@@ -1,44 +1,24 @@
 <?php
-
 use Baka\Http\RouterCollection;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register all of the routes for api.
+/**
+ * @todo how can we better define the version across the diff apps?
+ * Here is where you can register all of the routes for api.
  */
-
 $router = new RouterCollection($application);
 $router->setPrefix('/v1');
-$router->get('/', [
-    'Gewaer\Api\Controllers\IndexController',
-    'index',
-    'options' => [
-        'jwt' => false,
-    ]
-]);
-
-$router->get('/status', [
-    'Gewaer\Api\Controllers\IndexController',
-    'status',
-    'options' => [
-        'jwt' => false,
-    ]
-]);
 
 $router->get('/timezones', [
-    'Gewaer\Api\Controllers\TimeZonesController',
+    'Canvas\Api\Controllers\TimeZonesController',
     'index',
 ]);
 
 /**
- * Authentification Calls
+ * Authentification Calls.
  * @var [type]
  */
 $router->post('/auth', [
-    'Gewaer\Api\Controllers\AuthController',
+    'Canvas\Api\Controllers\AuthController',
     'login',
     'options' => [
         'jwt' => false,
@@ -47,18 +27,18 @@ $router->post('/auth', [
 
 //asociate mobile devices
 $router->post('/users/{id}/devices', [
-    'Gewaer\Api\Controllers\UserLinkedSourcesController',
+    'Canvas\Api\Controllers\UserLinkedSourcesController',
     'devices',
 ]);
 
 //detach mobile devices
 $router->delete('/users/{id}/devices/{deviceId}/detach', [
-    'Gewaer\Api\Controllers\UserLinkedSourcesController',
+    'Canvas\Api\Controllers\UserLinkedSourcesController',
     'detachDevice',
 ]);
 
 /**
- * Need to understand if using this can be a performance disadvantage in the future
+ * Need to understand if using this can be a performance disadvantage in the future.
  */
 $defaultCrudRoutes = [
     'users',
@@ -82,7 +62,7 @@ $defaultCrudRoutes = [
     'locales',
     'currencies',
     'UserLinkedSources' => 'devices',
-    'PaymentFrequencies'=> 'payment-frequencies'
+    'PaymentFrequencies' => 'payment-frequencies'
 ];
 
 foreach ($defaultCrudRoutes as $key => $route) {
@@ -91,38 +71,38 @@ foreach ($defaultCrudRoutes as $key => $route) {
     $controllerName = ucfirst($name) . 'Controller';
 
     $router->get('/' . $route, [
-        'Gewaer\Api\Controllers\\' . $controllerName,
+        'Canvas\Api\Controllers\\' . $controllerName,
         'index',
     ]);
 
     $router->post('/' . $route, [
-        'Gewaer\Api\Controllers\\' . $controllerName,
+        'Canvas\Api\Controllers\\' . $controllerName,
         'create',
     ]);
 
     $router->get('/' . $route . '/{id}', [
-        'Gewaer\Api\Controllers\\' . $controllerName,
+        'Canvas\Api\Controllers\\' . $controllerName,
         'getById',
     ]);
 
     $router->put('/' . $route . '/{id}', [
-        'Gewaer\Api\Controllers\\' . $controllerName,
+        'Canvas\Api\Controllers\\' . $controllerName,
         'edit',
     ]);
 
     $router->put('/' . $route, [
-        'Gewaer\Api\Controllers\\' . $controllerName,
+        'Canvas\Api\Controllers\\' . $controllerName,
         'multipleUpdates',
     ]);
 
     $router->delete('/' . $route . '/{id}', [
-        'Gewaer\Api\Controllers\\' . $controllerName,
+        'Canvas\Api\Controllers\\' . $controllerName,
         'delete',
     ]);
 }
 
 $router->post('/users', [
-    'Gewaer\Api\Controllers\AuthController',
+    'Canvas\Api\Controllers\AuthController',
     'signup',
     'options' => [
         'jwt' => false,
@@ -130,12 +110,12 @@ $router->post('/users', [
 ]);
 
 $router->put('/auth/logout', [
-    'Gewaer\Api\Controllers\AuthController',
+    'Canvas\Api\Controllers\AuthController',
     'logout',
 ]);
 
 $router->post('/auth/forgot', [
-    'Gewaer\Api\Controllers\AuthController',
+    'Canvas\Api\Controllers\AuthController',
     'recover',
     'options' => [
         'jwt' => false,
@@ -143,12 +123,12 @@ $router->post('/auth/forgot', [
 ]);
 
 $router->post('/roles-acceslist/{id}/copy', [
-    'Gewaer\Api\Controllers\RolesAccesListController',
+    'Canvas\Api\Controllers\RolesAccesListController',
     'copy'
 ]);
 
 $router->post('/auth/reset/{key}', [
-    'Gewaer\Api\Controllers\AuthController',
+    'Canvas\Api\Controllers\AuthController',
     'reset',
     'options' => [
         'jwt' => false,
@@ -156,17 +136,17 @@ $router->post('/auth/reset/{key}', [
 ]);
 
 $router->post('/users/invite', [
-    'Gewaer\Api\Controllers\UsersInviteController',
+    'Canvas\Api\Controllers\UsersInviteController',
     'insertInvite'
 ]);
 
 $router->post('/users-invite/{hash}', [
-    'Gewaer\Api\Controllers\UsersInviteController',
+    'Canvas\Api\Controllers\UsersInviteController',
     'processUserInvite',
 ]);
 
 $router->get('/users-invite/validate/{hash}', [
-    'Gewaer\Api\Controllers\UsersInviteController',
+    'Canvas\Api\Controllers\UsersInviteController',
     'getByHash',
     'options' => [
         'jwt' => false,
@@ -175,12 +155,12 @@ $router->get('/users-invite/validate/{hash}', [
 
 //Custom Fields specific routes
 $router->get('/custom-fields-modules/{id}/fields', [
-    'Gewaer\Api\Controllers\CustomFieldsModulesController',
+    'Canvas\Api\Controllers\CustomFieldsModulesController',
     'customFieldsByModulesId',
 ]);
 
 $router->post('/webhook/payments', [
-    'Gewaer\Api\Controllers\PaymentsController',
+    'Canvas\Api\Controllers\PaymentsController',
     'handleWebhook',
     'options' => [
         'jwt' => false,
@@ -189,17 +169,17 @@ $router->post('/webhook/payments', [
 
 // Email Template Copy
 $router->post('/email-templates/{id}/copy', [
-    'Gewaer\Api\Controllers\EmailTemplatesController',
+    'Canvas\Api\Controllers\EmailTemplatesController',
     'copy',
 ]);
 
 $router->post('/email-templates/test', [
-    'Gewaer\Api\Controllers\EmailTemplatesController',
+    'Canvas\Api\Controllers\EmailTemplatesController',
     'sendTestEmail',
 ]);
 
 $router->put('/apps-plans/{id}/method', [
-    'Gewaer\Api\Controllers\AppsPlansController',
+    'Canvas\Api\Controllers\AppsPlansController',
     'updatePaymentMethod',
 ]);
 

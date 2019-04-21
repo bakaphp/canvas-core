@@ -1,2 +1,2 @@
-# canvas-core
+# Canvas Core
 SaasCanvas Ecosystem Library 
