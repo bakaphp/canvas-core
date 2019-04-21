@@ -1,0 +1,223 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Canvas\Traits;
+
+use Phalcon\Http\Response;
+use Phalcon\Validation;
+use Phalcon\Validation\Validator\File as FileValidator;
+use Canvas\Exception\UnprocessableEntityHttpException;
+use Canvas\Models\FileSystem;
+use Canvas\Filesystem\Helper;
+
+/**
+ * Trait ResponseTrait
+ *
+ * @package Canvas\Traits
+ *
+ * @property Users $user
+ * @property AppsPlans $appPlan
+ * @property CompanyBranches $branches
+ * @property Companies $company
+ * @property UserCompanyApps $app
+ * @property \Phalcon\Di $di
+ *
+ */
+trait FileManagementTrait
+{
+    /**
+     * Get item.
+     *
+     * @method GET
+     * url /v1/filesystem/{id}
+     *
+     * @param mixed $id
+     *
+     * @return \Phalcon\Http\Response
+     * @throws Exception
+     */
+    public function getById($id) : Response
+    {
+        //find the info
+        $records = $this->model->findFirst([
+            'conditions' => 'entity_id = ?0 and companies_id = ?1 and apps_id = ?2',
+            'bind' => [$id, $this->userData->currentCompanyId(), $this->app->getId()]
+        ]);
+
+        if (!is_object($records)) {
+            throw new UnprocessableEntityHttpException('Records not found');
+        }
+
+        return $this->response($records);
+    }
+
+    /**
+     * Add a new item.
+     *
+     * @method POST
+     * url /v1/filesystem
+     *
+     * @return \Phalcon\Http\Response
+     * @throws Exception
+     */
+    public function create() : Response
+    {
+        if (!$this->request->hasFiles()) {
+            //@todo handle base64 images
+        }
+
+        return $this->response($this->processFiles());
+    }
+
+    /**
+     * Update an item.
+     *
+     * @method PUT
+     * url /v1/filesystem/{id}
+     *
+     * @param mixed $id
+     *
+     * @return \Phalcon\Http\Response
+     * @throws Exception
+     */
+    public function edit($id) : Response
+    {
+        $file = $this->model->findFirst([
+                'conditions' => 'id = ?0 and companies_id = ?1 and apps_id = ?2',
+                'bind' => [$id, $this->userData->currentCompanyId(), $this->app->getId()]
+            ]);
+
+        if (!is_object($file)) {
+            throw new UnprocessableEntityHttpException('Record not found');
+        }
+
+        $request = $this->request->getPut();
+
+        if (empty($request)) {
+            $request = $this->request->getJsonRawBody(true);
+        }
+
+        $systemModule = $request['system_modules_id'] ?? 0;
+        $entityId = $request['entity_id'] ?? 0;
+
+        $file->system_modules_id = $systemModule;
+        $file->entity_id = $entityId;
+
+        if (!$file->update()) {
+            throw new UnprocessableEntityHttpException((string)current($file->getMessages()));
+        }
+
+        return $this->response($file);
+    }
+
+    /**
+     * Set the validation for the files
+     *
+     * @return Validation
+     */
+    protected function validation(): Validation
+    {
+        $validator = new Validation();
+
+        /**
+         * @todo add validation for other file types, but we need to
+         * look for a scalable way
+         */
+        $uploadConfig = [
+            'maxSize' => '10M',
+            'messageSize' => ':field exceeds the max filesize (:max)',
+            'allowedTypes' => [
+                'image/jpeg',
+                'image/png',
+            ],
+            'messageType' => 'Allowed file types are :types',
+        ];
+
+        $validator->add(
+            'file',
+            new FileValidator($uploadConfig)
+        );
+
+        return $validator;
+    }
+
+    /**
+     * Upload the document and save them to the filesystem
+     *
+     * @return array
+     */
+    protected function processFiles(): array
+    {
+        //@todo validate entity id
+        $systemModule = $this->request->getPost('system_modules_id', 'int', '0');
+        $entityId = $this->request->getPost('entity_id', 'int', '0');
+
+        $validator = $this->validation();
+
+        $files = [];
+        foreach ($this->request->getUploadedFiles() as $file) {
+            //validate this current file
+            $errors = $validator->validate(['file' => [
+                'name' => $file->getName(),
+                'type' => $file->getType(),
+                'tmp_name' => $file->getTempName(),
+                'error' => $file->getError(),
+                'size' => $file->getSize(),
+            ]]);
+
+            if (!defined('API_TESTS')) {
+                if (count($errors)) {
+                    foreach ($errors as $error) {
+                        throw new UnprocessableEntityHttpException((string)$error);
+                    }
+                }
+            }
+
+            /**
+             * create directory
+             * @todo change this to be dynamic based on the app configuration , and default S3
+             */
+            $this->di->get('filesystem', 'local')->createDir($this->config->filesystem->local->path);
+
+            $filePath = Helper::generateUniqueName($file, $this->config->filesystem->local->path);
+            $compleFilePath = $this->config->filesystem->local->path . $filePath;
+
+            /**
+             * @todo change this to be dynamic based on the app configuration , and default S3
+             */
+            $this->di->get('filesystem', 'local')->writeStream($filePath, fopen($file->getTempName(), 'r'));
+
+            // if user already had an image upload, detach said image from the user first before. Find image depending on system_module_id
+            $existingImage = FileSystem::findFirst([
+                'conditions' => 'system_modules_id = ?0 and apps_id = ?1 and companies_id = ?2 and users_id = ?3 and is_deleted = 0',
+                'bind' => [$systemModule, $this->app->getId(), $this->userData->currentCompanyId(), $this->userData->getId()]
+            ]);
+
+            if (is_object($existingImage)) {
+                $existingImage->users_id = 0;
+                $existingImage->update();
+            }
+
+            $fileSystem = new FileSystem();
+            $fileSystem->name = $file->getName();
+            $fileSystem->system_modules_id = $systemModule;
+            $fileSystem->entity_id = $entityId;
+            $fileSystem->companies_id = $this->userData->currentCompanyId();
+            $fileSystem->apps_id = $this->app->getId();
+            $fileSystem->users_id = $this->userData->getId();
+            $fileSystem->path = $compleFilePath;
+            $fileSystem->url = $this->config->filesystem->cdn . $filePath;
+            $fileSystem->file_type = $file->getExtension();
+            $fileSystem->size = $file->getSize();
+
+            if (!$fileSystem->save()) {
+                throw new UnprocessableEntityHttpException((string)current($fileSystem->getMessages()));
+            }
+
+            $files[] = $fileSystem;
+        }
+
+        return $files;
+    }
+}
