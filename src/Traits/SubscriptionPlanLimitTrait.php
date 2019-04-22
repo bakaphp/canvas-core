@@ -28,6 +28,7 @@ trait SubscriptionPlanLimitTrait
 {
     /**
      * Array of routes that can bypass the system when subscription is inactive
+     * @todo look for a better way to handle this calls
      */
     public $bypassRoutes = [
         '/v1/auth/logout'=> ['PUT'],
