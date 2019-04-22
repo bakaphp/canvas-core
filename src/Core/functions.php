@@ -15,14 +15,24 @@ if (!function_exists('Canvas\Core\appPath')) {
      */
     function appPath(string $path = ''): string
     {
-        return dirname(dirname(getcwd())) . ($path ? DIRECTORY_SEPARATOR . $path : $path);
+        $currentDir = dirname(dirname(getcwd())) . ($path ? DIRECTORY_SEPARATOR . $path : $path);
+
+        /**
+         * since we are calling this file from the diferent path we have to verify if its cli.
+         * @todo look for a better solution , hate this
+         */
+        if (php_sapi_name() == 'cli') {
+            $currentDir = getcwd() . DIRECTORY_SEPARATOR. $path;
+        }
+
+        return $currentDir;
     }
 }
 
 if (!function_exists('Canvas\Core\envValue')) {
     /**
      * Gets a variable from the environment, returns it properly formatted or the
-     * default if it does not exist
+     * default if it does not exist.
      *
      * @param string     $variable
      * @param mixed|null $default
@@ -49,7 +59,7 @@ if (!function_exists('Canvas\Core\envValue')) {
 
 if (!function_exists('Canvas\Core\appUrl')) {
     /**
-     * Constructs a URL for links with resource and id
+     * Constructs a URL for links with resource and id.
      *
      * @param string $resource
      * @param int    $recordId
@@ -81,7 +91,7 @@ if (!function_exists('Canvas\Core\paymentGatewayIsActive')) {
 
 if (!function_exists('Canvas\Core\isJson')) {
     /**
-     * Given a string determine if its a json
+     * Given a string determine if its a json.
      *
      * @param string $string
      * @return boolean

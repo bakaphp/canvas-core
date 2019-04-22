@@ -122,7 +122,7 @@ class RolesAccesListController extends BaseController
     {
         $objectInfo = $this->model->findFirst([
             'roles_id = ?0 AND is_deleted = 0 AND apps_id in (?1, ?2)',
-            'bind' => [$id, $this->app->getId(), Apps::Canvas_DEFAULT_APP_ID],
+            'bind' => [$id, $this->app->getId(), Apps::CANVAS_DEFAULT_APP_ID],
         ]);
 
         //get relationship
