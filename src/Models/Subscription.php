@@ -5,6 +5,7 @@ namespace Canvas\Models;
 use Phalcon\Cashier\Subscription as PhalconSubscription;
 use Canvas\Exception\ServerErrorHttpException;
 use Phalcon\Di;
+use Phalcon\Mvc\Micro;
 
 /**
  * Trait Subscription
@@ -200,13 +201,20 @@ class Subscription extends PhalconSubscription
 
     /**
      * Search current company's app setting with key paid to verify payment status for current company
+     * @param Micro $app
      * @return bool
      */
-    public static function getPaymentStatus(): bool
+    public static function getPaymentStatus(Micro $app = null): bool
     {
+        $defaultCompany = Di::getDefault()->getUserData()->default_company;
+
+        if(isset($app)){
+            $defaultCompany = $app->getDI()->getUserData()->default_company;
+        }
+        
         $subscriptionPaid = CompaniesSettings::findFirst([
             'conditions' => "companies_id = ?0 and name = 'paid' and is_deleted = 0",
-            'bind' => [Di::getDefault()->getUserData()->default_company]
+            'bind' => [$defaultCompany]
         ]);
 
         if (!$subscriptionPaid->value) {
