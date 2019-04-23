@@ -42,10 +42,6 @@ class AclMiddleware extends TokenBase
             // DELETE -> delete
             // POST -> create
 
-            if (!Subscription::getPaymentStatus()) {
-                throw new ServerErrorHttpException('Subscription is not active.Please contact your admin');
-            }
-
             switch (strtolower($request->getMethod())) {
                 case 'get':
                     $action = 'list';
