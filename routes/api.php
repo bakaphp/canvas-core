@@ -63,7 +63,7 @@ $defaultCrudRoutes = [
     'currencies',
     'UserLinkedSources' => 'devices',
     'PaymentFrequencies' => 'payment-frequencies',
-    'SystemModules'=>'system-modules'
+    'SystemModules'=>'system-modules',
 ];
 
 foreach ($defaultCrudRoutes as $key => $route) {
@@ -144,6 +144,9 @@ $router->post('/users/invite', [
 $router->post('/users-invite/{hash}', [
     'Canvas\Api\Controllers\UsersInviteController',
     'processUserInvite',
+    'options' => [
+        'jwt' => false,
+    ]
 ]);
 
 $router->get('/users-invite/validate/{hash}', [
