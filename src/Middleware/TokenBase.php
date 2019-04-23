@@ -9,6 +9,7 @@ use Canvas\Traits\TokenTrait;
 use Canvas\Traits\SubscriptionPlanLimitTrait;
 use Phalcon\Mvc\Micro\MiddlewareInterface;
 use Canvas\Exception\UnauthorizedHttpException;
+use Canvas\Exception\SubscriptionPlanFailureException;
 use Phalcon\Mvc\Micro;
 use Phalcon\Http\RequestInterface;
 use Canvas\Models\Subscription;
@@ -37,10 +38,10 @@ abstract class TokenBase implements MiddlewareInterface
 
         if (isset($app['userData']) && !Subscription::getPaymentStatus($app->getDI()->getUserData())) {
             if (!array_key_exists($calledRoute, $this->bypassRoutes)) {
-                throw new UnauthorizedHttpException('Subscription expired,update payment method or verify payment');
+                throw new SubscriptionPlanFailureException('Subscription expired,update payment method or verify payment');
             } else {
                 if (!in_array($request->getMethod(), $this->bypassRoutes[$calledRoute])) {
-                    throw new UnauthorizedHttpException('Subscription expired,update payment method or verify payment');
+                    throw new SubscriptionPlanFailureException('Subscription expired,update payment method or verify payment');
                 }
             }
         }

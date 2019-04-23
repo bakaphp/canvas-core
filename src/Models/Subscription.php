@@ -204,17 +204,11 @@ class Subscription extends PhalconSubscription
      * @param Users $user
      * @return bool
      */
-    public static function getPaymentStatus(Users $user = null): bool
+    public static function getPaymentStatus(Users $user): bool
     {
-        $defaultCompany = Di::getDefault()->getUserData()->default_company;
-
-        if(!is_null($user)){
-            $defaultCompany = $user->default_company;
-        }
-        
         $subscriptionPaid = CompaniesSettings::findFirst([
             'conditions' => "companies_id = ?0 and name = 'paid' and is_deleted = 0",
-            'bind' => [$defaultCompany]
+            'bind' => [$user->default_company]
         ]);
 
         if (!$subscriptionPaid->value) {
