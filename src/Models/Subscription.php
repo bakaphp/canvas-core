@@ -201,15 +201,15 @@ class Subscription extends PhalconSubscription
 
     /**
      * Search current company's app setting with key paid to verify payment status for current company
-     * @param Micro $app
+     * @param Users $user
      * @return bool
      */
-    public static function getPaymentStatus(Micro $app = null): bool
+    public static function getPaymentStatus(Users $user = null): bool
     {
         $defaultCompany = Di::getDefault()->getUserData()->default_company;
 
-        if(isset($app)){
-            $defaultCompany = $app->getDI()->getUserData()->default_company;
+        if(!is_null($user)){
+            $defaultCompany = $user->default_company;
         }
         
         $subscriptionPaid = CompaniesSettings::findFirst([
