@@ -365,12 +365,7 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
      */
     public function beforeSave(): void
     {
-        //lets trim spaces from beginning and end of string from fields
-        foreach ($this as $key => $value) {
-            if (gettype($value) == 'string') {
-                $this->$key = $this->trimFrontBackSpaces($value);
-            }
-        }
+        $this->trimSpacesFromPropertiesValues();
     }
 
     /**

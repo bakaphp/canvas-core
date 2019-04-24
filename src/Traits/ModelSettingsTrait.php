@@ -100,12 +100,15 @@ trait ModelSettingsTrait
     }
 
     /**
-     * Trim spaces from the beginning and end of string type properties
-     * @param string $value
-     * @return string
+     * Trim spaces from  properties's values of objects
+     * @return void
      */
-    private function trimFrontBackSpaces(string $value): string
+    private function trimSpacesFromPropertiesValues(): void
     {
-        return rtrim(ltrim($value));
+        foreach ($this as $key => $value) {
+            if (gettype($value) == 'string') {
+                $this->$key = trim($value);
+            }
+        }
     }
 }
