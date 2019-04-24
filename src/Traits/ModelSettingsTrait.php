@@ -101,6 +101,7 @@ trait ModelSettingsTrait
 
     /**
      * Trim spaces from  properties's values of objects
+     * @todo Find a more elegant solution for trimming values
      * @return void
      */
     private function trimSpacesFromPropertiesValues(): void
