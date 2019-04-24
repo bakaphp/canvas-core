@@ -357,25 +357,18 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
         $this->language = $this->di->getApp()->getSettings('language');
         $this->timezone = $this->di->getApp()->getSettings('timezone');
         $this->currency_id = Currencies::findFirstByCode($this->di->getApp()->getSettings('currency'))->getId();
-
-        //lets trim spaces from beginning and end of string from fields
-        foreach ($this as $key => $value) {
-            if (gettype($value) == 'string') {
-                $this->$key = rtrim(ltrim($value));
-            }
-        }
     }
 
     /**
-     * Before update Company
+     * Before insert or update Company
      * @return void
      */
-    public function beforeUpdate(): void
+    public function beforeSave(): void
     {
         //lets trim spaces from beginning and end of string from fields
         foreach ($this as $key => $value) {
             if (gettype($value) == 'string') {
-                $this->$key = rtrim(ltrim($value));
+                $this->$key = $this->trimFrontBackSpaces($value);
             }
         }
     }

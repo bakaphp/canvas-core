@@ -98,4 +98,14 @@ trait ModelSettingsTrait
 
         return null;
     }
+
+    /**
+     * Trim spaces from the beginning and end of string type properties
+     * @param string $value
+     * @return string
+     */
+    private function trimFrontBackSpaces(string $value): string
+    {
+        return rtrim(ltrim($value));
+    }
 }
