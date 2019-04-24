@@ -72,6 +72,12 @@ class CompaniesController extends BaseCustomFieldsController
 
             $data = $this->request->getPut();
 
+            foreach ($data as $key => $value) {
+                if (gettype($value) == 'string') {
+                    $data[$key] = rtrim(ltrim($value));
+                }
+            }
+
             if (empty($data)) {
                 throw new UnprocessableEntityHttpException('No valid data sent.');
             }
