@@ -123,6 +123,7 @@ class UsersInviteController extends BaseController
         //Save data to users_invite table and generate a hash for the invite
         $userInvite = $this->model;
         $userInvite->companies_id = $this->userData->default_company;
+        $userInvite->users_id = $this->userData->getId();
         $userInvite->app_id = $this->app->getId();
         $userInvite->role_id = Roles::existsById((int)$request['role_id'])->id;
         $userInvite->email = $request['email'];
@@ -207,6 +208,8 @@ class UsersInviteController extends BaseController
         if (!is_object($usersInvite)) {
             throw new NotFoundHttpException('Users Invite not found');
         }
+
+        $this->setUserDataById((int)$usersInvite->users_id);
 
         //Check if user already exists
         $userExists = Users::findFirst([
