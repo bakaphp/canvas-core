@@ -32,7 +32,7 @@ $router->post('/users/{id}/devices', [
 ]);
 
 //detach mobile devices
-$router->delete('/users/{id}/devices/{deviceId}/detach', [
+$router->post('/users/{id}/devices/{deviceId}/detach', [
     'Canvas\Api\Controllers\UserLinkedSourcesController',
     'detachDevice',
 ]);
