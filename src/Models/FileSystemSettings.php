@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Canvas\Models;
 
-class FilesystemSettings extends AbstractModel
+class FileSystemSettings extends AbstractModel
 {
     /**
      *
