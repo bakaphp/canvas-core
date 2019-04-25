@@ -102,6 +102,13 @@ foreach ($defaultCrudRoutes as $key => $route) {
     ]);
 }
 
+//detach mobile devices
+$router->delete('/filesystem/{id}/attributes/{name}', [
+    'Canvas\Api\Controllers\FilesystemController',
+    'deleteAttributes',
+]);
+
+
 $router->post('/users', [
     'Canvas\Api\Controllers\AuthController',
     'signup',

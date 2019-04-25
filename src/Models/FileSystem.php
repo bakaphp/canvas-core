@@ -4,7 +4,18 @@ declare(strict_types=1);
 namespace Canvas\Models;
 
 use Canvas\Traits\ModelSettingsTrait;
+use Canvas\Exception\ModelException;
+use Phalcon\Di;
 
+/**
+ * Classs for FileSystem.
+ * @property Users $userData
+ * @property Request $request
+ * @property Config $config
+ * @property Apps $app
+ * @property \Phalcon\DI $di
+ *
+ */
 class FileSystem extends AbstractModel
 {
     use ModelSettingsTrait;
@@ -144,5 +155,47 @@ class FileSystem extends AbstractModel
     public function getSource() : string
     {
         return 'filesystem';
+    }
+
+    /**
+     * Get the element by its entity id.
+     *
+     * @param string $id
+     * @return FileSystem
+     * @throw Exception
+     */
+    public static function getByEntityId($id)
+    {
+        $file = self::findFirst([
+            'conditions' => 'entity_id = ?0 and companies_id = ?1 and apps_id = ?2',
+            'bind' => [$id, Di::getDefault()->getUserData()->currentCompanyId(), Di::getDefault()->getConfig()->app->id]
+        ]);
+
+        if (!is_object($file)) {
+            throw new ModelException('File not found');
+        }
+
+        return $file;
+    }
+    
+    /**
+     * Get the element by its entity id.
+     *
+     * @param string $id
+     * @return FileSystem
+     * @throw Exception
+     */
+    public static function getById($id)
+    {
+        $file = self::findFirst([
+            'conditions' => 'id = ?0 and companies_id = ?1 and apps_id = ?2',
+            'bind' => [$id, Di::getDefault()->getUserData()->currentCompanyId(), Di::getDefault()->getConfig()->app->id]
+        ]);
+
+        if (!is_object($file)) {
+            throw new ModelException('File not found');
+        }
+
+        return $file;
     }
 }
