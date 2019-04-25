@@ -360,6 +360,15 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
     }
 
     /**
+     * Before insert or update Company
+     * @return void
+     */
+    public function beforeSave(): void
+    {
+        $this->trimSpacesFromPropertiesValues();
+    }
+
+    /**
      * After creating the company.
      *
      * @return void

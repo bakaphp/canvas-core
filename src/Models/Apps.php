@@ -45,6 +45,11 @@ class Apps extends \Baka\Auth\Models\Apps
     public $is_actived;
 
     /**
+     * @var integer
+     */
+    public $payments_active;
+
+    /**
      *
      * @var string
      */

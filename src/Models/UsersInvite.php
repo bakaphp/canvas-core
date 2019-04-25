@@ -25,6 +25,12 @@ class UsersInvite extends AbstractModel
      *
      * @var integer
      */
+    public $users_id;
+
+    /**
+     *
+     * @var integer
+     */
     public $companies_id;
 
     /**
