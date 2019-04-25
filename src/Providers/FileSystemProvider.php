@@ -17,11 +17,14 @@ class FileSystemProvider implements ServiceProviderInterface
     public function register(DiInterface $container)
     {
         $config = $container->getShared('config');
-        $app = $container->getShared('app');
 
         $container->set(
             'filesystem',
-            function ($filesystem = null) use ($config, $app) {
+            function ($filesystem = null) use ($config, $container) {
+
+                //we ened to call it internally to avoid the test failing WTF
+                $app = $container->getShared('app');
+
                 //if its null lets get the filesystem from the app settings
                 if (is_null($filesystem)) {
                     $filesystem = $app->getSettings('filesystem');
