@@ -68,19 +68,19 @@ class Apps extends \Baka\Auth\Models\Apps
     public $is_deleted;
 
     /**
-     * Ecosystem default app
+     * Ecosystem default app.
      * @var string
      */
     const CANVAS_DEFAULT_APP_ID = 1;
     const CANVAS_DEFAULT_APP_NAME = 'Default';
 
     /**
-     * Users Associated Trait
+     * Users Associated Trait.
      */
     use UsersAssociatedTrait;
 
     /**
-     * Model Settings Trait
+     * Model Settings Trait.
      */
     use ModelSettingsTrait;
 
@@ -123,7 +123,7 @@ class Apps extends \Baka\Auth\Models\Apps
     }
 
     /**
-     * You can only get 2 variations or default in DB or the api app
+     * You can only get 2 variations or default in DB or the api app.
      *
      * @param string $name
      * @return Apps

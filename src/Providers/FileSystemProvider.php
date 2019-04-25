@@ -17,10 +17,16 @@ class FileSystemProvider implements ServiceProviderInterface
     public function register(DiInterface $container)
     {
         $config = $container->getShared('config');
+        $app = $container->getShared('app');
 
         $container->setShared(
             'filesystem',
-            function ($filesystem = 'local') use ($config) {
+            function ($filesystem = null) use ($config, $app) {
+                //if its null lets get the filesystem from the app settings
+                if (is_null($filesystem)) {
+                    $filesystem = $app->getSettings('filesystem');
+                }
+
                 if ($filesystem === 'local') {
                     //create directory
                     $adapter = new Local($config->filesystem->local->path);
