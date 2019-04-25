@@ -10,9 +10,10 @@ use Phalcon\Validation\Validator\File as FileValidator;
 use Canvas\Exception\UnprocessableEntityHttpException;
 use Canvas\Models\FileSystem;
 use Canvas\Filesystem\Helper;
+use Baka\Http\QueryParser;
 
 /**
- * Trait ResponseTrait
+ * Trait ResponseTrait.
  *
  * @package Canvas\Traits
  *
@@ -45,7 +46,13 @@ trait FileManagementTrait
             'bind' => [$id, $this->userData->currentCompanyId(), $this->app->getId()]
         ]);
 
-        if (!is_object($records)) {
+        //get relationship
+        if ($this->request->hasQuery('relationships')) {
+            $relationships = $this->request->getQuery('relationships', 'string');
+            $records = QueryParser::parseRelationShips($relationships, $records);
+        }
+
+        if (!$records) {
             throw new UnprocessableEntityHttpException('Records not found');
         }
 
@@ -84,9 +91,9 @@ trait FileManagementTrait
     public function edit($id) : Response
     {
         $file = $this->model->findFirst([
-                'conditions' => 'id = ?0 and companies_id = ?1 and apps_id = ?2',
-                'bind' => [$id, $this->userData->currentCompanyId(), $this->app->getId()]
-            ]);
+            'conditions' => 'id = ?0 and companies_id = ?1 and apps_id = ?2',
+            'bind' => [$id, $this->userData->currentCompanyId(), $this->app->getId()]
+        ]);
 
         if (!is_object($file)) {
             throw new UnprocessableEntityHttpException('Record not found');
@@ -112,7 +119,7 @@ trait FileManagementTrait
     }
 
     /**
-     * Set the validation for the files
+     * Set the validation for the files.
      *
      * @return Validation
      */
@@ -143,7 +150,7 @@ trait FileManagementTrait
     }
 
     /**
-     * Upload the document and save them to the filesystem
+     * Upload the document and save them to the filesystem.
      *
      * @return array
      */
@@ -152,6 +159,7 @@ trait FileManagementTrait
         //@todo validate entity id
         $systemModule = $this->request->getPost('system_modules_id', 'int', '0');
         $entityId = $this->request->getPost('entity_id', 'int', '0');
+        $allFields = $this->request->getPost();
 
         $validator = $this->validation();
 
@@ -174,30 +182,23 @@ trait FileManagementTrait
                 }
             }
 
-            /**
-             * create directory
-             * @todo change this to be dynamic based on the app configuration , and default S3
-             */
-            $this->di->get('filesystem', 'local')->createDir($this->config->filesystem->local->path);
+            //get the filesystem config
+            $appSettingFileConfig = $this->di->get('app')->getSettings('filesystem');
+            $fileSystemConfig = $this->config->filesystem->{$appSettingFileConfig};
 
+            //create local filesystem , for temp files
+            $this->di->get('filesystem', ['local'])->createDir($this->config->filesystem->local->path);
+
+            //get the tem file
             $filePath = Helper::generateUniqueName($file, $this->config->filesystem->local->path);
-            $compleFilePath = $this->config->filesystem->local->path . $filePath;
+            $compleFilePath = $fileSystemConfig->path . $filePath;
+            $uploadFileNameWithPath = $appSettingFileConfig == 'local' ? $filePath : $compleFilePath;
 
             /**
-             * @todo change this to be dynamic based on the app configuration , and default S3
+             * upload file base on temp.
+             * @todo change this to determine type of file and recreate it if its a image
              */
-            $this->di->get('filesystem', 'local')->writeStream($filePath, fopen($file->getTempName(), 'r'));
-
-            // if user already had an image upload, detach said image from the user first before. Find image depending on system_module_id
-            $existingImage = FileSystem::findFirst([
-                'conditions' => 'system_modules_id = ?0 and apps_id = ?1 and companies_id = ?2 and users_id = ?3 and is_deleted = 0',
-                'bind' => [$systemModule, $this->app->getId(), $this->userData->currentCompanyId(), $this->userData->getId()]
-            ]);
-
-            if (is_object($existingImage)) {
-                $existingImage->users_id = 0;
-                $existingImage->update();
-            }
+            $this->di->get('filesystem')->writeStream($uploadFileNameWithPath, fopen($file->getTempName(), 'r'));
 
             $fileSystem = new FileSystem();
             $fileSystem->name = $file->getName();
@@ -207,12 +208,17 @@ trait FileManagementTrait
             $fileSystem->apps_id = $this->app->getId();
             $fileSystem->users_id = $this->userData->getId();
             $fileSystem->path = $compleFilePath;
-            $fileSystem->url = $this->config->filesystem->cdn . $filePath;
+            $fileSystem->url = $fileSystemConfig->cdn . DIRECTORY_SEPARATOR . $uploadFileNameWithPath;
             $fileSystem->file_type = $file->getExtension();
             $fileSystem->size = $file->getSize();
 
             if (!$fileSystem->save()) {
                 throw new UnprocessableEntityHttpException((string)current($fileSystem->getMessages()));
+            }
+
+            //add settings
+            foreach ($allFields as $key => $settings) {
+                $fileSystem->setSettings($key, $settings);
             }
 
             $files[] = $fileSystem;

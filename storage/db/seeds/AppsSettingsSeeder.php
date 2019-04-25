@@ -25,10 +25,16 @@ class AppsSettingsSeeder extends AbstractSeed
                 'value' => 'USD',
                 'created_at' => date('Y-m-d H:m:s'),
             ],
+            [
+                'apps_id' => 1,
+                'name' => 'filesystem',
+                'value' => 'local',
+                'created_at' => date('Y-m-d H:m:s'),
+            ],
         ];
 
         $posts = $this->table('apps_settings');
         $posts->insert($data)
-              ->save();
+            ->save();
     }
 }

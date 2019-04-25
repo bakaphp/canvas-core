@@ -9,7 +9,7 @@ use Canvas\Exception\ServerErrorHttpException;
 use Canvas\Exception\ModelException;
 
 /**
- * Trait ResponseTrait
+ * Trait ResponseTrait.
  *
  * @package Canvas\Traits
  *
@@ -25,7 +25,7 @@ trait ModelSettingsTrait
     protected $settingsModel;
 
     /**
-     * Set the setting model
+     * Set the setting model.
      *
      * @return void
      */
@@ -37,7 +37,7 @@ trait ModelSettingsTrait
     }
 
     /**
-     * Get the primary key of this model, this will only work on model with just 1 primary key
+     * Get the primary key of this model, this will only work on model with just 1 primary key.
      *
      * @return string
      */
@@ -52,7 +52,7 @@ trait ModelSettingsTrait
     }
 
     /**
-     * Set the settings
+     * Set the settings.
      *
      * @param string $key
      * @param string $value
@@ -63,7 +63,7 @@ trait ModelSettingsTrait
         $this->createSettingsModel();
 
         if (!is_object($this->settingsModel)) {
-            throw new ServerErrorHttpException('ModelSettingsTrait need to have a settings mdoel configure, check the model setting existe for this class' . get_class($this));
+            throw new ServerErrorHttpException('ModelSettingsTrait need to have a settings model configure, check the model setting existe for this class' . get_class($this));
         }
 
         //setup the user notificatoin setting
@@ -79,7 +79,7 @@ trait ModelSettingsTrait
     }
 
     /**
-     * Get the settings base on the key
+     * Get the settings base on the key.
      *
      * @param string $key
      * @return void

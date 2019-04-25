@@ -3,8 +3,12 @@ declare(strict_types=1);
 
 namespace Canvas\Models;
 
+use Canvas\Traits\ModelSettingsTrait;
+
 class FileSystem extends AbstractModel
 {
+    use ModelSettingsTrait;
+
     /**
      *
      * @var integer
@@ -122,6 +126,13 @@ class FileSystem extends AbstractModel
             'Canvas\Models\SystemModules',
             'id',
             ['alias' => 'systemModules']
+        );
+
+        $this->hasMany(
+            'id',
+            'Canvas\Models\FilesystemSettings',
+            'filesystem_id',
+            ['alias' => 'attributes']
         );
     }
 
