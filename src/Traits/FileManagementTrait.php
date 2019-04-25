@@ -11,6 +11,7 @@ use Canvas\Exception\UnprocessableEntityHttpException;
 use Canvas\Models\FileSystem;
 use Canvas\Filesystem\Helper;
 use Baka\Http\QueryParser;
+use Canvas\Models\FilesystemSettings;
 
 /**
  * Trait ResponseTrait.
@@ -41,10 +42,7 @@ trait FileManagementTrait
     public function getById($id) : Response
     {
         //find the info
-        $records = $this->model->findFirst([
-            'conditions' => 'entity_id = ?0 and companies_id = ?1 and apps_id = ?2',
-            'bind' => [$id, $this->userData->currentCompanyId(), $this->app->getId()]
-        ]);
+        $records = FileSystem::getByEntityId($id);
 
         //get relationship
         if ($this->request->hasQuery('relationships')) {
@@ -90,14 +88,7 @@ trait FileManagementTrait
      */
     public function edit($id) : Response
     {
-        $file = $this->model->findFirst([
-            'conditions' => 'id = ?0 and companies_id = ?1 and apps_id = ?2',
-            'bind' => [$id, $this->userData->currentCompanyId(), $this->app->getId()]
-        ]);
-
-        if (!is_object($file)) {
-            throw new UnprocessableEntityHttpException('Record not found');
-        }
+        $file = FileSystem::getById($id);
 
         $request = $this->request->getPut();
 
@@ -105,7 +96,7 @@ trait FileManagementTrait
             $request = $this->request->getJsonRawBody(true);
         }
 
-        $systemModule = $request['system_modules_id'] ?? 0;
+        $systemModule = isset($request['system_modules_id']) ? $request['system_modules_id'] : $file->system_modules_id;
         $entityId = $request['entity_id'] ?? 0;
 
         $file->system_modules_id = $systemModule;
@@ -116,6 +107,37 @@ trait FileManagementTrait
         }
 
         return $this->response($file);
+    }
+
+    /**
+     * Delete a file atribute.
+     *
+     * @param $id
+     * @param string $name
+     * @return void
+     */
+    public function deleteAttributes($id, string $name)
+    {
+        //find the info
+        $records = FileSystem::getByEntityId($id);
+
+        if (!$records) {
+            throw new UnprocessableEntityHttpException('Records not found');
+        }
+
+        $recordAttributes = FilesystemSettings::findFirst([
+            'conditions' => 'filesystem_id = ?0 and name = ?1',
+            'bind' => [$records->getId(), $name]
+        ]);
+
+        if (!is_object($records)) {
+            throw UnprocessableEntityHttpException('File attribute not found');
+        }
+
+        //true true delete
+        $recordAttributes->delete();
+
+        return $this->response(['Delete Successfully']);
     }
 
     /**
