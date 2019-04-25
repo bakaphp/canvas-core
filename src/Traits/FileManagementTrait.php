@@ -11,7 +11,7 @@ use Canvas\Exception\UnprocessableEntityHttpException;
 use Canvas\Models\FileSystem;
 use Canvas\Filesystem\Helper;
 use Baka\Http\QueryParser;
-use Canvas\Models\FilesystemSettings;
+use Canvas\Models\FileSystemSettings;
 use Canvas\Models\SystemModules;
 
 /**
@@ -124,7 +124,7 @@ trait FileManagementTrait
             throw new UnprocessableEntityHttpException('Records not found');
         }
 
-        $recordAttributes = FilesystemSettings::findFirst([
+        $recordAttributes = FileSystemSettings::findFirst([
             'conditions' => 'filesystem_id = ?0 and name = ?1',
             'bind' => [$records->getId(), $name]
         ]);

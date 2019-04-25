@@ -142,7 +142,7 @@ class FileSystem extends AbstractModel
 
         $this->hasMany(
             'id',
-            'Canvas\Models\FilesystemSettings',
+            'Canvas\Models\FileSystemSettings',
             'filesystem_id',
             ['alias' => 'attributes']
         );
