@@ -6,6 +6,7 @@ namespace Canvas\Api\Controllers;
 
 use Canvas\Models\FileSystem;
 use Canvas\Traits\FileManagementTrait;
+use Canvas\Exception\UnprocessableEntityHttpException;
 
 /**
  * Class BaseController
