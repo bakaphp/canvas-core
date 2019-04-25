@@ -19,7 +19,7 @@ class FileSystemProvider implements ServiceProviderInterface
         $config = $container->getShared('config');
         $app = $container->getShared('app');
 
-        $container->set(
+        $container->setShared(
             'filesystem',
             function ($filesystem = null) use ($config, $app) {
                 //if its null lets get the filesystem from the app settings
