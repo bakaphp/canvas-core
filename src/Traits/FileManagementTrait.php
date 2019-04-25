@@ -116,7 +116,7 @@ trait FileManagementTrait
      * @param string $name
      * @return void
      */
-    public function deleteAttributes($id, string $name)
+    public function deleteAttributes($id, string $name): Response
     {
         //find the info
         $records = FileSystem::getByEntityId($id);
