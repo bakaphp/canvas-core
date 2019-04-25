@@ -6,6 +6,7 @@ namespace Canvas\Models;
 use Canvas\Traits\ModelSettingsTrait;
 use Canvas\Exception\ModelException;
 use Phalcon\Di;
+use Phalcon\Mvc\Model\ResultsetInterface;
 
 /**
  * Classs for FileSystem.
@@ -164,11 +165,32 @@ class FileSystem extends AbstractModel
      * @return FileSystem
      * @throw Exception
      */
-    public static function getByEntityId($id)
+    public static function getByEntityId($id, SystemModules $systeModule): FileSystem
     {
         $file = self::findFirst([
-            'conditions' => 'entity_id = ?0 and companies_id = ?1 and apps_id = ?2',
-            'bind' => [$id, Di::getDefault()->getUserData()->currentCompanyId(), Di::getDefault()->getConfig()->app->id]
+            'conditions' => 'entity_id = ?0 AND companies_id = ?1 AND apps_id = ?2 AND system_modules_id = ?3 AND is_deleted = 0',
+            'bind' => [$id, Di::getDefault()->getUserData()->currentCompanyId(), Di::getDefault()->getConfig()->app->id, $systeModule->getId()]
+        ]);
+
+        if (!is_object($file)) {
+            throw new ModelException('File not found');
+        }
+
+        return $file;
+    }
+
+    /**
+     * Get the element by its entity id.
+     *
+     * @param string $id
+     * @return FileSystem
+     * @throw Exception
+     */
+    public static function getAllByEntityId($id, SystemModules $systeModule): ResultsetInterface
+    {
+        $file = self::find([
+            'conditions' => 'entity_id = ?0 AND companies_id = ?1 AND apps_id = ?2 AND system_modules_id = ?3 AND is_deleted = 0',
+            'bind' => [$id, Di::getDefault()->getUserData()->currentCompanyId(), Di::getDefault()->getConfig()->app->id, $systeModule->getId()]
         ]);
 
         if (!is_object($file)) {
@@ -185,10 +207,10 @@ class FileSystem extends AbstractModel
      * @return FileSystem
      * @throw Exception
      */
-    public static function getById($id)
+    public static function getById($id): FileSystem
     {
         $file = self::findFirst([
-            'conditions' => 'id = ?0 and companies_id = ?1 and apps_id = ?2',
+            'conditions' => 'id = ?0 AND companies_id = ?1 AND apps_id = ?2 AND is_deleted = 0',
             'bind' => [$id, Di::getDefault()->getUserData()->currentCompanyId(), Di::getDefault()->getConfig()->app->id]
         ]);
 

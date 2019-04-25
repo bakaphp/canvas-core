@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Canvas\Models;
 
 use Phalcon\Di;
+use Canvas\Exception\ModelException;
 
 class SystemModules extends AbstractModel
 {
@@ -131,5 +132,25 @@ class SystemModules extends AbstractModel
             'conditions' => 'model_name = ?0 and apps_id = ?1',
             'bind' => [$modelName, Di::getDefault()->getApp()->getId()]
         ]);
+    }
+
+    /**
+     * Get System Module by id.
+     *
+     * @param int $id
+     * @return SystemModules
+     */
+    public static function getById($id): SystemModules
+    {
+        $module = SystemModules::findFirst([
+            'conditions' => 'id = ?0 and apps_id = ?1',
+            'bind' => [$id, Di::getDefault()->getApp()->getId()]
+        ]);
+
+        if (!is_object($module)) {
+            throw new ModelException('System Module not found');
+        }
+
+        return $module;
     }
 }

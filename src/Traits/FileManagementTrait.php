@@ -12,6 +12,7 @@ use Canvas\Models\FileSystem;
 use Canvas\Filesystem\Helper;
 use Baka\Http\QueryParser;
 use Canvas\Models\FilesystemSettings;
+use Canvas\Models\SystemModules;
 
 /**
  * Trait ResponseTrait.
@@ -41,8 +42,7 @@ trait FileManagementTrait
      */
     public function getById($id) : Response
     {
-        //find the info
-        $records = FileSystem::getByEntityId($id);
+        $records = FileSystem::getById($id);
 
         //get relationship
         if ($this->request->hasQuery('relationships')) {
@@ -118,8 +118,7 @@ trait FileManagementTrait
      */
     public function deleteAttributes($id, string $name): Response
     {
-        //find the info
-        $records = FileSystem::getByEntityId($id);
+        $records = FileSystem::getById($id);
 
         if (!$records) {
             throw new UnprocessableEntityHttpException('Records not found');
@@ -130,8 +129,8 @@ trait FileManagementTrait
             'bind' => [$records->getId(), $name]
         ]);
 
-        if (!is_object($records)) {
-            throw UnprocessableEntityHttpException('File attribute not found');
+        if (!is_object($recordAttributes)) {
+            throw new UnprocessableEntityHttpException('File attribute not found');
         }
 
         //true true delete
