@@ -146,6 +146,13 @@ class FileSystem extends AbstractModel
             'filesystem_id',
             ['alias' => 'attributes']
         );
+
+        $this->hasOne(
+            'id',
+            'Canvas\Models\FileSystemSettings',
+            'filesystem_id',
+            ['alias' => 'attribute']
+        );
     }
 
     /**
@@ -199,7 +206,7 @@ class FileSystem extends AbstractModel
 
         return $file;
     }
-    
+
     /**
      * Get the element by its entity id.
      *
