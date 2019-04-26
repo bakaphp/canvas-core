@@ -110,7 +110,7 @@ class AddComplexFilters extends AbstractMigration
             'comment' => '',
             'row_format' => 'DYNAMIC',
         ])
-            ->addColumn('search_filter_id', 'integer', [
+            ->addColumn('custom_filter_id', 'integer', [
                 'null' => false,
                 'limit' => MysqlAdapter::INT_REGULAR,
                 'precision' => '10',
@@ -120,7 +120,7 @@ class AddComplexFilters extends AbstractMigration
                 'null' => false,
                 'limit' => MysqlAdapter::INT_REGULAR,
                 'precision' => '10',
-                'after' => 'search_filter_id',
+                'after' => 'custom_filter_id',
             ])
             ->addColumn('conditional', 'string', [
                 'null' => false,
@@ -151,8 +151,8 @@ class AddComplexFilters extends AbstractMigration
                 'precision' => '3',
                 'after' => 'updated_at',
             ])
-        ->addIndex(['search_filter_id'], [
-            'name' => 'search_filter_id',
+        ->addIndex(['custom_filter_id'], [
+            'name' => 'custom_filter_id',
             'unique' => false,
         ])
             ->create();
