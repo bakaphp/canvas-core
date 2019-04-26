@@ -7,7 +7,7 @@ class AddComplexFilters extends AbstractMigration
 {
     public function change()
     {
-        $this->table('search_filters', [
+        $this->table('custom_filters', [
             'id' => false,
             'primary_key' => ['id'],
             'engine' => 'InnoDB',
@@ -101,9 +101,9 @@ class AddComplexFilters extends AbstractMigration
         ])
             ->create();
 
-        $this->table('search_filters_conditions', [
+        $this->table('custom_filters_conditions', [
             'id' => false,
-            'primary_key' => ['search_filter_id'],
+            'primary_key' => ['custom_filter_id'],
             'engine' => 'InnoDB',
             'encoding' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
