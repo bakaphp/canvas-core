@@ -153,11 +153,19 @@ trait FileManagementTrait
          * look for a scalable way
          */
         $uploadConfig = [
-            'maxSize' => '10M',
+            'maxSize' => '100M',
             'messageSize' => ':field exceeds the max filesize (:max)',
             'allowedTypes' => [
                 'image/jpeg',
                 'image/png',
+                'audio/mpeg',
+                'audio/mp3',
+                'audio/mpeg',
+                'application/pdf',
+                'audio/mpeg3',
+                'audio/x-mpeg-3',
+                'application/x-zip-compressed',
+                'application/octet-stream',
             ],
             'messageType' => 'Allowed file types are :types',
         ];
