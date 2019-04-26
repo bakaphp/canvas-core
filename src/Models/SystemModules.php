@@ -128,10 +128,16 @@ class SystemModules extends AbstractModel
      */
     public static function getSystemModuleByModelName(string $modelName): SystemModules
     {
-        return SystemModules::findFirst([
+        $module = SystemModules::findFirst([
             'conditions' => 'model_name = ?0 and apps_id = ?1',
             'bind' => [$modelName, Di::getDefault()->getApp()->getId()]
         ]);
+
+        if (!is_object($module)) {
+            throw new ModelException('No system module for ' . $modelName);
+        }
+
+        return $module;
     }
 
     /**
