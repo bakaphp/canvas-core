@@ -74,7 +74,6 @@ class AddComplexFilters extends AbstractMigration
             ])
             ->addColumn('description', 'text', [
                 'null' => true,
-                'default' => 'NULL',
                 'limit' => 65535,
                 'collation' => 'utf8mb4_unicode_ci',
                 'encoding' => 'utf8mb4',
