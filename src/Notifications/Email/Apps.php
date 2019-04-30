@@ -1,14 +1,14 @@
 <?php
 
-namespace Canvas\Notifications\Mobile;
+namespace Canvas\Notifications\Email;
 
 use Namshi\Notificator\Notification;
-use Canvas\Contracts\Notifications\PushNotificationsInterface as PushNotificationsContract;
+use Canvas\Contracts\Notifications\EmailNotificationsInterface as EmailNotificationsContract;
 use Canvas\Models\Notifications;
 use Canvas\Notifications\Mobile\Mobile;
 use Canvas\Traits\NotificationsTrait;
 
-class Apps extends Mobile implements PushNotificationsContract
+class Apps extends Email implements EmailNotificationsContract
 {
     /**
      * Notifications Trait
@@ -26,6 +26,8 @@ class Apps extends Mobile implements PushNotificationsContract
          */
         self::create((array)$this->user, $this->content, Notifications::APPS, $this->systemModule);
 
+
+        //Fetch and return specific template for Apps Email Notifications
         return $this->content . " From Apps";
     }
 }

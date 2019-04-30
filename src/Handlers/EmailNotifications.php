@@ -3,22 +3,20 @@
 namespace Canvas\Handlers;
 
 use Namshi\Notificator\Notification\Handler\HandlerInterface;
-use Canvas\Contracts\Notifications\PushNotificationsInterface as PushNotificationsContract;
+use Canvas\Contracts\Notifications\EmailNotificationsInterface as EmailNotificationsContract;
 use Namshi\Notificator\NotificationInterface;
 use Phalcon\Di;
-use Canvas\Notifications\Mobile\Apps;
-use Canvas\Notifications\Mobile\Mobile;
 use Canvas\Models\Notifications;
 use Canvas\Models\SystemModules;
 
-class PushNotifications implements HandlerInterface
+class EmailNotifications implements HandlerInterface
 {
     /**
      * Stablishes type of handler
      */
     public function shouldHandle(NotificationInterface $notification)
     {
-        return $notification instanceof PushNotificationsContract;
+        return $notification instanceof EmailNotificationsContract;
     }
     
     /**

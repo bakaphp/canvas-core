@@ -3,7 +3,7 @@
 namespace Canvas\Notifications\Mobile;
 
 use Namshi\Notificator\Notification;
-use Canvas\Contracts\PushNotifications as PushNotificationsContract;
+use Canvas\Contracts\Notifications\PushNotificationsInterface as PushNotificationsContract;
 use Canvas\Models\Notifications;
 use Canvas\Notifications\Mobile\Mobile;
 use Canvas\Traits\NotificationsTrait;
