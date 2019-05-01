@@ -24,7 +24,7 @@ class Users extends Mobile implements PushNotificationsContract
         /**
          * Create a new database record
          */
-        self::create((array)$this->user, $this->content, Notifications::USERS, $this->systemModule);
+        self::create((array)$this->entity,(array)$this->user, $this->content, Notifications::USERS, $this->systemModule);
 
         return $this->content . " From Users";
     }

@@ -26,7 +26,21 @@ class EmailNotifications implements HandlerInterface
     public function handle(NotificationInterface $notification)
     {
 
-        //Push the notification.In this case we are just logging the info
-        Di::getDefault()->getLog()->info($notification->assemble());
+        /**
+         * Lets log the email
+         */
+        Di::getDefault()->getLog()->info(json_encode($notification->assemble()));
+
+        $content = $notification->assemble()->template;
+
+
+        /**
+         * Lets send the email
+         */
+        Di::getDefault()->getMail()
+            ->to('rwhite@mctekk.com')
+            ->subject('Test subject')
+            ->content($content)
+            ->sendNow();
     }
 }

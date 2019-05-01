@@ -59,18 +59,24 @@ class QueueTask extends PhTask
 
 
             /**
+             * Look for current user in database
+             */
+             $currentUser =  Users::findFirst($msgObject->users_id);
+
+
+            /**
              * Lets determine what type of notification we are dealing with
              */
             switch ($msgObject->notification_type_id) {
                  case 1:
-                      $notification = new AppsPushNotifications((array)$msgObject->user, $msgObject->content, $msgObject->system_module);
+                      $notification = new AppsPushNotifications((array)$msgObject->entity, $msgObject->content, $msgObject->system_module,$currentUser->toArray());
                      break;
                  case 2:
-                    $notification = new UsersPushNotifications((array)$msgObject->user, $msgObject->content, $msgObject->system_module);
+                    $notification = new UsersPushNotifications((array)$msgObject->entity, $msgObject->content, $msgObject->system_module,$currentUser->toArray());
                      break;
 
                  case 3:
-                    $notification = new SystemPushNotifications((array)$msgObject->user, $msgObject->content, $msgObject->system_module);
+                    $notification = new SystemPushNotifications((array)$msgObject->entity, $msgObject->content, $msgObject->system_module,$currentUser->toArray());
                      break;
                  default:
                      break;
@@ -137,20 +143,24 @@ class QueueTask extends PhTask
 
             echo ' [x] Received from system module: ',$msgObject->system_module, "\n";
 
+            /**
+             * Look for current user in database
+             */
+            $currentUser =  Users::findFirst($msgObject->users_id);
 
             /**
              * Lets determine what type of notification we are dealing with
              */
             switch ($msgObject->notification_type_id) {
                  case 1:
-                      $notification = new AppsEmailNotifications((array)$msgObject->user, $msgObject->content, $msgObject->system_module);
+                      $notification = new AppsEmailNotifications((array)$msgObject->entity, $msgObject->content, $msgObject->system_module,$currentUser->toArray());
                      break;
                  case 2:
-                    $notification = new UsersEmailNotifications((array)$msgObject->user, $msgObject->content, $msgObject->system_module);
+                    $notification = new UsersEmailNotifications((array)$msgObject->entity, $msgObject->content, $msgObject->system_module,$currentUser->toArray());
                      break;
 
                  case 3:
-                    $notification = new SystemEmailNotifications((array)$msgObject->user, $msgObject->content, $msgObject->system_module);
+                    $notification = new SystemEmailNotifications((array)$msgObject->entity, $msgObject->content, $msgObject->system_module,$currentUser->toArray());
                      break;
                  default:
                      break;

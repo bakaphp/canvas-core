@@ -7,6 +7,7 @@ use Canvas\Contracts\Notifications\EmailNotificationsInterface as EmailNotificat
 use Canvas\Models\Notifications;
 use Canvas\Notifications\Mobile\Mobile;
 use Canvas\Traits\NotificationsTrait;
+use Phalcon\Di;
 
 class Users extends Email implements EmailNotificationsContract
 {
@@ -24,9 +25,17 @@ class Users extends Email implements EmailNotificationsContract
         /**
          * Create a new database record
          */
-        self::create((array)$this->user, $this->content, Notifications::USERS, $this->systemModule);
+        self::create((array)$this->entity,(array)$this->user, $this->content, Notifications::USERS, $this->systemModule);
 
-        //Fetch and return specific template for Apps Email Notifications
-        return $this->content . " From Users";
+        /**
+         * Search for specific email template for System
+         */
+        $template = EmailTemplates::findFirst([
+            'conditions'=>'companies_id in (0,?0) and apps_id in (0,?1) and name = ?2 and users_id in (1,?3) and is_deleted = 0',
+            'bind'=>[$this->user['default_company'],Di::getDefault()->getConfig()->app->id,'email-users',$this->user['id']]
+        ]);
+
+        //Fetch and return specific template for Users Email Notifications
+        return $template;
     }
 }

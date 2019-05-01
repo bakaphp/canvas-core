@@ -11,17 +11,20 @@ use PhpAmqpLib\Message\AMQPMessage;
 
 class Email extends Notification implements EmailNotificationsContract
 {
-    public $user;
+    public $entity;
 
     public $content;
 
     public $systemModule;
 
-    public function __construct(array $user, string $content, string $systemModule)
+    public $user;
+
+    public function __construct(array $entity, string $content, string $systemModule, array $user)
     {
-        $this->user = $user;
+        $this->entity = $entity;
         $this->content  = $content;
         $this->systemModule = $systemModule;
+        $this->user = $user;
     }
 
     /**
@@ -48,12 +51,12 @@ class Email extends Notification implements EmailNotificationsContract
          * Create an array of  Apps Push Notification
          */
         $notificationArray =  array(
-            'user'=> $user->toArray(),
+            'entity'=> $user->toArray(),
+            'users_id' => Di::getDefault()->getUserData()->getId(),
             'content'=> $content,
             'system_module'=>$systemModule,
             'notification_type_id'=> Notifications::APPS
         );
-
 
         /**
          * Convert notification to Rabbitmq message
@@ -82,7 +85,8 @@ class Email extends Notification implements EmailNotificationsContract
          * Create an array of  Apps Push Notification
          */
         $notificationArray =  array(
-            'user'=> $user->toArray(),
+            'entity'=> $user->toArray(),
+            'users_id' => Di::getDefault()->getUserData()->getId(),
             'content'=> $content,
             'system_module'=>$systemModule,
             'notification_type_id'=> Notifications::USERS
@@ -116,7 +120,8 @@ class Email extends Notification implements EmailNotificationsContract
          * Create an array of  Apps Push Notification
          */
         $notificationArray =  array(
-            'user'=> $user->toArray(),
+            'entity'=> $user->toArray(),
+            'users_id' => Di::getDefault()->getUserData()->getId(),
             'content'=> $content,
             'system_module'=>$systemModule,
             'notification_type_id'=> Notifications::SYSTEM
