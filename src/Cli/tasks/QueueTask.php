@@ -10,6 +10,9 @@ use Phalcon\Di;
 use Canvas\Notifications\Mobile\Apps as AppsPushNotifications;
 use Canvas\Notifications\Mobile\Users as UsersPushNotifications;
 use Canvas\Notifications\Mobile\System as SystemPushNotifications;
+use Canvas\Notifications\Email\Apps as AppsEmailNotifications;
+use Canvas\Notifications\Email\Users as UsersEmailNotifications;
+use Canvas\Notifications\Email\System as SystemEmailNotifications;
 
 /**
  * CLI To send push ontification and pusher msg
@@ -25,7 +28,11 @@ use Canvas\Notifications\Mobile\System as SystemPushNotifications;
  */
 class QueueTask extends PhTask
 {
-    public function notificationAction()
+    /**
+     * Queue action for mobile notifications
+     * @return void
+     */
+    public function mobileNotificationsAction(): void
     {
         $channel = $this->queue->channel();
 
@@ -52,18 +59,108 @@ class QueueTask extends PhTask
 
 
             /**
+             * Look for current user in database
+             */
+             $currentUser =  Users::findFirst($msgObject->users_id);
+
+
+            /**
              * Lets determine what type of notification we are dealing with
              */
             switch ($msgObject->notification_type_id) {
                  case 1:
-                      $notification = new AppsPushNotifications((array)$msgObject->user, $msgObject->content, $msgObject->system_module);
+                      $notification = new AppsPushNotifications((array)$msgObject->entity, $msgObject->content, $msgObject->system_module,$currentUser->toArray());
                      break;
                  case 2:
-                    $notification = new UsersPushNotifications((array)$msgObject->user, $msgObject->content, $msgObject->system_module);
+                    $notification = new UsersPushNotifications((array)$msgObject->entity, $msgObject->content, $msgObject->system_module,$currentUser->toArray());
                      break;
 
                  case 3:
-                    $notification = new SystemPushNotifications((array)$msgObject->user, $msgObject->content, $msgObject->system_module);
+                    $notification = new SystemPushNotifications((array)$msgObject->entity, $msgObject->content, $msgObject->system_module,$currentUser->toArray());
+                     break;
+                 default:
+                     break;
+             }
+
+
+            /**
+             * Trigger Event Manager
+             */
+            Di::getDefault()->getManager()->trigger($notification);
+
+            /**
+             * Log the delivery info
+             */
+            $msg->delivery_info['channel']->basic_ack($msg->delivery_info['delivery_tag']);
+        };
+
+        $channel->basic_qos(null, 1, null);
+
+        $channel->basic_consume(
+            $queue = "notifications",
+            $consumer_tag = '',
+            $no_local = false,
+            $no_ack = false,
+            $exclusive = false,
+            $nowait = false,
+            $callback
+        );
+
+        while (count($channel->callbacks)) {
+            $channel->wait();
+        }
+
+        $channel->close();
+        $this->queue->close();
+    }
+
+    /**
+     * Queue action for email notifications
+     * @return void
+     */
+    public function emailNotificationsAction(): void
+    {
+        $channel = $this->queue->channel();
+
+        // Create the queue if it doesnt already exist.
+        $channel->queue_declare(
+            $queue = "notifications",
+            $passive = false,
+            $durable = true,
+            $exclusive = false,
+            $auto_delete = false,
+            $nowait = false,
+            $arguments = null,
+            $ticket = null
+        );
+
+        echo ' [*] Waiting for email notifications. To exit press CTRL+C', "\n";
+
+        $callback = function ($msg) {
+            $msgObject = json_decode($msg->body);
+
+
+
+            echo ' [x] Received from system module: ',$msgObject->system_module, "\n";
+
+            /**
+             * Look for current user in database
+             */
+            $currentUser =  Users::findFirst($msgObject->users_id);
+
+            /**
+             * Lets determine what type of notification we are dealing with
+             */
+            switch ($msgObject->notification_type_id) {
+                 case 1:
+                      $notification = new AppsEmailNotifications((array)$msgObject->entity, $msgObject->content, $msgObject->system_module,$currentUser->toArray());
+                     break;
+                 case 2:
+                    $notification = new UsersEmailNotifications((array)$msgObject->entity, $msgObject->content, $msgObject->system_module,$currentUser->toArray());
+                     break;
+
+                 case 3:
+                    $notification = new SystemEmailNotifications((array)$msgObject->entity, $msgObject->content, $msgObject->system_module,$currentUser->toArray());
                      break;
                  default:
                      break;

@@ -4,7 +4,7 @@ namespace Canvas\Contracts\Notifications;
 
 use Namshi\Notificator\NotificationInterface;
 
-interface PushNotificationsInterface extends NotificationInterface
+interface EmailNotificationsInterface extends NotificationInterface
 {
     /**
      * Assemble Notification
