@@ -10,7 +10,7 @@ use Phalcon\Http\Response;
 use Baka\Http\Rest\CrudCustomFieldsController;
 
 /**
- * Class BaseController
+ * Class BaseController.
  *
  * @package Canvas\Api\Controllers
  * @property Users $userData
@@ -19,12 +19,12 @@ use Baka\Http\Rest\CrudCustomFieldsController;
 abstract class BaseCustomFieldsController extends CrudCustomFieldsController
 {
     /**
-     * Custom Model
+     * Custom Model.
      */
     protected $customModel;
 
     /**
-     * Get by Id
+     * Get by Id.
      *
      * @param mixed $id
      *
@@ -54,11 +54,21 @@ abstract class BaseCustomFieldsController extends CrudCustomFieldsController
 
         $result = !$relationships ? $record->toFullArray() : QueryParserCustomFields::parseRelationShips($relationships, $record);
 
+        /**
+         * @todo remove this with mapper or looking for a way to overwrite relationships? redis?
+         */
+        if (array_key_exists('files', $result)) {
+            $result['files'] = $result['files']->toArray();
+            foreach ($result['files'] as $key => $file) {
+                $result['files'][$key]['attributes'] = $record->getFileAllAttributes((int) $file['id']);
+            }
+        }
+
         return $this->response($result);
     }
 
     /**
-     * Add a new item
+     * Add a new item.
      *
      * @method POST
      * @url /v1/general

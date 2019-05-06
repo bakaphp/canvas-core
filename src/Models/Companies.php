@@ -10,6 +10,7 @@ use Exception;
 use Carbon\Carbon;
 use Canvas\Traits\ModelSettingsTrait;
 use Canvas\Traits\UsersAssociatedTrait;
+use Canvas\Traits\FileSystemModelTrait;
 
 /**
  * Class Companies.
@@ -31,6 +32,7 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
 {
     use ModelSettingsTrait;
     use UsersAssociatedTrait;
+    use FileSystemModelTrait;
 
     const DEFAULT_COMPANY = 'DefaulCompany';
     const PAYMENT_GATEWAY_CUSTOMER_KEY = 'payment_gateway_customer_id';
@@ -256,7 +258,7 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
             'Canvas\Models\FileSystem',
             'entity_id',
             [
-                'alias' => 'filesystem',
+                'alias' => 'files',
                 'conditions' => 'system_modules_id = ?0',
                 'bind' => [$systemModule->getId()]
             ]
@@ -360,7 +362,7 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
     }
 
     /**
-     * Before insert or update Company
+     * Before insert or update Company.
      * @return void
      */
     public function beforeSave(): void
@@ -522,5 +524,17 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
         }
 
         return $this->user->stripe_id;
+    }
+
+    /**
+     * Upload Files.
+     *
+     * @todo move this to the baka class
+     * @return void
+     */
+    public function afterSave()
+    {
+        parent::afterSave();
+        $this->associateFileSystem();
     }
 }

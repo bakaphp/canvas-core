@@ -66,16 +66,33 @@ trait ModelSettingsTrait
             throw new ServerErrorHttpException('ModelSettingsTrait need to have a settings model configure, check the model setting existe for this class' . get_class($this));
         }
 
-        //setup the user notificatoin setting
-        $this->settingsModel->{$this->getPrimaryKey()} = $this->getId();
+        //if we dont find it we create it
+        if (empty($this->settingsModel = $this->getSettingsByKey($key))) {
+            /**
+             * @todo this is stupid look for a better solution
+             */
+            $this->createSettingsModel();
+            $this->settingsModel->{$this->getPrimaryKey()} = $this->getId();
+        }
+
         $this->settingsModel->name = $key;
         $this->settingsModel->value = $value;
-
         if (!$this->settingsModel->save()) {
             throw new ModelException((string)current($this->settingsModel->getMessages()));
         }
 
         return true;
+    }
+
+    /**
+     * Get the settings by its key.
+     */
+    protected function getSettingsByKey(string $key)
+    {
+        return $this->settingsModel->findFirst([
+            'conditions' => "{$this->getPrimaryKey()} = ?0 and name = ?1",
+            'bind' => [$this->getId(), $key]
+        ]);
     }
 
     /**
@@ -87,10 +104,7 @@ trait ModelSettingsTrait
     public function getSettings(string $key): ?string
     {
         $this->createSettingsModel();
-        $value = $this->settingsModel->findFirst([
-            'conditions' => "{$this->getPrimaryKey()} = ?0 and name = ?1",
-            'bind' => [$this->getId(), $key]
-        ]);
+        $value = $this->getSettingsByKey($key);
 
         if (is_object($value)) {
             return $value->value;
@@ -100,7 +114,29 @@ trait ModelSettingsTrait
     }
 
     /**
-     * Trim spaces from  properties's values of objects
+     * Get all the setting of a given record.
+     *
+     * @return array
+     */
+    public function getAllSettings(): array
+    {
+        $this->createSettingsModel();
+
+        $allSettings = [];
+        $settings = $this->settingsModel->find([
+            'conditions' => "{$this->getPrimaryKey()} = ?0",
+            'bind' => [$this->getId()]
+        ]);
+
+        foreach ($settings as $setting) {
+            $allSettings[$setting->name] = $setting->value;
+        }
+
+        return $allSettings;
+    }
+
+    /**
+     * Trim spaces from  properties's values of objects.
      * @todo Find a more elegant solution for trimming values
      * @return void
      */

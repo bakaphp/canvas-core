@@ -7,13 +7,13 @@ use Canvas\Models\CustomFieldsModules;
 use Exception;
 
 /**
- * Custom Fields Abstract Class
+ * Custom Fields Abstract Class.
  * @property \Phalcon\Di $di
  */
 abstract class AbstractCustomFieldsModel extends \Baka\Database\ModelCustomFields
 {
     /**
-     * Get all custom fields of the given object
+     * Get all custom fields of the given object.
      *
      * @param  array  $fields
      * @return array
@@ -59,7 +59,7 @@ abstract class AbstractCustomFieldsModel extends \Baka\Database\ModelCustomField
     }
 
     /**
-     * Get all custom fields of the given model
+     * Get all custom fields of the given model.
      *
      * @param  array  $fields
      * @return \Phalcon\Mvc\Model
@@ -79,7 +79,7 @@ abstract class AbstractCustomFieldsModel extends \Baka\Database\ModelCustomField
     }
 
     /**
-    * Create new custom fields
+    * Create new custom fields.
     *
     * We never update any custom fields, we delete them and create them again, thats why we call cleanCustomFields before updates
     *
@@ -125,7 +125,7 @@ abstract class AbstractCustomFieldsModel extends \Baka\Database\ModelCustomField
     }
 
     /**
-    * Before create
+    * Before create.
     *
     * @return void
     */
