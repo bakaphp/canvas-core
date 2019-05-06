@@ -14,6 +14,7 @@ use Phalcon\Validation\Validator\Email;
 use Phalcon\Validation\Validator\PresenceOf;
 use Phalcon\Validation\Validator\Regex;
 use Phalcon\Validation\Validator\Uniqueness;
+use Canvas\Traits\FileSystemModelTrait;
 
 /**
  * Class Users.
@@ -31,6 +32,7 @@ class Users extends \Baka\Auth\Models\Users
     use PermissionsTrait;
     use Billable;
     use SubscriptionPlanLimitTrait;
+    use FileSystemModelTrait;
 
     /**
      * Default Company Branch.
@@ -179,7 +181,7 @@ class Users extends \Baka\Auth\Models\Users
             'Canvas\Models\FileSystem',
             'entity_id',
             [
-                'alias' => 'filesystem',
+                'alias' => 'files',
                 'conditions' => 'system_modules_id = ?0',
                 'bind' => [$systemModule->getId()]
             ]
@@ -465,5 +467,17 @@ class Users extends \Baka\Auth\Models\Users
         if (!$isFirstSignup) {
             $this->updateAppActivityLimit();
         }
+    }
+
+    /**
+     * Upload Files.
+     *
+     * @todo move this to the baka class
+     *
+     * @return void
+     */
+    public function afterSave()
+    {
+        $this->associateFileSystem();
     }
 }
