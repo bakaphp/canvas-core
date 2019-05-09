@@ -1,15 +1,19 @@
 <?php
 
 use Phinx\Seed\AbstractSeed;
+use Phalcon\Security\Random;
 
 class InitGewaer extends AbstractSeed
 {
     public function run()
     {
+        $random = new Random();
         //add default languages
         $data = [
             [
                 'name' => 'Default',
+                'key' => $random->uuid(),
+                'is_public'=> 1,
                 'description' => 'Gewaer Ecosystem',
                 'created_at' => date('Y-m-d H:i:s'),
                 'default_apps_plan_id' => 1,
@@ -17,6 +21,8 @@ class InitGewaer extends AbstractSeed
                 'is_deleted' => 0
             ], [
                 'name' => 'CRM',
+                'key' => $random->uuid(),
+                'is_public'=> 1,
                 'description' => 'CRM App',
                 'created_at' => date('Y-m-d H:i:s'),
                 'default_apps_plan_id' => 1,

@@ -9,6 +9,7 @@ use Canvas\Mapper\DTO\DTOAppsSettings;
 use Phalcon\Http\Response;
 use Baka\Http\QueryParserCustomFields;
 use Phalcon\Mvc\Model\Resultset\Simple as SimpleRecords;
+use Canvas\Exception\ModelException;
 
 /**
  * Class LanguagesController
@@ -46,7 +47,7 @@ class AppsController extends BaseController
     }
 
     /**
-     * List of data
+     * List of data. Can also return one item if key parameter is declared
      *
      * @method GET
      * url /v1/data
@@ -58,6 +59,19 @@ class AppsController extends BaseController
     {
         if ($id != null) {
             return $this->getById($id);
+        }
+
+        if($this->request->hasQuery('key')){
+
+            $key = $this->request->getQuery("key", "string");
+
+            $app = $this->model::getByKey($key);
+
+            if(!is_object($app)){
+                throw new ModelException('App not found');
+            }
+
+            return $this->response($app);
         }
 
         //parse the rquest

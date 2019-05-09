@@ -18,6 +18,12 @@ class Apps extends \Baka\Auth\Models\Apps
      *
      * @var string
      */
+    public $key;
+
+    /**
+     *
+     * @var string
+     */
     public $name;
 
     /**
@@ -137,6 +143,19 @@ class Apps extends \Baka\Auth\Models\Apps
         }
 
         return $app;
+    }
+
+    /**
+     * Get App information by key
+     * @param string $key
+     * @return Apps
+     */
+    public static function getByKey(string $key): Apps
+    {
+        return self::findFirst([
+            'conditions'=> 'key = ?0 and is_deleted = 0',
+            'bind'=>[$key]
+        ]);
     }
 
     /**
