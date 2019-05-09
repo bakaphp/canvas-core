@@ -9,6 +9,8 @@ use Canvas\Models\CompaniesCustomFields;
 use Phalcon\Http\Response;
 use Canvas\Exception\UnauthorizedHttpException;
 use Canvas\Exception\UnprocessableEntityHttpException;
+use Baka\Http\QueryParserCustomFields;
+use Phalcon\Mvc\Model\Resultset\Simple as SimpleRecords;
 
 /**
  * Class CompaniesController
@@ -50,6 +52,70 @@ class CompaniesController extends BaseCustomFieldsController
         $this->additionalSearchFields = [
             ['id', ':', implode('|', $this->userData->getAssociatedCompanies())],
         ];
+    }
+
+    /**
+     * List items.
+     *
+     * @method GET
+     * url /v1/controller
+     *
+     * @param mixed $id
+     *
+     * @return \Phalcon\Http\Response
+     */
+    public function index($id = null): Response
+    {
+        if ($id != null) {
+            return $this->getById($id);
+        }
+
+        //parse the rquest
+        $parse = new QueryParserCustomFields($this->request->getQuery(), $this->model);
+        $parse->appendParams($this->additionalSearchFields);
+        $parse->appendCustomParams($this->additionalCustomSearchFields);
+        $parse->appendRelationParams($this->additionalRelationSearchFields);
+        $params = $parse->request();
+
+        $results = (new SimpleRecords(null, $this->model, $this->model->getReadConnection()->query($params['sql'], $params['bind'])));
+        $count = $this->model->getReadConnection()->query($params['countSql'], $params['bind'])->fetch(\PDO::FETCH_OBJ)->total;
+        $relationships = false;
+
+        // Relationships, but we have to change it to sparo full implementation
+        if ($this->request->hasQuery('relationships')) {
+            $relationships = $this->request->getQuery('relationships', 'string');
+        }
+
+        //navigate los records
+        $newResult = [];
+        foreach ($results as $key => $record) {
+            //field the object
+            foreach ($record->getAllCustomFields() as $key => $value) {
+                $record->{$key} = $value;
+            }
+
+            $newResult[] = !$relationships ? $record->toFullArray() : QueryParserCustomFields::parseRelationShips($relationships, $record);
+        }
+
+        unset($results);
+
+        if(is_object(current($newResult)['branch'])){
+            $newResult[0]['branch'] = array(current($newResult)['branch']);
+        }
+
+        //this means the want the response in a vuejs format
+        if ($this->request->hasQuery('format')) {
+            $limit = (int)$this->request->getQuery('limit', 'int', 25);
+
+            $newResult = [
+                'data' => $newResult,
+                'limit' => $limit,
+                'page' => $this->request->getQuery('page', 'int', 1),
+                'total_pages' => ceil($count / $limit)
+            ];
+        }
+
+        return $this->response($newResult);
     }
 
     /**
