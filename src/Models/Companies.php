@@ -430,9 +430,9 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
         //If the newly created company is not the default then we create a new subscription with the same user
         if (($this->di->getUserData()->default_company != $this->getId()) && $appsSubscriptionStatus->value) {
             $this->setSettings(self::PAYMENT_GATEWAY_CUSTOMER_KEY, $this->startFreeTrial());
+            $companyApps->subscriptions_id = $this->subscription->getId();
         }
 
-        $companyApps->subscriptions_id = $this->subscription->getId();
         $companyApps->created_at = date('Y-m-d H:i:s');
         $companyApps->is_deleted = 0;
 
