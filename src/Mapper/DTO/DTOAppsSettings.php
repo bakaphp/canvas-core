@@ -14,6 +14,18 @@ class DTOAppsSettings
      *
      * @var string
      */
+    public $key;
+
+    /**
+     *
+     * @var integer
+     */
+    public $is_public;
+
+    /**
+     *
+     * @var string
+     */
     public $name;
 
     /**

@@ -146,19 +146,6 @@ class Apps extends \Baka\Auth\Models\Apps
     }
 
     /**
-     * Get App information by key
-     * @param string $key
-     * @return Apps
-     */
-    public static function getByKey(string $key): Apps
-    {
-        return self::findFirst([
-            'conditions'=> 'key = ?0 and is_deleted = 0',
-            'bind'=>[$key]
-        ]);
-    }
-
-    /**
      * Is active?
      *
      * @return boolean

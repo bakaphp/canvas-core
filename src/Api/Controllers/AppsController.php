@@ -55,23 +55,10 @@ class AppsController extends BaseController
      * @param int $id
      * @return \Phalcon\Http\Response
      */
-    public function index($id = null): Response
+    public function index($id = null, $key = null): Response
     {
-        if ($id != null) {
-            return $this->getById($id);
-        }
-
-        if($this->request->hasQuery('key')){
-
-            $key = $this->request->getQuery("key", "string");
-
-            $app = $this->model::getByKey($key);
-
-            if(!is_object($app)){
-                throw new ModelException('App not found');
-            }
-
-            return $this->response($app);
+        if ($id != null || $key != null) {
+            return $this->getById($id, $key);
         }
 
         //parse the rquest
@@ -121,12 +108,13 @@ class AppsController extends BaseController
      *
      * @return \Phalcon\Http\Response
      */
-    public function getById($id): Response
+    public function getById($id = null, $key = null): Response
     {
+        $appId =  !is_null($id) ? $id : $key;
         //find the info
         $objectInfo = $this->model->findFirst([
-            'id = ?0 AND is_deleted = 0',
-            'bind' => [$id],
+            '(id = ?0 OR key = ?0) AND is_deleted = 0',
+            'bind' => [$appId],
         ]);
 
         //get relationship

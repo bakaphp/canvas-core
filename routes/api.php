@@ -195,4 +195,10 @@ $router->put('/apps-plans/{id}/method', [
     'updatePaymentMethod',
 ]);
 
+$router->get('/apps/{id|key}', [
+    'Canvas\Api\Controllers\AppsController',
+    'index',
+]);
+
+
 $router->mount();
