@@ -51,7 +51,7 @@
         "symfony/finder": "3.4",
         "symfony/process": "3.4",
         "symfony/yaml": "3.4",
-        "odan/phinx-migrations-generator": "dev-master"
+        "odan/phinx-migrations-generator": "^4.0"
     },
     "autoload": {
         "psr-4": {

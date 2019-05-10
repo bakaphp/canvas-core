@@ -18,38 +18,32 @@ class AddComplexFilters extends AbstractMigration
         ])
             ->addColumn('id', 'integer', [
                 'null' => false,
-                'limit' => MysqlAdapter::INT_REGULAR,
-                'precision' => '10',
+                'limit' => '10',
                 'signed' => false,
             ])
             ->addColumn('system_modules_id', 'integer', [
                 'null' => false,
                 'limit' => MysqlAdapter::INT_REGULAR,
-                'precision' => '10',
                 'after' => 'id',
             ])
             ->addColumn('apps_id', 'integer', [
                 'null' => false,
                 'limit' => MysqlAdapter::INT_REGULAR,
-                'precision' => '10',
                 'after' => 'system_modules_id',
             ])
             ->addColumn('companies_id', 'integer', [
                 'null' => false,
                 'limit' => MysqlAdapter::INT_REGULAR,
-                'precision' => '10',
                 'after' => 'apps_id',
             ])
             ->addColumn('companies_branch_id', 'integer', [
                 'null' => false,
                 'limit' => MysqlAdapter::INT_REGULAR,
-                'precision' => '10',
                 'after' => 'companies_id',
             ])
             ->addColumn('users_id', 'integer', [
                 'null' => false,
                 'limit' => MysqlAdapter::INT_REGULAR,
-                'precision' => '10',
                 'after' => 'companies_branch_id',
             ])
             ->addColumn('name', 'string', [
@@ -69,12 +63,10 @@ class AddComplexFilters extends AbstractMigration
             ->addColumn('total_conditions', 'integer', [
                 'null' => false,
                 'limit' => MysqlAdapter::INT_REGULAR,
-                'precision' => '10',
                 'after' => 'sequence_logic',
             ])
             ->addColumn('description', 'text', [
                 'null' => true,
-                'default' => 'NULL',
                 'limit' => 65535,
                 'collation' => 'utf8mb4_unicode_ci',
                 'encoding' => 'utf8mb4',
@@ -92,34 +84,31 @@ class AddComplexFilters extends AbstractMigration
                 'null' => false,
                 'default' => '0',
                 'limit' => MysqlAdapter::INT_TINY,
-                'precision' => '3',
                 'after' => 'updated_at',
             ])
         ->addIndex(['id'], [
-            'name' => 'id',
-            'unique' => false,
-        ])
+                'name' => 'id',
+                'unique' => false,
+            ])
             ->create();
 
-        $this->table('custom_filters_conditions', [
-            'id' => false,
-            'primary_key' => ['custom_filter_id'],
-            'engine' => 'InnoDB',
-            'encoding' => 'utf8mb4',
-            'collation' => 'utf8mb4_unicode_ci',
-            'comment' => '',
-            'row_format' => 'DYNAMIC',
-        ])
+            $this->table('custom_filters_conditions', [
+                'id' => false,
+                'primary_key' => ['search_filter_id'],
+                'engine' => 'InnoDB',
+                'encoding' => 'utf8mb4',
+                'collation' => 'utf8mb4_unicode_ci',
+                'comment' => '',
+                'row_format' => 'DYNAMIC',
+            ])
             ->addColumn('search_filter_id', 'integer', [
                 'null' => false,
-                'limit' => MysqlAdapter::INT_REGULAR,
-                'precision' => '10',
+                'limit' => '10',
                 'signed' => false,
             ])
             ->addColumn('position', 'integer', [
                 'null' => false,
                 'limit' => MysqlAdapter::INT_REGULAR,
-                'precision' => '10',
                 'after' => 'search_filter_id',
             ])
             ->addColumn('conditional', 'string', [
@@ -136,9 +125,23 @@ class AddComplexFilters extends AbstractMigration
                 'encoding' => 'utf8mb4',
                 'after' => 'conditional',
             ])
+            ->addColumn('field', 'string', [
+                'null' => false,
+                'limit' => 255,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'value',
+            ])
+            ->addColumn('comparator', 'string', [
+                'null' => false,
+                'limit' => 5,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'field',
+            ])
             ->addColumn('created_at', 'datetime', [
                 'null' => false,
-                'after' => 'value',
+                'after' => 'comparator',
             ])
             ->addColumn('updated_at', 'datetime', [
                 'null' => true,
@@ -148,13 +151,12 @@ class AddComplexFilters extends AbstractMigration
                 'null' => false,
                 'default' => '0',
                 'limit' => MysqlAdapter::INT_TINY,
-                'precision' => '3',
                 'after' => 'updated_at',
             ])
         ->addIndex(['search_filter_id'], [
-            'name' => 'search_filter_id',
-            'unique' => false,
-        ])
+                'name' => 'search_filter_id',
+                'unique' => false,
+            ])
             ->create();
     }
 }

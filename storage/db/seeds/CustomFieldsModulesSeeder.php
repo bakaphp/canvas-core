@@ -10,11 +10,7 @@ class CustomFieldsModulesSeeder extends AbstractSeed
             [
                 'apps_id' => 1,
                 'name' => 'companies',
-                'created_at' => date('Y-m-d H:m:s'),
-            ],
-            [
-                'apps_id' => 1,
-                'name' => 'example_module',
+                'model_name' => 'Canvas\Models\Companies',
                 'created_at' => date('Y-m-d H:m:s'),
             ]
         ];

@@ -52,24 +52,110 @@ class CustomFieldsAttributes extends AbstractMigration
                 ->addColumn('updated_at', 'datetime', ['null' => true, 'after' => 'created_at'])
                 ->addColumn('is_deleted', 'integer', ['null' => false, 'default' => '0', 'limit' => MysqlAdapter::INT_TINY, 'precision' => 3, 'after' => 'updated_at'])
                 ->create();
-        $table = $this->table('custom_fields_values', ['id' => false, 'primary_key' => ['id'], 'engine' => 'InnoDB', 'encoding' => 'utf8mb4', 'collation' => 'utf8mb4_unicode_ci', 'comment' => '', 'row_format' => 'Dynamic']);
-        $table->addColumn('id', 'integer', ['null' => false, 'limit' => MysqlAdapter::INT_REGULAR, 'precision' => 11, 'identity' => 'enable'])
-                ->addColumn('custom_fields_id', 'integer', ['null' => false, 'limit' => MysqlAdapter::INT_REGULAR, 'precision' => 11, 'after' => 'id'])
-                ->addColumn('label', 'string', ['null' => false, 'limit' => 64, 'collation' => 'utf8mb4_unicode_ci', 'encoding' => 'utf8mb4', 'after' => 'custom_fields_id'])
-                ->addColumn('value', 'string', ['null' => false, 'limit' => 64, 'collation' => 'utf8mb4_unicode_ci', 'encoding' => 'utf8mb4', 'after' => 'label'])
-                ->addColumn('is_default', 'integer', ['null' => false, 'default' => '0', 'limit' => MysqlAdapter::INT_TINY, 'precision' => 3, 'after' => 'value'])
-                ->addColumn('created_at', 'datetime', ['null' => false, 'after' => 'value'])
-                ->addColumn('updated_at', 'datetime', ['null' => true, 'after' => 'created_at'])
-                ->addColumn('is_deleted', 'integer', ['null' => false, 'default' => '0', 'limit' => MysqlAdapter::INT_TINY, 'precision' => 3, 'after' => 'updated_at'])
+            
+        $this->table('custom_fields_values', [
+                    'id' => false,
+                    'primary_key' => ['id'],
+                    'engine' => 'InnoDB',
+                    'encoding' => 'utf8mb4',
+                    'collation' => 'utf8mb4_unicode_ci',
+                    'comment' => '',
+                    'row_format' => 'DYNAMIC',
+                ])
+                ->addColumn('id', 'integer', [
+                    'null' => false,
+                    'limit' => MysqlAdapter::INT_REGULAR,
+                    'identity' => 'enable',
+                ])
+                ->addColumn('custom_fields_id', 'integer', [
+                    'null' => false,
+                    'limit' => MysqlAdapter::INT_REGULAR,
+                    'after' => 'id',
+                ])
+                ->addColumn('label', 'string', [
+                    'null' => false,
+                    'limit' => 64,
+                    'collation' => 'utf8mb4_unicode_ci',
+                    'encoding' => 'utf8mb4',
+                    'after' => 'custom_fields_id',
+                ])
+                ->addColumn('value', 'text', [
+                    'null' => false,
+                    'limit' => 65535,
+                    'collation' => 'utf8mb4_unicode_ci',
+                    'encoding' => 'utf8mb4',
+                    'after' => 'label',
+                ])
+                ->addColumn('is_default', 'integer', [
+                    'null' => false,
+                    'default' => '0',
+                    'limit' => MysqlAdapter::INT_TINY,
+                    'after' => 'value',
+                ])
+                ->addColumn('created_at', 'datetime', [
+                    'null' => false,
+                    'after' => 'is_default',
+                ])
+                ->addColumn('updated_at', 'datetime', [
+                    'null' => true,
+                    'after' => 'created_at',
+                ])
+                ->addColumn('is_deleted', 'integer', [
+                    'null' => false,
+                    'default' => '0',
+                    'limit' => MysqlAdapter::INT_TINY,
+                    'after' => 'updated_at',
+                ])
                 ->create();
 
-        $table = $this->table('custom_fields_types_settings', ['id' => false, 'primary_key' => ['id'], 'engine' => 'InnoDB', 'encoding' => 'utf8mb4', 'collation' => 'utf8mb4_unicode_ci', 'comment' => '', 'row_format' => 'Dynamic']);
-        $table->addColumn('id', 'integer', ['null' => false, 'limit' => MysqlAdapter::INT_REGULAR, 'precision' => 11, 'identity' => 'enable'])
-                ->addColumn('custom_fields_types_id', 'integer', ['null' => false, 'limit' => MysqlAdapter::INT_REGULAR, 'precision' => 11, 'after' => 'id'])
-                ->addColumn('name', 'string', ['null' => false, 'limit' => 64, 'collation' => 'utf8mb4_unicode_ci', 'encoding' => 'utf8mb4', 'after' => 'custom_fields_types_id'])
-                ->addColumn('created_at', 'datetime', ['null' => false, 'after' => 'name'])
-                ->addColumn('updated_at', 'datetime', ['null' => true, 'after' => 'created_at'])
-                ->addColumn('is_deleted', 'integer', ['null' => false, 'default' => '0', 'limit' => MysqlAdapter::INT_TINY, 'precision' => 3, 'after' => 'updated_at'])
+            $this->table('custom_fields_types_settings', [
+                    'id' => false,
+                    'primary_key' => ['id'],
+                    'engine' => 'InnoDB',
+                    'encoding' => 'utf8mb4',
+                    'collation' => 'utf8mb4_unicode_ci',
+                    'comment' => '',
+                    'row_format' => 'DYNAMIC',
+                ])
+                ->addColumn('id', 'integer', [
+                    'null' => false,
+                    'limit' => MysqlAdapter::INT_REGULAR,
+                    'identity' => 'enable',
+                ])
+                ->addColumn('custom_fields_types_id', 'integer', [
+                    'null' => false,
+                    'limit' => MysqlAdapter::INT_REGULAR,
+                    'after' => 'id',
+                ])
+                ->addColumn('name', 'string', [
+                    'null' => false,
+                    'limit' => 64,
+                    'collation' => 'utf8mb4_unicode_ci',
+                    'encoding' => 'utf8mb4',
+                    'after' => 'custom_fields_types_id',
+                ])
+                ->addColumn('value', 'string', [
+                    'null' => false,
+                    'limit' => 64,
+                    'collation' => 'utf8mb4_unicode_ci',
+                    'encoding' => 'utf8mb4',
+                    'after' => 'name',
+                ])
+                ->addColumn('created_at', 'datetime', [
+                    'null' => false,
+                    'after' => 'value',
+                ])
+                ->addColumn('updated_at', 'datetime', [
+                    'null' => true,
+                    'after' => 'created_at',
+                ])
+                ->addColumn('is_deleted', 'integer', [
+                    'null' => false,
+                    'default' => '0',
+                    'limit' => MysqlAdapter::INT_TINY,
+                    'after' => 'updated_at',
+                ])
                 ->create();
+            $this->table('currency')->drop()->save();
     }
 }
