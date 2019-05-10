@@ -61,7 +61,6 @@ class CompaniesController extends BaseCustomFieldsController
      * url /v1/controller
      *
      * @param mixed $id
-     *
      * @return \Phalcon\Http\Response
      */
     public function index($id = null): Response
@@ -99,7 +98,10 @@ class CompaniesController extends BaseCustomFieldsController
 
         unset($results);
 
-        if(is_object(current($newResult)['branch'])){
+        /**
+         * @todo Find a way to accomplish this same logic with Mapper later.
+         */
+        if (is_object(current($newResult)['branch'])) {
             $newResult[0]['branch'] = array(current($newResult)['branch']);
         }
 
