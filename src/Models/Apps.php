@@ -118,7 +118,7 @@ class Apps extends \Baka\Auth\Models\Apps
             'id',
             'Canvas\Models\AppsSettings',
             'apps_id',
-            ['alias' => 'settings']
+            ['alias' => 'settingsApp']
         );
     }
 

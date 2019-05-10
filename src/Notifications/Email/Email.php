@@ -1,15 +1,15 @@
 <?php
 
-namespace Canvas\Notifications\Mobile;
+namespace Canvas\Notifications\Email;
 
 use Namshi\Notificator\Notification;
-use Canvas\Contracts\Notifications\PushNotificationsInterface as PushNotificationsContract;
+use Canvas\Contracts\Notifications\EmailNotificationsInterface as EmailNotificationsContract;
 use Canvas\Models\Users as UsersModel;
 use Canvas\Models\Notifications;
 use Phalcon\Di;
 use PhpAmqpLib\Message\AMQPMessage;
 
-class Mobile extends Notification implements PushNotificationsContract
+class Email extends Notification implements EmailNotificationsContract
 {
     public $entity;
 
@@ -57,7 +57,6 @@ class Mobile extends Notification implements PushNotificationsContract
             'system_module'=>$systemModule,
             'notification_type_id'=> Notifications::APPS
         );
-
 
         /**
          * Convert notification to Rabbitmq message

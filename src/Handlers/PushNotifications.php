@@ -3,7 +3,7 @@
 namespace Canvas\Handlers;
 
 use Namshi\Notificator\Notification\Handler\HandlerInterface;
-use Canvas\Contracts\PushNotifications as PushNotificationsContract;
+use Canvas\Contracts\Notifications\PushNotificationsInterface as PushNotificationsContract;
 use Namshi\Notificator\NotificationInterface;
 use Phalcon\Di;
 use Canvas\Notifications\Mobile\Apps;

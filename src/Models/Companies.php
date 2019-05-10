@@ -422,12 +422,17 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
             $companyApps->stripe_id = $plan->stripe_id;
         }
 
+        $appsSubscriptionStatus =  AppsSettings::findFirst([
+            'conditions'=> 'apps_id = ?0 and name = ?1 and is_deleted = 0',
+            'bind'=>[$this->di->getApp()->getId(),'subscription-based']
+        ]);
+
         //If the newly created company is not the default then we create a new subscription with the same user
-        if ($this->di->getUserData()->default_company != $this->getId()) {
+        if (($this->di->getUserData()->default_company != $this->getId()) && $appsSubscriptionStatus->value) {
             $this->setSettings(self::PAYMENT_GATEWAY_CUSTOMER_KEY, $this->startFreeTrial());
+            $companyApps->subscriptions_id = $this->subscription->getId();
         }
 
-        $companyApps->subscriptions_id = $this->subscription->getId();
         $companyApps->created_at = date('Y-m-d H:i:s');
         $companyApps->is_deleted = 0;
 

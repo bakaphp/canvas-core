@@ -31,6 +31,12 @@ class AppsSettingsSeeder extends AbstractSeed
                 'value' => 'local',
                 'created_at' => date('Y-m-d H:m:s'),
             ],
+            [
+                'apps_id' => 1,
+                'name' => 'subscription-based',
+                'value' => '1',
+                'created_at' => date('Y-m-d H:m:s'),
+            ],
         ];
 
         $posts = $this->table('apps_settings');
