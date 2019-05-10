@@ -18,6 +18,12 @@ class Apps extends \Baka\Auth\Models\Apps
      *
      * @var string
      */
+    public $key;
+
+    /**
+     *
+     * @var string
+     */
     public $name;
 
     /**

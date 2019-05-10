@@ -9,6 +9,7 @@ use Canvas\Mapper\DTO\DTOAppsSettings;
 use Phalcon\Http\Response;
 use Baka\Http\QueryParserCustomFields;
 use Phalcon\Mvc\Model\Resultset\Simple as SimpleRecords;
+use Canvas\Exception\ModelException;
 
 /**
  * Class LanguagesController
@@ -46,7 +47,7 @@ class AppsController extends BaseController
     }
 
     /**
-     * List of data
+     * List of data.
      *
      * @method GET
      * url /v1/data
@@ -107,11 +108,11 @@ class AppsController extends BaseController
      *
      * @return \Phalcon\Http\Response
      */
-    public function getById($id): Response
+    public function getById($id = null): Response
     {
         //find the info
         $objectInfo = $this->model->findFirst([
-            'id = ?0 AND is_deleted = 0',
+            '(id = ?0 OR key = ?0) AND is_deleted = 0',
             'bind' => [$id],
         ]);
 
