@@ -14,6 +14,7 @@ use Baka\Http\QueryParser;
 use Canvas\Exception\ModelException;
 use Canvas\Exception\NotFoundHttpException;
 use Canvas\Models\AccessList;
+use Canvas\Traits\AuthTrait;
 
 /**
  * Class UsersController
@@ -27,6 +28,11 @@ use Canvas\Models\AccessList;
  */
 class UsersController extends \Baka\Auth\UsersController
 {
+    /**
+     * Auth Trait
+     */
+    use AuthTrait;
+
     /*
      * fields we accept to create
      *
@@ -195,5 +201,39 @@ class UsersController extends \Baka\Auth\UsersController
         //iterate and save into users
 
         return $this->response(['OK' => $id]);
+    }
+
+    /**
+     * Change user's email
+     * @param string $key
+     * @return Response
+     */
+    public function changeUserEmail(string $key): Response
+    {
+        $newEmail = $this->request->getPost('new_email', 'string');
+        $password = $this->request->getPost('password', 'string');
+
+        //Search user by key
+        $user = Users::getByKey($key);
+
+        if (!is_object($user)) {
+            throw new NotFoundHttpException(_('User not found'));
+        }
+
+        $this->db->begin();
+        
+        $user->email = $newEmail;
+
+        if (!$user->update()) {
+            throw new ModelException((string)current($user->getMessages()));
+        }
+
+        if (!$userData = $this->loginUsers($user->email, $password)) {
+            $this->db->rollback();
+        }
+
+        $this->db->commit();
+
+        return $this->response($userData);
     }
 }

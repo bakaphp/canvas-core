@@ -195,4 +195,9 @@ $router->put('/apps-plans/{id}/method', [
     'updatePaymentMethod',
 ]);
 
+$router->post('/users/{key}/email', [
+    'Canvas\Api\Controllers\UsersController',
+    'changeUserEmail',
+]);
+
 $router->mount();

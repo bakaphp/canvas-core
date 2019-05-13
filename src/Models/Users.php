@@ -15,6 +15,7 @@ use Phalcon\Validation\Validator\PresenceOf;
 use Phalcon\Validation\Validator\Regex;
 use Phalcon\Validation\Validator\Uniqueness;
 use Canvas\Traits\FileSystemModelTrait;
+use Phalcon\Security\Random;
 
 /**
  * Class Users.
@@ -47,6 +48,13 @@ class Users extends \Baka\Auth\Models\Users
      * @var integer
      */
     public $roles_id;
+
+    /**
+     * Key
+     *
+     * @var string
+     */
+    public $key;
 
     /**
      * Stripe id.
@@ -349,6 +357,8 @@ class Users extends \Baka\Auth\Models\Users
     public function beforeCreate()
     {
         parent::beforeCreate();
+        $random = new Random();
+        $this->key = $random->uuid();
 
         //this is only empty when creating a new user
         if (!$this->isFirstSignup()) {
@@ -479,5 +489,18 @@ class Users extends \Baka\Auth\Models\Users
     public function afterSave()
     {
         $this->associateFileSystem();
+    }
+
+    /**
+     * Get user by key
+     * @param string $key
+     * @return Users
+     */
+    public static function getByKey(string $key): Users
+    {
+        return self::findFirst([
+            'conditions' => 'key = ?0 and user_active =?1 and is_deleted = 0',
+            'bind' => [$key, 1],
+        ]);
     }
 }
