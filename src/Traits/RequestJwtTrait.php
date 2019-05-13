@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Canvas\Traits;
 
-use Baka\Http\RouterCollection;
+use Baka\Http\Router\Collection;
 use Phalcon\Mvc\Router\Route;
 
 /**
@@ -38,8 +38,8 @@ trait RequestJwtTrait
     public function ignoreJwt(Route $route) : bool
     {
         //did we find the router?
-        if (is_array(RouterCollection::getJwtIgnoreRoutes()[$route->getHttpMethods()])) {
-            return isset(RouterCollection::getJwtIgnoreRoutes()[$route->getHttpMethods()][md5($route->getPattern())]);
+        if (is_array(Collection::getJwtIgnoreRoutes()[$route->getHttpMethods()])) {
+            return isset(Collection::getJwtIgnoreRoutes()[$route->getHttpMethods()][md5($route->getPattern())]);
         }
 
         //nop we dont have this route in ignore jwt

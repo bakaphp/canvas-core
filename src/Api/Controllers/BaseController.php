@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace Canvas\Api\Controllers;
 
-use Baka\Http\Rest\CrudExtendedController;
+use Baka\Http\Api\BaseController as BakaBaseController;
 
 /**
- * Class BaseController
+ * Class BaseController.
  *
  * @package Canvas\Api\Controllers
  *
  */
-abstract class BaseController extends CrudExtendedController
+abstract class BaseController extends BakaBaseController
 {
     /**
-     * activate softdelete
+     * activate softdelete.
      * @var int
      */
     public $softDelete = 1;

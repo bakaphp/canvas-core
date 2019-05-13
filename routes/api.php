@@ -1,11 +1,11 @@
 <?php
-use Baka\Http\RouterCollection;
+use Baka\Http\Router\Collection;
 
 /**
  * @todo how can we better define the version across the diff apps?
  * Here is where you can register all of the routes for api.
  */
-$router = new RouterCollection($application);
+$router = new Collection($application);
 $router->setPrefix('/v1');
 
 $router->get('/timezones', [
@@ -63,7 +63,7 @@ $defaultCrudRoutes = [
     'currencies',
     'UserLinkedSources' => 'devices',
     'PaymentFrequencies' => 'payment-frequencies',
-    'SystemModules'=>'system-modules',
+    'SystemModules' => 'system-modules',
     'apps'
 ];
 
@@ -108,7 +108,6 @@ $router->delete('/filesystem/{id}/attributes/{name}', [
     'Canvas\Api\Controllers\FilesystemController',
     'deleteAttributes',
 ]);
-
 
 $router->post('/users', [
     'Canvas\Api\Controllers\AuthController',

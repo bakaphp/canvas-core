@@ -37,21 +37,6 @@ trait ModelSettingsTrait
     }
 
     /**
-     * Get the primary key of this model, this will only work on model with just 1 primary key.
-     *
-     * @return string
-     */
-    private function getPrimaryKey(): string
-    {
-        // Get the first matching primary key.
-        // @TODO This will hurt on compound primary keys.
-        $metaData = new \Phalcon\Mvc\Model\MetaData\Memory();
-        // Get the first matching primary key.
-        // @TODO This will hurt on compound primary keys.
-        return $this->getSource() . '_' . $metaData->getPrimaryKeyAttributes($this)[0];
-    }
-
-    /**
      * Set the settings.
      *
      * @param string $key
