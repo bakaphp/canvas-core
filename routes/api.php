@@ -196,8 +196,13 @@ $router->put('/apps-plans/{id}/method', [
 ]);
 
 $router->post('/users/{key}/email', [
-    'Canvas\Api\Controllers\UsersController',
+    'Canvas\Api\Controllers\AuthController',
     'changeUserEmail',
+]);
+
+$router->post('/users/{id}/request', [
+    'Canvas\Api\Controllers\AuthController',
+    'sendEmailChange',
 ]);
 
 $router->mount();
