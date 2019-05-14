@@ -50,13 +50,6 @@ class Users extends \Baka\Auth\Models\Users
     public $roles_id;
 
     /**
-     * Key
-     *
-     * @var string
-     */
-    public $key;
-
-    /**
      * Stripe id.
      *
      * @var string
@@ -103,6 +96,13 @@ class Users extends \Baka\Auth\Models\Users
      * @var integer
      */
     public $system_modules_id = 2;
+
+    /**
+     * User email activation code
+     *
+     * @var string
+     */
+    public $user_activation_email;
 
     /**
      * Initialize method for model.
@@ -358,7 +358,7 @@ class Users extends \Baka\Auth\Models\Users
     {
         parent::beforeCreate();
         $random = new Random();
-        $this->key = $random->uuid();
+        $this->user_activation_email = $random->uuid();
 
         //this is only empty when creating a new user
         if (!$this->isFirstSignup()) {

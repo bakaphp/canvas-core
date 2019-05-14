@@ -82,7 +82,7 @@ class AuthController extends \Baka\Auth\AuthController
                 // send email that password was update
                 break;
             case 'email-change':
-                $emailChangeUrl = $this->config->app->frontEndUrl . '/user/' . $user->key . '/email';
+                $emailChangeUrl = $this->config->app->frontEndUrl . '/user/' . $user->user_activation_email . '/email';
                 $subject = _('Email Change Request');
                 $body = sprintf(_('Click %shere%s to set a new email for your account.'), '<a href="' . $emailChangeUrl . '">', '</a>');
                 break;
