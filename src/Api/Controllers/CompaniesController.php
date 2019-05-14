@@ -99,6 +99,15 @@ class CompaniesController extends BaseCustomFieldsController
         unset($results);
 
         /**
+        * @todo Find a way to accomplish this same logic with Mapper later.
+        */
+        foreach ($newResult as $key => $value) {
+            if (is_object($value['branch'])) {
+                $newResult[$key]['branch'] = array($value['branch']);
+            }
+        }
+
+        /**
          * @todo Find a way to accomplish this same logic with Mapper later.
          */
         if (is_object(current($newResult)['branch'])) {
