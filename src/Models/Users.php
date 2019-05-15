@@ -499,7 +499,7 @@ class Users extends \Baka\Auth\Models\Users
     public static function getByUserActivationEmail(string $userActivationEmail): Users
     {
         return self::findFirst([
-            'conditions' => 'key = ?0 and user_active =?1 and is_deleted = 0',
+            'conditions' => 'user_activation_email = ?0 and user_active =?1 and is_deleted = 0',
             'bind' => [$userActivationEmail, 1],
         ]);
     }

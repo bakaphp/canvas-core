@@ -7,8 +7,10 @@ namespace Canvas\Api\Controllers;
 use Canvas\Models\Users;
 use Canvas\Models\UserLinkedSources;
 use Canvas\Exception\ServerErrorHttpException;
+use Canvas\Exception\ModelException;
 use Baka\Auth\Models\Users as BakaUsers;
 use Canvas\Traits\AuthTrait;
+use Phalcon\Http\Response;
 
 /**
  * Class AuthController
