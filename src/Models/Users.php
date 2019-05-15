@@ -493,14 +493,14 @@ class Users extends \Baka\Auth\Models\Users
 
     /**
      * Get user by key
-     * @param string $key
+     * @param string $userActivationEmail
      * @return Users
      */
-    public static function getByKey(string $key): Users
+    public static function getByUserActivationEmail(string $userActivationEmail): Users
     {
         return self::findFirst([
             'conditions' => 'key = ?0 and user_active =?1 and is_deleted = 0',
-            'bind' => [$key, 1],
+            'bind' => [$userActivationEmail, 1],
         ]);
     }
 }

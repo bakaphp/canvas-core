@@ -46,15 +46,23 @@ class AuthController extends \Baka\Auth\AuthController
     /**
      * Send email to change current email for user
      * @param int $id
-     * @return void
+     * @return bool
      */
-    public function sendEmailChange(int $id): void
+    public function sendEmailChange(int $id): bool
     {
         //Search for user
         $user = Users::getById($id);
 
+        if (!is_object($user)) {
+            throw new NotFoundHttpException(_('User not found'));
+        }
+
         //Send email
-        $this->sendEmail($user, 'email-change');
+        if ($this->sendEmail($user, 'email-change')) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -62,8 +70,9 @@ class AuthController extends \Baka\Auth\AuthController
     *
     * @param String $emailAction
     * @param Users  $user
+    * @return bool
     */
-    protected function sendEmail(BakaUsers $user, string $type): void
+    protected function sendEmail(BakaUsers $user, string $type): bool
     {
         $send = true;
         $subject = null;
@@ -98,23 +107,24 @@ class AuthController extends \Baka\Auth\AuthController
             ->content($body)
             ->sendNow();
 
-            print_r('hello');
-            die();  
+            return true;
         }
+
+        return false;
     }
 
     /**
      * Change user's email
-     * @param string $key
+     * @param string $hash
      * @return Response
      */
-    public function changeUserEmail(string $key): Response
+    public function changeUserEmail(string $hash): Response
     {
         $newEmail = $this->request->getPost('new_email', 'string');
         $password = $this->request->getPost('password', 'string');
 
         //Search user by key
-        $user = Users::getByKey($key);
+        $user = Users::getByUserActivationEmail($hash);
 
         if (!is_object($user)) {
             throw new NotFoundHttpException(_('User not found'));
