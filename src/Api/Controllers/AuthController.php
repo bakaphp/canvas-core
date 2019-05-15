@@ -46,9 +46,9 @@ class AuthController extends \Baka\Auth\AuthController
     /**
      * Send email to change current email for user
      * @param int $id
-     * @return bool
+     * @return Response
      */
-    public function sendEmailChange(int $id): bool
+    public function sendEmailChange(int $id): Response
     {
         //Search for user
         $user = Users::getById($id);
@@ -58,11 +58,9 @@ class AuthController extends \Baka\Auth\AuthController
         }
 
         //Send email
-        if ($this->sendEmail($user, 'email-change')) {
-            return true;
-        }
+        $this->sendEmail($user, 'email-change');
 
-        return false;
+        return $this->response($user);
     }
 
     /**
@@ -70,9 +68,9 @@ class AuthController extends \Baka\Auth\AuthController
     *
     * @param String $emailAction
     * @param Users  $user
-    * @return bool
+    * @return void
     */
-    protected function sendEmail(BakaUsers $user, string $type): bool
+    protected function sendEmail(BakaUsers $user, string $type): void
     {
         $send = true;
         $subject = null;
@@ -106,11 +104,7 @@ class AuthController extends \Baka\Auth\AuthController
             ->subject($subject)
             ->content($body)
             ->sendNow();
-
-            return true;
         }
-
-        return false;
     }
 
     /**
