@@ -76,6 +76,22 @@ trait FileManagementTrait
     }
 
     /**
+     * Handle upload files from Uppy library.
+     *
+     * @return Response
+     */
+    public function createUppy(): Response
+    {
+        $request = $this->request->getPost();
+
+        if (empty($request)) {
+            $request = $this->request->getJsonRawBody(true);
+        }
+
+        return $this->response($request);
+    }
+
+    /**
      * Update an item.
      *
      * @method PUT

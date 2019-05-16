@@ -63,7 +63,7 @@ $defaultCrudRoutes = [
     'currencies',
     'UserLinkedSources' => 'devices',
     'PaymentFrequencies' => 'payment-frequencies',
-    'SystemModules'=>'system-modules',
+    'SystemModules' => 'system-modules',
     'apps'
 ];
 
@@ -109,6 +109,11 @@ $router->delete('/filesystem/{id}/attributes/{name}', [
     'deleteAttributes',
 ]);
 
+//handle upload files from uptty
+$router->post('/filesystem-uppy', [
+    'Canvas\Api\Controllers\FilesystemController',
+    'createUppy',
+]);
 
 $router->post('/users', [
     'Canvas\Api\Controllers\AuthController',
