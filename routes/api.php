@@ -195,12 +195,12 @@ $router->put('/apps-plans/{id}/method', [
     'updatePaymentMethod',
 ]);
 
-$router->post('/change-email/{hash}', [
+$router->post('/users/{hash}/change-email', [
     'Canvas\Api\Controllers\AuthController',
     'changeUserEmail',
 ]);
 
-$router->post('/request-email-change/{id}', [
+$router->post('/users/{id}/request-email-change', [
     'Canvas\Api\Controllers\AuthController',
     'sendEmailChange',
 ]);
