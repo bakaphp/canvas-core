@@ -32,6 +32,9 @@ class ThrottleMiddleware extends Plugin implements MiddlewareInterface
         $rateLimit = $throttler->consume($this->request->getClientAddress());
 
         if ($rateLimit->isLimited()) {
+            /**
+             *@todo give a more informative message
+             */
             throw new ServerErrorHttpException('API Calls limit reached');
         }
     }
