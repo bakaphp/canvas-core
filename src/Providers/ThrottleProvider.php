@@ -20,11 +20,11 @@ class ThrottleProvider implements ServiceProviderInterface
     {
         $config = $container->getShared('config');
 
-        $container->setShared('throttler', function () use ($container)  {
+        $container->setShared('throttler', function () use ($container,$config)  {
             return new RedisThrottler($container->getShared('redis'), [
-                'bucket_size'  => 2,
-                'refill_time'  => 120, // 10m
-                'refill_amount'  => 1
+                'bucket_size'  => $config->throttle->bucketSize,
+                'refill_time'  => $config->throttle->refillTime,
+                'refill_amount'  => $config->throttle->refillAmount
             ]);
         });
     }
