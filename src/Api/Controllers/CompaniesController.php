@@ -71,7 +71,7 @@ class CompaniesController extends BaseController
                 throw new UnauthorizedHttpException(_('You dont have permission to update this company info'));
             }
 
-            $data = $this->request->getPut();
+            $data = $this->request->getPutData();
 
             if (empty($data)) {
                 throw new UnprocessableEntityHttpException('No valid data sent.');
