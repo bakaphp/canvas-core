@@ -8,7 +8,7 @@ use Phalcon\Validation\Validator\PresenceOf;
 use Canvas\Exception\ServerErrorHttpException;
 use Exception;
 use Carbon\Carbon;
-use Canvas\Traits\ModelSettingsTrait;
+use Baka\Database\Contracts\HashTableTrait;
 use Canvas\Traits\UsersAssociatedTrait;
 use Canvas\Traits\FileSystemModelTrait;
 
@@ -30,7 +30,7 @@ use Canvas\Traits\FileSystemModelTrait;
  */
 class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
 {
-    use ModelSettingsTrait;
+    use HashTableTrait;
     use UsersAssociatedTrait;
     use FileSystemModelTrait;
 
@@ -344,7 +344,7 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
      */
     public function getPaymentGatewayCustomerId(): ?string
     {
-        return $this->getSettings(self::PAYMENT_GATEWAY_CUSTOMER_KEY);
+        return $this->get(self::PAYMENT_GATEWAY_CUSTOMER_KEY);
     }
 
     /**
@@ -356,18 +356,9 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
     {
         parent::beforeCreate();
 
-        $this->language = $this->di->getApp()->getSettings('language');
-        $this->timezone = $this->di->getApp()->getSettings('timezone');
-        $this->currency_id = Currencies::findFirstByCode($this->di->getApp()->getSettings('currency'))->getId();
-    }
-
-    /**
-     * Before insert or update Company.
-     * @return void
-     */
-    public function beforeSave(): void
-    {
-        $this->trimSpacesFromPropertiesValues();
+        $this->language = $this->di->getApp()->get('language');
+        $this->timezone = $this->di->getApp()->get('timezone');
+        $this->currency_id = Currencies::findFirstByCode($this->di->getApp()->get('currency'))->getId();
     }
 
     /**
@@ -380,8 +371,8 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
         parent::afterCreate();
 
         //setup the user notificatoin setting
-        $this->setSettings('notifications', $this->user->email);
-        $this->setSettings('paid', '1');
+        $this->set('notifications', $this->user->email);
+        $this->set('paid', '1');
 
         //now thta we setup de company and associated with the user we need to setup this as its default company
         if (!UserConfig::findFirst(['conditions' => 'users_id = ?0 and name = ?1', 'bind' => [$this->user->getId(), self::DEFAULT_COMPANY]])) {
@@ -422,14 +413,14 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
             $companyApps->stripe_id = $plan->stripe_id;
         }
 
-        $appsSubscriptionStatus =  AppsSettings::findFirst([
-            'conditions'=> 'apps_id = ?0 and name = ?1 and is_deleted = 0',
-            'bind'=>[$this->di->getApp()->getId(),'subscription-based']
+        $appsSubscriptionStatus = AppsSettings::findFirst([
+            'conditions' => 'apps_id = ?0 and name = ?1 and is_deleted = 0',
+            'bind' => [$this->di->getApp()->getId(), 'subscription-based']
         ]);
 
         //If the newly created company is not the default then we create a new subscription with the same user
         if (($this->di->getUserData()->default_company != $this->getId()) && $appsSubscriptionStatus->value) {
-            $this->setSettings(self::PAYMENT_GATEWAY_CUSTOMER_KEY, $this->startFreeTrial());
+            $this->set(self::PAYMENT_GATEWAY_CUSTOMER_KEY, $this->startFreeTrial());
             $companyApps->subscriptions_id = $this->subscription->getId();
         }
 
@@ -539,7 +530,7 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
      */
     public function afterSave()
     {
-        parent::afterSave();
+        //parent::afterSave();
         $this->associateFileSystem();
     }
 }

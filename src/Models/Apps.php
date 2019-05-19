@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Canvas\Models;
 
 use Canvas\Traits\UsersAssociatedTrait;
-use Canvas\Traits\ModelSettingsTrait;
+use Baka\Database\Contracts\HashTableTrait;
 
 class Apps extends \Baka\Auth\Models\Apps
 {
@@ -88,7 +88,7 @@ class Apps extends \Baka\Auth\Models\Apps
     /**
      * Model Settings Trait.
      */
-    use ModelSettingsTrait;
+    use HashTableTrait;
 
     /**
      * Initialize method for model.
