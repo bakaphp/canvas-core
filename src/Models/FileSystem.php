@@ -1,12 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Canvas\Models;
 
-use Canvas\Traits\ModelSettingsTrait;
+use Baka\Database\Contracts\HashTableTrait;
 use Canvas\Exception\ModelException;
 use Phalcon\Di;
-use Phalcon\Mvc\Model\ResultsetInterface;
 
 /**
  * Classs for FileSystem.
@@ -19,7 +19,7 @@ use Phalcon\Mvc\Model\ResultsetInterface;
  */
 class FileSystem extends AbstractModel
 {
-    use ModelSettingsTrait;
+    use HashTableTrait;
 
     /**
      *

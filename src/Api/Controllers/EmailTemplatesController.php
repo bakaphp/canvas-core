@@ -63,11 +63,7 @@ class EmailTemplatesController extends BaseController
      */
     public function copy(int $id): Response
     {
-        $request = $this->request->getPost();
-
-        if (empty($request)) {
-            $request = $this->request->getJsonRawBody(true);
-        }
+        $request = $this->request->getPostData();
 
         //Find email template based on the basic parameters
         $existingEmailTemplate = $this->model::findFirst([

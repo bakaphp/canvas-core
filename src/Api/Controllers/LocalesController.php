@@ -7,7 +7,7 @@ namespace Canvas\Api\Controllers;
 use Canvas\Models\Locales;
 
 /**
- * Class LanguagesController
+ * Class LanguagesController.
  *
  * @package Canvas\Api\Controllers
  *
@@ -29,7 +29,7 @@ class LocalesController extends BaseController
     protected $updateFields = ['name'];
 
     /**
-     * set objects
+     * set objects.
      *
      * @return void
      */
