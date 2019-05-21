@@ -215,6 +215,7 @@ class InitGewaer extends AbstractSeed
                 'apps_id' => 1,
                 'parents_id' => 0,
                 'menu_order' => null,
+                'show'=> 1,
                 'created_at' => date('Y-m-d H:i:s')
             ], [
                 'id' => 2,
@@ -224,6 +225,7 @@ class InitGewaer extends AbstractSeed
                 'apps_id' => 1,
                 'parents_id' => 0,
                 'menu_order' => null,
+                'show'=> 1,
                 'created_at' => date('Y-m-d H:i:s')
             ]
         ];

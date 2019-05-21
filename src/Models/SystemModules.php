@@ -52,6 +52,12 @@ class SystemModules extends AbstractModel
 
     /**
      *
+     * @var integer
+     */
+    public $show;
+
+    /**
+     *
      * @var string
      */
     public $created_at;

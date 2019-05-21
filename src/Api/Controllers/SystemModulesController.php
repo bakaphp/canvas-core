@@ -26,7 +26,7 @@ class SystemModulesController extends BaseController
      *
      * @var array
      */
-    protected $updateFields = [];
+    protected $updateFields = ['show'];
 
     /**
      * set objects
