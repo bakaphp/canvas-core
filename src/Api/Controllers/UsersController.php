@@ -76,7 +76,7 @@ class UsersController extends \Baka\Auth\UsersController
     public function getById($id) : Response
     {
         //none admin users can only edit themselves
-        if (!$this->userData->hasRole('Default.Admins')) {
+        if (!$this->userData->hasRole('Default.Admins') || (int) $id === 0) {
             $id = $this->userData->getId();
         }
 
