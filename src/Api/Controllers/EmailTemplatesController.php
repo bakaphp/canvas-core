@@ -84,13 +84,10 @@ class EmailTemplatesController extends BaseController
         $request['name'] = $existingEmailTemplate->name . '-' . $randomInstance;
         $request['template'] = $existingEmailTemplate->template;
 
-        //try to save all the fields we allow
-        if ($this->model->save($request, $this->createFields)) {
+        $this->model->saveOrFail($request, $this->createFields);
+       
             return $this->response($this->model->toArray());
-        } else {
-            //if not thorw exception
-            throw new UnprocessableEntityHttpException((string) current($this->model->getMessages()));
-        }
+       
     }
 
     /**
