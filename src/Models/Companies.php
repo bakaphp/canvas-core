@@ -186,6 +186,18 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
             ['alias' => 'UsersAssociatedApps']
         );
 
+        $this->hasMany(
+            'id',
+            'Canvas\Models\UsersAssociatedApps',
+            'companies_id',
+            [
+                'alias' => 'UsersAssociatedByApps',
+                'params' => [
+                    'conditions' => 'apps_id = ' . $this->di->getApp()->getId()
+                ]
+            ]
+        );
+
         $this->hasOne(
             'id',
             'Canvas\Models\CompaniesBranches',
@@ -422,9 +434,9 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
             $companyApps->stripe_id = $plan->stripe_id;
         }
 
-        $appsSubscriptionStatus =  AppsSettings::findFirst([
-            'conditions'=> 'apps_id = ?0 and name = ?1 and is_deleted = 0',
-            'bind'=>[$this->di->getApp()->getId(),'subscription-based']
+        $appsSubscriptionStatus = AppsSettings::findFirst([
+            'conditions' => 'apps_id = ?0 and name = ?1 and is_deleted = 0',
+            'bind' => [$this->di->getApp()->getId(), 'subscription-based']
         ]);
 
         //If the newly created company is not the default then we create a new subscription with the same user
@@ -541,5 +553,17 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
     {
         parent::afterSave();
         $this->associateFileSystem();
+    }
+
+    /**
+    * Get an array of the associates users for this company.
+    *
+    * @return array
+    */
+    public function getAssociatedUsersByApp(): array
+    {
+        return array_map(function ($users) {
+            return $users['users_id'];
+        }, $this->getUsersAssociatedByApps(['columns' => 'users_id'])->toArray());
     }
 }

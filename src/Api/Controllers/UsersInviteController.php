@@ -66,7 +66,7 @@ class UsersInviteController extends BaseController
         if ($this->di->has('userData')) {
             $additionaFields[] = ['companies_id', ':', $this->userData->currentCompanyId()];
         }
-        
+
         $this->additionalSearchFields = $additionaFields;
     }
 
@@ -219,7 +219,6 @@ class UsersInviteController extends BaseController
 
         if (is_object($userExists)) {
             $newUser = $this->userData->defaultCompany->associate($userExists, $this->userData->defaultCompany);
-            $this->app->associate($userExists, $this->userData->defaultCompany);
         } else {
             $newUser = new Users();
             $newUser->firstname = $request['firstname'];
@@ -246,6 +245,9 @@ class UsersInviteController extends BaseController
                 throw new UnprocessableEntityHttpException($e->getMessage());
             }
         }
+
+        //associate the user and the app + company
+        $this->app->associate($newUser, $usersInvite->company);
 
         //Lets login the new user
         $authInfo = $this->loginUsers($usersInvite->email, $password);

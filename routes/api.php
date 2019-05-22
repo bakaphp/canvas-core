@@ -157,9 +157,9 @@ $router->post('/users/invite', [
 $router->post('/users-invite/{hash}', [
     'Canvas\Api\Controllers\UsersInviteController',
     'processUserInvite',
-    // 'options' => [
-    //     'jwt' => false,
-    // ]
+    'options' => [
+        'jwt' => false,
+    ]
 ]);
 
 $router->get('/users-invite/validate/{hash}', [
