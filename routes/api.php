@@ -37,6 +37,11 @@ $router->post('/users/{id}/devices/{deviceId}/detach', [
     'detachDevice',
 ]);
 
+$router->post('/users/{accessToken}/facebook', [
+    'Canvas\Api\Controllers\AuthController',
+    'facebookTokenLogin',
+]);
+
 /**
  * Need to understand if using this can be a performance disadvantage in the future.
  */
