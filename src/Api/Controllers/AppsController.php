@@ -5,11 +5,8 @@ declare(strict_types=1);
 namespace Canvas\Api\Controllers;
 
 use Canvas\Models\Apps;
-use Canvas\Mapper\DTO\DTOAppsSettings;
+use Canvas\Dto\AppsSettings;
 use Phalcon\Http\Response;
-use Baka\Http\QueryParserCustomFields;
-use Phalcon\Mvc\Model\Resultset\Simple as SimpleRecords;
-use Canvas\Exception\ModelException;
 
 /**
  * Class LanguagesController.
@@ -55,8 +52,14 @@ class AppsController extends BaseController
      */
     protected function processOutput($results)
     {
+        //DTOAppsSettings
+        $this->dtoConfig->registerMapping(Apps::class, AppsSettings::class)
+          ->forMember('settings', function (Apps $app) {
+              return $app->settingsApp->toArray();
+          });
+
         return $results instanceof \Phalcon\Mvc\Model\Resultset\Simple ?
-                $this->mapper->mapMultiple(iterator_to_array($results), DTOAppsSettings::class)
+                $this->mapper->mapMultiple(iterator_to_array($results), AppsSettings::class)
                 : $this->mapper->map($results, DTOAppsSettings::class);
     }
 

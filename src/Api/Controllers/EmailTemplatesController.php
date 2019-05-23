@@ -12,7 +12,7 @@ use Phalcon\Security\Random;
 use Phalcon\Http\Response;
 
 /**
- * Class LanguagesController
+ * Class LanguagesController.
  *
  * @package Canvas\Api\Controllers
  *
@@ -40,7 +40,7 @@ class EmailTemplatesController extends BaseController
     protected $updateFields = ['users_id', 'companies_id', 'apps_id', 'name', 'template'];
 
     /**
-     * set objects
+     * set objects.
      *
      * @return void
      */
@@ -54,7 +54,7 @@ class EmailTemplatesController extends BaseController
     }
 
     /**
-     * Add a new by copying a specific email template based on
+     * Add a new by copying a specific email template based on.
      *
      * @method POST
      * @url /v1/data
@@ -85,13 +85,12 @@ class EmailTemplatesController extends BaseController
         $request['template'] = $existingEmailTemplate->template;
 
         $this->model->saveOrFail($request, $this->createFields);
-       
-            return $this->response($this->model->toArray());
-       
+
+        return $this->response($this->model->toArray());
     }
 
     /**
-     * Send test email to specific recipient
+     * Send test email to specific recipient.
      * @param string $email
      * @return Response
      */
