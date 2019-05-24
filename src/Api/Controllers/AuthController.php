@@ -201,9 +201,8 @@ class AuthController extends \Baka\Auth\AuthController
 
         if (!is_object($user) && !is_object($userLinkedSource)) // User does not exist and has not been linked to a source
         {
-
-            //Set a default password for social login
-            $password =  '123456';
+            $random = new Random();
+            $password = '123456';
 
             //Create a new User
             $newUser = new Users();
@@ -215,7 +214,7 @@ class AuthController extends \Baka\Auth\AuthController
             $newUser->user_active = 1;
             $newUser->roles_id = 1;
             $newUser->created_at = date('Y-m-d H:m:s');
-            $newUser->default_company = 1; // We need to make a new default company for this user
+            $newUser->defaultCompanyName = 'Default-' . $random->base58();
 
             try {
                 $this->db->begin();
@@ -229,16 +228,16 @@ class AuthController extends \Baka\Auth\AuthController
                 $newLinkedSource->source_users_id = $userProfile->identifier;
                 $newLinkedSource->source_users_id_text = $userProfile->identifier;
                 $newLinkedSource->source_username = $userProfile->displayName;
+                $newLinkedSource->save();
     
-
                 $this->db->commit();
-                print_r($newUser->toArray());
-                    die();
             } catch (Exception $e) {
                 $this->db->rollback();
 
                 throw new UnprocessableEntityHttpException($e->getMessage());
             }
+
+            return $this->response($this->loginUsers($newUser->email,$password));
         }
         else // User already has been linked to a source and just wants to login with social
         {

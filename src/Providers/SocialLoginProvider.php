@@ -26,7 +26,7 @@ class SocialLoginProvider implements ServiceProviderInterface
                 $providers = [
                     'callback'=> '',
                     'providers'=>[
-                        'Facebook'=> ['enabled'=> true, 'keys'=>['id'=>'1197131063788181','secret'=>'1ee2138ace609549f524945ab9f3db3d']]
+                        'Facebook'=> ['enabled'=> true, 'keys'=>['id'=>$config->facebook->id,'secret'=>$config->facebook->secret]]
                     ]
                 ];
 
