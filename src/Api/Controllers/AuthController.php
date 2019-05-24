@@ -11,6 +11,7 @@ use Canvas\Exception\ServerErrorHttpException;
 use Canvas\Exception\ModelException;
 use Baka\Auth\Models\Users as BakaUsers;
 use Canvas\Traits\AuthTrait;
+use Canvas\Traits\SocialLoginTrait;
 use Phalcon\Http\Response;
 
 /**
@@ -30,6 +31,7 @@ class AuthController extends \Baka\Auth\AuthController
      * Auth Trait
      */
     use AuthTrait;
+    use SocialLoginTrait;
 
     /**
      * Setup for this controller
@@ -145,34 +147,13 @@ class AuthController extends \Baka\Auth\AuthController
     }
 
     /**
-     * Login user using Facebook Access Token
-     * @param $accessToken
+     * Login user using Access Token
      * @return Response
      */
-    public function facebookTokenLogin($accessToken): Response
+    public function loginByAccessToken(): Response
     {
+        $accessToken = $this->request->getPost('access_token','string');
         $providerName =  $this->request->getPost('provider','string');
-
-        // /**
-        //  * Get the Facebook adapter
-        //  */
-        // $facebookAdapter = $this->socialLogin->authenticate('Facebook');
-
-        // /**
-        //  * Set user's Access Token
-        //  */
-        // $facebookAdapter->setAccessToken($accessToken);
-
-        // /**
-        //  * Get user's profile based on set Access Token
-        //  */
-        // $data = $facebookAdapter->getUserProfile();
-
-
-        // /**
-        //  * Lets Login or Signup the user
-        //  */
-        // $userProfile = current($data);
 
         $source = Sources::findFirst([
             'conditions'=>'title = ?0 and is_deleted = 0',
@@ -183,76 +164,13 @@ class AuthController extends \Baka\Auth\AuthController
             throw new NotFoundHttpException('Source not found');
         }
 
-        /**
-        * Lets find if user has a linked source by social network id
-        */
-        $userLinkedSource =  UserLinkedSources::findFirst([
-            'conditions'=>'source_id = ?0 and source_users_id_text = ?1 and is_deleted = 0',
-            'bind'=>[$source->id,$userProfile->identifier]
-        ]);
-
-        /**
-         * Verify if user exists
-         */
-        $user = Users::findFirst([
-            'conditions' => 'email = ?0 and is_deleted = 0',
-            'bind' => [$userProfile->email]
-        ]);
-
-        if (!is_object($user) && !is_object($userLinkedSource)) // User does not exist and has not been linked to a source
-        {
-            $random = new Random();
-            $password = '123456';
-
-            //Create a new User
-            $newUser = new Users();
-            $newUser->firstname = $userProfile->firstName ? $userProfile->firstName : 'John';
-            $newUser->lastname = $userProfile->lastName ? $userProfile->lastName : 'Doe';
-            $newUser->displayname = $request->displayName;
-            $newUser->password = $password;
-            $newUser->email = $userProfile->email ? $userProfile->email : 'doe@gmail.com';
-            $newUser->user_active = 1;
-            $newUser->roles_id = 1;
-            $newUser->created_at = date('Y-m-d H:m:s');
-            $newUser->defaultCompanyName = 'Default-' . $random->base58();
-
-            try {
-                $this->db->begin();
-
-                //signup
-                $newUser->signup();
-
-                $newLinkedSource = new UserLinkedSources();
-                $newLinkedSource->users_id =  $newUser->id;
-                $newLinkedSource->source_id =  $source->id;
-                $newLinkedSource->source_users_id = $userProfile->identifier;
-                $newLinkedSource->source_users_id_text = $userProfile->identifier;
-                $newLinkedSource->source_username = $userProfile->displayName;
-                $newLinkedSource->save();
-    
-                $this->db->commit();
-            } catch (Exception $e) {
-                $this->db->rollback();
-
-                throw new UnprocessableEntityHttpException($e->getMessage());
-            }
-
-            return $this->response($this->loginUsers($newUser->email,$password));
+        //Use Social Login Trait to log in with different provices.Depends on Provider name
+        
+        if ($source->title == 'facebook') {
+             return $this->response($this->facebookLogin($source,$accessToken));
         }
-        else // User already has been linked to a source and just wants to login with social
-        {
-            //Cannot login without password. Need to make another login function that logs in user if users object exists
-
+        elseif ($source->title == 'google') {
+            return $this->response($this->googleLogin($source,$accessToken));
         }
-
-
-
-        /**
-         * Disconnect Adapter
-         */
-        $facebookAdapter->disconnect();
-
-
-        return $this->response($user);
     }
 }

@@ -37,9 +37,9 @@ $router->post('/users/{id}/devices/{deviceId}/detach', [
     'detachDevice',
 ]);
 
-$router->post('/users/{accessToken}/facebook', [
+$router->post('/users/social', [
     'Canvas\Api\Controllers\AuthController',
-    'facebookTokenLogin',
+    'loginByAccessToken',
 ]);
 
 /**
