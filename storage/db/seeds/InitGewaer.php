@@ -95,6 +95,11 @@ class InitGewaer extends AbstractSeed
                 'url' => 'google.com',
                 'created_at' => date('Y-m-d H:i:s'),
                 'is_deleted' => 0
+            ], [
+                'title' => 'facebook',
+                'url' => 'facebook.com',
+                'created_at' => date('Y-m-d H:i:s'),
+                'is_deleted' => 0
             ],
         ];
 
