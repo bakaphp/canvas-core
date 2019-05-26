@@ -186,6 +186,18 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
             ['alias' => 'UsersAssociatedApps']
         );
 
+        $this->hasMany(
+            'id',
+            'Canvas\Models\UsersAssociatedApps',
+            'companies_id',
+            [
+                'alias' => 'UsersAssociatedByApps',
+                'params' => [
+                    'conditions' => 'apps_id = ' . $this->di->getApp()->getId()
+                ]
+            ]
+        );
+
         $this->hasOne(
             'id',
             'Canvas\Models\CompaniesBranches',
@@ -532,5 +544,17 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
     {
         //parent::afterSave();
         $this->associateFileSystem();
+    }
+
+    /**
+    * Get an array of the associates users for this company.
+    *
+    * @return array
+    */
+    public function getAssociatedUsersByApp(): array
+    {
+        return array_map(function ($users) {
+            return $users['users_id'];
+        }, $this->getUsersAssociatedByApps(['columns' => 'users_id'])->toArray());
     }
 }

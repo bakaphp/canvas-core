@@ -104,6 +104,7 @@ class InitGewaer extends AbstractSeed
         //add default languages
         $data = [
             [
+                'user_activation_email'=> $random->uuid(),
                 'email' => 'nobody@baka.io',
                 'password' => password_hash('bakatest123567', PASSWORD_DEFAULT),
                 'firstname' => 'Baka',
@@ -214,6 +215,7 @@ class InitGewaer extends AbstractSeed
                 'apps_id' => 1,
                 'parents_id' => 0,
                 'menu_order' => null,
+                'show'=> 1,
                 'created_at' => date('Y-m-d H:i:s')
             ], [
                 'id' => 2,
@@ -223,6 +225,7 @@ class InitGewaer extends AbstractSeed
                 'apps_id' => 1,
                 'parents_id' => 0,
                 'menu_order' => null,
+                'show'=> 1,
                 'created_at' => date('Y-m-d H:i:s')
             ]
         ];
