@@ -7,7 +7,6 @@ namespace Canvas\Providers;
 use Phalcon\DiInterface;
 use Phalcon\Di\ServiceProviderInterface;
 use AutoMapperPlus\AutoMapper;
-use Canvas\Mapper\MapperConfig;
 use AutoMapperPlus\Configuration\AutoMapperConfig;
 
 class MapperProvider implements ServiceProviderInterface

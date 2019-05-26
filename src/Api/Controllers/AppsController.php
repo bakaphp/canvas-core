@@ -60,7 +60,7 @@ class AppsController extends BaseController
 
         return $results instanceof \Phalcon\Mvc\Model\Resultset\Simple ?
                 $this->mapper->mapMultiple(iterator_to_array($results), AppsSettings::class)
-                : $this->mapper->map($results, DTOAppsSettings::class);
+                : $this->mapper->map($results, AppsSettings::class);
     }
 
     /**

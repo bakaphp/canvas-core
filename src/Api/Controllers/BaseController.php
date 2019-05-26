@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Canvas\Api\Controllers;
 
 use Baka\Http\Api\BaseController as BakaBaseController;
+use Baka\Http\Contracts\Api\CrudBehaviorTrait;
 
 /**
  * Class BaseController.
@@ -14,6 +15,8 @@ use Baka\Http\Api\BaseController as BakaBaseController;
  */
 abstract class BaseController extends BakaBaseController
 {
+    use CrudBehaviorTrait;
+
     /**
      * activate softdelete.
      * @var int

@@ -252,7 +252,7 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
             ['alias' => 'user-webhooks']
         );
 
-        $systemModule = SystemModules::getSystemModuleByModelName(self::class);
+        $systemModule = SystemModules::getSystemModuleByModelName(static::class);
         $this->hasMany(
             'id',
             'Canvas\Models\FileSystem',

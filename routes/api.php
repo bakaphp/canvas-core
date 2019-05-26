@@ -64,6 +64,7 @@ $defaultCrudRoutes = [
     'UserLinkedSources' => 'devices',
     'PaymentFrequencies' => 'payment-frequencies',
     'SystemModules' => 'system-modules',
+    'CustomFilters' => 'custom-filters',
     'apps'
 ];
 
@@ -192,6 +193,18 @@ $router->post('/email-templates/test', [
 $router->put('/apps-plans/{id}/method', [
     'Canvas\Api\Controllers\AppsPlansController',
     'updatePaymentMethod',
+]);
+
+//schema
+$router->get('/schema/{slug}', [
+    'Canvas\Api\Controllers\SchemaController',
+    'getBySlug',
+]);
+
+//schema
+$router->get('/schema/{slug}/description', [
+    'Canvas\Api\Controllers\SchemaController',
+    'getModelDescription',
 ]);
 
 $router->mount();
