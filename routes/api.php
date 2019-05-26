@@ -110,6 +110,12 @@ $router->delete('/filesystem/{id}/attributes/{name}', [
     'deleteAttributes',
 ]);
 
+//handle upload files from uptty
+$router->post('/filesystem-uppy', [
+    'Canvas\Api\Controllers\FilesystemController',
+    'createUppy',
+]);
+
 $router->post('/users', [
     'Canvas\Api\Controllers\AuthController',
     'signup',
@@ -152,9 +158,9 @@ $router->post('/users/invite', [
 $router->post('/users-invite/{hash}', [
     'Canvas\Api\Controllers\UsersInviteController',
     'processUserInvite',
-    // 'options' => [
-    //     'jwt' => false,
-    // ]
+    'options' => [
+        'jwt' => false,
+    ]
 ]);
 
 $router->get('/users-invite/validate/{hash}', [
@@ -205,6 +211,16 @@ $router->get('/schema/{slug}', [
 $router->get('/schema/{slug}/description', [
     'Canvas\Api\Controllers\SchemaController',
     'getModelDescription',
+]);
+
+$router->post('/users/{hash}/change-email', [
+    'Canvas\Api\Controllers\AuthController',
+    'changeUserEmail',
+]);
+
+$router->post('/users/{id}/request-email-change', [
+    'Canvas\Api\Controllers\AuthController',
+    'sendEmailChange',
 ]);
 
 $router->mount();

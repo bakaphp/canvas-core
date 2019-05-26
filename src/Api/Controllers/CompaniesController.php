@@ -54,6 +54,40 @@ class CompaniesController extends BaseController
     }
 
     /**
+     * List items.
+     *
+     * @method GET
+     * url /v1/controller
+     *
+     * @param mixed $id
+     * @return \Phalcon\Http\Response
+     */
+    public function index(): Response
+    {
+        $results = $this->processIndex();
+
+        /**
+        * @todo Find a way to accomplish this same logic with Mapper later.
+        */
+        foreach ($results as $key => $value) {
+            if (is_object($value['branch'])) {
+                $results[$key]['branch'] = array($value['branch']);
+            }
+        }
+
+        /**
+         * @todo Find a way to accomplish this same logic with Mapper later.
+         */
+        if (is_object(current($results)['branch'])) {
+            $results[0]['branch'] = array(current($results)['branch']);
+        }
+
+
+        //return the response + transform it if needed
+        return $this->response($results);
+    }
+
+    /**
      * Update an item.
      *
      * @method PUT

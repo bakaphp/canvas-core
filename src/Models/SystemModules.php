@@ -55,11 +55,18 @@ class SystemModules extends AbstractModel
      * @var integer
      */
     public $use_elastic;
+
     /**
      *
      * @var string
      */
     public $browse_fields;
+
+    /**
+     *
+     * @var integer
+     */
+    public $show;
 
     /**
      *

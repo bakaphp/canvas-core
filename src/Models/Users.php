@@ -15,6 +15,7 @@ use Phalcon\Validation\Validator\PresenceOf;
 use Phalcon\Validation\Validator\Regex;
 use Phalcon\Validation\Validator\Uniqueness;
 use Canvas\Traits\FileSystemModelTrait;
+use Phalcon\Security\Random;
 
 /**
  * Class Users.
@@ -95,6 +96,13 @@ class Users extends \Baka\Auth\Models\Users
      * @var integer
      */
     public $system_modules_id = 2;
+
+    /**
+     * User email activation code
+     *
+     * @var string
+     */
+    public $user_activation_email;
 
     /**
      * Initialize method for model.
@@ -357,6 +365,8 @@ class Users extends \Baka\Auth\Models\Users
     public function beforeCreate()
     {
         parent::beforeCreate();
+        $random = new Random();
+        $this->user_activation_email = $random->uuid();
 
         //this is only empty when creating a new user
         if (!$this->isFirstSignup()) {
@@ -499,5 +509,18 @@ class Users extends \Baka\Auth\Models\Users
         return array_map(function ($company) {
             return $company['companies_id'];
         }, $this->getCompanies(['columns' => 'companies_id'])->toArray());
+    }
+    
+    /** 
+     * Get user by key
+     * @param string $userActivationEmail
+     * @return Users
+     */
+    public static function getByUserActivationEmail(string $userActivationEmail): Users
+    {
+        return self::findFirst([
+            'conditions' => 'user_activation_email = ?0 and user_active =?1 and is_deleted = 0',
+            'bind' => [$userActivationEmail, 1],
+        ]);
     }
 }
