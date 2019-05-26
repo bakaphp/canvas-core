@@ -32,7 +32,9 @@
         "robmorgan/phinx": "^0.10",
         "sentry/sentry": "^1.9",
         "sly/notification-pusher": "2.x",
-        "vlucas/phpdotenv": "^2.4"
+        "vlucas/phpdotenv": "^2.4",
+        "elasticsearch/elasticsearch": "^6.1",
+        "mark-gerarts/auto-mapper-plus": "^1.3"
     },
     "require-dev": {
         "codeception/verify": "*",

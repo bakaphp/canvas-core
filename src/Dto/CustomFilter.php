@@ -62,10 +62,4 @@ class CustomFilter
      * @var array
      */
     public $contidions;
-
-    /**
-     *
-     * @var string
-     */
-    public $query;
 }
