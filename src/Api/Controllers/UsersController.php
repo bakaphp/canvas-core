@@ -16,7 +16,7 @@ use Canvas\Exception\NotFoundHttpException;
 use Canvas\Models\AccessList;
 
 /**
- * Class UsersController
+ * Class UsersController.
  *
  * @package Canvas\Api\Controllers
  *
@@ -32,17 +32,17 @@ class UsersController extends \Baka\Auth\UsersController
      *
      * @var array
      */
-    protected $createFields = ['name', 'firstname', 'lastname', 'displayname', 'language', 'country_id', 'timezone', 'email', 'password', 'created_at', 'updated_at', 'default_company','default_company_branch', 'family', 'cell_phone_number', 'country_id'];
+    protected $createFields = ['name', 'firstname', 'lastname', 'displayname', 'language', 'country_id', 'timezone', 'email', 'password', 'created_at', 'updated_at', 'default_company', 'default_company_branch', 'family', 'cell_phone_number', 'country_id'];
 
     /*
      * fields we accept to create
      *
      * @var array
      */
-    protected $updateFields = ['name', 'firstname', 'lastname', 'displayname', 'language', 'country_id', 'timezone', 'email', 'password', 'created_at', 'updated_at', 'default_company','default_company_branch', 'cell_phone_number', 'country_id'];
+    protected $updateFields = ['name', 'firstname', 'lastname', 'displayname', 'language', 'country_id', 'timezone', 'email', 'password', 'created_at', 'updated_at', 'default_company', 'default_company_branch', 'cell_phone_number', 'country_id'];
 
     /**
-     * set objects
+     * set objects.
      *
      * @return void
      */
@@ -58,13 +58,13 @@ class UsersController extends \Baka\Auth\UsersController
         } else {
             //admin get all the users for this company
             $this->additionalSearchFields = [
-                ['default_company', ':', $this->userData->currentCompanyId()],
+                ['id', ':', implode('|', $this->userData->currentCompany->getAssociatedUsersByApp())],
             ];
         }
     }
 
     /**
-     * Get Uer
+     * Get Uer.
      *
      * @param mixed $id
      *
@@ -75,10 +75,17 @@ class UsersController extends \Baka\Auth\UsersController
      */
     public function getById($id) : Response
     {
-        //find the info
+        //none admin users can only edit themselves
+        if (!$this->userData->hasRole('Default.Admins') || (int) $id === 0) {
+            $id = $this->userData->getId();
+        }
+
+        /**
+         * @todo filter only by usres from this app / company
+         */
         $user = $this->model->findFirst([
             'id = ?0 AND is_deleted = 0',
-            'bind' => [$this->userData->getId()],
+            'bind' => [$id],
         ]);
 
         $user->password = null;
@@ -112,7 +119,7 @@ class UsersController extends \Baka\Auth\UsersController
     }
 
     /**
-     * Update a User Info
+     * Update a User Info.
      *
      * @method PUT
      * @url /v1/users/{id}
@@ -182,7 +189,7 @@ class UsersController extends \Baka\Auth\UsersController
     }
 
     /**
-     * Add users notifications
+     * Add users notifications.
      *
      * @param int $id
      * @method PUT
