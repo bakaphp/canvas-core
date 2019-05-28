@@ -24,9 +24,9 @@ class SocialLoginProvider implements ServiceProviderInterface
                  * @todo Change the way provider information is handled
                  */
                 $providers = [
-                    'callback'=> 'https://apidev.kanvas.dev/v1/users/social',
+                    'callback'=> $config->social->callback,
                     'providers'=>[
-                        'Facebook'=> ['enabled'=> true, 'keys'=>['id'=>$config->facebook->id,'secret'=>$config->facebook->secret]]
+                        'Facebook'=> ['enabled'=> true, 'keys'=>['id'=>$config->social->facebook->id,'secret'=>$config->social->facebook->secret]]
                     ]
                 ];
 
