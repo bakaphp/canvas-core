@@ -49,6 +49,7 @@ class UserLinkedSources extends \Baka\Auth\Models\UserLinkedSources
         parent::initialize();
 
         $this->setSource('user_linked_sources');
+        $this->belongsTo('users_id', 'Canvas\Models\Users', 'id', ['alias' => 'user']);
     }
 
     /**
