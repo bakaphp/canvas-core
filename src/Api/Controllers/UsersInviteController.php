@@ -218,7 +218,8 @@ class UsersInviteController extends BaseController
         ]);
 
         if (is_object($userExists)) {
-            $newUser = $this->userData->defaultCompany->associate($userExists, $this->userData->defaultCompany);
+            $newUser = $userExists;
+            $this->userData->defaultCompany->associate($userExists, $this->userData->defaultCompany);
         } else {
             $newUser = new Users();
             $newUser->firstname = $request['firstname'];
