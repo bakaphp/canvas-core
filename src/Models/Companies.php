@@ -8,9 +8,11 @@ use Phalcon\Validation\Validator\PresenceOf;
 use Canvas\Exception\ServerErrorHttpException;
 use Exception;
 use Carbon\Carbon;
-use Canvas\Traits\ModelSettingsTrait;
+use Baka\Database\Contracts\HashTableTrait;
+use Baka\Blameable\BlameableTrait;
 use Canvas\Traits\UsersAssociatedTrait;
 use Canvas\Traits\FileSystemModelTrait;
+use Baka\Blameable\Blameable;
 
 /**
  * Class Companies.
@@ -30,9 +32,10 @@ use Canvas\Traits\FileSystemModelTrait;
  */
 class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
 {
-    use ModelSettingsTrait;
+    use HashTableTrait;
     use UsersAssociatedTrait;
     use FileSystemModelTrait;
+    use BlameableTrait;
 
     const DEFAULT_COMPANY = 'DefaulCompany';
     const PAYMENT_GATEWAY_CUSTOMER_KEY = 'payment_gateway_customer_id';
@@ -140,6 +143,9 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
     public function initialize()
     {
         $this->setSource('companies');
+        
+        $this->keepSnapshots(true);
+        $this->addBehavior(new Blameable());
 
         $this->belongsTo('users_id', 'Baka\Auth\Models\Users', 'id', ['alias' => 'user']);
         $this->hasMany('id', 'Baka\Auth\Models\CompanySettings', 'id', ['alias' => 'settings']);
@@ -356,7 +362,7 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
      */
     public function getPaymentGatewayCustomerId(): ?string
     {
-        return $this->getSettings(self::PAYMENT_GATEWAY_CUSTOMER_KEY);
+        return $this->get(self::PAYMENT_GATEWAY_CUSTOMER_KEY);
     }
 
     /**
@@ -368,18 +374,9 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
     {
         parent::beforeCreate();
 
-        $this->language = $this->di->getApp()->getSettings('language');
-        $this->timezone = $this->di->getApp()->getSettings('timezone');
-        $this->currency_id = Currencies::findFirstByCode($this->di->getApp()->getSettings('currency'))->getId();
-    }
-
-    /**
-     * Before insert or update Company.
-     * @return void
-     */
-    public function beforeSave(): void
-    {
-        $this->trimSpacesFromPropertiesValues();
+        $this->language = $this->di->getApp()->get('language');
+        $this->timezone = $this->di->getApp()->get('timezone');
+        $this->currency_id = Currencies::findFirstByCode($this->di->getApp()->get('currency'))->getId();
     }
 
     /**
@@ -392,8 +389,8 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
         parent::afterCreate();
 
         //setup the user notificatoin setting
-        $this->setSettings('notifications', $this->user->email);
-        $this->setSettings('paid', '1');
+        $this->set('notifications', $this->user->email);
+        $this->set('paid', '1');
 
         //now thta we setup de company and associated with the user we need to setup this as its default company
         if (!UserConfig::findFirst(['conditions' => 'users_id = ?0 and name = ?1', 'bind' => [$this->user->getId(), self::DEFAULT_COMPANY]])) {
@@ -441,7 +438,7 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
 
         //If the newly created company is not the default then we create a new subscription with the same user
         if (($this->di->getUserData()->default_company != $this->getId()) && $appsSubscriptionStatus->value) {
-            $this->setSettings(self::PAYMENT_GATEWAY_CUSTOMER_KEY, $this->startFreeTrial());
+            $this->set(self::PAYMENT_GATEWAY_CUSTOMER_KEY, $this->startFreeTrial());
             $companyApps->subscriptions_id = $this->subscription->getId();
         }
 
@@ -486,34 +483,6 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
     }
 
     /**
-     * After the model was update we need to update its custom fields.
-     *
-     * @return void
-     */
-    public function afterUpdate()
-    {
-        //only clean and change custom fields if they are been sent
-        if (!empty($this->customFields)) {
-            //replace old custom with new
-            $allCustomFields = $this->getAllCustomFields();
-            if (is_array($allCustomFields)) {
-                foreach ($this->customFields as $key => $value) {
-                    $allCustomFields[$key] = $value;
-                }
-            }
-
-            if (!empty($allCustomFields)) {
-                //set
-                $this->setCustomFields($allCustomFields);
-                //clean old
-                $this->cleanCustomFields($this->getId());
-                //save new
-                $this->saveCustomFields();
-            }
-        }
-    }
-
-    /**
      * Start a free trial for a new company.
      *
      * @return string //the customer id
@@ -551,7 +520,7 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
      */
     public function afterSave()
     {
-        parent::afterSave();
+        //parent::afterSave();
         $this->associateFileSystem();
     }
 

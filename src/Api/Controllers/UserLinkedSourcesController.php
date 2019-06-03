@@ -44,8 +44,10 @@ class UserLinkedSourcesController extends BaseController
     public function onConstruct()
     {
         $this->model = new UserLinkedSources();
+        $this->softDelete = 1;
         $this->additionalSearchFields = [
             ['is_deleted', ':', '0'],
+            ['users_id', ':', $this->userData->getId()],
         ];
     }
 
@@ -117,23 +119,10 @@ class UserLinkedSourcesController extends BaseController
      */
     public function detachDevice(int $id, int $deviceId): Response
     {
-        //Validation
-        $validation = new Validation();
-        $validation->add('source_id', new PresenceOf(['message' => _('Source Id is required.')]));
-
-        //validate this form for password
-        $messages = $validation->validate($this->request->getPost());
-        if (count($messages)) {
-            foreach ($messages as $message) {
-                throw new BadRequestHttpException((string)$message);
-            }
-        }
-
-        $sourceId = $this->request->getPost('source_id', 'int');
-
+       //$sourceId = $this->request->getPost('source_id', 'int');
         $userSource = UserLinkedSources::findFirst([
-                'conditions' => 'users_id = ?0 and source_id = ?1 and source_users_id_text = ?2 and is_deleted = 0',
-                'bind' => [$this->userData->getId(), $sourceId, $deviceId]
+                'conditions' => 'users_id = ?0  and source_users_id_text = ?1    and is_deleted = 0',
+                'bind' => [$this->userData->getId(), $deviceId]
             ]);
 
         //Check if User Linked Sources exists by users_id and source_users_id_text
@@ -141,10 +130,7 @@ class UserLinkedSourcesController extends BaseController
             throw new NotFoundHttpException('User Linked Source not found');
         }
 
-        $userSource->is_deleted = 1;
-        if (!$userSource->update()) {
-            throw new UnprocessableEntityHttpException((string) current($userSource->getMessages()));
-        }
+        $userSource->softDelete();
 
         return $this->response([
                 'msg' => 'User Device detached',

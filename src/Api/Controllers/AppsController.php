@@ -5,14 +5,11 @@ declare(strict_types=1);
 namespace Canvas\Api\Controllers;
 
 use Canvas\Models\Apps;
-use Canvas\Mapper\DTO\DTOAppsSettings;
+use Canvas\Dto\AppsSettings;
 use Phalcon\Http\Response;
-use Baka\Http\QueryParserCustomFields;
-use Phalcon\Mvc\Model\Resultset\Simple as SimpleRecords;
-use Canvas\Exception\ModelException;
 
 /**
- * Class LanguagesController
+ * Class LanguagesController.
  *
  * @package Canvas\Api\Controllers
  *
@@ -34,7 +31,7 @@ class AppsController extends BaseController
     protected $updateFields = [];
 
     /**
-     * set objects
+     * set objects.
      *
      * @return void
      */
@@ -43,63 +40,31 @@ class AppsController extends BaseController
         $this->model = new Apps();
         $this->additionalSearchFields = [
             ['is_deleted', ':', '0'],
+            ['id', ':', implode('|', $this->userData->getAssociatedApps())],
         ];
     }
 
     /**
-     * List of data.
+     * Format output.
      *
-     * @method GET
-     * url /v1/data
-     *
-     * @param int $id
-     * @return \Phalcon\Http\Response
+     * @param [type] $results
+     * @return void
      */
-    public function index($id = null): Response
+    protected function processOutput($results)
     {
-        if ($id != null) {
-            return $this->getById($id);
-        }
+        //DTOAppsSettings
+        $this->dtoConfig->registerMapping(Apps::class, AppsSettings::class)
+          ->forMember('settings', function (Apps $app) {
+              return $app->settingsApp->toArray();
+          });
 
-        //parse the rquest
-        $parse = new QueryParserCustomFields($this->request->getQuery(), $this->model);
-        $parse->appendParams($this->additionalSearchFields);
-        $parse->appendCustomParams($this->additionalCustomSearchFields);
-        $parse->appendRelationParams($this->additionalRelationSearchFields);
-        $params = $parse->request();
-
-        $results = (new SimpleRecords(null, $this->model, $this->model->getReadConnection()->query($params['sql'], $params['bind'])));
-        $count = $this->model->getReadConnection()->query($params['countSql'], $params['bind'])->fetch(\PDO::FETCH_OBJ)->total;
-
-        // Relationships, but we have to change it to sparo full implementation
-        if ($this->request->hasQuery('relationships')) {
-            $relationships = $this->request->getQuery('relationships', 'string');
-
-            $results = QueryParser::parseRelationShips($relationships, $results);
-        }
-
-
-
-        $newResult = $this->mapper->mapMultiple(iterator_to_array($results), DTOAppsSettings::class);
-
-        //this means the want the response in a vuejs format
-        if ($this->request->hasQuery('format')) {
-            $limit = (int) $this->request->getQuery('limit', 'int', 25);
-
-            $newResult = [
-                'data' => $results,
-                'limit' => $limit,
-                'page' => $this->request->getQuery('page', 'int', 1),
-                'total_pages' => ceil($count / $limit),
-                'total_rows' => $count
-            ];
-        }
-
-        return $this->response($newResult);
+        return is_iterable($results) ?
+                $this->mapper->mapMultiple(iterator_to_array($results), AppsSettings::class)
+                : $this->mapper->map($results, AppsSettings::class);
     }
 
     /**
-     * get item
+     * get item.
      *
      * @param mixed $id
      *
@@ -111,24 +76,14 @@ class AppsController extends BaseController
     public function getById($id = null): Response
     {
         //find the info
-        $objectInfo = $this->model->findFirst([
+        $record = $this->model->findFirst([
             '(id = ?0 OR key = ?0) AND is_deleted = 0',
             'bind' => [$id],
         ]);
 
-        //get relationship
-        if ($this->request->hasQuery('relationships')) {
-            $relationships = $this->request->getQuery('relationships', 'string');
+        //get the results and append its relationships
+        $result = $this->appendRelationshipsToResult($this->request, $record);
 
-            $objectInfo = QueryParser::parseRelationShips($relationships, $objectInfo);
-        }
-
-        $objectInfo = $this->mapper->map($objectInfo, DTOAppsSettings::class);
-
-        if ($objectInfo) {
-            return $this->response($objectInfo);
-        } else {
-            throw new Exception('Record not found');
-        }
+        return $this->response($this->processOutput($result));
     }
 }
