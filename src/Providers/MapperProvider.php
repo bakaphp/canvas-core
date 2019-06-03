@@ -7,7 +7,7 @@ namespace Canvas\Providers;
 use Phalcon\DiInterface;
 use Phalcon\Di\ServiceProviderInterface;
 use AutoMapperPlus\AutoMapper;
-use Canvas\Mapper\MapperConfig;
+use AutoMapperPlus\Configuration\AutoMapperConfig;
 
 class MapperProvider implements ServiceProviderInterface
 {
@@ -16,10 +16,22 @@ class MapperProvider implements ServiceProviderInterface
      */
     public function register(DiInterface $container)
     {
+        //configure the dto config
+        $container->setShared(
+            'dtoConfig',
+            function () {
+                $config = new AutoMapperConfig();
+                $config->getOptions()->dontSkipConstructor();
+        
+                return $config;
+            }
+        );
+
+        //configure the dto mapper
         $container->set(
             'mapper',
-            function () {
-                return new AutoMapper(MapperConfig::get());
+            function () use ($container) {
+                return new AutoMapper($container->get('dtoConfig'));
             }
         );
     }

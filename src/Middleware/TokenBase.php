@@ -13,8 +13,6 @@ use Canvas\Exception\SubscriptionPlanFailureException;
 use Phalcon\Mvc\Micro;
 use Phalcon\Http\RequestInterface;
 use Canvas\Models\Subscription;
-use Baka\Http\RouterCollection;
-use Phalcon\Di;
 
 /**
  * Class AuthenticationMiddleware.

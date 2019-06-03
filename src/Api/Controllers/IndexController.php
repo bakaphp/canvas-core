@@ -12,7 +12,7 @@ use Canvas\Exception\ServerErrorHttpException;
 use RedisException;
 
 /**
- * Class IndexController
+ * Class IndexController.
  *
  * @package Canvas\Api\Controllers
  *
@@ -24,7 +24,7 @@ use RedisException;
 class IndexController extends BaseController
 {
     /**
-     * Index
+     * Index.
      *
      * @method GET
      * @url /
@@ -37,7 +37,7 @@ class IndexController extends BaseController
     }
 
     /**
-     * Show the status of the diferent services
+     * Show the status of the diferent services.
      *
      * @method GET
      * @url /status

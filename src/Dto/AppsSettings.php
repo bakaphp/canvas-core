@@ -1,8 +1,8 @@
 <?php
 
-namespace Canvas\Mapper\DTO;
+namespace Canvas\Dto;
 
-class DTOAppsSettings
+class AppsSettings
 {
     /**
      *

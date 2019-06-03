@@ -10,7 +10,6 @@ use Phalcon\Http\Response;
 use Phalcon\Validation;
 use Phalcon\Validation\Validator\PresenceOf;
 use Canvas\Exception\BadRequestHttpException;
-use Baka\Http\QueryParser;
 use Canvas\Exception\ModelException;
 use Canvas\Exception\NotFoundHttpException;
 use Canvas\Models\AccessList;
@@ -83,19 +82,13 @@ class UsersController extends \Baka\Auth\UsersController
         /**
          * @todo filter only by usres from this app / company
          */
-        $user = $this->model->findFirst([
+        $user = $this->model->findFirstOrFail([
             'id = ?0 AND is_deleted = 0',
             'bind' => [$id],
         ]);
 
-        $user->password = null;
-
-        //get relationship
-        if ($this->request->hasQuery('relationships')) {
-            $relationships = $this->request->getQuery('relationships', 'string');
-
-            $user = QueryParser::parseRelationShips($relationships, $user);
-        }
+        //get the results and append its relationships
+        $user = $this->appendRelationshipsToResult($this->request, $user);
 
         //if you search for roles we give you the access for this app
         if (array_key_exists('roles', $user)) {
@@ -111,11 +104,7 @@ class UsersController extends \Baka\Auth\UsersController
             }
         }
 
-        if ($user) {
-            return $this->response($user);
-        } else {
-            throw new ModelException('Record not found');
-        }
+        return $this->response($this->processOutput($user));
     }
 
     /**
@@ -133,59 +122,68 @@ class UsersController extends \Baka\Auth\UsersController
             $id = $this->userData->getId();
         }
 
-        if ($user = $this->model->findFirst($id)) {
-            $request = $this->request->getPut();
+        $user = $this->model->findFirstOrFail($id);
+        $request = $this->request->getPutData();
 
-            if (empty($request)) {
-                $request = $this->request->getJsonRawBody(true);
-            }
-
-            if (empty($request)) {
-                throw new BadRequestHttpException(_('No data to update this account with '));
-            }
-
-            //update password
-            if (array_key_exists('new_password', $request) && (!empty($request['new_password']) && !empty($request['current_password']))) {
-                //Ok let validate user password
-                $validation = new Validation();
-                $validation->add('new_password', new PresenceOf(['message' => 'The new_password is required.']));
-                $validation->add('current_password', new PresenceOf(['message' => 'The current_password is required.']));
-                $validation->add('confirm_new_password', new PresenceOf(['message' => 'The confirm_new_password is required.']));
-                $messages = $validation->validate($request);
-
-                if (count($messages)) {
-                    foreach ($messages as $message) {
-                        throw new BadRequestHttpException((string)$message);
-                    }
-                }
-
-                $user->updatePassword($request['current_password'], $request['new_password'], $request['confirm_new_password']);
-            } else {
-                //remove on any actino that doesnt involve password
-                unset($request['password']);
-            }
-
-            //change my default company
-            if (array_key_exists('default_company', $request)) {
-                if ($company = Companies::findFirst($request['default_company'])) {
-                    if ($company->userAssociatedToCompany($this->userData)) {
-                        $user->default_company = $company->getId();
-                        unset($request['default_company']);
-                    }
-                }
-            }
-
-            //update
-            if ($user->update($request, $this->updateFields)) {
-                $user->password = null;
-                return $this->response($user);
-            } else {
-                //didnt work
-                throw new ModelException((string)current($user->getMessages()));
-            }
-        } else {
-            throw new NotFoundHttpException('Record not found');
+        if (empty($request)) {
+            throw new BadRequestHttpException(_('No data to update this account with '));
         }
+
+        //update password
+        if (array_key_exists('new_password', $request) && (!empty($request['new_password']) && !empty($request['current_password']))) {
+            //Ok let validate user password
+            $validation = new Validation();
+            $validation->add('new_password', new PresenceOf(['message' => 'The new_password is required.']));
+            $validation->add('current_password', new PresenceOf(['message' => 'The current_password is required.']));
+            $validation->add('confirm_new_password', new PresenceOf(['message' => 'The confirm_new_password is required.']));
+            $messages = $validation->validate($request);
+
+            if (count($messages)) {
+                foreach ($messages as $message) {
+                    throw new BadRequestHttpException((string)$message);
+                }
+            }
+
+            $user->updatePassword($request['current_password'], $request['new_password'], $request['confirm_new_password']);
+        } else {
+            //remove on any actino that doesnt involve password
+            unset($request['password']);
+        }
+
+        //change my default company
+        if (array_key_exists('default_company', $request)) {
+            if ($company = Companies::findFirst($request['default_company'])) {
+                if ($company->userAssociatedToCompany($this->userData)) {
+                    $user->default_company = $company->getId();
+                    unset($request['default_company']);
+                }
+            }
+        }
+
+        //update
+        $user->updateOrFail($request, $this->updateFields);
+        return $this->response($this->processOutput($user));
+    }
+
+    /**
+     * Given the results we will proess the output
+     * we will check if a DTO transformer exist and if so we will send it over to change it.
+     *
+     * @param object|array $results
+     * @return void
+     */
+    protected function processOutput($results)
+    {
+        /**
+         * remove password
+         * @todo move to DTO
+         */
+        if (is_object($results)) {
+            $results->password = null;
+            $results->bypassRoutes = null;
+        }
+
+        return $results;
     }
 
     /**

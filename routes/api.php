@@ -1,11 +1,11 @@
 <?php
-use Baka\Http\RouterCollection;
+use Baka\Http\Router\Collection;
 
 /**
  * @todo how can we better define the version across the diff apps?
  * Here is where you can register all of the routes for api.
  */
-$router = new RouterCollection($application);
+$router = new Collection($application);
 $router->setPrefix('/v1');
 
 $router->get('/timezones', [
@@ -32,7 +32,7 @@ $router->post('/users/{id}/devices', [
 ]);
 
 //detach mobile devices
-$router->post('/users/{id}/devices/{deviceId}/detach', [
+$router->delete('/users/{id}/devices/{deviceId}', [
     'Canvas\Api\Controllers\UserLinkedSourcesController',
     'detachDevice',
 ]);
@@ -64,6 +64,7 @@ $defaultCrudRoutes = [
     'UserLinkedSources' => 'devices',
     'PaymentFrequencies' => 'payment-frequencies',
     'SystemModules' => 'system-modules',
+    'CustomFilters' => 'custom-filters',
     'apps'
 ];
 
@@ -198,6 +199,18 @@ $router->post('/email-templates/test', [
 $router->put('/apps-plans/{id}/method', [
     'Canvas\Api\Controllers\AppsPlansController',
     'updatePaymentMethod',
+]);
+
+//schema
+$router->get('/schema/{slug}', [
+    'Canvas\Api\Controllers\SchemaController',
+    'getBySlug',
+]);
+
+//schema
+$router->get('/schema/{slug}/description', [
+    'Canvas\Api\Controllers\SchemaController',
+    'getModelDescription',
 ]);
 
 $router->post('/users/{hash}/change-email', [

@@ -20,7 +20,7 @@ class AddComplexFilters extends AbstractMigration
                 'null' => false,
                 'limit' => MysqlAdapter::INT_REGULAR,
                 'precision' => '10',
-                'signed' => false,
+                'identity' => 'enable',
             ])
             ->addColumn('system_modules_id', 'integer', [
                 'null' => false,
@@ -102,7 +102,7 @@ class AddComplexFilters extends AbstractMigration
 
         $this->table('custom_filters_conditions', [
             'id' => false,
-            'primary_key' => ['custom_filter_id'],
+            'primary_key' => ['custom_filter_id', 'field'],
             'engine' => 'InnoDB',
             'encoding' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
@@ -128,16 +128,30 @@ class AddComplexFilters extends AbstractMigration
                 'encoding' => 'utf8mb4',
                 'after' => 'position',
             ])
+            ->addColumn('field', 'string', [
+                'null' => false,
+                'limit' => 100,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'conditional',
+            ])
             ->addColumn('value', 'string', [
                 'null' => false,
                 'limit' => 255,
                 'collation' => 'utf8mb4_unicode_ci',
                 'encoding' => 'utf8mb4',
-                'after' => 'conditional',
+                'after' => 'field',
+            ])
+            ->addColumn('comparator', 'string', [
+                'null' => false,
+                'limit' => 10,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'value',
             ])
             ->addColumn('created_at', 'datetime', [
                 'null' => false,
-                'after' => 'value',
+                'after' => 'comparator',
             ])
             ->addColumn('updated_at', 'datetime', [
                 'null' => true,

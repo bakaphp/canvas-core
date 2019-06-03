@@ -228,7 +228,7 @@ trait FileManagementTrait
             }
 
             //get the filesystem config
-            $appSettingFileConfig = $this->di->get('app')->getSettings('filesystem');
+            $appSettingFileConfig = $this->di->get('app')->get('filesystem');
             $fileSystemConfig = $this->config->filesystem->{$appSettingFileConfig};
 
             //create local filesystem , for temp files
@@ -263,7 +263,7 @@ trait FileManagementTrait
 
             //add settings
             foreach ($allFields as $key => $settings) {
-                $fileSystem->setSettings($key, $settings);
+                $fileSystem->set($key, $settings);
             }
 
             $files[] = $fileSystem;

@@ -3,76 +3,16 @@ declare(strict_types=1);
 
 namespace Canvas\CustomFields;
 
-use Canvas\Models\AbstractModel;
+use  Baka\Database\CustomFields\CustomFields as BakaCustomFields;
 
-class CustomFields extends AbstractModel
+class CustomFields extends BakaCustomFields
 {
-    /**
-     *
-     * @var integer
-     */
-    public $id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $users_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $companies_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $apps_id;
-
-    /**
-     *
-     * @var string
-     */
-    public $name;
-
-    /**
-     *
-     * @var integer
-     */
-    public $custom_fields_modules_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $fields_type_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $is_deleted;
-
-    /**
-     *
-     * @var string
-     */
-    public $created_at;
-
-    /**
-     *
-     * @var string
-     */
-    public $updated_at;
-
     /**
      * Initialize method for model.
      */
     public function initialize()
     {
-        $this->setSource('custom_fields');
+        parent::initialize();
 
         $this->belongsTo(
             'custom_fields_modules_id',
@@ -108,15 +48,5 @@ class CustomFields extends AbstractModel
             'custom_fields_id',
             ['alias' => 'fields-values']
         );
-    }
-
-    /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource(): string
-    {
-        return 'custom_fields';
     }
 }

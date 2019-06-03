@@ -9,7 +9,6 @@ use Phalcon\Mvc\Micro;
 use Phalcon\Http\Request;
 use Canvas\Models\Users;
 use Canvas\Exception\PermissionException;
-use Baka\Http\RouterCollection;
 
 /**
  * Class TokenValidationMiddleware.

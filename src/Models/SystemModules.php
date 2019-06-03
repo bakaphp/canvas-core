@@ -54,6 +54,18 @@ class SystemModules extends AbstractModel
      *
      * @var integer
      */
+    public $use_elastic;
+
+    /**
+     *
+     * @var string
+     */
+    public $browse_fields;
+
+    /**
+     *
+     * @var integer
+     */
     public $show;
 
     /**
@@ -113,8 +125,6 @@ class SystemModules extends AbstractModel
             'id',
             ['alias' => 'companyBranch']
         );
-
-        $this->setSource('user_company_apps_activities');
     }
 
     /**
@@ -164,5 +174,35 @@ class SystemModules extends AbstractModel
         }
 
         return $module;
+    }
+
+    /**
+     * Get System Module by id.
+     *
+     * @param int $id
+     * @return SystemModules
+     */
+    public static function getBySlug(string $slug): SystemModules
+    {
+        $module = SystemModules::findFirst([
+            'conditions' => 'slug = ?0 and apps_id = ?1',
+            'bind' => [$slug, Di::getDefault()->getApp()->getId()]
+        ]);
+
+        if (!is_object($module)) {
+            throw new ModelException('System Module not found');
+        }
+
+        return $module;
+    }
+
+    /**
+     * Given tell them if this system module is index in elastic
+     *
+     * @return bool
+     */
+    public function useElastic(): bool
+    {
+        return (bool) $this->use_elastic;
     }
 }

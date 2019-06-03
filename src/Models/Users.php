@@ -119,7 +119,6 @@ class Users extends \Baka\Auth\Models\Users
         $this->hasMany('id', 'Baka\Auth\Models\Sessions', 'users_id', ['alias' => 'sessions']);
         $this->hasMany('id', 'Canvas\Models\UserConfig', 'users_id', ['alias' => 'config']);
         $this->hasMany('id', 'Canvas\Models\UserLinkedSources', 'users_id', ['alias' => 'sources']);
-        $this->hasMany('id', 'Baka\Auth\Models\UsersAssociatedCompany', 'users_id', ['alias' => 'companies']);
         $this->hasOne('default_company', 'Canvas\Models\Companies', 'id', ['alias' => 'defaultCompany']);
         $this->hasOne('default_company', 'Canvas\Models\Companies', 'id', ['alias' => 'currentCompany']);
 
@@ -173,6 +172,15 @@ class Users extends \Baka\Auth\Models\Users
             'users_id',
             [
                 'alias' => 'companies',
+            ]
+        );
+
+        $this->hasMany(
+            'id',
+            'Canvas\Models\UsersAssociatedApps',
+            'users_id',
+            [
+                'alias' => 'apps',
             ]
         );
 
@@ -374,18 +382,6 @@ class Users extends \Baka\Auth\Models\Users
     }
 
     /**
-     * Get an array of the associates companies Ids.
-     *
-     * @return array
-     */
-    public function getAssociatedCompanies(): array
-    {
-        return array_map(function ($company) {
-            return $company['companies_id'];
-        }, $this->getCompanies(['columns' => 'companies_id'])->toArray());
-    }
-
-    /**
      * What the current company the users is logged in with
      * in this current session?
      *
@@ -492,6 +488,30 @@ class Users extends \Baka\Auth\Models\Users
     }
 
     /**
+     * Get the list of all the associated apps this users has.
+     *
+     * @return array
+     */
+    public function getAssociatedApps(): array
+    {
+        return array_map(function ($apps) {
+            return $apps['apps_id'];
+        }, $this->getApps(['columns' => 'apps_id', 'group' => 'apps_id'])->toArray());
+    }
+
+    /**
+     * Get an array of the associates companies Ids.
+     *
+     * @return array
+     */
+    public function getAssociatedCompanies(): array
+    {
+        return array_map(function ($company) {
+            return $company['companies_id'];
+        }, $this->getCompanies(['columns' => 'companies_id'])->toArray());
+    }
+    
+    /** 
      * Get user by key
      * @param string $userActivationEmail
      * @return Users
