@@ -1,4 +1,4 @@
-<?php
+u<?php
 
 use Phinx\Seed\AbstractSeed;
 use Phalcon\Security\Random;
@@ -208,9 +208,10 @@ class InitGewaer extends AbstractSeed
         $table->insert($data)->save();
 
         $data = [
-            ['id' => 1,
+            [
+                'id' => 1,
                 'name' => 'Companies',
-                'slug' => 'example_slug',
+                'slug' => 'companies',
                 'model_name' => 'Canvas\Models\Companies',
                 'apps_id' => 1,
                 'parents_id' => 0,
@@ -220,7 +221,7 @@ class InitGewaer extends AbstractSeed
             ], [
                 'id' => 2,
                 'name' => 'Users',
-                'slug' => 'example_slug',
+                'slug' => 'users',
                 'model_name' => 'Canvas\Models\Users',
                 'apps_id' => 1,
                 'parents_id' => 0,
@@ -231,6 +232,23 @@ class InitGewaer extends AbstractSeed
         ];
 
         $table = $this->table('system_modules');
+        $table->insert($data)->save();
+
+        $data = [
+            [
+                'id' => 1,
+                'name' => 'text',
+                'description' => 'Any Text type of area, input , etc',
+                'created_at' => date('Y-m-d H:i:s')
+            ], [
+                'id' => 2,
+                'name' => 'list',
+                'description' => 'Dropdown lists',
+                'created_at' => date('Y-m-d H:i:s')
+            ]
+        ];
+
+        $table = $this->table('custom_fields_types');
         $table->insert($data)->save();
     }
 }

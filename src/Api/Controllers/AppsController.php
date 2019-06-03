@@ -58,7 +58,7 @@ class AppsController extends BaseController
               return $app->settingsApp->toArray();
           });
 
-        return $results instanceof \Phalcon\Mvc\Model\Resultset\Simple ?
+        return is_iterable($results) ?
                 $this->mapper->mapMultiple(iterator_to_array($results), AppsSettings::class)
                 : $this->mapper->map($results, AppsSettings::class);
     }

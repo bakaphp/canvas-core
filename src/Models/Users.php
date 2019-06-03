@@ -191,7 +191,7 @@ class Users extends \Baka\Auth\Models\Users
             ['alias' => 'userWebhook']
         );
 
-        $systemModule = SystemModules::getSystemModuleByModelName(static::class);
+        $systemModule = SystemModules::getSystemModuleByModelName(self::class);
         $this->hasMany(
             'id',
             'Canvas\Models\FileSystem',

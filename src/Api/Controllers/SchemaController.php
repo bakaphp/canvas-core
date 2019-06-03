@@ -77,7 +77,7 @@ class SchemaController extends BakaBaseController
         $columns = $this->db->describeColumns($model->getSource());
         $structure = [];
         $type = null;
-        
+
         foreach ($columns as $column) {
             switch ($column->getType()) {
                 case Column::TYPE_INTEGER:
@@ -103,6 +103,10 @@ class SchemaController extends BakaBaseController
                     $structure[$column->getName()] = 'float';
                     break;
             }
+        }
+
+        if ($model->hasCustomFields()) {
+            $structure = array_merge($structure, $model->getCustomFields());
         }
 
         return $this->response($structure);

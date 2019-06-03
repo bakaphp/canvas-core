@@ -71,7 +71,7 @@ class CompaniesController extends BaseController
         */
         foreach ($results as $key => $value) {
             if (is_object($value['branch'])) {
-                $results[$key]['branch'] = array($value['branch']);
+                $results[$key]['branch'] = [$value['branch']];
             }
         }
 
@@ -79,9 +79,8 @@ class CompaniesController extends BaseController
          * @todo Find a way to accomplish this same logic with Mapper later.
          */
         if (is_object(current($results)['branch'])) {
-            $results[0]['branch'] = array(current($results)['branch']);
+            $results[0]['branch'] = [current($results)['branch']];
         }
-
 
         //return the response + transform it if needed
         return $this->response($results);
@@ -100,29 +99,26 @@ class CompaniesController extends BaseController
      */
     public function edit($id): Response
     {
-        if ($company = $this->model->findFirst($id)) {
-            if (!$company->userAssociatedToCompany($this->userData) && !$this->userData->hasRole('Default.Admins')) {
-                throw new UnauthorizedHttpException(_('You dont have permission to update this company info'));
-            }
+        $company = $this->model->findFirstOrFail($id);
+        if (!$company->userAssociatedToCompany($this->userData) && !$this->userData->hasRole('Default.Admins')) {
+            throw new UnauthorizedHttpException(_('You dont have permission to update this company info'));
+        }
 
-            $data = $this->request->getPutData();
+        $data = $this->request->getPutData();
 
-            if (empty($data)) {
-                throw new UnprocessableEntityHttpException('No valid data sent.');
-            }
+        if (empty($data)) {
+            throw new UnprocessableEntityHttpException('No valid data sent.');
+        }
 
-            //set the custom fields to update
-            $company->setCustomFields($data);
+        //set the custom fields to update
+        $company->setCustomFields($data);
 
-            //update
-            if ($company->update($data, $this->updateFields)) {
-                return $this->getById($id);
-            } else {
-                //didnt work
-                throw new UnprocessableEntityHttpException($company->getMessages()[0]);
-            }
+        //update
+        if ($company->update($data, $this->updateFields)) {
+            return $this->response($this->processOutput($company));
         } else {
-            throw new UnprocessableEntityHttpException(_('Company doesnt exist'));
+            //didnt work
+            throw new UnprocessableEntityHttpException($company->getMessages()[0]);
         }
     }
 
@@ -139,20 +135,17 @@ class CompaniesController extends BaseController
      */
     public function delete($id): Response
     {
-        if ($company = $this->model->findFirst($id)) {
-            if (!$company->userAssociatedToCompany($this->userData) && !$this->userData->hasRole('Default.Admins')) {
-                throw new UnauthorizedHttpException(_('You dont have permission to delete this company'));
-            }
-
-            if ($company->delete() === false) {
-                foreach ($company->getMessages() as $message) {
-                    throw new UnprocessableEntityHttpException($message);
-                }
-            }
-
-            return $this->response(['Delete Successfully']);
-        } else {
-            throw new UnprocessableEntityHttpException(_('Company doesnt exist'));
+        $company = $this->model->findFirstOrFail($id);
+        if (!$company->userAssociatedToCompany($this->userData) && !$this->userData->hasRole('Default.Admins')) {
+            throw new UnauthorizedHttpException(_('You dont have permission to delete this company'));
         }
+
+        if ($company->delete() === false) {
+            foreach ($company->getMessages() as $message) {
+                throw new UnprocessableEntityHttpException($message);
+            }
+        }
+
+        return $this->response(['Delete Successfully']);
     }
 }

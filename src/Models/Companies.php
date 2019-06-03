@@ -9,8 +9,10 @@ use Canvas\Exception\ServerErrorHttpException;
 use Exception;
 use Carbon\Carbon;
 use Baka\Database\Contracts\HashTableTrait;
+use Baka\Blameable\BlameableTrait;
 use Canvas\Traits\UsersAssociatedTrait;
 use Canvas\Traits\FileSystemModelTrait;
+use Baka\Blameable\Blameable;
 
 /**
  * Class Companies.
@@ -33,6 +35,7 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
     use HashTableTrait;
     use UsersAssociatedTrait;
     use FileSystemModelTrait;
+    use BlameableTrait;
 
     const DEFAULT_COMPANY = 'DefaulCompany';
     const PAYMENT_GATEWAY_CUSTOMER_KEY = 'payment_gateway_customer_id';
@@ -140,6 +143,9 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
     public function initialize()
     {
         $this->setSource('companies');
+        
+        $this->keepSnapshots(true);
+        $this->addBehavior(new Blameable());
 
         $this->belongsTo('users_id', 'Baka\Auth\Models\Users', 'id', ['alias' => 'user']);
         $this->hasMany('id', 'Baka\Auth\Models\CompanySettings', 'id', ['alias' => 'settings']);
@@ -264,7 +270,7 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
             ['alias' => 'user-webhooks']
         );
 
-        $systemModule = SystemModules::getSystemModuleByModelName(static::class);
+        $systemModule = SystemModules::getSystemModuleByModelName(self::class);
         $this->hasMany(
             'id',
             'Canvas\Models\FileSystem',
@@ -474,34 +480,6 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
         }
 
         throw new Exception(_("User doesn't have an active company"));
-    }
-
-    /**
-     * After the model was update we need to update its custom fields.
-     *
-     * @return void
-     */
-    public function afterUpdate()
-    {
-        //only clean and change custom fields if they are been sent
-        if (!empty($this->customFields)) {
-            //replace old custom with new
-            $allCustomFields = $this->getAllCustomFields();
-            if (is_array($allCustomFields)) {
-                foreach ($this->customFields as $key => $value) {
-                    $allCustomFields[$key] = $value;
-                }
-            }
-
-            if (!empty($allCustomFields)) {
-                //set
-                $this->setCustomFields($allCustomFields);
-                //clean old
-                $this->cleanCustomFields($this->getId());
-                //save new
-                $this->saveCustomFields();
-            }
-        }
     }
 
     /**

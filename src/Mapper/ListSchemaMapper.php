@@ -5,15 +5,14 @@ declare(strict_types=1);
 namespace Canvas\Mapper;
 
 use AutoMapperPlus\CustomMapper\CustomMapper;
-use Baka\Elasticsearch\Contracts\CustomFiltresSchemaTrait;
+use Baka\Elasticsearch\Contracts\CustomFiltersSchemaTrait;
 use Phalcon\DI;
-use function GuzzleHttp\json_decode;
 
 // You can either extend the CustomMapper, or just implement the MapperInterface
 // directly.
 class ListSchemaMapper extends CustomMapper
 {
-    use CustomFiltresSchemaTrait;
+    use CustomFiltersSchemaTrait;
 
     private $elastic;
 
