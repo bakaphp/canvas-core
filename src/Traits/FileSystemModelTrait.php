@@ -47,7 +47,7 @@ trait FileSystemModelTrait
                     $currentFile->entity_id = 0;
                     //$currentFile->update();
                     //but lets keep a record or you pass location
-                    $currentFile->setSettings('old_entity_id', $this->getId());
+                    $currentFile->set('old_entity_id', $this->getId());
                 }
             }
 
@@ -59,7 +59,7 @@ trait FileSystemModelTrait
                 if ($file = FileSystem::getById($file['id'])) {
                     $file->system_modules_id = $systemModule->getId();
                     $file->entity_id = $this->getId();
-                    $file->setSettings('entity_id', $this->getId());
+                    $file->set('entity_id', $this->getId());
 
                     if (!$file->update()) {
                         throw new ModelException(current($this->getMessages())->getMessage());

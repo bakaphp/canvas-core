@@ -11,7 +11,7 @@ use Canvas\Exception\NotFoundHttpException;
 use Canvas\Exception\PermissionException;
 
 /**
- * Class LanguagesController
+ * Class LanguagesController.
  *
  * @package Canvas\Api\Controllers
  * @property Users $userData
@@ -25,17 +25,17 @@ class CustomFieldsModulesController extends BaseController
      *
      * @var array
      */
-    protected $createFields = ['name'];
+    protected $createFields = ['name', 'model_name'];
 
     /*
      * fields we accept to create
      *
      * @var array
      */
-    protected $updateFields = ['name'];
+    protected $updateFields = ['name', 'model_name'];
 
     /**
-     * set objects
+     * set objects.
      *
      * @return void
      */
@@ -50,7 +50,7 @@ class CustomFieldsModulesController extends BaseController
     }
 
     /**
-     * Fetch all Custom Fields of a Module
+     * Fetch all Custom Fields of a Module.
      * @param integer $id
      * @return Response
      */

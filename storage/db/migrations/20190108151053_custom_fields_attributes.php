@@ -47,7 +47,7 @@ class CustomFieldsAttributes extends AbstractMigration
         $table->addColumn('id', 'integer', ['null' => false, 'limit' => MysqlAdapter::INT_REGULAR, 'precision' => 11, 'identity' => 'enable'])
                 ->addColumn('name', 'string', ['null' => false, 'limit' => 64, 'collation' => 'utf8mb4_unicode_ci', 'encoding' => 'utf8mb4', 'after' => 'id'])
                 ->addColumn('description', 'string', ['null' => false, 'limit' => 100, 'collation' => 'utf8mb4_unicode_ci', 'encoding' => 'utf8mb4', 'after' => 'name'])
-                ->addColumn('icon', 'string', ['null' => false, 'limit' => 64, 'collation' => 'utf8mb4_unicode_ci', 'encoding' => 'utf8mb4', 'after' => 'description'])
+                ->addColumn('icon', 'string', ['null' => true, 'limit' => 64, 'collation' => 'utf8mb4_unicode_ci', 'encoding' => 'utf8mb4', 'after' => 'description'])
                 ->addColumn('created_at', 'datetime', ['null' => false, 'after' => 'icon'])
                 ->addColumn('updated_at', 'datetime', ['null' => true, 'after' => 'created_at'])
                 ->addColumn('is_deleted', 'integer', ['null' => false, 'default' => '0', 'limit' => MysqlAdapter::INT_TINY, 'precision' => 3, 'after' => 'updated_at'])
