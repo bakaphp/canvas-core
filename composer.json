@@ -12,7 +12,7 @@
         "baka/auth": "^0.2",
         "baka/database": "^0.5",
         "baka/http": "^0.5",
-        "baka/mail": "^0.1",
+        "baka/mail": "^0.2",
         "baka/elasticsearch": "^1.0",
         "baka/support": "^1.0",
         "baka/blameable": "^0.1",

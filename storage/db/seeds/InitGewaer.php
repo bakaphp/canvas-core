@@ -1,4 +1,4 @@
-<?php
+u<?php
 
 use Phinx\Seed\AbstractSeed;
 use Phalcon\Security\Random;
