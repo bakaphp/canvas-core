@@ -37,8 +37,7 @@
         "robmorgan/phinx": "^0.10",
         "sentry/sentry": "^1.9",
         "sly/notification-pusher": "2.x",
-        "vlucas/phpdotenv": "^2.4",
-        "bakaphp/phalcon-throttler": "^0.1"
+        "vlucas/phpdotenv": "^2.4"
     },
     "require-dev": {
         "codeception/verify": "*",

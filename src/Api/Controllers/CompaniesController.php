@@ -9,6 +9,7 @@ use Phalcon\Http\Response;
 use Canvas\Exception\UnauthorizedHttpException;
 use Canvas\Exception\UnprocessableEntityHttpException;
 use Baka\Http\Contracts\Api\CrudCustomFieldsBehaviorTrait;
+use Canvas\Dto\CompaniesBranches;
 
 /**
  * Class CompaniesController.
@@ -65,25 +66,7 @@ class CompaniesController extends BaseController
     public function index(): Response
     {
         $results = $this->processIndex();
-
-        /**
-        * @todo Find a way to accomplish this same logic with Mapper later.
-        */
-        foreach ($results as $key => $value) {
-            if (is_object($value['branch'])) {
-                $results[$key]['branch'] = [$value['branch']];
-            }
-        }
-
-        /**
-         * @todo Find a way to accomplish this same logic with Mapper later.
-         */
-        if (is_object(current($results)['branch'])) {
-            $results[0]['branch'] = [current($results)['branch']];
-        }
-
-        //return the response + transform it if needed
-        return $this->response($results);
+        return $this->response($this->processOutput($results));
     }
 
     /**
@@ -147,5 +130,32 @@ class CompaniesController extends BaseController
         }
 
         return $this->response(['Delete Successfully']);
+    }
+
+    /**
+     * Format output.
+     *
+     * @param [type] $results
+     * @return void
+     */
+    protected function processOutput($results)
+    {
+        /**
+        * @todo Find a way to accomplish this same logic with Mapper later.
+        */
+        foreach ($results as $key => $value) {
+            if (is_object($value['branch'])) {
+                $results[$key]['branch'] = array($value['branch']);
+            }
+        }
+
+        /**
+         * @todo Find a way to accomplish this same logic with Mapper later.
+         */
+        if (is_object(current($results)['branch'])) {
+            $results[0]['branch'] = array(current($results)['branch']);
+        }
+
+        return $results;
     }
 }
