@@ -140,18 +140,12 @@ class CompaniesController extends BaseController
      */
     protected function processOutput($results)
     {
-        /**
-        * @todo Find a way to accomplish this same logic with Mapper later.
-        */
         foreach ($results as $key => $value) {
             if (is_object($value['branch'])) {
                 $results[$key]['branch'] = array($value['branch']);
             }
         }
 
-        /**
-         * @todo Find a way to accomplish this same logic with Mapper later.
-         */
         if (is_object(current($results)['branch'])) {
             $results[0]['branch'] = array(current($results)['branch']);
         }
