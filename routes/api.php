@@ -37,6 +37,11 @@ $router->delete('/users/{id}/devices/{deviceId}', [
     'detachDevice',
 ]);
 
+$router->post('/users/social', [
+    'Canvas\Api\Controllers\AuthController',
+    'loginByAccessToken',
+]);
+
 /**
  * Need to understand if using this can be a performance disadvantage in the future.
  */

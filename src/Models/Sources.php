@@ -1,39 +1,56 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Canvas\Models;
 
-class UserLinkedSources extends \Baka\Auth\Models\UserLinkedSources
+use Phalcon\Di;
+use Canvas\Exception\ModelException;
+
+/**
+ * Class Resources
+ *
+ * @package Canvas\Models
+ *
+ * @property \Phalcon\Di $di
+ */
+class Sources extends AbstractModel
 {
     /**
      *
      * @var integer
      */
-    public $source_id;
+    public $id;
+
+    /**
+     *
+     * @var string
+     */
+    public $title;
+
+    /**
+     *
+     * @var string
+     */
+    public $url;
 
     /**
      *
      * @var integer
      */
-    public $users_id;
+    public $language_id;
 
     /**
      *
      * @var string
      */
-    public $source_users_id;
+    public $created_at;
 
     /**
      *
      * @var string
      */
-    public $source_users_id_text;
-
-    /**
-     *
-     * @var string
-     */
-    public $source_username;
+    public $updated_at;
 
     /**
      *
@@ -46,10 +63,7 @@ class UserLinkedSources extends \Baka\Auth\Models\UserLinkedSources
      */
     public function initialize()
     {
-        parent::initialize();
-
-        $this->setSource('user_linked_sources');
-        $this->belongsTo('users_id', 'Canvas\Models\Users', 'id', ['alias' => 'user']);
+        $this->setSource('sources');
     }
 
     /**
@@ -59,6 +73,6 @@ class UserLinkedSources extends \Baka\Auth\Models\UserLinkedSources
      */
     public function getSource(): string
     {
-        return 'user_linked_sources';
+        return 'sources';
     }
 }

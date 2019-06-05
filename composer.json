@@ -22,6 +22,8 @@
         "dmkit/phalcon-jwt-auth": "dev-master",
         "duncan3dc/fork-helper": "^2.2.0",
         "firebase/php-jwt": "^5.0",
+        "hybridauth/hybridauth": "dev-master",
+        "lcobucci/jwt": "^3.2",
         "league/flysystem": "^1.0",
         "league/flysystem-aws-s3-v3": "^1.0",
         "league/fractal": "^0.17.0",
@@ -30,14 +32,12 @@
         "nesbot/carbon": "~1.18",
         "phalcon/incubator": "~3.4",
         "php-amqplib/php-amqplib": "^2.9",
-        "lcobucci/jwt": "^3.2",
         "psr/log": "^1.0",
         "pusher/pusher-php-server": "^3.0",
         "robmorgan/phinx": "^0.10",
         "sentry/sentry": "^1.9",
         "sly/notification-pusher": "2.x",
-        "vlucas/phpdotenv": "^2.4",
-        "bakaphp/phalcon-throttler": "^0.1"
+        "vlucas/phpdotenv": "^2.4"
     },
     "require-dev": {
         "codeception/verify": "*",
