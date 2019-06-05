@@ -55,6 +55,8 @@ build:
           -
             command: 'cd ~/ && rm -rf cphalcon && git clone -b 3.4.x -q --depth=1 https://github.com/phalcon/cphalcon.git && cd cphalcon/build && ./install'
           -
+            command: 'pecl channel-update pecl.php.net'
+          -
             command: 'cp -v /home/scrutinizer/cphalcon/build/php7/64bits/modules/phalcon.so  /home/scrutinizer/.phpenv/versions/7.2.13/lib/php/extensions/no-debug-zts-2017071'
             only_if: 'test -e /home/scrutinizer/cphalcon/build/php7/64bits/modules/phalcon.so'
           - sed -i '$ a \\n[Phalcon]\nextension=phalcon.so\n' /home/scrutinizer/.phpenv/versions/7.2.13/etc/php.ini
