@@ -148,7 +148,6 @@ class CompaniesController extends BaseController
                 $results[$key]['branch'] = array($value['branch']);
             }
         }
-
         /**
          * Format branches as an array of branches even if there is only one branch in a unique company
          */
