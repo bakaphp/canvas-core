@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace Canvas\Api\Controllers;
 
 use Canvas\Models\Users;
+use Canvas\Models\Sources;
 use Canvas\Models\UserLinkedSources;
 use Canvas\Exception\ServerErrorHttpException;
 use Canvas\Exception\ModelException;
 use Baka\Auth\Models\Users as BakaUsers;
 use Canvas\Traits\AuthTrait;
+use Canvas\Traits\SocialLoginTrait;
 use Phalcon\Http\Response;
 
 /**
@@ -29,6 +31,7 @@ class AuthController extends \Baka\Auth\AuthController
      * Auth Trait
      */
     use AuthTrait;
+    use SocialLoginTrait;
 
     /**
      * Setup for this controller
@@ -141,5 +144,27 @@ class AuthController extends \Baka\Auth\AuthController
         $this->db->commit();
 
         return $this->response($userData);
+    }
+
+    /**
+     * Login user using Access Token
+     * @return Response
+     */
+    public function loginByAccessToken(): Response
+    {
+        $request = $this->request->getPostData();
+
+        $source = Sources::findFirstOrFail([
+            'title = ?0 and is_deleted = 0',
+            'bind'=>[$request['provider']]
+        ]);
+
+        //Use Social Login Trait to log in with different provices.Depends on Provider name
+        
+        if ($source->title == 'facebook') {
+            return $this->response($this->facebook($source, $request['access_token']));
+        } elseif ($source->title == 'google') {
+            return $this->response($this->googleLogin($source, $request['access_token']));
+        }
     }
 }

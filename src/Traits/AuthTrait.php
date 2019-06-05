@@ -47,6 +47,35 @@ trait AuthTrait
     }
 
     /**
+     * User Login Social 
+     * @param string
+     * @return array
+     */
+    private function loginSocial(Users $user): array
+    {
+        $userIp = !defined('API_TESTS') ? $this->request->getClientAddress() : '127.0.0.1';
+
+        $user->lastvisit = date('Y-m-d H:i:s');
+        $user->user_login_tries = 0;
+        $user->user_last_login_try = 0;
+        $user->update();
+
+        $token = $user->getToken();
+
+
+        //start session
+        $session = new Sessions();
+        $session->start($user, $token['sessionId'], $token['token'], $userIp, 1);
+
+        return [
+            'token' => $token['token'],
+            'time' => date('Y-m-d H:i:s'),
+            'expires' => date('Y-m-d H:i:s', time() + $this->config->jwt->payload->exp),
+            'id' => $user->getId(),
+        ];
+    }
+
+    /**
      * Set user into Di by id
      * @param int $usersId
      * @return void
