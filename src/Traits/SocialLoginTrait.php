@@ -10,6 +10,7 @@ use Canvas\Models\Sources;
 use Canvas\Models\Users;
 use Canvas\Models\UserLinkedSources;
 use Phalcon\Security\Random;
+use Canvas\Traits\AuthTrait;
 
 /**
  * Trait SocialLoginTrait.
@@ -18,13 +19,16 @@ use Phalcon\Security\Random;
  */
 trait SocialLoginTrait
 {
+    use AuthTrait {
+        AuthTrait::loginSocial as loginSocialParent;
+    }
     /**
      * Facebook Login
      * @param Sources $source
      * @param string $accessToken
      * @return Array
      */
-    protected function facebookLogin(Sources $source, string $accessToken): array
+    protected function facebook(Sources $source, string $accessToken): array
     {
 
         /**
@@ -60,7 +64,7 @@ trait SocialLoginTrait
 
         if ($userLinkedSource->getUser()) {
             $facebookAdapter->disconnect();
-            return $this->loginSocial($user);
+            return $this->loginSocialParent($user);
         }
 
         $random = new Random();

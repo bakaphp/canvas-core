@@ -162,7 +162,7 @@ class AuthController extends \Baka\Auth\AuthController
         //Use Social Login Trait to log in with different provices.Depends on Provider name
         
         if ($source->title == 'facebook') {
-            return $this->response($this->facebookLogin($source, $request['access_token']));
+            return $this->response($this->facebook($source, $request['access_token']));
         } elseif ($source->title == 'google') {
             return $this->response($this->googleLogin($source, $request['access_token']));
         }
