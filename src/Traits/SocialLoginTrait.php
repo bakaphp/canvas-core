@@ -30,22 +30,22 @@ trait SocialLoginTrait
         /**
          * Get the Facebook adapter
          */
-        // $facebookAdapter = $this->di->get('socialLogin')->authenticate(ucfirst($source->title));
+        $facebookAdapter = $this->di->get('socialLogin')->authenticate(ucfirst($source->title));
 
-        // /**
-        //  * Set user's Access Token
-        //  */
-        // $facebookAdapter->setAccessToken($accessToken);
+        /**
+         * Set user's Access Token
+         */
+        $facebookAdapter->setAccessToken($accessToken);
 
-        // /**
-        //  * Get user's profile based on set Access Token
-        //  */
-        // $data = $facebookAdapter->getUserProfile();
+        /**
+         * Get user's profile based on set Access Token
+         */
+        $data = $facebookAdapter->getUserProfile();
 
-        // /**
-        //  * Lets Login or Signup the user
-        //  */
-        // $userProfile = current($data);
+        /**
+         * Lets Login or Signup the user
+         */
+        $userProfile = current($data);
 
         /**
         * Lets find if user has a linked source by social network id

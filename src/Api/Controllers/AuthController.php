@@ -152,24 +152,19 @@ class AuthController extends \Baka\Auth\AuthController
      */
     public function loginByAccessToken(): Response
     {
-        $accessToken = $this->request->getPost('access_token', 'string');
-        $providerName =  $this->request->getPost('provider', 'string');
+        $request = $this->request->getPostData();
 
-        $source = Sources::findFirst([
-            'conditions'=>'title = ?0 and is_deleted = 0',
-            'bind'=>[$providerName]
+        $source = Sources::findFirstOrFail([
+            'title = ?0 and is_deleted = 0',
+            'bind'=>[$request['provider']]
         ]);
-
-        if (!$source) {
-            throw new NotFoundHttpException('Source not found');
-        }
 
         //Use Social Login Trait to log in with different provices.Depends on Provider name
         
         if ($source->title == 'facebook') {
-            return $this->response($this->facebookLogin($source, $accessToken));
+            return $this->response($this->facebookLogin($source, $request['access_token']));
         } elseif ($source->title == 'google') {
-            return $this->response($this->googleLogin($source, $accessToken));
+            return $this->response($this->googleLogin($source, $request['access_token']));
         }
     }
 }
