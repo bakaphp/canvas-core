@@ -53,7 +53,7 @@ build:
           - cp storage/ci/.env.example .env
           - cp storage/ci/phinx.php.example phinx.php
           -
-            command: 'pecl channel-update pecl.php.net'
+            command: 'cd ~/ && pecl channel-update pecl.php.net'
           -
             command: 'cd ~/ && rm -rf cphalcon && git clone -b 3.4.x -q --depth=1 https://github.com/phalcon/cphalcon.git && cd cphalcon/build && ./install'
           -
