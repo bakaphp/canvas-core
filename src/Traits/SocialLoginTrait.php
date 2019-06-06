@@ -19,10 +19,10 @@ use Canvas\Traits\AuthTrait;
  */
 trait SocialLoginTrait
 {
-    use AuthTrait {
-        AuthTrait::loginSocial as loginSocialParent;
-        AuthTrait::loginUsers as loginUsersParent;
-    }
+    // use AuthTrait {
+    //     AuthTrait::loginSocial as loginSocialParent;
+    //     AuthTrait::loginUsers as loginUsersParent;
+    // }
     
     /**
      * Facebook Login
