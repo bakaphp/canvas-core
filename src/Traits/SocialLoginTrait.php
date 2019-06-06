@@ -21,6 +21,7 @@ trait SocialLoginTrait
 {
     use AuthTrait {
         AuthTrait::loginSocial as loginSocialParent;
+        AuthTrait::loginUsers as loginUsersParent;
     }
     /**
      * Facebook Login
@@ -104,6 +105,6 @@ trait SocialLoginTrait
         }
 
         $facebookAdapter->disconnect();
-        return $this->loginUsers($newUser->email, $password);
+        return $this->loginUsersParent($newUser->email, $password);
     }
 }
