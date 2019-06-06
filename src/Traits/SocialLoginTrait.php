@@ -66,7 +66,7 @@ trait SocialLoginTrait
 
         if ($userLinkedSource->getUser()) {
             $facebookAdapter->disconnect();
-            return $this->loginSocialParent($user);
+            return $this->loginSocial($user);
         }
 
         $random = new Random();
@@ -106,6 +106,6 @@ trait SocialLoginTrait
         }
 
         $facebookAdapter->disconnect();
-        return $this->loginUsersParent($newUser->email, $password);
+        return $this->loginUsers($newUser->email, $password);
     }
 }
