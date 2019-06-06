@@ -141,19 +141,25 @@ class CompaniesController extends BaseController
     protected function processOutput($results)
     {
         /**
-         * Format branches as an array of branches even if there is only one branch per company
+         * Check if the branches exists on results
          */
-        foreach ($results as $key => $value) {
-            if (is_object($value['branch'])) {
-                $results[$key]['branch'] = array($value['branch']);
+        if (array_key_exists('branch', $results)) {
+            
+            /**
+            * Format branches as an array of branches even if there is only one branch per company
+            */
+            foreach ($results as $key => $value) {
+                if (is_object($value['branch'])) {
+                    $results[$key]['branch'] = array($value['branch']);
+                }
             }
-        }
 
-        /**
-         * Format branches as an array of branches even if there is only one branch in a unique company
-         */
-        if (is_object(current($results)['branch'])) {
-            $results[0]['branch'] = array(current($results)['branch']);
+            /**
+             * Format branches as an array of branches even if there is only one branch in a unique company
+             */
+            if (is_object(current($results)['branch'])) {
+                $results[0]['branch'] = array(current($results)['branch']);
+            }
         }
 
         return $results;
