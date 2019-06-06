@@ -19,10 +19,22 @@ use Canvas\Traits\AuthTrait;
  */
 trait SocialLoginTrait
 {
-    use AuthTrait {
-        AuthTrait::loginSocial as loginSocialParent;
-        AuthTrait::loginUsers as loginUsersParent;
-    }
+    /**
+     * Login user via Social Login Feature
+     * @param Users $user
+     * @return array
+     */
+    abstract public function loginSocial(Users $user): array;
+
+    /**
+     * Login user using stablished user credentials
+     * @param string $email
+     * @param string $password
+     * @return array
+     */
+    abstract public function loginUsers(string $email, string $password): array;
+
+
     
     /**
      * Facebook Login
@@ -64,9 +76,9 @@ trait SocialLoginTrait
                 ]
         ]);
 
-        if ($userLinkedSource->getUser()) {
+        if ($user = $userLinkedSource->getUser()) {
             $facebookAdapter->disconnect();
-            return $this->loginSocialParent($user);
+            return $this->loginSocial($user);
         }
 
         $random = new Random();
@@ -106,6 +118,6 @@ trait SocialLoginTrait
         }
 
         $facebookAdapter->disconnect();
-        return $this->loginUsersParent($newUser->email, $password);
+        return $this->loginUsers($newUser->email, $password);
     }
 }
