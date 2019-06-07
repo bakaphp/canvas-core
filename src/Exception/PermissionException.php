@@ -6,7 +6,7 @@ namespace Canvas\Exception;
 
 use Canvas\Http\Response;
 
-class PermissionException extends Exception
+class PermissionException extends HttpException
 {
     protected $httpCode = Response::UNAUTHORIZED;
     protected $httpMessage = 'Unauthorized';
