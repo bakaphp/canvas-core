@@ -184,20 +184,16 @@ class SystemModules extends AbstractModel
      */
     public static function getBySlug(string $slug): SystemModules
     {
-        $module = SystemModules::findFirst([
+        $module = SystemModules::findFirstOrFail([
             'conditions' => 'slug = ?0 and apps_id = ?1',
             'bind' => [$slug, Di::getDefault()->getApp()->getId()]
         ]);
-
-        if (!is_object($module)) {
-            throw new ModelException('System Module not found');
-        }
 
         return $module;
     }
 
     /**
-     * Given tell them if this system module is index in elastic
+     * Given tell them if this system module is index in elastic.
      *
      * @return bool
      */

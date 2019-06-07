@@ -43,7 +43,7 @@ class ListSchemaMapper extends CustomMapper
         }
 
         /**
-         * get the schema
+         * get the schema.
          * @todo in PHP 7.3 change to use exceptions
          */
         $listSchema->tableFields = !empty($systeModel->browse_fields) ? json_decode($systeModel->browse_fields) : null;
