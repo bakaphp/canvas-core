@@ -49,8 +49,8 @@ class Api extends AbstractBootstrap
         $identifier = $request->getServerAddress();
         $config = $this->container->getConfig();
 
-        $httpCode = (method_exists($e, 'getHttpCode')) ? $e->getHttpCode() : 400;
-        $httpMessage = (method_exists($e, 'getHttpMessage')) ? $e->getHttpMessage() : 'Bad Request';
+        $httpCode = (method_exists($e, 'getHttpCode')) ? $e->getHttpCode() : 404;
+        $httpMessage = (method_exists($e, 'getHttpMessage')) ? $e->getHttpMessage() : 'Not Found';
         $data = (method_exists($e, 'getData')) ? $e->getData() : [];
 
         $response->setHeader('Access-Control-Allow-Origin', '*'); //@todo check why this fails on nginx
