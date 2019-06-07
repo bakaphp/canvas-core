@@ -19,9 +19,15 @@ class ConfigProvider implements ServiceProviderInterface
         $container->setShared(
             'config',
             function () {
-                $data = require appPath('library/Core/config.php');
+                $data = require appPath('src/Core/config.php');
 
                 return new Config($data);
+
+                if (!defined('API_TESTS')) {
+                    $data = require appPath('library/Core/config.php');
+
+                    return new Config($data);
+                }
             }
         );
     }
