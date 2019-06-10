@@ -1,8 +1,8 @@
 <?php
 
-namespace Gewaer\Tests\unit\library\Providers;
+namespace Canvas\Tests\unit\library\Providers;
 
-use Gewaer\Providers\ModelsMetadataProvider;
+use Canvas\Providers\ModelsMetadataProvider;
 use Phalcon\Di\FactoryDefault;
 use Phalcon\Mvc\Model\MetaData\Libmemcached;
 use UnitTester;

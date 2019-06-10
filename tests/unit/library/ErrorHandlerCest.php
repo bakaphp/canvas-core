@@ -1,6 +1,6 @@
 <?php
 
-namespace Gewaer\Tests\unit\library;
+namespace Canvas\Tests\unit\library;
 
 use Canvas\ErrorHandler;
 use Canvas\Logger;

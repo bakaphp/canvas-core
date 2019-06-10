@@ -1,6 +1,6 @@
 <?php
 
-namespace Gewaer\Tests\unit\library\Constants;
+namespace Canvas\Tests\unit\library\Constants;
 
 use CliTester;
 use Canvas\Constants\Flags;

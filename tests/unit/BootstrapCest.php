@@ -1,6 +1,6 @@
 <?php
 
-namespace Gewaer\Tests\unit;
+namespace Canvas\Tests\unit;
 
 use CliTester;
 use Codeception\Util\HttpCode;

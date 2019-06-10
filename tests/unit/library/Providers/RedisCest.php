@@ -1,6 +1,6 @@
 <?php
 
-namespace Gewaer\Tests\unit\library\Providers;
+namespace Canvas\Tests\unit\library\Providers;
 
 use Canvas\Providers\RedisProvider;
 use Canvas\Providers\ConfigProvider;

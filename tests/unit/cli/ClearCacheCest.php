@@ -1,6 +1,6 @@
 <?php
 
-namespace Gewaer\Tests\unit\cli;
+namespace Canvas\Tests\unit\cli;
 
 use FilesystemIterator;
 use Canvas\Cli\Tasks\ClearcacheTask;
@@ -38,7 +38,7 @@ class ClearCacheCest
 
         // $iterator = new FilesystemIterator($path, FilesystemIterator::SKIP_DOTS);
         // $I->assertEquals((int)$count + 4, (int)iterator_count($iterator));
-        $I->assertEquals(4,4); // Lets just pass it for now. We need to check memcached error
+        $I->assertEquals(4, 4); // Lets just pass it for now. We need to check memcached error
 
         // ob_start();
         // $task->mainAction();

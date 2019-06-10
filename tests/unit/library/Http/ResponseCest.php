@@ -1,6 +1,6 @@
 <?php
 
-namespace Gewaer\Tests\unit\library\Http;
+namespace Canvas\Tests\unit\library\Http;
 
 use Canvas\Http\Response;
 use UnitTester;

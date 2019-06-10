@@ -1,6 +1,6 @@
 <?php
 
-namespace Gewaer\Tests\unit\library\Providers;
+namespace Canvas\Tests\unit\library\Providers;
 
 use Monolog\Logger;
 use Canvas\Providers\ConfigProvider;

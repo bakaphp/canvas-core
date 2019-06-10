@@ -1,6 +1,6 @@
 <?php
 
-namespace Gewaer\Tests\unit\library\Providers;
+namespace Canvas\Tests\unit\library\Providers;
 
 use Canvas\Providers\CacheDataProvider;
 use Phalcon\Cache\Backend\Libmemcached;

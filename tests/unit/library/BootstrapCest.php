@@ -1,6 +1,6 @@
 <?php
 
-namespace Gewaer\Tests\unit\library;
+namespace Canvas\Tests\unit\library;
 
 use Canvas\Bootstrap\Api;
 use Phalcon\Di\FactoryDefault;
