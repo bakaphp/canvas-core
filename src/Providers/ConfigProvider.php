@@ -22,12 +22,6 @@ class ConfigProvider implements ServiceProviderInterface
                 $data = !defined('API_TESTS') ? require appPath('library/Core/config.php') : require appPath('src/Core/config.php');
 
                 return new Config($data);
-
-                if (!defined('API_TESTS')) {
-                    $data = require appPath('library/Core/config.php');
-
-                    return new Config($data);
-                }
             }
         );
     }
