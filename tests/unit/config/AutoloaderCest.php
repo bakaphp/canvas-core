@@ -1,6 +1,6 @@
 <?php
 
-namespace Gewaer\Tests\unit\config;
+namespace Canvas\Tests\unit\config;
 
 use Canvas\Http\Response;
 use UnitTester;
@@ -11,7 +11,7 @@ class AutoloaderCest
 {
     public function checkDotenvVariables(UnitTester $I)
     {
-        require appPath('src/Core/autoload.php');
+        require appPath('tests/autoload.php');
 
         $I->assertNotEquals(false, getenv('APP_DEBUG'));
         $I->assertNotEquals(false, getenv('APP_ENV'));
@@ -38,7 +38,7 @@ class AutoloaderCest
 
     public function checkAutoloader(UnitTester $I)
     {
-        require appPath('src/Core/autoload.php');
+        require appPath('tests/autoload.php');
 
         $class = new Response();
         $I->assertTrue($class instanceof Response);

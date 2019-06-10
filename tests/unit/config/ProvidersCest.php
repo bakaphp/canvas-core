@@ -1,6 +1,6 @@
 <?php
 
-namespace Gewaer\Tests\unit\config;
+namespace Canvas\Tests\unit\config;
 
 use Canvas\Providers\CliDispatcherProvider;
 use Canvas\Providers\ConfigProvider;
@@ -17,7 +17,7 @@ class ProvidersCest
 {
     public function checkApiProviders(UnitTester $I)
     {
-        $providers = require appPath('src/Core/providers.php');
+        $providers = require appPath('tests/providers.php');
 
         $I->assertEquals(ConfigProvider::class, $providers[0]);
         $I->assertEquals(LoggerProvider::class, $providers[1]);
@@ -30,7 +30,7 @@ class ProvidersCest
 
     public function checkCliProviders(UnitTester $I)
     {
-        $providers = require appPath('src/Core/providers.php');
+        $providers = require appPath('tests/providers.php');
 
         $I->assertEquals(ConfigProvider::class, $providers[0]);
         $I->assertEquals(LoggerProvider::class, $providers[1]);

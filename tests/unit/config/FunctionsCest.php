@@ -1,6 +1,6 @@
 <?php
 
-namespace Gewaer\Tests\unit\config;
+namespace Canvas\Tests\unit\config;
 
 use UnitTester;
 use function Canvas\Core\appPath;

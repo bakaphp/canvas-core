@@ -5,15 +5,14 @@ use Phalcon\Loader;
 use function Canvas\Core\appPath;
 
 // Register the auto loader
-//require __DIR__ . '/functions.php';
-require  'functions.php';
+require  __DIR__ . '/../src/Core/functions.php';
 // require dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . '/vendor/canvas/core/src/Core/functions.php';
 
 $loader = new Loader();
 $namespaces = [
-    'Gewaer\Cli\Tasks' => appPath('/cli/tasks'),
+    'Canvas\Cli\Tasks' => appPath('/cli/tasks'),
     'Niden\Tests' => appPath('/tests'),
-    'Gewaer\Tests' => appPath('/tests'),
+    'Canvas\Tests' => appPath('/tests')
 
 ];
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Gewaer\Tests\unit\config;
+namespace Canvas\Tests\unit\config;
 
 use UnitTester;
 use function is_array;
@@ -10,7 +10,7 @@ class ConfigCest
 {
     public function checkConfig(UnitTester $I)
     {
-        $config = require appPath('src/Core/config.php');
+        $config = require appPath('tests/config.php');
 
         $I->assertTrue(is_array($config));
         $I->assertTrue(isset($config['app']));

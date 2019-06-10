@@ -19,7 +19,11 @@ class ConfigProvider implements ServiceProviderInterface
         $container->setShared(
             'config',
             function () {
-                $data = !defined('API_TESTS') ? require appPath('library/Core/config.php') : require appPath('src/Core/config.php');
+
+                /**
+                 * @todo Find a better way to handle unit test file include
+                 */
+                $data = !defined('API_TESTS') ? require appPath('library/Core/config.php') : require appPath('tests/config.php');
 
                 return new Config($data);
             }
