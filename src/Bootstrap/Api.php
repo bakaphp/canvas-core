@@ -82,7 +82,7 @@ class Api extends AbstractBootstrap
         //set the default DI
         $this->container = new FactoryDefault();
         //set all the services
-        $this->providers = require appPath('/src/Core/providers.php');
+        $this->providers = !defined('API_TESTS') ? require appPath('api/config/providers.php') : require appPath('/src/Core/providers.php');
 
         //run my parents setup
         parent::setup();
