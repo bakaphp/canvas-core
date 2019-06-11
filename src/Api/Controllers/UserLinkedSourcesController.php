@@ -14,7 +14,7 @@ use Canvas\Exception\NotFoundHttpException;
 use Canvas\Exception\UnprocessableEntityHttpException;
 
 /**
- * Class LanguagesController
+ * Class LanguagesController.
  *
  * @package Canvas\Api\Controllers
  * @property UserData $userData
@@ -37,7 +37,7 @@ class UserLinkedSourcesController extends BaseController
     protected $updateFields = ['users_id', 'source_id', 'source_users_id', 'source_users_id_text', 'source_username'];
 
     /**
-     * set objects
+     * set objects.
      *
      * @return void
      */
@@ -52,7 +52,7 @@ class UserLinkedSourcesController extends BaseController
     }
 
     /**
-     * Associate a Device with the corrent loggedin user
+     * Associate a Device with the corrent loggedin user.
      *
      * @url /users/{id}/device
      * @method POST
@@ -80,8 +80,8 @@ class UserLinkedSourcesController extends BaseController
         //get the app source
         if ($source = Sources::getByTitle($app)) {
             $userSource = UserLinkedSources::findFirst([
-                'conditions' => 'users_id = ?0 and source_users_id_text = ?1',
-                'bind' => [$this->userData->getId(), $deviceId]
+                'conditions' => 'users_id = ?0 and source_users_id_text = ?1 and source_id = ?2',
+                'bind' => [$this->userData->getId(), $deviceId, $source->getId()]
             ]);
 
             if (!is_object($userSource)) {
@@ -113,17 +113,17 @@ class UserLinkedSourcesController extends BaseController
     }
 
     /**
-     * Detach user's devices
+     * Detach user's devices.
      * @param integer $deviceId User's devices id
      * @return Response
      */
     public function detachDevice(int $id, int $deviceId): Response
     {
-       //$sourceId = $this->request->getPost('source_id', 'int');
+        //$sourceId = $this->request->getPost('source_id', 'int');
         $userSource = UserLinkedSources::findFirst([
-                'conditions' => 'users_id = ?0  and source_users_id_text = ?1    and is_deleted = 0',
-                'bind' => [$this->userData->getId(), $deviceId]
-            ]);
+            'conditions' => 'users_id = ?0  and source_users_id_text = ?1    and is_deleted = 0',
+            'bind' => [$this->userData->getId(), $deviceId]
+        ]);
 
         //Check if User Linked Sources exists by users_id and source_users_id_text
         if (!is_object($userSource)) {
@@ -133,8 +133,8 @@ class UserLinkedSourcesController extends BaseController
         $userSource->softDelete();
 
         return $this->response([
-                'msg' => 'User Device detached',
-                'user' => $this->userData
-            ]);
+            'msg' => 'User Device detached',
+            'user' => $this->userData
+        ]);
     }
 }

@@ -37,11 +37,11 @@ class ListSchemaMapper extends CustomMapper
         ];
 
         //if the system model uses elastic then we can show custom filters
-        if ($systeModel->useElastic()) {
-            $this->elastic = DI::getDefault()->get('elastic');
-            $listSchema->customFilterFields = $this->getSchema($systeModel->slug);
-        }
-
+        /*         if ($systeModel->useElastic()) {
+                    $this->elastic = DI::getDefault()->get('elastic');
+                    $listSchema->customFilterFields = $this->getSchema($systeModel->slug);
+                }
+         */
         /**
          * get the schema.
          * @todo in PHP 7.3 change to use exceptions
