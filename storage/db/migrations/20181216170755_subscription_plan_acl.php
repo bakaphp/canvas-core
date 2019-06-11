@@ -58,7 +58,7 @@ class SubscriptionPlanAcl extends AbstractMigration
             ->addColumn('menu_order', 'integer', ['null' => true, 'limit' => MysqlAdapter::INT_REGULAR, 'precision' => 10, 'after' => 'parents_id'])
             ->addColumn('show', 'integer', ['null' => true, 'default' => '1', 'limit' => MysqlAdapter::INT_REGULAR, 'precision' => 10, 'after' => 'menu_order'])
             ->addColumn('use_elastic', 'boolean', ['null' => true, 'default' => '0', 'limit' => MysqlAdapter::INT_TINY, 'precision' => 3, 'after' => 'show'])
-            ->addColumn('browse_fields', 'json', ['null' => true, 'default' => '0', 'limit' => MysqlAdapter::TEXT_REGULAR, 'precision' => 3, 'after' => 'use_elastic'])
+            ->addColumn('browse_fields', 'text', ['null' => true, 'default' => '0', 'limit' => MysqlAdapter::TEXT_LONG, 'precision' => 3, 'after' => 'use_elastic'])
             ->addColumn('created_at', 'datetime', ['null' => false, 'after' => 'browse_fields'])
             ->addColumn('updated_at', 'datetime', ['null' => true, 'after' => 'created_at'])
             ->addColumn('is_deleted', 'boolean', ['null' => true, 'default' => '0', 'limit' => MysqlAdapter::INT_TINY, 'precision' => 3, 'after' => 'updated_at'])
