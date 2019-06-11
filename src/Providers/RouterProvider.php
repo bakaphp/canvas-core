@@ -89,11 +89,20 @@ class RouterProvider implements ServiceProviderInterface
      */
     protected function getRoutes(): array
     {
-        $path = appPath('api/routes');
+        $path = appPath('/routes');
 
         $routes = [
-            'api' => $path . '/api.php',
-        ];
+                'api' => $path . '/api.php',
+            ];
+
+
+        if (!defined('API_TESTS')) {
+            $path = appPath('api/routes');
+
+            $routes = [
+                'api' => $path . '/api.php',
+            ];
+        }
 
         return $routes;
     }
