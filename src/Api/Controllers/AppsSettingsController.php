@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Canvas\Api\Controllers;
 
+use Baka\Http\Api\BaseController as BakaBaseController;
 use Canvas\Models\Apps;
 use Canvas\Dto\AppsSettings;
 use Phalcon\Http\Response;
@@ -14,7 +15,7 @@ use Phalcon\Http\Response;
  * @package Canvas\Api\Controllers
  *
  */
-class AppsSettingsController extends BaseController
+class AppsSettingsController extends BakaBaseController
 {
     /*
      * fields we accept to create
@@ -38,50 +39,6 @@ class AppsSettingsController extends BaseController
     public function onConstruct()
     {
         $this->model = new Apps();
-    }
-
-    /**
-     * Given the model list the records based on the  filter.
-     *
-     * @return Response
-     */
-    public function index(): Response
-    {
-        return $this->response([]);
-    }
-
-    /**
-     * Create new record.
-     *
-     * @return Response
-     */
-    public function create(): Response
-    {
-        return $this->response([]);
-    }
-
-    /**
-     * Get the record by its primary key.
-     *
-     * @param mixed $id
-     *
-     * @throws Exception
-     * @return Response
-     */
-    public function getById($id): Response
-    {
-        return $this->response([]);
-    }
-
-    /**
-     * Delete a Record.
-     *
-     * @throws Exception
-     * @return Response
-     */
-    public function delete($id): Response
-    {
-        return $this->response([]);
     }
 
     /**
@@ -125,9 +82,6 @@ class AppsSettingsController extends BaseController
             'bind' => [$key],
         ]);
 
-        //get the results and append its relationships
-        $result = $this->appendRelationshipsToResult($this->request, $record);
-
-        return $this->response($this->processOutput($result));
+        return $this->response($this->processOutput($record));
     }
 }
