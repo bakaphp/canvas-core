@@ -30,6 +30,7 @@ class Api extends AbstractBootstrap
     public function run()
     {
         try {
+    //        dd($this->application);
             return $this->application->handle();
         } catch (Throwable $e) {
             $this->handleException($e)->send();

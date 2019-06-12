@@ -17,6 +17,7 @@
         "baka/support": "^1.0",
         "baka/blameable": "^0.1",
         "baka/cashier": "dev-master",
+        "baka/router": "dev-master",
         "bakaphp/phalcon-throttler": "^0.1",
         "dariuszp/cli-progress-bar": "^1.0",
         "dmkit/phalcon-jwt-auth": "dev-master",
