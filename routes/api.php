@@ -228,4 +228,11 @@ $router->post('/users/{id}/request-email-change', [
     'sendEmailChange',
 ]);
 
+//Apps Settings
+
+$router->get('/apps/{key}/settings', [
+    'Canvas\Api\Controllers\AppsSettingsController',
+    'getByKey',
+]);
+
 $router->mount();
