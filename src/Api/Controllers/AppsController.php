@@ -77,7 +77,7 @@ class AppsController extends BaseController
     {
         //find the info
         $record = $this->model->findFirst([
-            '(id = ?0 OR key = ?0) AND is_deleted = 0',
+            'id = ?0 AND is_deleted = 0',
             'bind' => [$id],
         ]);
 

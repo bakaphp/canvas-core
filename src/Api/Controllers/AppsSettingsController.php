@@ -41,6 +41,50 @@ class AppsSettingsController extends BaseController
     }
 
     /**
+     * Given the model list the records based on the  filter.
+     *
+     * @return Response
+     */
+    public function index(): Response
+    {
+        return $this->response([]);
+    }
+
+    /**
+     * Create new record.
+     *
+     * @return Response
+     */
+    public function create(): Response
+    {
+        return $this->response([]);
+    }
+
+    /**
+     * Get the record by its primary key.
+     *
+     * @param mixed $id
+     *
+     * @throws Exception
+     * @return Response
+     */
+    public function getById($id): Response
+    {
+        return $this->response([]);
+    }
+
+    /**
+     * Delete a Record.
+     *
+     * @throws Exception
+     * @return Response
+     */
+    public function delete($id): Response
+    {
+        return $this->response([]);
+    }
+
+    /**
      * Format output.
      *
      * @param [type] $results
