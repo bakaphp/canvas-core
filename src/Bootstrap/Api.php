@@ -87,7 +87,7 @@ class Api extends AbstractBootstrap
         /**
         * @todo Find a better way to handle unit test file include
         */
-        $this->providers = !defined('API_TESTS') ? require appPath('api/config/providers.php') : require appPath('/tests/providers.php');
+        $this->providers =  require appPath('api/config/providers.php');
 
         //run my parents setup
         parent::setup();

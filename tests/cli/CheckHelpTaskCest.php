@@ -1,6 +1,6 @@
 <?php
 
-namespace Canvas\Tests\cli;
+namespace Gewaer\Tests\cli;
 
 use CliTester;
 

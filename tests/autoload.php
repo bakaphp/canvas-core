@@ -13,7 +13,6 @@ $namespaces = [
     'Canvas\Cli\Tasks' => appPath('/cli/tasks'),
     'Niden\Tests' => appPath('/tests'),
     'Canvas\Tests' => appPath('/tests')
-
 ];
 
 $loader->registerNamespaces($namespaces);
