@@ -14,7 +14,6 @@ $publicRoutes = [
 ];
 
 $privateRoutes = [
-    Route::add('/users'),
     Route::add('/companies'),
     Route::add('/languages'),
     Route::add('/webhooks'),
@@ -36,7 +35,13 @@ $privateRoutes = [
     Route::add('/user-webhooks')->controller('UserWebhooksController'),
     Route::add('/devices')->controller('UserLinkedSourcesController'),
     Route::add('/custom-filters')->controller('CustomFiltersController'),
+    Route::add('/email-templates-variables')->controller('EmailTemplatesVariablesController'),
     
+    Route::get('/users')->controller('UsersController')->action('index'),
+    Route::get('/users/{id}')->controller('UsersController')->action('getById'),
+    Route::put('/users/{id}')->controller('UsersController')->action('edit'),
+    Route::delete('/users/{id}')->controller('UsersController')->action('delete'),
+
     Route::get('/timezones')->controller('TimeZonesController'),
     Route::post('/users/{id}/devices')->controller('UserLinkedSourcesController')->action('devices'),
     Route::delete('/users/{id}/devices/{deviceId}')->controller('UserLinkedSourcesController')->action('detachDevice'),
