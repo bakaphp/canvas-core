@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Canvas\Api\Controllers;
 
+use Baka\Http\Api\BaseController as BakaBaseController;
 use Canvas\Models\Apps;
 use Canvas\Dto\AppsSettings;
 use Phalcon\Http\Response;
@@ -14,7 +15,7 @@ use Phalcon\Http\Response;
  * @package Canvas\Api\Controllers
  *
  */
-class AppsController extends BaseController
+class AppsSettingsController extends BakaBaseController
 {
     /*
      * fields we accept to create
@@ -38,10 +39,6 @@ class AppsController extends BaseController
     public function onConstruct()
     {
         $this->model = new Apps();
-        $this->additionalSearchFields = [
-            ['is_deleted', ':', '0'],
-            ['id', ':', implode('|', $this->userData->getAssociatedApps())],
-        ];
     }
 
     /**
@@ -55,7 +52,11 @@ class AppsController extends BaseController
         //DTOAppsSettings
         $this->dtoConfig->registerMapping(Apps::class, AppsSettings::class)
           ->forMember('settings', function (Apps $app) {
-              return $app->settingsApp->toArray();
+              $settings = [];
+              foreach ($app->settingsApp->toArray() as $setting) {
+                  $settings[$setting['name']] = $setting['value'];
+              }
+              return $settings;
           });
 
         return is_iterable($results) ?
@@ -73,17 +74,14 @@ class AppsController extends BaseController
      *
      * @return \Phalcon\Http\Response
      */
-    public function getById($id = null): Response
+    public function getByKey($key = null): Response
     {
         //find the info
         $record = $this->model->findFirst([
-            'id = ?0 AND is_deleted = 0',
-            'bind' => [$id],
+            'key = ?0 AND is_deleted = 0',
+            'bind' => [$key],
         ]);
 
-        //get the results and append its relationships
-        $result = $this->appendRelationshipsToResult($this->request, $record);
-
-        return $this->response($this->processOutput($result));
+        return $this->response($this->processOutput($record));
     }
 }
