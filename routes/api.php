@@ -10,6 +10,7 @@ $publicRoutes = [
     Route::post('/auth/forgot')->controller('AuthController')->action('recover'),
     Route::post('/auth/reset/{key}')->controller('AuthController')->action('reset'),
     Route::get('/users-invite/validate/{hash}')->controller('UsersInviteController')->action('getByHash'),
+    Route::post('/users-invite/{hash}')->controller('UsersInviteController')->action('processUserInvite'),
     Route::post('/webhook/payments')->controller('PaymentsController')->action('handleWebhook'),
 ];
 
