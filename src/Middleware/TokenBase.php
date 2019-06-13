@@ -30,8 +30,6 @@ abstract class TokenBase implements MiddlewareInterface
      */
     protected function isValidCheck(RequestInterface $request, Micro $app): bool
     {
-        $ignoreJwt = $request->ignoreJwt($app['router']->getMatchedRoute());
-
         $calledRoute = $app['router']->getMatchedRoute()->getCompiledPattern();
 
         if (isset($app['userData']) && !Subscription::getPaymentStatus($app->getDI()->getUserData())) {
@@ -44,10 +42,6 @@ abstract class TokenBase implements MiddlewareInterface
             }
         }
 
-        if (!$ignoreJwt && $request->isEmptyBearerToken()) {
-            throw new UnauthorizedHttpException('Missing Token');
-        }
-
-        return !$ignoreJwt;
+        return true;
     }
 }

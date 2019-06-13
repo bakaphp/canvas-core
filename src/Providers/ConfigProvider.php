@@ -23,7 +23,7 @@ class ConfigProvider implements ServiceProviderInterface
                 /**
                  * @todo Find a better way to handle unit test file include
                  */
-                $data = !defined('API_TESTS') ? require appPath('library/Core/config.php') : require appPath('tests/config.php');
+                $data = require appPath('src/Core/config.php');
 
                 return new Config($data);
             }

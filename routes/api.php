@@ -1,238 +1,76 @@
 <?php
-use Baka\Http\Router\Collection;
 
-/**
- * @todo how can we better define the version across the diff apps?
- * Here is where you can register all of the routes for api.
- */
-$router = new Collection($application);
-$router->setPrefix('/v1');
+use Baka\Router\RouteGroup;
+use Baka\Router\Route;
 
-$router->get('/timezones', [
-    'Canvas\Api\Controllers\TimeZonesController',
-    'index',
-]);
-
-/**
- * Authentification Calls.
- * @var [type]
- */
-$router->post('/auth', [
-    'Canvas\Api\Controllers\AuthController',
-    'login',
-    'options' => [
-        'jwt' => false,
-    ]
-]);
-
-//asociate mobile devices
-$router->post('/users/{id}/devices', [
-    'Canvas\Api\Controllers\UserLinkedSourcesController',
-    'devices',
-]);
-
-//detach mobile devices
-$router->delete('/users/{id}/devices/{deviceId}', [
-    'Canvas\Api\Controllers\UserLinkedSourcesController',
-    'detachDevice',
-]);
-
-$router->post('/users/social', [
-    'Canvas\Api\Controllers\AuthController',
-    'loginByAccessToken',
-]);
-
-/**
- * Need to understand if using this can be a performance disadvantage in the future.
- */
-$defaultCrudRoutes = [
-    'users',
-    'companies',
-    'CompaniesBranches' => 'companies-branches',
-    'languages',
-    'AppsPlans' => 'apps-plans',
-    'RolesAccesList' => 'roles-acceslist',
-    'PermissionsResources' => 'permissions-resources',
-    'PermissionsResourcesAccess' => 'permissions-resources-access',
-    'UsersInvite' => 'users-invite',
-    'EmailTemplates' => 'email-templates',
-    'CompaniesCustomFields' => 'companies-custom-fields',
-    'CustomFieldsModules' => 'custom-fields-modules',
-    'CustomFields' => 'custom-fields',
-    'EmailTemplatesVariables' => 'templates-variables',
-    'webhooks',
-    'filesystem',
-    'UserWebhooks' => 'user-webhooks',
-    'roles',
-    'locales',
-    'currencies',
-    'UserLinkedSources' => 'devices',
-    'PaymentFrequencies' => 'payment-frequencies',
-    'SystemModules' => 'system-modules',
-    'CustomFilters' => 'custom-filters',
-    'apps'
+$publicRoutes = [
+    Route::get('/')->controller('IndexController'),
+    Route::post('/auth')->controller('AuthController')->action('login'),
+    Route::post('/users')->controller('AuthController')->action('signup'),
+    Route::post('/auth/forgot')->controller('AuthController')->action('recover'),
+    Route::post('/auth/reset/{key}')->controller('AuthController')->action('reset'),
+    Route::get('/users-invite/validate/{hash}')->controller('UsersInviteController')->action('getByHash'),
+    Route::post('/users-invite/{hash}')->controller('UsersInviteController')->action('processUserInvite'),
+    Route::post('/webhook/payments')->controller('PaymentsController')->action('handleWebhook'),
 ];
 
-foreach ($defaultCrudRoutes as $key => $route) {
-    //set the controller name
-    $name = is_int($key) ? $route : $key;
-    $controllerName = ucfirst($name) . 'Controller';
+$privateRoutes = [
+    Route::add('/companies'),
+    Route::add('/languages'),
+    Route::add('/webhooks'),
+    Route::add('/filesystem'),
+    Route::add('/roles'),
+    Route::add('/locales'),
+    Route::add('/currencies'),
+    Route::add('/apps'),
+    Route::add('/companies-branches')->controller('CompaniesBranchesController'),
+    Route::add('/apps-plans')->controller('AppsPlansController'),
+    Route::add('/roles-acceslist')->controller('RolesAccesListController'),
+    Route::add('/permissions-resources')->controller('PermissionsResourcesController'),
+    Route::add('/permissions-resources-accesss')->controller('PermissionsResourcesAccessController'),
+    Route::add('/users-invite')->controller('UsersInviteController'),
+    Route::add('/email-templates')->controller('EmailTemplatesController'),
+    Route::add('/companies-custom-fields')->controller('CompaniesCustomFieldsController'),
+    Route::add('/custom-fields-modules')->controller('CustomFieldsModulesController'),
+    Route::add('/custom-fields')->controller('CustomFieldsController'),
+    Route::add('/user-webhooks')->controller('UserWebhooksController'),
+    Route::add('/devices')->controller('UserLinkedSourcesController'),
+    Route::add('/custom-filters')->controller('CustomFiltersController'),
+    Route::add('/email-templates-variables')->controller('EmailTemplatesVariablesController'),
+    
+    Route::get('/users')->controller('UsersController')->action('index'),
+    Route::get('/users/{id}')->controller('UsersController')->action('getById'),
+    Route::put('/users/{id}')->controller('UsersController')->action('edit'),
+    Route::delete('/users/{id}')->controller('UsersController')->action('delete'),
 
-    $router->get('/' . $route, [
-        'Canvas\Api\Controllers\\' . $controllerName,
-        'index',
-    ]);
+    Route::get('/timezones')->controller('TimeZonesController'),
+    Route::post('/users/{id}/devices')->controller('UserLinkedSourcesController')->action('devices'),
+    Route::delete('/users/{id}/devices/{deviceId}')->controller('UserLinkedSourcesController')->action('detachDevice'),
+    Route::post('/users/social')->controller('AuthController')->action('loginByAccessToken'),
+    Route::delete('/filesystem/{id}/attributes/{name}')->controller('FilesystemController')->action('deleteAttributes'),
+    Route::put('/auth/logout')->controller('AuthController')->action('logout'),
+    Route::post('/users/invite')->controller('UsersInviteController')->action('insertInvite'),
+    Route::post('/roles-acceslist/{id}/copy')->controller('RolesAccesListController')->action('copy'),
+    Route::get('/custom-fields-modules/{id}/fields')->controller('CustomFieldsModulesController')->action('customFieldsByModulesId'),
+    Route::post('/email-templates/{id}/copy')->controller('EmailTemplatesController')->action('copy'),
+    Route::post('/email-templates/test')->controller('EmailTemplatesController')->action('sendTestEmail'),
+    Route::put('/apps-plans/{id}/method')->controller('AppsPlansController')->action('updatePaymentMethod'),
+    Route::get('/schema/{slug}')->controller('SchemaController')->action('getBySlug'),
+    Route::get('/schema/{slug}/description')->controller('SchemaController')->action('getModelDescription'),
+    Route::post('/users/{hash}/change-email')->controller('AuthController')->action('changeUserEmail'),
+    Route::post('/users/{id}/request-email-change')->controller('AuthController')->action('sendEmailChange'),
+];
 
-    $router->post('/' . $route, [
-        'Canvas\Api\Controllers\\' . $controllerName,
-        'create',
-    ]);
+$publicRoutesGroup = RouteGroup::from($publicRoutes)
+                ->defaultNamespace('Canvas\Api\Controllers')
+                ->defaultPrefix('/v1');
 
-    $router->get('/' . $route . '/{id}', [
-        'Canvas\Api\Controllers\\' . $controllerName,
-        'getById',
-    ]);
+$privateRoutesGroup = RouteGroup::from($privateRoutes)
+                ->defaultNamespace('Canvas\Api\Controllers')
+                ->addMiddlewares('auth.jwt@before', 'auth.acl@before')
+                ->defaultPrefix('/v1');
 
-    $router->put('/' . $route . '/{id}', [
-        'Canvas\Api\Controllers\\' . $controllerName,
-        'edit',
-    ]);
-
-    $router->put('/' . $route, [
-        'Canvas\Api\Controllers\\' . $controllerName,
-        'multipleUpdates',
-    ]);
-
-    $router->delete('/' . $route . '/{id}', [
-        'Canvas\Api\Controllers\\' . $controllerName,
-        'delete',
-    ]);
-}
-
-//detach mobile devices
-$router->delete('/filesystem/{id}/attributes/{name}', [
-    'Canvas\Api\Controllers\FilesystemController',
-    'deleteAttributes',
-]);
-
-//handle upload files from uptty
-$router->post('/filesystem-uppy', [
-    'Canvas\Api\Controllers\FilesystemController',
-    'createUppy',
-]);
-
-$router->post('/users', [
-    'Canvas\Api\Controllers\AuthController',
-    'signup',
-    'options' => [
-        'jwt' => false,
-    ]
-]);
-
-$router->put('/auth/logout', [
-    'Canvas\Api\Controllers\AuthController',
-    'logout',
-]);
-
-$router->post('/auth/forgot', [
-    'Canvas\Api\Controllers\AuthController',
-    'recover',
-    'options' => [
-        'jwt' => false,
-    ]
-]);
-
-$router->post('/roles-acceslist/{id}/copy', [
-    'Canvas\Api\Controllers\RolesAccesListController',
-    'copy'
-]);
-
-$router->post('/auth/reset/{key}', [
-    'Canvas\Api\Controllers\AuthController',
-    'reset',
-    'options' => [
-        'jwt' => false,
-    ]
-]);
-
-$router->post('/users/invite', [
-    'Canvas\Api\Controllers\UsersInviteController',
-    'insertInvite'
-]);
-
-$router->post('/users-invite/{hash}', [
-    'Canvas\Api\Controllers\UsersInviteController',
-    'processUserInvite',
-    'options' => [
-        'jwt' => false,
-    ]
-]);
-
-$router->get('/users-invite/validate/{hash}', [
-    'Canvas\Api\Controllers\UsersInviteController',
-    'getByHash',
-    'options' => [
-        'jwt' => false,
-    ]
-]);
-
-//Custom Fields specific routes
-$router->get('/custom-fields-modules/{id}/fields', [
-    'Canvas\Api\Controllers\CustomFieldsModulesController',
-    'customFieldsByModulesId',
-]);
-
-$router->post('/webhook/payments', [
-    'Canvas\Api\Controllers\PaymentsController',
-    'handleWebhook',
-    'options' => [
-        'jwt' => false,
-    ]
-]);
-
-// Email Template Copy
-$router->post('/email-templates/{id}/copy', [
-    'Canvas\Api\Controllers\EmailTemplatesController',
-    'copy',
-]);
-
-$router->post('/email-templates/test', [
-    'Canvas\Api\Controllers\EmailTemplatesController',
-    'sendTestEmail',
-]);
-
-$router->put('/apps-plans/{id}/method', [
-    'Canvas\Api\Controllers\AppsPlansController',
-    'updatePaymentMethod',
-]);
-
-//schema
-$router->get('/schema/{slug}', [
-    'Canvas\Api\Controllers\SchemaController',
-    'getBySlug',
-]);
-
-//schema
-$router->get('/schema/{slug}/description', [
-    'Canvas\Api\Controllers\SchemaController',
-    'getModelDescription',
-]);
-
-$router->post('/users/{hash}/change-email', [
-    'Canvas\Api\Controllers\AuthController',
-    'changeUserEmail',
-]);
-
-$router->post('/users/{id}/request-email-change', [
-    'Canvas\Api\Controllers\AuthController',
-    'sendEmailChange',
-]);
-
-//Apps Settings
-
-$router->get('/apps/{key}/settings', [
-    'Canvas\Api\Controllers\AppsSettingsController',
-    'getByKey',
-]);
-
-$router->mount();
+/**
+ * @todo look for a better way to handle this
+ */
+return array_merge($publicRoutesGroup->toCollections(), $privateRoutesGroup->toCollections());

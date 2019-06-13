@@ -5,81 +5,24 @@ declare(strict_types=1);
 namespace Canvas\Providers;
 
 use function Canvas\Core\appPath;
-use Canvas\Middleware\NotFoundMiddleware;
-use Canvas\Middleware\AuthenticationMiddleware;
-use Canvas\Middleware\TokenValidationMiddleware;
-use Canvas\Middleware\AclMiddleware;
-use Phalcon\Di\ServiceProviderInterface;
-use Phalcon\DiInterface;
-use Phalcon\Events\Manager;
-use Phalcon\Mvc\Micro;
+use Baka\Router\Providers\RouterProvider as BakaRouterProvider;
 
-class RouterProvider implements ServiceProviderInterface
+class RouterProvider extends BakaRouterProvider
 {
     /**
-     * {@inheritdoc}
-     *
-     * @param DiInterface $container
-     */
-    public function register(DiInterface $container)
-    {
-        /** @var Micro $application */
-        $application = $container->getShared('application');
-        /** @var Manager $eventsManager */
-        $eventsManager = $container->getShared('eventsManager');
-
-        $this->attachRoutes($application);
-        $this->attachMiddleware($application, $eventsManager);
-
-        $application->setEventsManager($eventsManager);
-    }
-
-    /**
-     * Attaches the middleware to the application.
-     *
-     * @param Micro   $application
-     * @param Manager $eventsManager
-     */
-    protected function attachMiddleware(Micro $application, Manager $eventsManager)
-    {
-        $middleware = $this->getMiddleware();
-
-        /**
-         * Get the events manager and attach the middleware to it.
-         */
-        foreach ($middleware as $class => $function) {
-            $eventsManager->attach('micro', new $class());
-            $application->{$function}(new $class());
-        }
-    }
-
-    /**
-     * Attaches the routes to the application; lazy loaded.
-     *
-     * @param Micro $application
-     */
-    protected function attachRoutes(Micro $application)
-    {
-        $routes = $this->getRoutes();
-
-        foreach ($routes as $route) {
-            include $route;
-        }
-    }
-
-    /**
-     * Returns the array for the middleware with the action to attach.
+     * @inheritDoc
      *
      * @return array
      */
-    protected function getMiddleware(): array
+    protected function getCollections(): array
     {
-        return [
-            TokenValidationMiddleware::class => 'before',
-            NotFoundMiddleware::class => 'before',
-            AuthenticationMiddleware::class => 'before',
-            AclMiddleware::class => 'before',
-        ];
+        $routerCollections = [];
+
+        foreach ($this->getRoutes() as $routePath) {
+            array_push($routerCollections, ...require($routePath));
+        }
+
+        return $routerCollections;
     }
 
     /**
@@ -89,20 +32,11 @@ class RouterProvider implements ServiceProviderInterface
      */
     protected function getRoutes(): array
     {
-        $path = appPath('/routes');
+        $path = appPath('api/routes');
 
         $routes = [
-                'api' => $path . '/api.php',
-            ];
-
-
-        if (!defined('API_TESTS')) {
-            $path = appPath('api/routes');
-
-            $routes = [
-                'api' => $path . '/api.php',
-            ];
-        }
+            'api' => $path . '/api.php',
+        ];
 
         return $routes;
     }
