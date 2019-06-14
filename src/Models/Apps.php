@@ -95,8 +95,6 @@ class Apps extends \Baka\Database\Apps
      */
     public function initialize()
     {
-        parent::initialize();
-
         $this->setSource('apps');
 
         $this->hasOne(
