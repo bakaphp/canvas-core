@@ -12,6 +12,7 @@ $publicRoutes = [
     Route::get('/users-invite/validate/{hash}')->controller('UsersInviteController')->action('getByHash'),
     Route::post('/users-invite/{hash}')->controller('UsersInviteController')->action('processUserInvite'),
     Route::post('/webhook/payments')->controller('PaymentsController')->action('handleWebhook'),
+    Router::get('/apps/{key}/settings')->controller('AppsSettingsController')->actions('getByKey')
 ];
 
 $privateRoutes = [
@@ -23,6 +24,7 @@ $privateRoutes = [
     Route::add('/locales'),
     Route::add('/currencies'),
     Route::add('/apps'),
+    Route::add('/system-modules'),
     Route::add('/companies-branches')->controller('CompaniesBranchesController'),
     Route::add('/apps-plans')->controller('AppsPlansController'),
     Route::add('/roles-acceslist')->controller('RolesAccesListController'),
@@ -37,6 +39,8 @@ $privateRoutes = [
     Route::add('/devices')->controller('UserLinkedSourcesController'),
     Route::add('/custom-filters')->controller('CustomFiltersController'),
     Route::add('/email-templates-variables')->controller('EmailTemplatesVariablesController'),
+    Route::add('/templates-variables')->controller('EmailTemplatesVariablesController'),
+
     
     Route::get('/users')->controller('UsersController')->action('index'),
     Route::get('/users/{id}')->controller('UsersController')->action('getById'),
