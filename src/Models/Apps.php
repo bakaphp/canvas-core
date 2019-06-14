@@ -6,7 +6,7 @@ namespace Canvas\Models;
 use Canvas\Traits\UsersAssociatedTrait;
 use Baka\Database\Contracts\HashTableTrait;
 
-class Apps extends \Baka\Auth\Models\Apps
+class Apps extends \Baka\Database\Apps
 {
     /**
      *
@@ -95,8 +95,6 @@ class Apps extends \Baka\Auth\Models\Apps
      */
     public function initialize()
     {
-        parent::initialize();
-
         $this->setSource('apps');
 
         $this->hasOne(
