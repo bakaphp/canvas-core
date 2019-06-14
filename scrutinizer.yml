@@ -80,6 +80,7 @@ build:
             coverage:
               file: './tests/_output/coverage.xml'
               format: 'clover'
+          - ./vendor/bin/codecept run --coverage-xml
           - php-scrutinizer-run --enable-security-analysis
 
 filter:
