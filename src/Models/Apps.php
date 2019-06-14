@@ -6,7 +6,7 @@ namespace Canvas\Models;
 use Canvas\Traits\UsersAssociatedTrait;
 use Baka\Database\Contracts\HashTableTrait;
 
-class Apps extends \Baka\Auth\Models\Apps
+class Apps extends \Baka\Database\Apps
 {
     /**
      *
