@@ -65,6 +65,5 @@
     },
     "scripts": {
         "phpcs": "phpcs --standard=PSR2"
-    },
-    "prefer-stable": true
+    }
 }
