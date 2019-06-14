@@ -12,7 +12,7 @@ $publicRoutes = [
     Route::get('/users-invite/validate/{hash}')->controller('UsersInviteController')->action('getByHash'),
     Route::post('/users-invite/{hash}')->controller('UsersInviteController')->action('processUserInvite'),
     Route::post('/webhook/payments')->controller('PaymentsController')->action('handleWebhook'),
-    Router::get('/apps/{key}/settings')->controller('AppsSettingsController')->actions('getByKey')
+    Route::get('/apps/{key}/settings')->controller('AppsSettingsController')->action('getByKey')
 ];
 
 $privateRoutes = [
