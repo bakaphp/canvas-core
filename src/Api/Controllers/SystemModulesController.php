@@ -7,7 +7,7 @@ namespace Canvas\Api\Controllers;
 use Canvas\Models\SystemModules;
 
 /**
- * Class LanguagesController
+ * Class SystemModulesController.
  *
  * @package Canvas\Api\Controllers
  *
@@ -29,7 +29,7 @@ class SystemModulesController extends BaseController
     protected $updateFields = ['show'];
 
     /**
-     * set objects
+     * set objects.
      *
      * @return void
      */

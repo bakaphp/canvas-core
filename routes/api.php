@@ -24,7 +24,7 @@ $privateRoutes = [
     Route::add('/locales'),
     Route::add('/currencies'),
     Route::add('/apps'),
-    Route::add('/system-modules'),
+    Route::add('/system-modules')->controller('SystemModulesController'),
     Route::add('/companies-branches')->controller('CompaniesBranchesController'),
     Route::add('/apps-plans')->controller('AppsPlansController'),
     Route::add('/roles-acceslist')->controller('RolesAccesListController'),
@@ -41,7 +41,6 @@ $privateRoutes = [
     Route::add('/email-templates-variables')->controller('EmailTemplatesVariablesController'),
     Route::add('/templates-variables')->controller('EmailTemplatesVariablesController'),
 
-    
     Route::get('/users')->controller('UsersController')->action('index'),
     Route::get('/users/{id}')->controller('UsersController')->action('getById'),
     Route::put('/users/{id}')->controller('UsersController')->action('edit'),
