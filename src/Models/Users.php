@@ -98,7 +98,7 @@ class Users extends \Baka\Auth\Models\Users
     public $system_modules_id = 2;
 
     /**
-     * User email activation code
+     * User email activation code.
      *
      * @var string
      */
@@ -147,7 +147,7 @@ class Users extends \Baka\Auth\Models\Users
                 'alias' => 'roles',
                 'params' => [
                     'limit' => 1,
-                    'conditions' => 'Canvas\Models\UserRoles.apps_id = ' . $this->di->getConfig()->app->id,
+                    'conditions' => 'Canvas\Models\UserRoles.apps_id = ' . $this->di->getApp()->getId(),
                 ]
             ]
         );
@@ -510,9 +510,9 @@ class Users extends \Baka\Auth\Models\Users
             return $company['companies_id'];
         }, $this->getCompanies(['columns' => 'companies_id'])->toArray());
     }
-    
-    /** 
-     * Get user by key
+
+    /**
+     * Get user by key.
      * @param string $userActivationEmail
      * @return Users
      */

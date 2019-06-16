@@ -12,7 +12,7 @@ class InitGewaer extends AbstractSeed
         $data = [
             [
                 'name' => 'Default',
-                'key' => $random->uuid(),
+                'key' => 'mQsVRvorhqBJOijxkC4MB4hHFVcVTJia',
                 'is_public' => 1,
                 'description' => 'Gewaer Ecosystem',
                 'created_at' => date('Y-m-d H:i:s'),

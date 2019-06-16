@@ -176,7 +176,7 @@ class FileSystem extends AbstractModel
     {
         return self::findFirst([
             'conditions' => 'entity_id = ?0 AND companies_id = ?1 AND apps_id = ?2 AND system_modules_id = ?3 AND is_deleted = 0',
-            'bind' => [$id, Di::getDefault()->getUserData()->currentCompanyId(), Di::getDefault()->getConfig()->app->id, $systeModule->getId()]
+            'bind' => [$id, Di::getDefault()->getUserData()->currentCompanyId(), Di::getDefault()->getApp()->getId(), $systeModule->getId()]
         ]);
     }
 
@@ -191,7 +191,7 @@ class FileSystem extends AbstractModel
     {
         return self::find([
             'conditions' => 'entity_id = ?0 AND companies_id = ?1 AND apps_id = ?2 AND system_modules_id = ?3 AND is_deleted = 0',
-            'bind' => [$id, Di::getDefault()->getUserData()->currentCompanyId(), Di::getDefault()->getConfig()->app->id, $systeModule->getId()]
+            'bind' => [$id, Di::getDefault()->getUserData()->currentCompanyId(), Di::getDefault()->getApp()->getId(), $systeModule->getId()]
         ]);
     }
 
@@ -206,7 +206,7 @@ class FileSystem extends AbstractModel
     {
         $file = self::findFirst([
             'conditions' => 'id = ?0 AND companies_id = ?1 AND apps_id = ?2 AND is_deleted = 0',
-            'bind' => [$id, Di::getDefault()->getUserData()->currentCompanyId(), Di::getDefault()->getConfig()->app->id]
+            'bind' => [$id, Di::getDefault()->getUserData()->currentCompanyId(), Di::getDefault()->getApp()->getId()]
         ]);
 
         if (!is_object($file)) {

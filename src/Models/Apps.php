@@ -137,7 +137,7 @@ class Apps extends \Baka\Database\Apps
         if (trim($name) == self::CANVAS_DEFAULT_APP_NAME) {
             $app = self::findFirst(1);
         } else {
-            $app = self::findFirst(\Phalcon\DI::getDefault()->getConfig()->app->id);
+            $app = self::findFirstByKey(\Phalcon\DI::getDefault()->getConfig()->app->id);
         }
 
         return $app;
