@@ -16,31 +16,31 @@ $publicRoutes = [
 ];
 
 $privateRoutes = [
-    Route::add('/users');
-    Route::add('/companies'),
-    Route::add('/languages'),
-    Route::add('/webhooks'),
-    Route::add('/filesystem'),
-    Route::add('/roles'),
-    Route::add('/locales'),
-    Route::add('/currencies'),
-    Route::add('/apps'),
-    Route::add('/system-modules')->controller('SystemModulesController'),
-    Route::add('/companies-branches')->controller('CompaniesBranchesController'),
-    Route::add('/apps-plans')->controller('AppsPlansController'),
-    Route::add('/roles-acceslist')->controller('RolesAccesListController'),
-    Route::add('/permissions-resources')->controller('PermissionsResourcesController'),
-    Route::add('/permissions-resources-accesss')->controller('PermissionsResourcesAccessController'),
-    Route::add('/users-invite')->controller('UsersInviteController'),
-    Route::add('/email-templates')->controller('EmailTemplatesController'),
-    Route::add('/companies-custom-fields')->controller('CompaniesCustomFieldsController'),
-    Route::add('/custom-fields-modules')->controller('CustomFieldsModulesController'),
-    Route::add('/custom-fields')->controller('CustomFieldsController'),
-    Route::add('/user-webhooks')->controller('UserWebhooksController'),
-    Route::add('/devices')->controller('UserLinkedSourcesController'),
-    Route::add('/custom-filters')->controller('CustomFiltersController'),
-    Route::add('/email-templates-variables')->controller('EmailTemplatesVariablesController'),
-    Route::add('/templates-variables')->controller('EmailTemplatesVariablesController'), 
+    Route::crud('/users');
+    Route::crud('/companies'),
+    Route::crud('/languages'),
+    Route::crud('/webhooks'),
+    Route::crud('/filesystem'),
+    Route::crud('/roles'),
+    Route::crud('/locales'),
+    Route::crud('/currencies'),
+    Route::crud('/apps'),
+    Route::crud('/system-modules')->controller('SystemModulesController'),
+    Route::crud('/companies-branches')->controller('CompaniesBranchesController'),
+    Route::crud('/apps-plans')->controller('AppsPlansController'),
+    Route::crud('/roles-acceslist')->controller('RolesAccesListController'),
+    Route::crud('/permissions-resources')->controller('PermissionsResourcesController'),
+    Route::crud('/permissions-resources-accesss')->controller('PermissionsResourcesAccessController'),
+    Route::crud('/users-invite')->controller('UsersInviteController'),
+    Route::crud('/email-templates')->controller('EmailTemplatesController'),
+    Route::crud('/companies-custom-fields')->controller('CompaniesCustomFieldsController'),
+    Route::crud('/custom-fields-modules')->controller('CustomFieldsModulesController'),
+    Route::crud('/custom-fields')->controller('CustomFieldsController'),
+    Route::crud('/user-webhooks')->controller('UserWebhooksController'),
+    Route::crud('/devices')->controller('UserLinkedSourcesController'),
+    Route::crud('/custom-filters')->controller('CustomFiltersController'),
+    Route::crud('/email-templates-variables')->controller('EmailTemplatesVariablesController'),
+    Route::crud('/templates-variables')->controller('EmailTemplatesVariablesController'), 
     Route::get('/timezones')->controller('TimeZonesController'),
     Route::post('/users/{id}/devices')->controller('UserLinkedSourcesController')->action('devices'),
     Route::delete('/users/{id}/devices/{deviceId}')->controller('UserLinkedSourcesController')->action('detachDevice'),
@@ -65,7 +65,7 @@ $publicRoutesGroup = RouteGroup::from($publicRoutes)
 
 $privateRoutesGroup = RouteGroup::from($privateRoutes)
                 ->defaultNamespace('Canvas\Api\Controllers')
-                ->addMiddlewares('auth.jwt@before', 'auth.acl@before')
+                ->crudMiddlewares('auth.jwt@before', 'auth.acl@before')
                 ->defaultPrefix('/v1');
 
 /**
