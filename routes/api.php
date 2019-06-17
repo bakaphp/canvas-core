@@ -65,7 +65,7 @@ $publicRoutesGroup = RouteGroup::from($publicRoutes)
 
 $privateRoutesGroup = RouteGroup::from($privateRoutes)
                 ->defaultNamespace('Canvas\Api\Controllers')
-                ->crudMiddlewares('auth.jwt@before', 'auth.acl@before')
+                ->addMiddlewares('auth.jwt@before', 'auth.acl@before')
                 ->defaultPrefix('/v1');
 
 /**
