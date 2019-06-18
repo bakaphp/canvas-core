@@ -16,7 +16,7 @@ $publicRoutes = [
 ];
 
 $privateRoutes = [
-    Route::crud('/users');
+    Route::crud('/users'),
     Route::crud('/companies'),
     Route::crud('/languages'),
     Route::crud('/webhooks'),
