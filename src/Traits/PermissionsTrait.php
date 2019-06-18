@@ -10,7 +10,7 @@ use Canvas\Exception\ServerErrorHttpException;
 use Canvas\Exception\ModelException;
 
 /**
- * Trait FractalTrait
+ * Trait FractalTrait.
  *
  * @package Canvas\Traits
  */
@@ -18,7 +18,7 @@ trait PermissionsTrait
 {
     /**
      * Assigne a user this role
-     * Example: App.Role
+     * Example: App.Role.
      *
      * @param string $role
      * @return boolean
@@ -52,7 +52,7 @@ trait PermissionsTrait
 
     /**
      * Remove a role for the current user
-     * Example: App.Role
+     * Example: App.Role.
      *
      * @param string $role
      * @return boolean
@@ -78,7 +78,7 @@ trait PermissionsTrait
     }
 
     /**
-     * Check if the user has this role
+     * Check if the user has this role.
      *
      * @param string $role
      * @return boolean
@@ -123,7 +123,7 @@ trait PermissionsTrait
         $resource = $action[0];
         $action = $action[1];
         //get your user account role for this app or the canvas ecosystem
-        $role = $this->getPermission('apps_id in (' . \Phalcon\DI::getDefault()->getConfig()->app->id . ',' . Roles::DEFAULT_ACL_APP_ID . ')')->roles->name;
+        $role = $this->getPermission('apps_id in (' . $this->di->getApp()->getId() . ',' . Roles::DEFAULT_ACL_APP_ID . ')')->roles->name;
 
         return $this->di->getAcl()->isAllowed($role, $resource, $action);
     }

@@ -13,6 +13,7 @@ use Canvas\Exception\BadRequestHttpException;
 use Canvas\Exception\ModelException;
 use Canvas\Exception\NotFoundHttpException;
 use Canvas\Models\AccessList;
+use Canvas\Exception\ServerErrorHttpException;
 
 /**
  * Class UsersController.
@@ -175,7 +176,7 @@ class UsersController extends \Baka\Auth\UsersController
     protected function processOutput($results)
     {
         /**
-         * remove password
+         * remove password.
          * @todo move to DTO
          */
         if (is_object($results)) {
@@ -200,5 +201,20 @@ class UsersController extends \Baka\Auth\UsersController
         //iterate and save into users
 
         return $this->response(['OK' => $id]);
+    }
+
+    /**
+     * Delete a Record.
+     *
+     * @throws Exception
+     * @return Response
+     */
+    public function delete($id): Response
+    {
+        if ((int) $this->userData->getId() === (int) $id) {
+            throw new ServerErrorHttpException('Cant delete your own user . If you want to close your account contact support or go to app settings');
+        }
+
+        return parent::delete($id);
     }
 }

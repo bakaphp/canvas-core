@@ -86,4 +86,15 @@ class AppsController extends BaseController
 
         return $this->response($this->processOutput($result));
     }
+
+    /**
+     * Delete a Record.
+     *
+     * @throws Exception
+     * @return Response
+     */
+    public function delete($id): Response
+    {
+        return $this->response('Cant delete app at the moment');
+    }
 }
