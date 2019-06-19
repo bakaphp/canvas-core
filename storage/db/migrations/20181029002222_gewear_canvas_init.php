@@ -22,6 +22,12 @@ class GewearCanvasInit extends AbstractMigration
             ->addColumn('is_deleted', 'integer', ['null' => true, 'limit' => MysqlAdapter::INT_REGULAR, 'precision' => 10, 'after' => 'updated_at'])
             ->save();
 
+        if ($table->hasIndex('apps_key')) {
+            $table->removeIndexByName('apps_key')->save();
+        }
+        $table = $this->table('apps');
+        $table->addIndex(['key'], ['name' => 'apps_key', 'unique' => false])->save();
+
         $table = $this->table('apps_roles', ['id' => false, 'engine' => 'InnoDB', 'encoding' => 'utf8mb4', 'collation' => 'utf8mb4_unicode_ci', 'comment' => '', 'row_format' => 'Compact']);
         $table->addColumn('apps_id', 'integer', ['null' => false, 'limit' => MysqlAdapter::INT_REGULAR, 'precision' => 10])
             ->addColumn('roles_name', 'string', ['null' => false, 'limit' => 32, 'collation' => 'utf8mb4_unicode_ci', 'encoding' => 'utf8mb4', 'after' => 'apps_id'])
