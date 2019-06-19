@@ -153,6 +153,13 @@ class FileSystem extends AbstractModel
             'filesystem_id',
             ['alias' => 'attribute']
         );
+
+        $this->hasMany(
+            'id',
+            'Canvas\Models\FileSystemEntities',
+            'filesystem_id',
+            ['alias' => 'entities']
+        );
     }
 
     /**

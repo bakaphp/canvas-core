@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Canvas\Models;
 
-class FileSystemSettings extends AbstractModel
+class FileSystemEntities extends AbstractModel
 {
     /**
      *
@@ -13,16 +13,22 @@ class FileSystemSettings extends AbstractModel
 
     /**
      *
-     * @var string
+     * @var integer
      */
-    public $name;
+    public $entity_id;
+
+    /**
+     *
+     * @var integer
+     */
+    public $system_modules_id;
 
     /**
      *
      * @var string
      */
-    public $value;
-
+    public $field_name;
+    
     /**
      *
      * @var string
@@ -46,7 +52,7 @@ class FileSystemSettings extends AbstractModel
      */
     public function initialize()
     {
-        $this->setSource('filesystem_settings');
+        $this->setSource('filesystem_entities');
 
         $this->belongsTo(
             'filesystem_id',
@@ -63,6 +69,6 @@ class FileSystemSettings extends AbstractModel
      */
     public function getSource() : string
     {
-        return 'filesystem_settings';
+        return 'filesystem_entities';
     }
 }

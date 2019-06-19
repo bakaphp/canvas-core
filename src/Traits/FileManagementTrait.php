@@ -13,6 +13,7 @@ use Canvas\Filesystem\Helper;
 use Baka\Http\QueryParser;
 use Canvas\Models\FileSystemSettings;
 use Canvas\Models\SystemModules;
+use Canvas\Models\FileSystemEntities;
 
 /**
  * Trait ResponseTrait.
@@ -42,16 +43,12 @@ trait FileManagementTrait
      */
     public function getById($id) : Response
     {
-        $records = FileSystem::getById($id);
+        $records = FileSystem::findFirstOrFail($id);
 
         //get relationship
         if ($this->request->hasQuery('relationships')) {
             $relationships = $this->request->getQuery('relationships', 'string');
             $records = QueryParser::parseRelationShips($relationships, $records);
-        }
-
-        if (!$records) {
-            throw new UnprocessableEntityHttpException('Records not found');
         }
 
         return $this->response($records);
@@ -69,26 +66,12 @@ trait FileManagementTrait
     public function create() : Response
     {
         if (!$this->request->hasFiles()) {
-            //@todo handle base64 images
+            /**
+             * @todo handle file hash to avoid uploading same files again
+             */
         }
 
         return $this->response($this->processFiles());
-    }
-
-    /**
-     * Handle upload files from Uppy library.
-     *
-     * @return Response
-     */
-    public function createUppy(): Response
-    {
-        $request = $this->request->getPost();
-
-        if (empty($request)) {
-            $request = $this->request->getJsonRawBody(true);
-        }
-
-        return $this->response($request);
     }
 
     /**
@@ -104,23 +87,23 @@ trait FileManagementTrait
      */
     public function edit($id) : Response
     {
-        $file = FileSystem::getById($id);
+        $file = FileSystem::findFirstOrFail($id);
 
-        $request = $this->request->getPut();
+        $request = $this->request->getPutData();
 
-        if (empty($request)) {
-            $request = $this->request->getJsonRawBody(true);
-        }
-
-        $systemModule = isset($request['system_modules_id']) ? $request['system_modules_id'] : $file->system_modules_id;
+        $systemModule = $request['system_modules_id'] ?? 0;
         $entityId = $request['entity_id'] ?? 0;
+        $fieldName = $request['field_name'] ?? '';
 
-        $file->system_modules_id = $systemModule;
-        $file->entity_id = $entityId;
+        //associate
+        $fileSystemEntities = new FileSystemEntities();
+        $fileSystemEntities->filesystem_id = $file->getId();
+        $fileSystemEntities->entity_id = $entityId;
+        $fileSystemEntities->system_modules_id = $systemModule;
+        $fileSystemEntities->field_name = $fieldName;
+        $fileSystemEntities->saveOrFail();
 
-        if (!$file->update()) {
-            throw new UnprocessableEntityHttpException((string)current($file->getMessages()));
-        }
+        $file->updateOrFail();
 
         return $this->response($file);
     }
@@ -134,20 +117,12 @@ trait FileManagementTrait
      */
     public function deleteAttributes($id, string $name): Response
     {
-        $records = FileSystem::getById($id);
+        $records = FileSystem::findFirstOrFail($id);
 
-        if (!$records) {
-            throw new UnprocessableEntityHttpException('Records not found');
-        }
-
-        $recordAttributes = FileSystemSettings::findFirst([
+        $recordAttributes = FileSystemSettings::findFirstOrFail([
             'conditions' => 'filesystem_id = ?0 and name = ?1',
             'bind' => [$records->getId(), $name]
         ]);
-
-        if (!is_object($recordAttributes)) {
-            throw new UnprocessableEntityHttpException('File attribute not found');
-        }
 
         //true true delete
         $recordAttributes->delete();
@@ -201,10 +176,7 @@ trait FileManagementTrait
      */
     protected function processFiles(): array
     {
-        //@todo validate entity id
-        $systemModule = $this->request->getPost('system_modules_id', 'int', '0');
-        $entityId = $this->request->getPost('entity_id', 'int', '0');
-        $allFields = $this->request->getPost();
+        $allFields = $this->request->getPostData();
 
         $validator = $this->validation();
 
@@ -219,11 +191,9 @@ trait FileManagementTrait
                 'size' => $file->getSize(),
             ]]);
 
-            if (!defined('API_TESTS')) {
-                if (count($errors)) {
-                    foreach ($errors as $error) {
-                        throw new UnprocessableEntityHttpException((string)$error);
-                    }
+            if (count($errors)) {
+                foreach ($errors as $error) {
+                    throw new UnprocessableEntityHttpException((string)$error);
                 }
             }
 
@@ -247,8 +217,6 @@ trait FileManagementTrait
 
             $fileSystem = new FileSystem();
             $fileSystem->name = $file->getName();
-            $fileSystem->system_modules_id = $systemModule;
-            $fileSystem->entity_id = $entityId;
             $fileSystem->companies_id = $this->userData->currentCompanyId();
             $fileSystem->apps_id = $this->app->getId();
             $fileSystem->users_id = $this->userData->getId();
@@ -257,9 +225,7 @@ trait FileManagementTrait
             $fileSystem->file_type = $file->getExtension();
             $fileSystem->size = $file->getSize();
 
-            if (!$fileSystem->save()) {
-                throw new UnprocessableEntityHttpException((string)current($fileSystem->getMessages()));
-            }
+            $fileSystem->saveOrFail();
 
             //add settings
             foreach ($allFields as $key => $settings) {
