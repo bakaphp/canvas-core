@@ -4,15 +4,14 @@ declare(strict_types=1);
 
 namespace Canvas\Traits;
 
-use Baka\Database\Model;
 use Canvas\Models\SystemModules;
 use Canvas\Models\FileSystem;
-use Canvas\Exception\ModelException;
-use Canvas\Models\FileSystemSettings;
+use RuntimeException;
 use Phalcon\Mvc\Model\Resultset\Simple;
 use Canvas\Models\FileSystemEntities;
 use Canvas\Dto\Files;
 use Canvas\Mapper\FileMapper;
+use Phalcon\Di;
 
 /**
  * Trait ResponseTrait.
@@ -41,22 +40,16 @@ trait FileSystemModelTrait
     protected function associateFileSystem(): bool
     {
         if (!empty($this->uploadedFiles) && is_array($this->uploadedFiles)) {
-            //look for the current system module
-            $systemModule = SystemModules::getSystemModuleByModelName(self::class);
-
             foreach ($this->uploadedFiles as $file) {
                 if (!isset($file['id'])) {
                     continue;
                 }
 
-                if ($file = FileSystem::getById($file['id'])) {
-                    $fileSystemEntities = new FileSystemEntities();
-                    $fileSystemEntities->filesystem_id = $file->getId();
-                    $fileSystemEntities->system_modules_id = $systemModule->getId();
-                    $fileSystemEntities->field_name = $file['field_name'] ?? ''; //field_name for this specify relationship
-                    $fileSystemEntities->entity_id = $this->getId();
-
-                    $fileSystemEntities->saveOrFail();
+                if ($fileSystem = FileSystem::getById($file['id'])) {
+                    $this->attach([[
+                        'file' => $fileSystem,
+                        'field_name' => $file['field_name'] ?? ''
+                    ]]);
                 }
             }
         }
@@ -125,8 +118,11 @@ trait FileSystemModelTrait
     {
         $systemModule = SystemModules::getSystemModuleByModelName(self::class);
 
-        $files = FileSystem::getAllByEntityId($this->getId(), $systemModule);
-        $files->delete();
+        if ($files = FileSystem::getAllByEntityId($this->getId(), $systemModule)) {
+            foreach ($files as $file) {
+                $file->softDelete();
+            }
+        }
 
         return true;
     }
@@ -144,12 +140,15 @@ trait FileSystemModelTrait
     public function attach(array $files): bool
     {
         $systemModule = SystemModules::getSystemModuleByModelName(self::class);
-
+        
         foreach ($files as $file) {
-
             //im looking for the file inside an array
             if (!array_key_exists('file', $file)) {
                 continue;
+            }
+
+            if (!$file['file'] instanceof FileSystem) {
+                throw new RuntimeException('Cant attach a one Filesytem to this entity');
             }
 
             //attach to the entity
@@ -158,6 +157,8 @@ trait FileSystemModelTrait
             $fileSystemEntities->entity_id = $this->getId();
             $fileSystemEntities->system_modules_id = $systemModule->getId();
             $fileSystemEntities->field_name = $file['field_name'] ?? null;
+            $fileSystemEntities->created_at = $file['file']->created_at;
+            $fileSystemEntities->is_deleted = 0 ;
             $fileSystemEntities->saveOrFail();
         }
 
@@ -167,13 +168,15 @@ trait FileSystemModelTrait
     /**
      * Get all the files attach for the given module.
      *
-     * @return Simple
+     * @param string $fileType filter the files by their type
+     * @return array
      */
     public function getAttachments(string $fileType = null) : array
     {
         $systemModule = SystemModules::getSystemModuleByModelName(self::class);
         $bindParams = [
             0,
+            Di::getDefault()->getUserData()->currentCompanyId(),
             $systemModule->getId(),
             $this->getId()
         ];
@@ -188,10 +191,10 @@ trait FileSystemModelTrait
 
         $attachments = FileSystem::find([
             'conditions' => '
-                is_deleted = ?0 AND id in 
+                is_deleted = ?0 AND companies_id = ?1 AND id in 
                     (SELECT 
                         filesystem_id from \Canvas\Models\FileSystemEntities e
-                        WHERE e.system_modules_id = ?1 AND e.entity_id = ?2
+                        WHERE e.system_modules_id = ?2 AND e.entity_id = ?3
                     )' . $fileTypeSql,
             'bind' => $bindParams
         ]);
@@ -208,23 +211,13 @@ trait FileSystemModelTrait
     }
 
     /**
-     * Given the file id get all attributes.
+     * Overwrite the relationship of the filesystem to return the attachment structure
+     * to the given user.
      *
-     * @param integer $fileId
      * @return array
      */
-    public function getFileAllAttributes(int $fileId): array
+    public function getFilesystem(): array
     {
-        $attributes = [];
-        $settings = FileSystemSettings::find([
-            'conditions' => 'filesystem_id = ?0',
-            'bind' => [$fileId]
-        ]);
-
-        foreach ($settings as $setting) {
-            $attributes[$setting->name] = $setting->value;
-        }
-
-        return $attributes;
+        return $this->getAttachments();
     }
 }

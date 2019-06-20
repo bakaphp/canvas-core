@@ -171,7 +171,8 @@ trait FileManagementTrait
 
     /**
      * Upload the document and save them to the filesystem.
-     *
+     * @todo add test
+     * 
      * @return array
      */
     protected function processFiles(): array

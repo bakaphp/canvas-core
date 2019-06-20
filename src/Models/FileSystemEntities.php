@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Canvas\Models;
 
+use Phalcon\Validation;
+use Phalcon\Validation\Validator\Uniqueness;
 class FileSystemEntities extends AbstractModel
 {
     /**
@@ -60,6 +62,27 @@ class FileSystemEntities extends AbstractModel
             'id',
             ['alias' => 'file']
         );
+    }
+
+    /**
+     * Validate the model
+     *
+     * @return void
+     */
+    public function validation()
+    {
+        $validator = new Validation();
+
+        $validator->add(
+            ['filesystem_id', 'entity_id', 'system_modules_id'],
+            new Uniqueness(
+                [
+                    'message' => 'Cant attach a file to a entity two times',
+                ]
+            )
+        );
+
+        return $this->validate($validator);
     }
 
     /**
