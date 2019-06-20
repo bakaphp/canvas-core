@@ -98,7 +98,7 @@ class Users extends \Baka\Auth\Models\Users
     public $system_modules_id = 2;
 
     /**
-     * User email activation code
+     * User email activation code.
      *
      * @var string
      */
@@ -147,7 +147,7 @@ class Users extends \Baka\Auth\Models\Users
                 'alias' => 'roles',
                 'params' => [
                     'limit' => 1,
-                    'conditions' => 'Canvas\Models\UserRoles.apps_id = ' . $this->di->getConfig()->app->id,
+                    'conditions' => 'Canvas\Models\UserRoles.apps_id = ' . $this->di->getApp()->getId(),
                 ]
             ]
         );
@@ -192,12 +192,12 @@ class Users extends \Baka\Auth\Models\Users
         );
 
         $systemModule = SystemModules::getSystemModuleByModelName(self::class);
-        $this->hasMany(
+        $this->hasOne(
             'id',
-            'Canvas\Models\FileSystem',
+            'Canvas\Models\FileSystemEntities',
             'entity_id',
             [
-                'alias' => 'files',
+                'alias' => 'filesystem',
                 'conditions' => 'system_modules_id = ?0',
                 'bind' => [$systemModule->getId()]
             ]
@@ -205,11 +205,11 @@ class Users extends \Baka\Auth\Models\Users
 
         $this->hasOne(
             'id',
-            'Canvas\Models\FileSystem',
+            'Canvas\Models\FileSystemEntities',
             'entity_id',
             [
                 'alias' => 'logo',
-                'conditions' => "system_modules_id = ?0 and file_type in ('png','jpg','bmp','jpeg','webp')",
+                'conditions' => 'system_modules_id = ?0',
                 'bind' => [$systemModule->getId()]
             ]
         );
@@ -510,9 +510,9 @@ class Users extends \Baka\Auth\Models\Users
             return $company['companies_id'];
         }, $this->getCompanies(['columns' => 'companies_id'])->toArray());
     }
-    
-    /** 
-     * Get user by key
+
+    /**
+     * Get user by key.
      * @param string $userActivationEmail
      * @return Users
      */

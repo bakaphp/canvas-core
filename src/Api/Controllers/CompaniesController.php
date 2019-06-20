@@ -123,11 +123,8 @@ class CompaniesController extends BaseController
             throw new UnauthorizedHttpException(_('You dont have permission to delete this company'));
         }
 
-        if ($company->delete() === false) {
-            foreach ($company->getMessages() as $message) {
-                throw new UnprocessableEntityHttpException($message);
-            }
-        }
+        $company->is_deleted = 1;
+        $company->updateOrFail();
 
         return $this->response(['Delete Successfully']);
     }
@@ -141,24 +138,23 @@ class CompaniesController extends BaseController
     protected function processOutput($results)
     {
         /**
-         * Check if the branches exists on results
+         * Check if the branches exists on results.
          */
         if (array_key_exists('branch', $results)) {
-            
             /**
-            * Format branches as an array of branches even if there is only one branch per company
+            * Format branches as an array of branches even if there is only one branch per company.
             */
             foreach ($results as $key => $value) {
-                if (is_object($value['branch'])) {
-                    $results[$key]['branch'] = array($value['branch']);
-                }
+                /*   if (is_object($value['branch'])) {
+                      $results[$key]['branch'] = [$value['branch']];
+                  } */
             }
 
             /**
-             * Format branches as an array of branches even if there is only one branch in a unique company
+             * Format branches as an array of branches even if there is only one branch in a unique company.
              */
             if (is_object(current($results)['branch'])) {
-                $results[0]['branch'] = array(current($results)['branch']);
+                $results[0]['branch'] = [current($results)['branch']];
             }
         }
 

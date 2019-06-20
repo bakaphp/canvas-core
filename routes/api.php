@@ -40,7 +40,8 @@ $privateRoutes = [
     Route::crud('/devices')->controller('UserLinkedSourcesController'),
     Route::crud('/custom-filters')->controller('CustomFiltersController'),
     Route::crud('/email-templates-variables')->controller('EmailTemplatesVariablesController'),
-    Route::crud('/templates-variables')->controller('EmailTemplatesVariablesController'), 
+    Route::crud('/templates-variables')->controller('EmailTemplatesVariablesController'),
+    
     Route::get('/timezones')->controller('TimeZonesController'),
     Route::post('/users/{id}/devices')->controller('UserLinkedSourcesController')->action('devices'),
     Route::delete('/users/{id}/devices/{deviceId}')->controller('UserLinkedSourcesController')->action('detachDevice'),

@@ -7,7 +7,7 @@ use Canvas\Exception\UnprocessableEntityHttpException;
 use Phalcon\Di;
 
 /**
- * Classs for Email Templates
+ * Classs for Email Templates.
  * @property Users $userData
  * @property Request $request
  * @property Config $config
@@ -111,7 +111,7 @@ class EmailTemplates extends AbstractModel
     }
 
     /**
-     * Retrieve email template by name
+     * Retrieve email template by name.
      * @param $name
      * @return EmailTemplates
      */
@@ -119,7 +119,7 @@ class EmailTemplates extends AbstractModel
     {
         $emailTemplate = self::findFirst([
             'conditions' => 'companies_id in (?0, 0) and apps_id in (?1, 0) and name = ?2 and is_deleted = 0',
-            'bind' => [Di::getDefault()->getUserData()->currentCompanyId(), Di::getDefault()->getConfig()->app->id, $name]
+            'bind' => [Di::getDefault()->getUserData()->currentCompanyId(), Di::getDefault()->getApp()->getId(), $name]
         ]);
 
         if (!is_object($emailTemplate)) {
