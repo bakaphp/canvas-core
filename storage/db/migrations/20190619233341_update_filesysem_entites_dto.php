@@ -57,14 +57,7 @@ class UpdateFilesysemEntitesDto extends AbstractMigration
         ])
         ->changeColumn('updated_at', 'datetime', [
             'null' => true,
-            'default' => 'NULL',
             'after' => 'created_at',
-        ])
-        ->changeColumn('is_deleted', 'boolean', [
-            'null' => true,
-            'default' => 'NULL',
-            'limit' => MysqlAdapter::INT_TINY,
-            'after' => 'updated_at',
         ])
             ->removeColumn('system_modules_id')
             ->removeColumn('entity_id')
