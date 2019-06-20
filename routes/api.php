@@ -30,7 +30,7 @@ $privateRoutes = [
     Route::crud('/apps-plans')->controller('AppsPlansController'),
     Route::crud('/roles-acceslist')->controller('RolesAccesListController'),
     Route::crud('/permissions-resources')->controller('PermissionsResourcesController'),
-    Route::crud('/permissions-resources-accesss')->controller('PermissionsResourcesAccessController'),
+    Route::crud('/permissions-resources-access')->controller('PermissionsResourcesAccessController'),
     Route::crud('/users-invite')->controller('UsersInviteController'),
     Route::crud('/email-templates')->controller('EmailTemplatesController'),
     Route::crud('/companies-custom-fields')->controller('CompaniesCustomFieldsController'),
