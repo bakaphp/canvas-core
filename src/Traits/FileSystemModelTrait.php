@@ -41,6 +41,14 @@ trait FileSystemModelTrait
     {
         if (!empty($this->uploadedFiles) && is_array($this->uploadedFiles)) {
             foreach ($this->uploadedFiles as $file) {
+
+                /**
+                 * @todo remove when all the frontend standardize our request
+                 */
+                if (!isset($file['id']) && (int) $file > 0) {
+                    $file = ['id' => $file];
+                }
+
                 if (!isset($file['id'])) {
                     continue;
                 }
@@ -69,6 +77,8 @@ trait FileSystemModelTrait
         //associate uploaded files
         if (isset($data['files'])) {
             $this->uploadedFiles = $data['files'];
+        } elseif (isset($data['filesystem_files'])) {
+            $this->uploadedFiles = $data['filesystem_files'];
         }
 
         return parent::update($data, $whiteList);
@@ -104,6 +114,8 @@ trait FileSystemModelTrait
         //associate uploaded files
         if (isset($data['files'])) {
             $this->uploadedFiles = $data['files'];
+        } elseif (isset($data['filesystem_files'])) {
+            $this->uploadedFiles = $data['filesystem_files'];
         }
 
         return parent::save($data, $whiteList);
@@ -140,7 +152,7 @@ trait FileSystemModelTrait
     public function attach(array $files): bool
     {
         $systemModule = SystemModules::getSystemModuleByModelName(self::class);
-        
+
         foreach ($files as $file) {
             //im looking for the file inside an array
             if (!array_key_exists('file', $file)) {
