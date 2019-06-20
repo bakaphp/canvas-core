@@ -143,7 +143,7 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
     public function initialize()
     {
         $this->setSource('companies');
-        
+
         $this->keepSnapshots(true);
         $this->addBehavior(new Blameable());
 
@@ -534,5 +534,15 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
         return array_map(function ($users) {
             return $users['users_id'];
         }, $this->getUsersAssociatedByApps(['columns' => 'users_id'])->toArray());
+    }
+
+    /**
+     * Overwrite the relationship.
+     *
+     * @return void
+     */
+    public function getLogo()
+    {
+        return $this->getAttachementByName('logo');
     }
 }

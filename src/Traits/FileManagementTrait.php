@@ -149,6 +149,7 @@ trait FileManagementTrait
             'allowedTypes' => [
                 'image/jpeg',
                 'image/png',
+                'image/webp',
                 'audio/mpeg',
                 'audio/mp3',
                 'audio/mpeg',

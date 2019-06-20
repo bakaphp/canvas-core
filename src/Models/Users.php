@@ -208,7 +208,7 @@ class Users extends \Baka\Auth\Models\Users
             'Canvas\Models\FileSystemEntities',
             'entity_id',
             [
-                'alias' => 'logo',
+                'alias' => 'avatar',
                 'conditions' => 'system_modules_id = ?0',
                 'bind' => [$systemModule->getId()]
             ]
@@ -522,5 +522,15 @@ class Users extends \Baka\Auth\Models\Users
             'conditions' => 'user_activation_email = ?0 and user_active =?1 and is_deleted = 0',
             'bind' => [$userActivationEmail, 1],
         ]);
+    }
+
+    /**
+     * Overwrite the relationship.
+     *
+     * @return void
+     */
+    public function getAvatar(): ?string
+    {
+        return $this->getAttachementByName('avatar');
     }
 }
