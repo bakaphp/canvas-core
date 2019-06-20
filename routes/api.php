@@ -29,7 +29,7 @@ $privateRoutes = [
     Route::add('/apps-plans')->controller('AppsPlansController'),
     Route::add('/roles-acceslist')->controller('RolesAccesListController'),
     Route::add('/permissions-resources')->controller('PermissionsResourcesController'),
-    Route::add('/permissions-resources-accesss')->controller('PermissionsResourcesAccessController'),
+    Route::add('/permissions-resources-access')->controller('PermissionsResourcesAccessController'),
     Route::add('/users-invite')->controller('UsersInviteController'),
     Route::add('/email-templates')->controller('EmailTemplatesController'),
     Route::add('/companies-custom-fields')->controller('CompaniesCustomFieldsController'),

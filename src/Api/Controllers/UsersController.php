@@ -81,7 +81,7 @@ class UsersController extends \Baka\Auth\UsersController
         }
 
         /**
-         * @todo filter only by usres from this app / company
+         * @todo filter only by user from this app / company
          */
         $user = $this->model->findFirstOrFail([
             'id = ?0 AND is_deleted = 0',
