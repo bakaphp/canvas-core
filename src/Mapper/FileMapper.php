@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Canvas\Mapper;
 
 use AutoMapperPlus\CustomMapper\CustomMapper;
-use Canvas\Models\FileSystem;
 use Canvas\Dto\Files;
 use Canvas\Models\FileSystemEntities;
 
@@ -21,11 +20,11 @@ class FileMapper extends CustomMapper
      * @param Canvas\Dto\Files $fileDto
      * @return Files
      */
-    public function mapToObject($file, $fileDto)
+    public function mapToObject($file, $fileDto, array $context = [])
     {
         $fieledName = FileSystemEntities::findFirst([
             'conditions' => 'system_modules_id = ?0 AND entity_id = ?1 AND filesystem_id = ?2',
-            'bind' => [$this->systemModuleId, $this->entityId , $file->getId()]
+            'bind' => [$this->systemModuleId, $this->entityId, $file->getId()]
         ]);
 
         $fileDto->id = $file->getId();
