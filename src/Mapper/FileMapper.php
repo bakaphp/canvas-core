@@ -23,8 +23,8 @@ class FileMapper extends CustomMapper
     public function mapToObject($file, $fileDto, array $context = [])
     {
         $fieledName = FileSystemEntities::findFirst([
-            'conditions' => 'system_modules_id = ?0 AND entity_id = ?1 AND filesystem_id = ?2',
-            'bind' => [$this->systemModuleId, $this->entityId, $file->getId()]
+            'conditions' => 'system_modules_id = ?0 AND entity_id = ?1 AND filesystem_id = ?2 AND companies_id = ?3',
+            'bind' => [$this->systemModuleId, $this->entityId, $file->getId(), $file->companies_id]
         ]);
 
         $fileDto->id = $file->getId();

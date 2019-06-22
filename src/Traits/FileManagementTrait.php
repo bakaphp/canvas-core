@@ -99,6 +99,7 @@ trait FileManagementTrait
         $fileSystemEntities = new FileSystemEntities();
         $fileSystemEntities->filesystem_id = $file->getId();
         $fileSystemEntities->entity_id = $entityId;
+        $fileSystemEntities->companies_id = $file->companies_id;
         $fileSystemEntities->system_modules_id = $systemModule;
         $fileSystemEntities->field_name = $fieldName;
         $fileSystemEntities->saveOrFail();

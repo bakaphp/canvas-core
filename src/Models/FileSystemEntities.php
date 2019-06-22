@@ -5,6 +5,7 @@ namespace Canvas\Models;
 
 use Phalcon\Validation;
 use Phalcon\Validation\Validator\Uniqueness;
+
 class FileSystemEntities extends AbstractModel
 {
     /**
@@ -27,10 +28,16 @@ class FileSystemEntities extends AbstractModel
 
     /**
      *
+     * @var integer
+     */
+    public $companies_id;
+
+    /**
+     *
      * @var string
      */
     public $field_name;
-    
+
     /**
      *
      * @var string
@@ -65,7 +72,7 @@ class FileSystemEntities extends AbstractModel
     }
 
     /**
-     * Validate the model
+     * Validate the model.
      *
      * @return void
      */
