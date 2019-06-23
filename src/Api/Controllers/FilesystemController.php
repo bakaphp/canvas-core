@@ -34,7 +34,7 @@ class FilesystemController extends BaseController
      *
      * @var array
      */
-    protected $updateFields = [];
+    protected $updateFields = ['name', 'path', 'url', 'size', 'file_type'];
 
     /**
      * set objects

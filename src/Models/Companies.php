@@ -143,7 +143,7 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
     public function initialize()
     {
         $this->setSource('companies');
-        
+
         $this->keepSnapshots(true);
         $this->addBehavior(new Blameable());
 
@@ -271,12 +271,12 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
         );
 
         $systemModule = SystemModules::getSystemModuleByModelName(self::class);
-        $this->hasMany(
+        $this->hasOne(
             'id',
-            'Canvas\Models\FileSystem',
+            'Canvas\Models\FileSystemEntities',
             'entity_id',
             [
-                'alias' => 'files',
+                'alias' => 'filesystem',
                 'conditions' => 'system_modules_id = ?0',
                 'bind' => [$systemModule->getId()]
             ]
@@ -284,11 +284,11 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
 
         $this->hasOne(
             'id',
-            'Canvas\Models\FileSystem',
+            'Canvas\Models\FileSystemEntities',
             'entity_id',
             [
                 'alias' => 'logo',
-                'conditions' => "system_modules_id = ?0 and file_type in ('png','jpg','bmp','jpeg','webp')",
+                'conditions' => 'system_modules_id = ?0',
                 'bind' => [$systemModule->getId()]
             ]
         );
@@ -534,5 +534,15 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
         return array_map(function ($users) {
             return $users['users_id'];
         }, $this->getUsersAssociatedByApps(['columns' => 'users_id'])->toArray());
+    }
+
+    /**
+     * Overwrite the relationship.
+     *
+     * @return void
+     */
+    public function getLogo()
+    {
+        return $this->getAttachementByName('logo');
     }
 }

@@ -49,7 +49,7 @@ class FileSystemSettings extends AbstractModel
         $this->setSource('filesystem_settings');
 
         $this->belongsTo(
-            'apps_id',
+            'filesystem_id',
             'Canvas\Models\Filesystem',
             'id',
             ['alias' => 'file']

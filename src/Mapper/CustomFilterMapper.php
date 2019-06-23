@@ -15,7 +15,7 @@ class CustomFilterMapper extends CustomMapper
      * @param \Canvas\Dto\CustomFilter $filterSchema
      * @return ListSchema
      */
-    public function mapToObject($filter, $customFilter)
+    public function mapToObject($filter, $customFilter, array $context = [])
     {
         $customFilter->id = $filter->getId();
         $customFilter->system_modules_id = $filter->system_modules_id;

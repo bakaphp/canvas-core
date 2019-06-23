@@ -145,9 +145,9 @@ class CompaniesController extends BaseController
             * Format branches as an array of branches even if there is only one branch per company.
             */
             foreach ($results as $key => $value) {
-                if (is_object($value['branch'])) {
-                    $results[$key]['branch'] = [$value['branch']];
-                }
+                /*   if (is_object($value['branch'])) {
+                      $results[$key]['branch'] = [$value['branch']];
+                  } */
             }
 
             /**

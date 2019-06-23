@@ -6,7 +6,6 @@ namespace Canvas\Mapper;
 
 use AutoMapperPlus\CustomMapper\CustomMapper;
 use Baka\Elasticsearch\Contracts\CustomFiltersSchemaTrait;
-use Phalcon\DI;
 
 // You can either extend the CustomMapper, or just implement the MapperInterface
 // directly.
@@ -21,7 +20,7 @@ class ListSchemaMapper extends CustomMapper
      * @param \Canvas\Dto\ListSchema $listSchema
      * @return ListSchema
      */
-    public function mapToObject($systeModel, $listSchema)
+    public function mapToObject($systeModel, $listSchema, array $context = [])
     {
         $listSchema->bulkActions = [
             [

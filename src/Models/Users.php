@@ -192,12 +192,12 @@ class Users extends \Baka\Auth\Models\Users
         );
 
         $systemModule = SystemModules::getSystemModuleByModelName(self::class);
-        $this->hasMany(
+        $this->hasOne(
             'id',
-            'Canvas\Models\FileSystem',
+            'Canvas\Models\FileSystemEntities',
             'entity_id',
             [
-                'alias' => 'files',
+                'alias' => 'filesystem',
                 'conditions' => 'system_modules_id = ?0',
                 'bind' => [$systemModule->getId()]
             ]
@@ -205,11 +205,11 @@ class Users extends \Baka\Auth\Models\Users
 
         $this->hasOne(
             'id',
-            'Canvas\Models\FileSystem',
+            'Canvas\Models\FileSystemEntities',
             'entity_id',
             [
-                'alias' => 'logo',
-                'conditions' => "system_modules_id = ?0 and file_type in ('png','jpg','bmp','jpeg','webp')",
+                'alias' => 'avatar',
+                'conditions' => 'system_modules_id = ?0',
                 'bind' => [$systemModule->getId()]
             ]
         );
@@ -522,5 +522,15 @@ class Users extends \Baka\Auth\Models\Users
             'conditions' => 'user_activation_email = ?0 and user_active =?1 and is_deleted = 0',
             'bind' => [$userActivationEmail, 1],
         ]);
+    }
+
+    /**
+     * Overwrite the relationship.
+     *
+     * @return void
+     */
+    public function getAvatar(): ?string
+    {
+        return $this->getAttachementByName('avatar');
     }
 }
