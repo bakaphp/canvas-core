@@ -7,15 +7,9 @@ use Canvas\Models\UserLinkedSources;
 use Canvas\Models\Users;
 use Throwable;
 use Phalcon\Di;
-use Canvas\Notifications\Mobile\Apps as AppsPushNotifications;
-use Canvas\Notifications\Mobile\Users as UsersPushNotifications;
-use Canvas\Notifications\Mobile\System as SystemPushNotifications;
-use Canvas\Notifications\Email\Apps as AppsEmailNotifications;
-use Canvas\Notifications\Email\Users as UsersEmailNotifications;
-use Canvas\Notifications\Email\System as SystemEmailNotifications;
 
 /**
- * CLI To send push ontification and pusher msg
+ * CLI To send push ontification and pusher msg.
  *
  * @package Canvas\Cli\Tasks
  *
@@ -29,7 +23,7 @@ use Canvas\Notifications\Email\System as SystemEmailNotifications;
 class QueueTask extends PhTask
 {
     /**
-     * Queue action for mobile notifications
+     * Queue action for mobile notifications.
      * @return void
      */
     public function mobileNotificationsAction(): void
@@ -38,7 +32,7 @@ class QueueTask extends PhTask
 
         // Create the queue if it doesnt already exist.
         $channel->queue_declare(
-            $queue = "notifications",
+            $queue = 'notifications',
             $passive = false,
             $durable = true,
             $exclusive = false,
@@ -53,43 +47,24 @@ class QueueTask extends PhTask
         $callback = function ($msg) {
             $msgObject = json_decode($msg->body);
 
-
-
             echo ' [x] Received from system module: ',$msgObject->system_module, "\n";
 
-
             /**
-             * Look for current user in database
+             * Look for current user in database.
              */
-             $currentUser =  Users::findFirst($msgObject->users_id);
-
+            $currentUser = Users::findFirst($msgObject->users_id);
 
             /**
-             * Lets determine what type of notification we are dealing with
+             * Lets determine what type of notification we are dealing with.
              */
-            switch ($msgObject->notification_type_id) {
-                 case 1:
-                      $notification = new AppsPushNotifications((array)$msgObject->entity, $msgObject->content, $msgObject->system_module,$currentUser->toArray());
-                     break;
-                 case 2:
-                    $notification = new UsersPushNotifications((array)$msgObject->entity, $msgObject->content, $msgObject->system_module,$currentUser->toArray());
-                     break;
-
-                 case 3:
-                    $notification = new SystemPushNotifications((array)$msgObject->entity, $msgObject->content, $msgObject->system_module,$currentUser->toArray());
-                     break;
-                 default:
-                     break;
-             }
-
 
             /**
-             * Trigger Event Manager
+             * Trigger Event Manager.
              */
-            Di::getDefault()->getManager()->trigger($notification);
+            //Di::getDefault()->getManager()->trigger($notification);
 
             /**
-             * Log the delivery info
+             * Log the delivery info.
              */
             $msg->delivery_info['channel']->basic_ack($msg->delivery_info['delivery_tag']);
         };
@@ -97,7 +72,7 @@ class QueueTask extends PhTask
         $channel->basic_qos(null, 1, null);
 
         $channel->basic_consume(
-            $queue = "notifications",
+            $queue = 'notifications',
             $consumer_tag = '',
             $no_local = false,
             $no_ack = false,
@@ -115,7 +90,7 @@ class QueueTask extends PhTask
     }
 
     /**
-     * Queue action for email notifications
+     * Queue action for email notifications.
      * @return void
      */
     public function emailNotificationsAction(): void
@@ -124,7 +99,7 @@ class QueueTask extends PhTask
 
         // Create the queue if it doesnt already exist.
         $channel->queue_declare(
-            $queue = "notifications",
+            $queue = 'notifications',
             $passive = false,
             $durable = true,
             $exclusive = false,
@@ -139,41 +114,24 @@ class QueueTask extends PhTask
         $callback = function ($msg) {
             $msgObject = json_decode($msg->body);
 
-
-
             echo ' [x] Received from system module: ',$msgObject->system_module, "\n";
 
             /**
-             * Look for current user in database
+             * Look for current user in database.
              */
-            $currentUser =  Users::findFirst($msgObject->users_id);
+            $currentUser = Users::findFirst($msgObject->users_id);
 
             /**
-             * Lets determine what type of notification we are dealing with
+             * Lets determine what type of notification we are dealing with.
              */
-            switch ($msgObject->notification_type_id) {
-                 case 1:
-                      $notification = new AppsEmailNotifications((array)$msgObject->entity, $msgObject->content, $msgObject->system_module,$currentUser->toArray());
-                     break;
-                 case 2:
-                    $notification = new UsersEmailNotifications((array)$msgObject->entity, $msgObject->content, $msgObject->system_module,$currentUser->toArray());
-                     break;
-
-                 case 3:
-                    $notification = new SystemEmailNotifications((array)$msgObject->entity, $msgObject->content, $msgObject->system_module,$currentUser->toArray());
-                     break;
-                 default:
-                     break;
-             }
-
 
             /**
-             * Trigger Event Manager
+             * Trigger Event Manager.
              */
-            Di::getDefault()->getManager()->trigger($notification);
+            //Di::getDefault()->getManager()->trigger($notification);
 
             /**
-             * Log the delivery info
+             * Log the delivery info.
              */
             $msg->delivery_info['channel']->basic_ack($msg->delivery_info['delivery_tag']);
         };
@@ -181,7 +139,7 @@ class QueueTask extends PhTask
         $channel->basic_qos(null, 1, null);
 
         $channel->basic_consume(
-            $queue = "notifications",
+            $queue = 'notifications',
             $consumer_tag = '',
             $no_local = false,
             $no_ack = false,
