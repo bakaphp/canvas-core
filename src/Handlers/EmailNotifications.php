@@ -12,30 +12,28 @@ use Canvas\Models\SystemModules;
 class EmailNotifications implements HandlerInterface
 {
     /**
-     * Stablishes type of handler
+     * Stablishes type of handler.
      */
     public function shouldHandle(NotificationInterface $notification)
     {
         return $notification instanceof EmailNotificationsContract;
     }
-    
+
     /**
-     * Handles actions to take depending of notifications
+     * Handles actions to take depending of notifications.
      * @param NotificationInterface $notification
      */
     public function handle(NotificationInterface $notification)
     {
-
         /**
-         * Lets log the email
+         * Lets log the email.
          */
         Di::getDefault()->getLog()->info(json_encode($notification->assemble()));
 
         $content = $notification->assemble()->template;
 
-
         /**
-         * Lets send the email
+         * Lets send the email.
          */
         Di::getDefault()->getMail()
             ->to('rwhite@mctekk.com')
