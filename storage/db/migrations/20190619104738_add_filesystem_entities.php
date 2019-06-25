@@ -17,7 +17,7 @@ class AddFilesystemEntities extends AbstractMigration
             'row_format' => 'COMPACT',
         ])
         ->addIndex(['key'], [
-            'name' => 'apps_key',
+            'name' => 'apps_key_index2',
             'unique' => false,
         ])
             ->save();
