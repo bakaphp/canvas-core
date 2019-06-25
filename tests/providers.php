@@ -20,7 +20,7 @@ use Canvas\Providers\AclProvider;
 use Canvas\Providers\AppProvider;
 use Canvas\Providers\ResponseProvider;
 use Canvas\Providers\FileSystemProvider;
-use Canvas\Providers\EventManagerProvider;
+use Canvas\Providers\EventsManagerProvider;
 use Canvas\Providers\MapperProvider;
 use Canvas\Providers\ElasticProvider;
 
@@ -41,7 +41,7 @@ return [
     AppProvider::class,
     ResponseProvider::class,
     FileSystemProvider::class,
-    EventManagerProvider::class,
+    EventsManagerProvider::class,
     MapperProvider::class,
     ElasticProvider::class
 ];
