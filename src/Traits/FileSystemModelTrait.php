@@ -185,7 +185,7 @@ trait FileSystemModelTrait
             $fileSystemEntities->filesystem_id = $file['file']->getId();
             $fileSystemEntities->entity_id = $this->getId();
             $fileSystemEntities->system_modules_id = $systemModule->getId();
-            $fileSystemEntities->companies_id = $file->companies_id;
+            $fileSystemEntities->companies_id = $file['file']->companies_id;
             $fileSystemEntities->field_name = $file['field_name'] ?? null;
             $fileSystemEntities->created_at = $file['file']->created_at;
             $fileSystemEntities->is_deleted = 0 ;
