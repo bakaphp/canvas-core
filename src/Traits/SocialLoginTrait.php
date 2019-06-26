@@ -20,60 +20,57 @@ use Canvas\Traits\AuthTrait;
 trait SocialLoginTrait
 {
     /**
-     * Login user via Social Login Feature
+     * Login user via Social Login Feature.
      * @param Users $user
      * @return array
      */
     abstract public function loginSocial(Users $user): array;
 
     /**
-     * Login user using stablished user credentials
+     * Login user using stablished user credentials.
      * @param string $email
      * @param string $password
      * @return array
      */
     abstract public function loginUsers(string $email, string $password): array;
 
-
-    
     /**
-     * Facebook Login
+     * Facebook Login.
      * @param Sources $source
      * @param string $accessToken
      * @return Array
      */
     protected function facebook(Sources $source, string $accessToken): array
     {
-
         /**
-         * Get the Facebook adapter
+         * Get the Facebook adapter.
          */
         $facebookAdapter = $this->di->get('socialLogin')->authenticate(ucfirst($source->title));
 
         /**
-         * Set user's Access Token
+         * Set user's Access Token.
          */
         $facebookAdapter->setAccessToken($accessToken);
 
         /**
-         * Get user's profile based on set Access Token
+         * Get user's profile based on set Access Token.
          */
         $data = $facebookAdapter->getUserProfile();
 
         /**
-         * Lets Login or Signup the user
+         * Lets Login or Signup the user.
          */
         $userProfile = current($data);
 
         /**
-        * Lets find if user has a linked source by social network id
+        * Lets find if user has a linked source by social network id.
         */
-        $userLinkedSource =  UserLinkedSources::findFirst([
-            'conditions'=>'source_id = ?0 and source_users_id_text = ?1 and is_deleted = 0',
-            'bind'=>[
-                    $source->id,
-                    $userProfile->identifier
-                ]
+        $userLinkedSource = UserLinkedSources::findFirst([
+            'conditions' => 'source_id = ?0 and source_users_id_text = ?1 and is_deleted = 0',
+            'bind' => [
+                $source->id,
+                $userProfile->identifier
+            ]
         ]);
 
         if ($user = $userLinkedSource->getUser()) {
@@ -88,7 +85,7 @@ trait SocialLoginTrait
         $newUser = new Users();
         $newUser->firstname = $userProfile->firstName ? $userProfile->firstName : 'John';
         $newUser->lastname = $userProfile->lastName ? $userProfile->lastName : 'Doe';
-        $newUser->displayname = $request->displayName;
+        $newUser->displayname = $newUser->firstname;
         $newUser->password = $password;
         $newUser->email = $userProfile->email ? $userProfile->email : 'doe@gmail.com';
         $newUser->user_active = 1;
@@ -103,8 +100,8 @@ trait SocialLoginTrait
             $newUser->signup();
 
             $newLinkedSource = new UserLinkedSources();
-            $newLinkedSource->users_id =  $newUser->id;
-            $newLinkedSource->source_id =  $source->id;
+            $newLinkedSource->users_id = $newUser->id;
+            $newLinkedSource->source_id = $source->id;
             $newLinkedSource->source_users_id = $userProfile->identifier ? $userProfile->identifier : 'asdakelkmaefa';
             $newLinkedSource->source_users_id_text = $userProfile->identifier ? $userProfile->identifier : 'asdakelkmaefa';
             $newLinkedSource->source_username = $userProfile->displayName ? $userProfile->displayName : 'exampleasdadas';
