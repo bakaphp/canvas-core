@@ -190,6 +190,10 @@ trait FileSystemModelTrait
             $fileSystemEntities->created_at = $file['file']->created_at;
             $fileSystemEntities->is_deleted = 0 ;
             $fileSystemEntities->saveOrFail();
+
+            if (!is_null($this->filesNewAttachedPath())) {
+                $file['file']->move($this->filesNewAttachedPath());
+            }
         }
 
         return true;
@@ -277,6 +281,17 @@ trait FileSystemModelTrait
             return $fileEntity->file->url;
         }
 
+        return null;
+    }
+
+    /**
+     * Given this entity define a new path.
+     *
+     * @param string $path
+     * @return string
+     */
+    protected function filesNewAttachedPath(): ?string
+    {
         return null;
     }
 }

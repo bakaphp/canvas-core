@@ -87,6 +87,13 @@ trait FileManagementTrait
      */
     public function edit($id) : Response
     {
+        /**
+         * @todo update filesystem move function
+         * limit the file for this app / company
+         * provide a method either here or another to move the file to a new location
+         * calling the method move of the same object , right now we can do it internally but for
+         * exposing the api we will need this
+         */
         $file = FileSystem::findFirstOrFail($id);
 
         $request = $this->request->getPutData();
@@ -205,35 +212,7 @@ trait FileManagementTrait
                 }
             }
 
-            //get the filesystem config
-            $appSettingFileConfig = $this->di->get('app')->get('filesystem');
-            $fileSystemConfig = $this->config->filesystem->{$appSettingFileConfig};
-
-            //create local filesystem , for temp files
-            $this->di->get('filesystem', ['local'])->createDir($this->config->filesystem->local->path);
-
-            //get the tem file
-            $filePath = Helper::generateUniqueName($file, $this->config->filesystem->local->path);
-            $compleFilePath = $fileSystemConfig->path . $filePath;
-            $uploadFileNameWithPath = $appSettingFileConfig == 'local' ? $filePath : $compleFilePath;
-
-            /**
-             * upload file base on temp.
-             * @todo change this to determine type of file and recreate it if its a image
-             */
-            $this->di->get('filesystem')->writeStream($uploadFileNameWithPath, fopen($file->getTempName(), 'r'));
-
-            $fileSystem = new FileSystem();
-            $fileSystem->name = $file->getName();
-            $fileSystem->companies_id = $this->userData->currentCompanyId();
-            $fileSystem->apps_id = $this->app->getId();
-            $fileSystem->users_id = $this->userData->getId();
-            $fileSystem->path = $compleFilePath;
-            $fileSystem->url = $fileSystemConfig->cdn . DIRECTORY_SEPARATOR . $uploadFileNameWithPath;
-            $fileSystem->file_type = $file->getExtension();
-            $fileSystem->size = $file->getSize();
-
-            $fileSystem->saveOrFail();
+            $fileSystem = Helper::upload($file);
 
             //add settings
             foreach ($allFields as $key => $settings) {

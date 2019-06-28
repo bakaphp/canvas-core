@@ -212,4 +212,25 @@ class FileSystem extends AbstractModel
 
         return $file;
     }
+
+    /**
+     * Given a new string move the file to that localtion.
+     *
+     * @return bool
+     */
+    public function move(string $location): bool
+    {
+        $appSettingFileConfig = $this->di->get('app')->get('filesystem');
+        $fileSystemConfig = $this->di->get('config')->filesystem->{$appSettingFileConfig};
+
+        $newPath = $location . '/' . basename($this->path);
+        $newUrl = $fileSystemConfig->cdn . DIRECTORY_SEPARATOR . $newPath;
+        $this->di->get('filesystem')->rename($this->path, $newPath);
+
+        $this->path = $newPath;
+        $this->url = $newUrl;
+        $this->updateOrFail();
+
+        return true;
+    }
 }
