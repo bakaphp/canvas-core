@@ -533,4 +533,9 @@ class Users extends \Baka\Auth\Models\Users
     {
         return $this->getAttachementByName('avatar');
     }
+
+    protected function filesNewAttachedPath(): ?string
+    {
+        return 'userss/'.$this->getId();
+    }
 }
