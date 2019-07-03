@@ -150,7 +150,7 @@ class AuthController extends \Baka\Auth\AuthController
      * Login user using Access Token.
      * @return Response
      */
-    public function loginByAccessToken(): Response
+    public function loginBySocial(): Response
     {
         $request = $this->request->getPostData();
 
@@ -162,9 +162,9 @@ class AuthController extends \Baka\Auth\AuthController
         //Use Social Login Trait to log in with different provices.Depends on Provider name
 
         if ($source->title == 'facebook') {
-            return $this->response($this->facebook($source, $request['access_token']));
+            return $this->response($this->facebook($source, $request['social_id'], $request['email']));
         } elseif ($source->title == 'google') {
-            return $this->response($this->googleLogin($source, $request['access_token']));
+            return $this->response($this->googleLogin($source, $request['social_id'], $request['email']));
         }
     }
 }
