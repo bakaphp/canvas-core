@@ -51,7 +51,7 @@ trait SocialLoginTrait
         $userLinkedSource =  UserLinkedSources::findFirst([
             'conditions'=>'source_id = ?0 and source_users_id_text = ?1 and is_deleted = 0',
             'bind'=>[
-                    $source->id,
+                    $source->getId(),
                     $identifier
                 ]
         ]);
@@ -59,8 +59,8 @@ trait SocialLoginTrait
         /**
          * This confirms if the linked source exists and if it has a user attached to it. If true then logs in the user
          */
-        if (is_object($user = $userLinkedSource->getUser())) {
-            return $this->loginSocial($user);
+        if ($userLinkedSource) {
+            return $this->loginSocial($userLinkedSource->getUser());
         }
 
         /**
@@ -90,7 +90,7 @@ trait SocialLoginTrait
         }
 
         
-        $newUser = $this->createUser((int)$source->id, $identifier, $email, $password);
+        $newUser = $this->createUser($source->getId(), $identifier, $email, $password);
         return $this->loginUsers($newUser->email, $password);
     }
 
@@ -111,13 +111,13 @@ trait SocialLoginTrait
         $newUser = new Users();
         $newUser->firstname = 'John';
         $newUser->lastname = 'Doe';
-        $newUser->displayname = 'johnDoe';
+        $newUser->displayname = 'FacebookLogin-' . $random->base58();
         $newUser->password = $password;
         $newUser->email = $email;
         $newUser->user_active = 1;
         $newUser->roles_id = 1;
         $newUser->created_at = date('Y-m-d H:m:s');
-        $newUser->defaultCompanyName = 'Default-' . $random->base58();
+        $newUser->defaultCompanyName = 'FacebookLogin-' . $random->base58();
 
         try {
             $this->db->begin();
@@ -130,7 +130,7 @@ trait SocialLoginTrait
             $newLinkedSource->source_id =  $sourceId;
             $newLinkedSource->source_users_id = $identifier;
             $newLinkedSource->source_users_id_text = $identifier;
-            $newLinkedSource->source_username = $newUser->displayname;
+            $newLinkedSource->source_username = 'FacebookLogin-' . $random->base58();
             $newLinkedSource->save();
 
             $this->db->commit();
