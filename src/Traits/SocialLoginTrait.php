@@ -37,20 +37,26 @@ trait SocialLoginTrait
 
     
     /**
-     * Facebook Login
+     * Social Login for many providers
      * @param Sources $source
      * @param string $accessToken
      * @return Array
      */
-    protected function facebook(Sources $source, string $identifier, string $email): array
+    protected function providerLogin(Sources $source, string $identifier, string $email): array
     {
+
+        $existingUser = Users::findFirst([
+            'conditions'=>'email = ?0 and is_deleted = 0 and status = 1',
+            'bind'=>[$email]
+        ]);
 
         /**
         * Lets find if user has a linked source by social network id
         */
         $userLinkedSource =  UserLinkedSources::findFirst([
-            'conditions'=>'source_id = ?0 and source_users_id_text = ?1 and is_deleted = 0',
+            'conditions'=>'users_id = ?0 and source_id = ?1 and source_users_id_text = ?2 and is_deleted = 0',
             'bind'=>[
+                    $existingUser->getId(),
                     $source->getId(),
                     $identifier
                 ]
@@ -69,28 +75,23 @@ trait SocialLoginTrait
         $random = new Random();
         $password = $random->base58();
 
-        $existingUser = Users::findFirst([
-            'conditions'=>'email = ?0 and is_deleted = 0 and status = 1',
-            'bind'=>[$email]
-        ]);
-
         /**
          * If user exists but doesnt have a linked source
          */
         if (!$userLinkedSource && $existingUser) {
             $newLinkedSource = new UserLinkedSources();
-            $newLinkedSource->users_id =  $existingUser->id;
-            $newLinkedSource->source_id =  $source->id;
+            $newLinkedSource->users_id =  $existingUser->getId();
+            $newLinkedSource->source_id =  $source->getId();
             $newLinkedSource->source_users_id = $identifier;
             $newLinkedSource->source_users_id_text = $identifier;
-            $newLinkedSource->source_username = $existingUser->displayname;
+            $newLinkedSource->source_username = ucfirst($source->title) . 'Login-' . $random->base58();
             $newLinkedSource->save();
 
             return $this->loginSocial($existingUser);
         }
 
         
-        $newUser = $this->createUser($source->getId(), $identifier, $email, $password);
+        $newUser = $this->createUser($source, $identifier, $email, $password);
         return $this->loginUsers($newUser->email, $password);
     }
 
@@ -103,7 +104,7 @@ trait SocialLoginTrait
      * @param string $password
      * @return Users
      */
-    protected function createUser(int $sourceId, string $identifier, $email, $password): Users
+    protected function createUser(Sources $source, string $identifier, $email, $password): Users
     {
         $random = new Random();
 
@@ -111,13 +112,13 @@ trait SocialLoginTrait
         $newUser = new Users();
         $newUser->firstname = 'John';
         $newUser->lastname = 'Doe';
-        $newUser->displayname = 'FacebookLogin-' . $random->base58();
+        $newUser->displayname =  ucfirst($source->title) . 'Login-' . $random->base58();
         $newUser->password = $password;
         $newUser->email = $email;
         $newUser->user_active = 1;
         $newUser->roles_id = 1;
         $newUser->created_at = date('Y-m-d H:m:s');
-        $newUser->defaultCompanyName = 'FacebookLogin-' . $random->base58();
+        $newUser->defaultCompanyName = ucfirst($source->title) . 'Login-' . $random->base58();
 
         try {
             $this->db->begin();
@@ -127,10 +128,10 @@ trait SocialLoginTrait
 
             $newLinkedSource = new UserLinkedSources();
             $newLinkedSource->users_id =  $newUser->id;
-            $newLinkedSource->source_id =  $sourceId;
+            $newLinkedSource->source_id =  $source->getId();
             $newLinkedSource->source_users_id = $identifier;
             $newLinkedSource->source_users_id_text = $identifier;
-            $newLinkedSource->source_username = 'FacebookLogin-' . $random->base58();
+            $newLinkedSource->source_username = ucfirst($source->title) . 'Login-' . $random->base58();
             $newLinkedSource->save();
 
             $this->db->commit();

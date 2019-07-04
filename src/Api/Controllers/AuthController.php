@@ -159,12 +159,6 @@ class AuthController extends \Baka\Auth\AuthController
             'bind' => [$request['provider']]
         ]);
 
-        //Use Social Login Trait to log in with different provices.Depends on Provider name
-
-        if ($source->title == 'facebook') {
-            return $this->response($this->facebook($source, $request['social_id'], $request['email']));
-        } elseif ($source->title == 'google') {
-            return $this->response($this->googleLogin($source, $request['social_id'], $request['email']));
-        }
+        return $this->response($this->providerLogin($source, $request['social_id'], $request['email']));
     }
 }
