@@ -250,6 +250,7 @@ trait FileSystemModelTrait
      * Overwrite the relationship of the filesystem to return the attachment structure
      * to the given user.
      *
+     * @deprecated version 0.2
      * @return array
      */
     public function getFilesystem(): array
@@ -258,22 +259,45 @@ trait FileSystemModelTrait
     }
 
     /**
-     * Undocumented function.
+     * Overwrite the relationship of the filesystem to return the attachment structure
+     * to the given user.
+     *
+     * @return array
+     */
+    public function getFiles(): array
+    {
+        return $this->getAttachments();
+    }
+
+    /**
+     * Get a file by its fieldname.
      *
      * @todo this will be a performance issue in the futur look for better ways to handle this
      * when a company has over 1k images
      *
+     * @deprecated version 0.2
      * @param string $name
      * @return void
      */
     public function getAttachementByName(string $fieldName): ?string
+    {
+        return $this->getFileByName($fieldName);
+    }
+
+    /**
+     * Undocumented function.
+     *
+     * @param string $fieldName
+     * @return string|null
+     */
+    public function getFileByName(string $fieldName): ?string
     {
         $systemModule = SystemModules::getSystemModuleByModelName(self::class);
         $companyId = Di::getDefault()->getUserData()->currentCompanyId();
 
         $fileEntity = FileSystemEntities::findFirst([
             'conditions' => 'system_modules_id = ?0 AND entity_id = ?1 AND is_deleted = ?2 and field_name = ?3 and companies_id = ?4
-                            AND filesystem_id IN (SELECT id from \Canvas\Models\FileSystem f WHERE
+                            AND filesystem_id IN (SELECT f.id from \Canvas\Models\FileSystem f WHERE
                                 f.is_deleted = ?2 AND f.companies_id = ?4
                             )',
             'bind' => [$systemModule->getId(), $this->getId(), 0, $fieldName, $companyId]

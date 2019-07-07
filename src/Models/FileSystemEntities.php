@@ -153,6 +153,31 @@ class FileSystemEntities extends AbstractModel
     }
 
     /**
+     * Get a filesystem entities from this system modules.
+     *
+     * @param integer $id
+     * @param SystemModules $systemModules
+     * @return void
+     */
+    public static function getByEntityId(int $id): FileSystemEntities
+    {
+        $app = Di::getDefault()->getApp();
+        $companyId = Di::getDefault()->getUserData()->currentCompanyId();
+
+        $fileEntity = self::findFirst([
+            'conditions' => 'entity_id = ?0 AND companies_id = ?1 AND  is_deleted = 0 AND 
+                                filesystem_id in (SELECT s.id from \Canvas\Models\FileSystem s WHERE s.apps_id = ?2 AND s.is_deleted = 0)',
+            'bind' => [$id, $companyId, $app->getId()]
+        ]);
+
+        if (!is_object($fileEntity)) {
+            throw new ModelException('File not found');
+        }
+
+        return $fileEntity;
+    }
+
+    /**
      * Given a entity id get all its asociated files.
      *
      * @param integer $id

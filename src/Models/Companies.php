@@ -276,7 +276,7 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
             'Canvas\Models\FileSystemEntities',
             'entity_id',
             [
-                'alias' => 'filesystem',
+                'alias' => 'files',
                 'conditions' => 'system_modules_id = ?0',
                 'bind' => [$systemModule->getId()]
             ]

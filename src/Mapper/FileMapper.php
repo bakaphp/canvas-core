@@ -22,26 +22,20 @@ class FileMapper extends CustomMapper
      */
     public function mapToObject($file, $fileDto, array $context = [])
     {
-        $fieldName = FileSystemEntities::findFirst([
+        $fileEntity = FileSystemEntities::findFirst([
             'conditions' => 'system_modules_id = ?0 AND entity_id = ?1 AND filesystem_id = ?2 AND companies_id = ?3 AND is_deleted = 0',
             'bind' => [$this->systemModuleId, $this->entityId, $file->getId(), $file->companies_id]
         ]);
 
-        $fileDto->id = $file->getId();
-        $fileDto->companies_id = $file->companies_id;
-        $fileDto->apps_id = $file->apps_id;
-        $fileDto->users_id = $file->users_id;
-        $fileDto->system_modules_id = $this->systemModuleId;
+        $fileDto->id = $fileEntity->getId();
+        $fileDto->filesystem_id = $file->getId();
         $fileDto->entity_id = $this->entityId;
         $fileDto->name = $file->name;
-        $fileDto->field_name = $fieldName ? $fieldName->field_name : null;
+        $fileDto->field_name = $fileEntity ? $fileEntity->field_name : null;
         $fileDto->path = $file->path;
         $fileDto->url = $file->url;
         $fileDto->size = $file->size;
         $fileDto->file_type = $file->file_type;
-        $fileDto->created_at = $file->created_at;
-        $fileDto->updated_at = $file->updated_at;
-        $fileDto->is_deleted = $file->is_deleted;
         $fileDto->attributes = $file->getAllSettings();
 
         return $fileDto;
