@@ -39,6 +39,11 @@ class FileMapper extends CustomMapper
             'bind' => [$this->systemModuleId, $this->entityId, $file->getId(), $file->companies_id]
         ]);
 
+        //cant type check 
+        if (!is_object($fileEntity) || !is_object($file)) {
+            return ;
+        }
+
         $fileDto->id = $fileEntity->getId();
         $fileDto->filesystem_id = $file->getId();
         $fileDto->name = $file->name;

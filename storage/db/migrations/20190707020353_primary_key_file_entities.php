@@ -7,19 +7,18 @@ class PrimaryKeyFileEntities extends AbstractMigration
 {
     public function change()
     {
+        $this->execute('ALTER TABLE filesystem_entities DROP PRIMARY KEY;');
+        $this->execute('ALTER TABLE `filesystem_entities`
+        ADD COLUMN `id` INT(11) NOT NULL AUTO_INCREMENT FIRST,
+        ADD PRIMARY KEY (`id`);');
+
         $this->table('filesystem_entities', [
                 'id' => false,
-                'primary_key' => ['id'],
                 'engine' => 'InnoDB',
                 'encoding' => 'utf8mb4',
                 'collation' => 'utf8mb4_unicode_ci',
                 'comment' => '',
                 'row_format' => 'DYNAMIC',
-            ])
-            ->addColumn('id', 'integer', [
-                'null' => false,
-                'limit' => MysqlAdapter::INT_REGULAR,
-                'identity' => 'enable',
             ])
         ->changeColumn('filesystem_id', 'integer', [
                 'null' => false,
@@ -43,7 +42,6 @@ class PrimaryKeyFileEntities extends AbstractMigration
             ])
         ->changeColumn('field_name', 'string', [
                 'null' => true,
-                'default' => 'NULL',
                 'limit' => 50,
                 'collation' => 'utf8mb4_unicode_ci',
                 'encoding' => 'utf8mb4',
@@ -55,7 +53,6 @@ class PrimaryKeyFileEntities extends AbstractMigration
             ])
         ->changeColumn('updated_at', 'datetime', [
                 'null' => true,
-                'default' => 'NULL',
                 'after' => 'created_at',
             ])
         ->changeColumn('is_deleted', 'boolean', [

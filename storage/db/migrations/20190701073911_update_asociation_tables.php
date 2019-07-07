@@ -22,7 +22,6 @@ class UpdateAsociationTables extends AbstractMigration
             ])
             ->addColumn('updated_at', 'datetime', [
                 'null' => true,
-                'default' => 'NULL',
                 'after' => 'created_at',
             ])
             ->addColumn('is_deleted', 'integer', [
@@ -74,7 +73,6 @@ class UpdateAsociationTables extends AbstractMigration
             ])
             ->addColumn('icon_url', 'string', [
                 'null' => true,
-                'default' => 'NULL',
                 'limit' => 50,
                 'collation' => 'utf8mb4_unicode_ci',
                 'encoding' => 'utf8mb4',
@@ -91,8 +89,7 @@ class UpdateAsociationTables extends AbstractMigration
             'after' => 'with_realtime',
         ])
         ->changeColumn('updated_at', 'datetime', [
-            'null' => true,
-            'default' => 'NULL',
+            'null' => true
             'after' => 'created_at',
         ])
         ->changeColumn('is_deleted', 'integer', [
@@ -137,7 +134,6 @@ class UpdateAsociationTables extends AbstractMigration
             ])
             ->addColumn('updated_at', 'datetime', [
                 'null' => true,
-                'default' => 'NULL',
                 'after' => 'created_at',
             ])
             ->addColumn('is_deleted', 'integer', [
@@ -193,8 +189,7 @@ class UpdateAsociationTables extends AbstractMigration
             'after' => 'read',
         ])
         ->changeColumn('updated_at', 'datetime', [
-            'null' => true,
-            'default' => 'NULL',
+            'null' => true
             'after' => 'created_at',
         ])
         ->changeColumn('is_deleted', 'integer', [
