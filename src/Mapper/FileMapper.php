@@ -16,6 +16,18 @@ class FileMapper extends CustomMapper
     public $entityId;
 
     /**
+     * constructor.
+     *
+     * @param integer $entityId
+     * @param integer $systemModuleId
+     */
+    public function __construct(int $entityId, int $systemModuleId)
+    {
+        $this->systemModuleId = $systemModuleId;
+        $this->entityId = $entityId;
+    }
+
+    /**
      * @param Canvas\Models\FileSystem $file
      * @param Canvas\Dto\Files $fileDto
      * @return Files
@@ -29,10 +41,8 @@ class FileMapper extends CustomMapper
 
         $fileDto->id = $fileEntity->getId();
         $fileDto->filesystem_id = $file->getId();
-        $fileDto->entity_id = $this->entityId;
         $fileDto->name = $file->name;
         $fileDto->field_name = $fileEntity ? $fileEntity->field_name : null;
-        $fileDto->path = $file->path;
         $fileDto->url = $file->url;
         $fileDto->size = $file->size;
         $fileDto->file_type = $file->file_type;

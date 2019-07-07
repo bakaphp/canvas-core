@@ -186,13 +186,13 @@ trait FileSystemModelTrait
             //new attachment
             if (!is_object($fileSystemEntities)) {
                 $fileSystemEntities = new FileSystemEntities();
-                $fileSystemEntities->filesystem_id = $file['file']->getId();
                 $fileSystemEntities->system_modules_id = $systemModule->getId();
                 $fileSystemEntities->companies_id = $file['file']->companies_id;
                 $fileSystemEntities->entity_id = $this->getId();
                 $fileSystemEntities->created_at = $file['file']->created_at;
             }
 
+            $fileSystemEntities->filesystem_id = $file['file']->getId();
             $fileSystemEntities->field_name = $file['field_name'] ?? null;
             $fileSystemEntities->is_deleted = 0 ;
             $fileSystemEntities->saveOrFail();
@@ -235,9 +235,7 @@ trait FileSystemModelTrait
             'bind' => $bindParams
         ]);
 
-        $fileMapper = new FileMapper();
-        $fileMapper->systemModuleId = $systemModule->getId();
-        $fileMapper->entityId = $this->getId();
+        $fileMapper = new FileMapper($this->getId(), $systemModule->getId());
 
         //add a mapper
         $this->di->getDtoConfig()->registerMapping(FileSystem::class, Files::class)
@@ -264,9 +262,9 @@ trait FileSystemModelTrait
      *
      * @return array
      */
-    public function getFiles(): array
+    public function getFiles(string $fileType = null): array
     {
-        return $this->getAttachments();
+        return $this->getAttachments($fileType);
     }
 
     /**
@@ -279,7 +277,7 @@ trait FileSystemModelTrait
      * @param string $name
      * @return void
      */
-    public function getAttachementByName(string $fieldName): ?string
+    public function getAttachementByName(string $fieldName): ?object
     {
         return $this->getFileByName($fieldName);
     }
@@ -290,7 +288,7 @@ trait FileSystemModelTrait
      * @param string $fieldName
      * @return string|null
      */
-    public function getFileByName(string $fieldName): ?string
+    public function getFileByName(string $fieldName): ?object
     {
         $systemModule = SystemModules::getSystemModuleByModelName(self::class);
         $companyId = Di::getDefault()->getUserData()->currentCompanyId();
@@ -304,7 +302,16 @@ trait FileSystemModelTrait
         ]);
 
         if ($fileEntity) {
-            return $fileEntity->file->url;
+            $fileMapper = new FileMapper($this->getId(), $systemModule->getId());
+
+            //add a mapper
+            $this->di->getDtoConfig()->registerMapping(FileSystem::class, Files::class)
+                ->useCustomMapper($fileMapper);
+
+            /**
+             * @todo create a mapper for entity so we dont have to look for the relationship?
+             */
+            return $this->di->getMapper()->map($fileEntity->file, Files::class);
         }
 
         return null;

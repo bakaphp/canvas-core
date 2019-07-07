@@ -32,12 +32,6 @@ class Files
      *
      * @var string
      */
-    public $path;
-
-    /**
-     *
-     * @var string
-     */
     public $url;
 
     /**

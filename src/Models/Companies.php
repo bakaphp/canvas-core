@@ -543,6 +543,6 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
      */
     public function getLogo()
     {
-        return $this->getAttachementByName('logo');
+        return $this->getFileByName('logo');
     }
 }
