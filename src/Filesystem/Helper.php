@@ -6,11 +6,13 @@ namespace Canvas\Filesystem;
 
 use Phalcon\Http\Request\File;
 use Exception;
+use Canvas\Models\FileSystem;
+use Phalcon\Di;
 
 class Helper
 {
     /**
-     * Generate a unique name in a specific dir
+     * Generate a unique name in a specific dir.
      *
      * @param string $dir the especific dir where the file will be saved
      * @param bool $withPath
@@ -37,7 +39,7 @@ class Helper
     }
 
     /**
-     * Create a File instance from a given path
+     * Create a File instance from a given path.
      *
      * @param string $path Path of the file to be used
      *
@@ -53,5 +55,49 @@ class Helper
             'error' => 0,
             'size' => filesize($path),
         ]);
+    }
+
+    /**
+     * Given a file create it in the filesystem.
+     *
+     * @param File $file
+     * @return bool
+     */
+    public static function upload(File $file): FileSystem
+    {
+        $di = Di::getDefault();
+        $config = $di->get('config');
+
+        //get the filesystem config
+        $appSettingFileConfig = $di->get('app')->get('filesystem');
+        $fileSystemConfig = $config->filesystem->{$appSettingFileConfig};
+
+        //create local filesystem , for temp files
+        $di->get('filesystem', ['local'])->createDir($config->filesystem->local->path);
+
+        //get the tem file
+        $filePath = self::generateUniqueName($file, $config->filesystem->local->path);
+        $compleFilePath = $fileSystemConfig->path . $filePath;
+        $uploadFileNameWithPath = $appSettingFileConfig == 'local' ? $filePath : $compleFilePath;
+
+        /**
+         * upload file base on temp.
+         * @todo change this to determine type of file and recreate it if its a image
+         */
+        $di->get('filesystem')->writeStream($uploadFileNameWithPath, fopen($file->getTempName(), 'r'));
+
+        $fileSystem = new FileSystem();
+        $fileSystem->name = $file->getName();
+        $fileSystem->companies_id = $di->get('userData')->currentCompanyId();
+        $fileSystem->apps_id = $di->get('app')->getId();
+        $fileSystem->users_id = $di->get('userData')->getId();
+        $fileSystem->path = $compleFilePath;
+        $fileSystem->url = $fileSystemConfig->cdn . DIRECTORY_SEPARATOR . $uploadFileNameWithPath;
+        $fileSystem->file_type = $file->getExtension();
+        $fileSystem->size = $file->getSize();
+
+        $fileSystem->saveOrFail();
+
+        return $fileSystem;
     }
 }

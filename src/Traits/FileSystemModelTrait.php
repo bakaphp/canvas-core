@@ -196,6 +196,10 @@ trait FileSystemModelTrait
             $fileSystemEntities->field_name = $file['field_name'] ?? null;
             $fileSystemEntities->is_deleted = 0 ;
             $fileSystemEntities->saveOrFail();
+
+            if (!is_null($this->filesNewAttachedPath())) {
+                $file['file']->move($this->filesNewAttachedPath());
+            }
         }
 
         return true;
@@ -212,7 +216,6 @@ trait FileSystemModelTrait
         $systemModule = SystemModules::getSystemModuleByModelName(self::class);
         $bindParams = [
             0,
-            Di::getDefault()->getUserData()->currentCompanyId(),
             $systemModule->getId(),
             $this->getId()
         ];
@@ -227,10 +230,10 @@ trait FileSystemModelTrait
 
         $attachments = FileSystem::find([
             'conditions' => '
-                is_deleted = ?0 AND companies_id = ?1 AND id in 
+                is_deleted = ?0 AND id in 
                     (SELECT 
                         filesystem_id from \Canvas\Models\FileSystemEntities e
-                        WHERE e.system_modules_id = ?2 AND e.entity_id = ?3 AND e.is_deleted = ?0 and e.companies_id = ?1
+                        WHERE e.system_modules_id = ?1 AND e.entity_id = ?2 AND e.is_deleted = ?0
                     )' . $fileTypeSql,
             'bind' => $bindParams
         ]);
@@ -291,14 +294,13 @@ trait FileSystemModelTrait
     public function getFileByName(string $fieldName): ?object
     {
         $systemModule = SystemModules::getSystemModuleByModelName(self::class);
-        $companyId = Di::getDefault()->getUserData()->currentCompanyId();
 
         $fileEntity = FileSystemEntities::findFirst([
             'conditions' => 'system_modules_id = ?0 AND entity_id = ?1 AND is_deleted = ?2 and field_name = ?3 and companies_id = ?4
                             AND filesystem_id IN (SELECT f.id from \Canvas\Models\FileSystem f WHERE
                                 f.is_deleted = ?2 AND f.companies_id = ?4
                             )',
-            'bind' => [$systemModule->getId(), $this->getId(), 0, $fieldName, $companyId]
+            'bind' => [$systemModule->getId(), $this->getId(), 0, $fieldName]
         ]);
 
         if ($fileEntity) {
@@ -314,6 +316,17 @@ trait FileSystemModelTrait
             return $this->di->getMapper()->map($fileEntity->file, Files::class);
         }
 
+        return null;
+    }
+
+    /**
+     * Given this entity define a new path.
+     *
+     * @param string $path
+     * @return string
+     */
+    protected function filesNewAttachedPath(): ?string
+    {
         return null;
     }
 }

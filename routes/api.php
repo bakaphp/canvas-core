@@ -12,7 +12,8 @@ $publicRoutes = [
     Route::get('/users-invite/validate/{hash}')->controller('UsersInviteController')->action('getByHash'),
     Route::post('/users-invite/{hash}')->controller('UsersInviteController')->action('processUserInvite'),
     Route::post('/webhook/payments')->controller('PaymentsController')->action('handleWebhook'),
-    Route::get('/apps/{key}/settings')->controller('AppsSettingsController')->action('getByKey')
+    Route::get('/apps/{key}/settings')->controller('AppsSettingsController')->action('getByKey'),
+    Route::post('/users/social')->controller('AuthController')->action('loginBySocial')
 ];
 
 $privateRoutes = [
@@ -45,7 +46,6 @@ $privateRoutes = [
     Route::get('/timezones')->controller('TimeZonesController'),
     Route::post('/users/{id}/devices')->controller('UserLinkedSourcesController')->action('devices'),
     Route::delete('/users/{id}/devices/{deviceId}')->controller('UserLinkedSourcesController')->action('detachDevice'),
-    Route::post('/users/social')->controller('AuthController')->action('loginByAccessToken'),
     Route::delete('/filesystem/{id}/attributes/{name}')->controller('FilesystemController')->action('deleteAttributes'),
     Route::put('/filesystem-entity/{id}')->controller('FilesystemController')->action('editEntity'),
     Route::put('/auth/logout')->controller('AuthController')->action('logout'),

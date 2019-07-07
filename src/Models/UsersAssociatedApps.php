@@ -60,6 +60,13 @@ class UsersAssociatedApps extends AbstractModel
             ['alias' => 'app']
         );
 
+        $this->belongsTo(
+            'users_id',
+            'Canvas\Models\Users',
+            'id',
+            ['alias' => 'user']
+        );
+
         $this->setSource('users_associated_apps');
     }
 

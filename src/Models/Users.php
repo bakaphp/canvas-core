@@ -16,6 +16,7 @@ use Phalcon\Validation\Validator\Regex;
 use Phalcon\Validation\Validator\Uniqueness;
 use Canvas\Traits\FileSystemModelTrait;
 use Phalcon\Security\Random;
+use Baka\Database\Contracts\HashTableTrait;
 
 /**
  * Class Users.
@@ -34,6 +35,7 @@ class Users extends \Baka\Auth\Models\Users
     use Billable;
     use SubscriptionPlanLimitTrait;
     use FileSystemModelTrait;
+    use HashTableTrait;
 
     /**
      * Default Company Branch.
@@ -269,11 +271,21 @@ class Users extends \Baka\Auth\Models\Users
     }
 
     /**
+    * Set hashtable settings table, userConfig ;).
+    *
+    * @return void
+    */
+    private function createSettingsModel(): void
+    {
+        $this->settingsModel = new UserConfig();
+    }
+
+    /**
      * Get the User key for redis.
      *
      * @return string
      */
-    public function getKey() : string
+    public function getKey() : int
     {
         return $this->id;
     }
@@ -453,6 +465,12 @@ class Users extends \Baka\Auth\Models\Users
             if (empty($this->default_company_branch)) {
                 $this->default_company_branch = $this->defaultCompany->branch->getId();
             }
+
+            /**
+             * asociate user to app.
+             * @todo move most of the aftersave function to events
+             */
+            $this->di->getApp()->associate($this, $this->defaultCompany);
         }
 
         //Create new company associated company

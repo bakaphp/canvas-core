@@ -72,7 +72,7 @@ class FileSystemEntities extends AbstractModel
 
         $this->belongsTo(
             'filesystem_id',
-            'Canvas\Models\Filesystem',
+            FileSystem::class,
             'id',
             ['alias' => 'file']
         );

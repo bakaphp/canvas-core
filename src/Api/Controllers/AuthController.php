@@ -15,7 +15,7 @@ use Canvas\Traits\SocialLoginTrait;
 use Phalcon\Http\Response;
 
 /**
- * Class AuthController
+ * Class AuthController.
  *
  * @package Canvas\Api\Controllers
  *
@@ -28,13 +28,13 @@ use Phalcon\Http\Response;
 class AuthController extends \Baka\Auth\AuthController
 {
     /**
-     * Auth Trait
+     * Auth Trait.
      */
     use AuthTrait;
     use SocialLoginTrait;
 
     /**
-     * Setup for this controller
+     * Setup for this controller.
      *
      * @return void
      */
@@ -49,7 +49,7 @@ class AuthController extends \Baka\Auth\AuthController
     }
 
     /**
-     * Send email to change current email for user
+     * Send email to change current email for user.
      * @param int $id
      * @return Response
      */
@@ -69,7 +69,7 @@ class AuthController extends \Baka\Auth\AuthController
     }
 
     /**
-    * Set the email config array we are going to be sending
+    * Set the email config array we are going to be sending.
     *
     * @param String $emailAction
     * @param Users  $user
@@ -113,7 +113,7 @@ class AuthController extends \Baka\Auth\AuthController
     }
 
     /**
-     * Change user's email
+     * Change user's email.
      * @param string $hash
      * @return Response
      */
@@ -130,7 +130,7 @@ class AuthController extends \Baka\Auth\AuthController
         }
 
         $this->db->begin();
-        
+
         $user->email = $newEmail;
 
         if (!$user->update()) {
@@ -147,24 +147,18 @@ class AuthController extends \Baka\Auth\AuthController
     }
 
     /**
-     * Login user using Access Token
+     * Login user using Access Token.
      * @return Response
      */
-    public function loginByAccessToken(): Response
+    public function loginBySocial(): Response
     {
         $request = $this->request->getPostData();
 
         $source = Sources::findFirstOrFail([
             'title = ?0 and is_deleted = 0',
-            'bind'=>[$request['provider']]
+            'bind' => [$request['provider']]
         ]);
 
-        //Use Social Login Trait to log in with different provices.Depends on Provider name
-        
-        if ($source->title == 'facebook') {
-            return $this->response($this->facebook($source, $request['access_token']));
-        } elseif ($source->title == 'google') {
-            return $this->response($this->googleLogin($source, $request['access_token']));
-        }
+        return $this->response($this->providerLogin($source, $request['social_id'], $request['email']));
     }
 }
