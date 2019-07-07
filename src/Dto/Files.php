@@ -6,39 +6,15 @@ class Files
 {
     /**
      *
-     * @var string
+     * @var int
      */
     public $id;
 
     /**
      *
-     * @var integer
+     * @var int
      */
-    public $companies_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $entity_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $system_modules_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $apps_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $users_id;
+    public $filesystem_id;
 
     /**
      *
@@ -51,12 +27,6 @@ class Files
      * @var string
      */
     public $field_name;
-
-    /**
-     *
-     * @var string
-     */
-    public $path;
 
     /**
      *
@@ -75,24 +45,6 @@ class Files
      * @var string
      */
     public $file_type;
-
-    /**
-     *
-     * @var string
-     */
-    public $created_at;
-
-    /**
-     *
-     * @var string
-     */
-    public $updated_at;
-
-    /**
-     *
-     * @var string
-     */
-    public $is_deleted;
 
     /**
      *

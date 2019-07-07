@@ -87,14 +87,7 @@ trait FileManagementTrait
      */
     public function edit($id) : Response
     {
-        /**
-         * @todo update filesystem move function
-         * limit the file for this app / company
-         * provide a method either here or another to move the file to a new location
-         * calling the method move of the same object , right now we can do it internally but for
-         * exposing the api we will need this
-         */
-        $file = FileSystem::findFirstOrFail($id);
+        $file = FileSystem::getById($id);
 
         $request = $this->request->getPutData();
 
@@ -114,6 +107,23 @@ trait FileManagementTrait
         $file->updateOrFail($request, $this->updateFields);
 
         return $this->response($file);
+    }
+
+    /**
+     * Update a filesystem Entity,  field name.
+     *
+     * @param int $id
+     * @return Response
+     */
+    public function editEntity(int $id): Response
+    {
+        $fileEntity = FileSystemEntities::getById($id);
+        $request = $this->request->getPutData();
+
+        $fileEntity->field_name = $request['field_name'];
+        $fileEntity->updateOrFail();
+
+        return $this->response($fileEntity);
     }
 
     /**

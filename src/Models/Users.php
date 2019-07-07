@@ -199,7 +199,7 @@ class Users extends \Baka\Auth\Models\Users
             'Canvas\Models\FileSystemEntities',
             'entity_id',
             [
-                'alias' => 'filesystem',
+                'alias' => 'files',
                 'conditions' => 'system_modules_id = ?0',
                 'bind' => [$systemModule->getId()]
             ]
@@ -210,7 +210,7 @@ class Users extends \Baka\Auth\Models\Users
             'Canvas\Models\FileSystemEntities',
             'entity_id',
             [
-                'alias' => 'avatar',
+                'alias' => 'photo',
                 'conditions' => 'system_modules_id = ?0',
                 'bind' => [$systemModule->getId()]
             ]
@@ -547,8 +547,8 @@ class Users extends \Baka\Auth\Models\Users
      *
      * @return void
      */
-    public function getAvatar(): ?string
+    public function getPhoto()
     {
-        return $this->getAttachementByName('avatar');
+        return $this->getAttachementByName('photo');
     }
 }

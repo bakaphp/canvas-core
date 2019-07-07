@@ -276,7 +276,7 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
             'Canvas\Models\FileSystemEntities',
             'entity_id',
             [
-                'alias' => 'filesystem',
+                'alias' => 'files',
                 'conditions' => 'system_modules_id = ?0',
                 'bind' => [$systemModule->getId()]
             ]
@@ -543,6 +543,6 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
      */
     public function getLogo()
     {
-        return $this->getAttachementByName('logo');
+        return $this->getFileByName('logo');
     }
 }
