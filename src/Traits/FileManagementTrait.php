@@ -87,7 +87,7 @@ trait FileManagementTrait
      */
     public function edit($id) : Response
     {
-        $file = FileSystem::findFirstOrFail($id);
+        $file = FileSystem::getById($id);
 
         $request = $this->request->getPutData();
 
@@ -107,6 +107,23 @@ trait FileManagementTrait
         $file->updateOrFail($request, $this->updateFields);
 
         return $this->response($file);
+    }
+
+    /**
+     * Update a filesystem Entity,  field name.
+     *
+     * @param int $id
+     * @return Response
+     */
+    public function editEntity(int $id): Response
+    {
+        $fileEntity = FileSystemEntities::getById($id);
+        $request = $this->request->getPutData();
+
+        $fileEntity->field_name = $request['field_name'];
+        $fileEntity->updateOrFail();
+
+        return $this->response($fileEntity);
     }
 
     /**

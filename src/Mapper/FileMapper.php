@@ -22,8 +22,8 @@ class FileMapper extends CustomMapper
      */
     public function mapToObject($file, $fileDto, array $context = [])
     {
-        $fieledName = FileSystemEntities::findFirst([
-            'conditions' => 'system_modules_id = ?0 AND entity_id = ?1 AND filesystem_id = ?2 AND companies_id = ?3',
+        $fieldName = FileSystemEntities::findFirst([
+            'conditions' => 'system_modules_id = ?0 AND entity_id = ?1 AND filesystem_id = ?2 AND companies_id = ?3 AND is_deleted = 0',
             'bind' => [$this->systemModuleId, $this->entityId, $file->getId(), $file->companies_id]
         ]);
 
@@ -34,7 +34,7 @@ class FileMapper extends CustomMapper
         $fileDto->system_modules_id = $this->systemModuleId;
         $fileDto->entity_id = $this->entityId;
         $fileDto->name = $file->name;
-        $fileDto->field_name = $fieledName ? $fieledName->field_name : null;
+        $fileDto->field_name = $fieldName ? $fieldName->field_name : null;
         $fileDto->path = $file->path;
         $fileDto->url = $file->url;
         $fileDto->size = $file->size;

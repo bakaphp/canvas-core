@@ -41,12 +41,13 @@ $privateRoutes = [
     Route::crud('/custom-filters')->controller('CustomFiltersController'),
     Route::crud('/email-templates-variables')->controller('EmailTemplatesVariablesController'),
     Route::crud('/templates-variables')->controller('EmailTemplatesVariablesController'),
-    
+
     Route::get('/timezones')->controller('TimeZonesController'),
     Route::post('/users/{id}/devices')->controller('UserLinkedSourcesController')->action('devices'),
     Route::delete('/users/{id}/devices/{deviceId}')->controller('UserLinkedSourcesController')->action('detachDevice'),
     Route::post('/users/social')->controller('AuthController')->action('loginByAccessToken'),
     Route::delete('/filesystem/{id}/attributes/{name}')->controller('FilesystemController')->action('deleteAttributes'),
+    Route::put('/filesystem-entity/{id}')->controller('FilesystemController')->action('editEntity'),
     Route::put('/auth/logout')->controller('AuthController')->action('logout'),
     Route::post('/users/invite')->controller('UsersInviteController')->action('insertInvite'),
     Route::post('/roles-acceslist/{id}/copy')->controller('RolesAccesListController')->action('copy'),
