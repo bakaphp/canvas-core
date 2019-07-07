@@ -214,23 +214,26 @@ trait FileSystemModelTrait
     public function getAttachments(string $fileType = null) : array
     {
         $systemModule = SystemModules::getSystemModuleByModelName(self::class);
+        $companyId = $this->di->getUserData()->currentCompanyId();
+
         $bindParams = [
             0,
             $systemModule->getId(),
-            $this->getId()
+            $this->getId(),
+            $companyId
         ];
 
         /**
          * We can also filter the attachements by its file type.
          */
-        $fileTypeSql = !is_null($fileType) ? 'AND file_type = ?3' : null;
+        $fileTypeSql = !is_null($fileType) ? 'AND file_type = ?4' : null;
         if ($fileTypeSql) {
             $bindParams[] = $fileType;
         }
 
         $attachments = FileSystem::find([
             'conditions' => '
-                is_deleted = ?0 AND id in 
+                is_deleted = ?0 AND companies_id = ?3 AND  id in 
                     (SELECT 
                         filesystem_id from \Canvas\Models\FileSystemEntities e
                         WHERE e.system_modules_id = ?1 AND e.entity_id = ?2 AND e.is_deleted = ?0
@@ -294,13 +297,14 @@ trait FileSystemModelTrait
     public function getFileByName(string $fieldName): ?object
     {
         $systemModule = SystemModules::getSystemModuleByModelName(self::class);
+        $companyId = $this->di->getUserData()->currentCompanyId();
 
         $fileEntity = FileSystemEntities::findFirst([
             'conditions' => 'system_modules_id = ?0 AND entity_id = ?1 AND is_deleted = ?2 and field_name = ?3 and companies_id = ?4
                             AND filesystem_id IN (SELECT f.id from \Canvas\Models\FileSystem f WHERE
                                 f.is_deleted = ?2 AND f.companies_id = ?4
                             )',
-            'bind' => [$systemModule->getId(), $this->getId(), 0, $fieldName]
+            'bind' => [$systemModule->getId(), $this->getId(), 0, $fieldName, $companyId]
         ]);
 
         if ($fileEntity) {
