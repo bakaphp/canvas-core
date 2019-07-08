@@ -17,6 +17,7 @@ use Phalcon\Validation\Validator\Uniqueness;
 use Canvas\Traits\FileSystemModelTrait;
 use Phalcon\Security\Random;
 use Baka\Database\Contracts\HashTableTrait;
+use Canvas\Contracts\Notifications\NotifiableTrait;
 
 /**
  * Class Users.
@@ -36,6 +37,7 @@ class Users extends \Baka\Auth\Models\Users
     use SubscriptionPlanLimitTrait;
     use FileSystemModelTrait;
     use HashTableTrait;
+    use NotifiableTrait;
 
     /**
      * Default Company Branch.

@@ -6,25 +6,17 @@ namespace Canvas\Models;
 class Notifications extends AbstractModel
 {
     /**
-     * Apps notication type
-     */
-    const APPS = 1;
-
-    /**
-     * Users notification type
-     */
-    const USERS = 2;
-
-    /**
-     * System notification type
-     */
-    const SYSTEM = 3;
-    /**
      *
      * @var integer
      */
     public $id;
 
+    /**
+     *
+     * @var integer
+     */
+    public $from_users_id;
+    
     /**
      *
      * @var integer
@@ -47,7 +39,7 @@ class Notifications extends AbstractModel
      *
      * @var integer
      */
-    public $system_module_id;
+    public $system_modules_id;
 
     /**
      *
@@ -66,6 +58,12 @@ class Notifications extends AbstractModel
      * @var string
      */
     public $content;
+
+    /**
+     *
+     * @var integer
+     */
+    public $read;
 
     /**
      *
