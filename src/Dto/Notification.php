@@ -92,6 +92,4 @@ class Notification
      * @var array
      */
     public $entity;
-
-    
 }
