@@ -41,19 +41,13 @@ trait FileSystemModelTrait
     {
         if (!empty($this->uploadedFiles) && is_array($this->uploadedFiles)) {
             foreach ($this->uploadedFiles as $file) {
-                /**
-                 * @todo remove when all the frontend standardize our request
-                 */
-                if (!isset($file['id']) && (int) $file > 0) {
-                    $file = ['id' => $file];
-                }
-
-                if (!isset($file['id'])) {
+                if (!isset($file['filesystem_id'])) {
                     continue;
                 }
 
-                if ($fileSystem = FileSystem::getById($file['id'])) {
+                if ($fileSystem = FileSystem::getById($file['filesystem_id'])) {
                     $this->attach([[
+                        'id' => $file['id'] ?: 0,
                         'file' => $fileSystem,
                         'field_name' => $file['field_name'] ?? ''
                     ]]);
@@ -75,9 +69,11 @@ trait FileSystemModelTrait
     {
         //associate uploaded files
         if (isset($data['files'])) {
-            $this->uploadedFiles = $data['files'];
-        } elseif (isset($data['filesystem_files'])) {
-            $this->uploadedFiles = $data['filesystem_files'];
+            if (!empty($data['files'])) {
+                $this->uploadedFiles = $data['files'];
+            } else {
+                $this->deleteFiles();
+            }
         }
 
         return parent::update($data, $whiteList);
@@ -112,9 +108,11 @@ trait FileSystemModelTrait
     {
         //associate uploaded files
         if (isset($data['files'])) {
-            $this->uploadedFiles = $data['files'];
-        } elseif (isset($data['filesystem_files'])) {
-            $this->uploadedFiles = $data['filesystem_files'];
+            if (!empty($data['files'])) {
+                $this->uploadedFiles = $data['files'];
+            } else {
+                $this->deleteFiles();
+            }
         }
 
         return parent::save($data, $whiteList);
@@ -129,7 +127,7 @@ trait FileSystemModelTrait
     {
         $systemModule = SystemModules::getSystemModuleByModelName(self::class);
 
-        if ($files = FileSystem::getAllByEntityId($this->getId(), $systemModule)) {
+        if ($files = FileSystemEntities::getAllByEntityId($this->getId(), $systemModule)) {
             foreach ($files as $file) {
                 $file->softDelete();
             }
@@ -149,8 +147,8 @@ trait FileSystemModelTrait
         $systemModule = SystemModules::getSystemModuleByModelName(self::class);
 
         $file = FileSystemEntities::findFirstOrFail([
-            'contidions' => 'filesystem_id = ?0 AND system_modules_id = ?1 AND entity_id = ?2 AND is_deleted = ?3',
-            'bind' => [$id, $systemModule->getId(), $this->getId(), 0]
+            'contidions' => 'id = ?0 AND entity_id = ?1 AND system_modules_id = ?2 AND is_deleted = ?3',
+            'bind' => [$id, $this->getId(), $systemModule->getId(), 0]
         ]);
 
         return $file->softDelete();
@@ -180,16 +178,28 @@ trait FileSystemModelTrait
                 throw new RuntimeException('Cant attach a one Filesytem to this entity');
             }
 
-            //attach to the entity
-            $fileSystemEntities = new FileSystemEntities();
+            //check if we are updating the attachment
+            if (array_key_exists('id', $file) && (int) $file['id']) {
+                $fileSystemEntities = FileSystemEntities::getByIdWithSystemModule($file['id'], $systemModule);
+            }
+
+            //new attachment
+            if (!is_object($fileSystemEntities)) {
+                $fileSystemEntities = new FileSystemEntities();
+                $fileSystemEntities->system_modules_id = $systemModule->getId();
+                $fileSystemEntities->companies_id = $file['file']->companies_id;
+                $fileSystemEntities->entity_id = $this->getId();
+                $fileSystemEntities->created_at = $file['file']->created_at;
+            }
+
             $fileSystemEntities->filesystem_id = $file['file']->getId();
-            $fileSystemEntities->entity_id = $this->getId();
-            $fileSystemEntities->system_modules_id = $systemModule->getId();
-            $fileSystemEntities->companies_id = $file['file']->companies_id;
             $fileSystemEntities->field_name = $file['field_name'] ?? null;
-            $fileSystemEntities->created_at = $file['file']->created_at;
             $fileSystemEntities->is_deleted = 0 ;
             $fileSystemEntities->saveOrFail();
+
+            if (!is_null($this->filesNewAttachedPath())) {
+                $file['file']->move($this->filesNewAttachedPath());
+            }
         }
 
         return true;
@@ -204,34 +214,34 @@ trait FileSystemModelTrait
     public function getAttachments(string $fileType = null) : array
     {
         $systemModule = SystemModules::getSystemModuleByModelName(self::class);
+        $companyId = $this->di->getUserData()->currentCompanyId();
+
         $bindParams = [
             0,
-            Di::getDefault()->getUserData()->currentCompanyId(),
             $systemModule->getId(),
-            $this->getId()
+            $this->getId(),
+            $companyId
         ];
 
         /**
          * We can also filter the attachements by its file type.
          */
-        $fileTypeSql = !is_null($fileType) ? 'AND file_type = ?3' : null;
+        $fileTypeSql = !is_null($fileType) ? 'AND file_type = ?4' : null;
         if ($fileTypeSql) {
             $bindParams[] = $fileType;
         }
 
         $attachments = FileSystem::find([
             'conditions' => '
-                is_deleted = ?0 AND companies_id = ?1 AND id in 
+                is_deleted = ?0 AND companies_id = ?3 AND  id in 
                     (SELECT 
                         filesystem_id from \Canvas\Models\FileSystemEntities e
-                        WHERE e.system_modules_id = ?2 AND e.entity_id = ?3 AND e.is_deleted = ?0 and e.companies_id = ?1
+                        WHERE e.system_modules_id = ?1 AND e.entity_id = ?2 AND e.is_deleted = ?0
                     )' . $fileTypeSql,
             'bind' => $bindParams
         ]);
 
-        $fileMapper = new FileMapper();
-        $fileMapper->systemModuleId = $systemModule->getId();
-        $fileMapper->entityId = $this->getId();
+        $fileMapper = new FileMapper($this->getId(), $systemModule->getId());
 
         //add a mapper
         $this->di->getDtoConfig()->registerMapping(FileSystem::class, Files::class)
@@ -244,6 +254,7 @@ trait FileSystemModelTrait
      * Overwrite the relationship of the filesystem to return the attachment structure
      * to the given user.
      *
+     * @deprecated version 0.2
      * @return array
      */
     public function getFilesystem(): array
@@ -252,31 +263,74 @@ trait FileSystemModelTrait
     }
 
     /**
-     * Undocumented function.
+     * Overwrite the relationship of the filesystem to return the attachment structure
+     * to the given user.
+     *
+     * @return array
+     */
+    public function getFiles(string $fileType = null): array
+    {
+        return $this->getAttachments($fileType);
+    }
+
+    /**
+     * Get a file by its fieldname.
      *
      * @todo this will be a performance issue in the futur look for better ways to handle this
      * when a company has over 1k images
      *
+     * @deprecated version 0.2
      * @param string $name
      * @return void
      */
-    public function getAttachementByName(string $fieldName): ?string
+    public function getAttachementByName(string $fieldName): ?object
+    {
+        return $this->getFileByName($fieldName);
+    }
+
+    /**
+     * Undocumented function.
+     *
+     * @param string $fieldName
+     * @return string|null
+     */
+    public function getFileByName(string $fieldName): ?object
     {
         $systemModule = SystemModules::getSystemModuleByModelName(self::class);
-        $companyId = Di::getDefault()->getUserData()->currentCompanyId();
+        $companyId = $this->di->getUserData()->currentCompanyId();
 
         $fileEntity = FileSystemEntities::findFirst([
             'conditions' => 'system_modules_id = ?0 AND entity_id = ?1 AND is_deleted = ?2 and field_name = ?3 and companies_id = ?4
-                            AND filesystem_id IN (SELECT id from \Canvas\Models\FileSystem f WHERE
+                            AND filesystem_id IN (SELECT f.id from \Canvas\Models\FileSystem f WHERE
                                 f.is_deleted = ?2 AND f.companies_id = ?4
                             )',
             'bind' => [$systemModule->getId(), $this->getId(), 0, $fieldName, $companyId]
         ]);
 
         if ($fileEntity) {
-            return $fileEntity->file->url;
+            $fileMapper = new FileMapper($this->getId(), $systemModule->getId());
+
+            //add a mapper
+            $this->di->getDtoConfig()->registerMapping(FileSystem::class, Files::class)
+                ->useCustomMapper($fileMapper);
+
+            /**
+             * @todo create a mapper for entity so we dont have to look for the relationship?
+             */
+            return $this->di->getMapper()->map($fileEntity->file, Files::class);
         }
 
+        return null;
+    }
+
+    /**
+     * Given this entity define a new path.
+     *
+     * @param string $path
+     * @return string
+     */
+    protected function filesNewAttachedPath(): ?string
+    {
         return null;
     }
 }

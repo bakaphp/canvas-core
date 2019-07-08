@@ -20,78 +20,105 @@ use Canvas\Traits\AuthTrait;
 trait SocialLoginTrait
 {
     /**
-     * Login user via Social Login Feature.
+     * Login user via Social Login Feature
      * @param Users $user
      * @return array
      */
     abstract public function loginSocial(Users $user): array;
 
     /**
-     * Login user using stablished user credentials.
+     * Login user using stablished user credentials
      * @param string $email
      * @param string $password
      * @return array
      */
     abstract public function loginUsers(string $email, string $password): array;
 
+
+    
     /**
-     * Facebook Login.
+     * Social Login for many providers
      * @param Sources $source
      * @param string $accessToken
      * @return Array
      */
-    protected function facebook(Sources $source, string $accessToken): array
+    protected function providerLogin(Sources $source, string $identifier, string $email): array
     {
-        /**
-         * Get the Facebook adapter.
-         */
-        $facebookAdapter = $this->di->get('socialLogin')->authenticate(ucfirst($source->title));
 
-        /**
-         * Set user's Access Token.
-         */
-        $facebookAdapter->setAccessToken($accessToken);
-
-        /**
-         * Get user's profile based on set Access Token.
-         */
-        $data = $facebookAdapter->getUserProfile();
-
-        /**
-         * Lets Login or Signup the user.
-         */
-        $userProfile = current($data);
-
-        /**
-        * Lets find if user has a linked source by social network id.
-        */
-        $userLinkedSource = UserLinkedSources::findFirst([
-            'conditions' => 'source_id = ?0 and source_users_id_text = ?1 and is_deleted = 0',
-            'bind' => [
-                $source->id,
-                $userProfile->identifier
-            ]
+        $existingUser = Users::findFirst([
+            'conditions'=>'email = ?0 and is_deleted = 0 and status = 1',
+            'bind'=>[$email]
         ]);
 
-        if ($user = $userLinkedSource->getUser()) {
-            $facebookAdapter->disconnect();
-            return $this->loginSocial($user);
+        /**
+        * Lets find if user has a linked source by social network id
+        */
+        $userLinkedSource =  UserLinkedSources::findFirst([
+            'conditions'=>'users_id = ?0 and source_id = ?1 and source_users_id_text = ?2 and is_deleted = 0',
+            'bind'=>[
+                    $existingUser->id,
+                    $source->getId(),
+                    $identifier
+                ]
+        ]);
+
+        /**
+         * This confirms if the linked source exists and if it has a user attached to it. If true then logs in the user
+         */
+        if ($userLinkedSource) {
+            return $this->loginSocial($userLinkedSource->getUser());
         }
 
+        /**
+         * Whereas if there is not link and not user then lets create a new user and link
+         */
         $random = new Random();
         $password = $random->base58();
 
+        /**
+         * If user exists but doesnt have a linked source
+         */
+        if (!$userLinkedSource && $existingUser) {
+            $newLinkedSource = new UserLinkedSources();
+            $newLinkedSource->users_id =  $existingUser->getId();
+            $newLinkedSource->source_id =  $source->getId();
+            $newLinkedSource->source_users_id = $identifier;
+            $newLinkedSource->source_users_id_text = $identifier;
+            $newLinkedSource->source_username = ucfirst($source->title) . 'Login-' . $random->base58();
+            $newLinkedSource->save();
+
+            return $this->loginSocial($existingUser);
+        }
+
+        
+        $newUser = $this->createUser($source, $identifier, $email, $password);
+        return $this->loginUsers($newUser->email, $password);
+    }
+
+    /**
+     * Create a new user from social
+     *
+     * @param int @sourceId
+     * @param string $identifier
+     * @param string $email
+     * @param string $password
+     * @return Users
+     */
+    protected function createUser(Sources $source, string $identifier, $email, $password): Users
+    {
+        $random = new Random();
+
         //Create a new User
         $newUser = new Users();
-        $newUser->firstname = $userProfile->firstName ? $userProfile->firstName : 'John';
-        $newUser->lastname = $userProfile->lastName ? $userProfile->lastName : 'Doe';
-        $newUser->displayname = $newUser->firstname;
+        $newUser->firstname = 'John';
+        $newUser->lastname = 'Doe';
+        $newUser->displayname =  ucfirst($source->title) . 'Login-' . $random->base58();
         $newUser->password = $password;
-        $newUser->email = $userProfile->email ? $userProfile->email : 'doe@gmail.com';
+        $newUser->email = $email;
         $newUser->user_active = 1;
         $newUser->roles_id = 1;
         $newUser->created_at = date('Y-m-d H:m:s');
-        $newUser->defaultCompanyName = 'Default-' . $random->base58();
+        $newUser->defaultCompanyName = ucfirst($source->title) . 'Login-' . $random->base58();
 
         try {
             $this->db->begin();
@@ -100,11 +127,11 @@ trait SocialLoginTrait
             $newUser->signup();
 
             $newLinkedSource = new UserLinkedSources();
-            $newLinkedSource->users_id = $newUser->id;
-            $newLinkedSource->source_id = $source->id;
-            $newLinkedSource->source_users_id = $userProfile->identifier ? $userProfile->identifier : 'asdakelkmaefa';
-            $newLinkedSource->source_users_id_text = $userProfile->identifier ? $userProfile->identifier : 'asdakelkmaefa';
-            $newLinkedSource->source_username = $userProfile->displayName ? $userProfile->displayName : 'exampleasdadas';
+            $newLinkedSource->users_id =  $newUser->id;
+            $newLinkedSource->source_id =  $source->getId();
+            $newLinkedSource->source_users_id = $identifier;
+            $newLinkedSource->source_users_id_text = $identifier;
+            $newLinkedSource->source_username = ucfirst($source->title) . 'Login-' . $random->base58();
             $newLinkedSource->save();
 
             $this->db->commit();
@@ -114,7 +141,6 @@ trait SocialLoginTrait
             throw new UnprocessableEntityHttpException($e->getMessage());
         }
 
-        $facebookAdapter->disconnect();
-        return $this->loginUsers($newUser->email, $password);
+        return $newUser;
     }
 }

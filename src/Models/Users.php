@@ -16,6 +16,8 @@ use Phalcon\Validation\Validator\Regex;
 use Phalcon\Validation\Validator\Uniqueness;
 use Canvas\Traits\FileSystemModelTrait;
 use Phalcon\Security\Random;
+use Baka\Database\Contracts\HashTableTrait;
+use Canvas\Contracts\Notifications\NotifiableTrait;
 
 /**
  * Class Users.
@@ -34,6 +36,8 @@ class Users extends \Baka\Auth\Models\Users
     use Billable;
     use SubscriptionPlanLimitTrait;
     use FileSystemModelTrait;
+    use HashTableTrait;
+    use NotifiableTrait;
 
     /**
      * Default Company Branch.
@@ -197,7 +201,7 @@ class Users extends \Baka\Auth\Models\Users
             'Canvas\Models\FileSystemEntities',
             'entity_id',
             [
-                'alias' => 'filesystem',
+                'alias' => 'files',
                 'conditions' => 'system_modules_id = ?0',
                 'bind' => [$systemModule->getId()]
             ]
@@ -208,7 +212,7 @@ class Users extends \Baka\Auth\Models\Users
             'Canvas\Models\FileSystemEntities',
             'entity_id',
             [
-                'alias' => 'avatar',
+                'alias' => 'photo',
                 'conditions' => 'system_modules_id = ?0',
                 'bind' => [$systemModule->getId()]
             ]
@@ -269,11 +273,21 @@ class Users extends \Baka\Auth\Models\Users
     }
 
     /**
+    * Set hashtable settings table, userConfig ;).
+    *
+    * @return void
+    */
+    private function createSettingsModel(): void
+    {
+        $this->settingsModel = new UserConfig();
+    }
+
+    /**
      * Get the User key for redis.
      *
      * @return string
      */
-    public function getKey() : string
+    public function getKey() : int
     {
         return $this->id;
     }
@@ -453,6 +467,12 @@ class Users extends \Baka\Auth\Models\Users
             if (empty($this->default_company_branch)) {
                 $this->default_company_branch = $this->defaultCompany->branch->getId();
             }
+
+            /**
+             * asociate user to app.
+             * @todo move most of the aftersave function to events
+             */
+            $this->di->getApp()->associate($this, $this->defaultCompany);
         }
 
         //Create new company associated company
@@ -529,8 +549,8 @@ class Users extends \Baka\Auth\Models\Users
      *
      * @return void
      */
-    public function getAvatar(): ?string
+    public function getPhoto()
     {
-        return $this->getAttachementByName('avatar');
+        return $this->getAttachementByName('photo');
     }
 }

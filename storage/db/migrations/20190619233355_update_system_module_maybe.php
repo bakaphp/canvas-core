@@ -18,7 +18,7 @@ class UpdateSystemModuleMaybe extends AbstractMigration
             $table
             ->addColumn('show', 'integer', ['null' => true, 'default' => '1', 'limit' => MysqlAdapter::INT_REGULAR, 'precision' => 10, 'after' => 'menu_order'])
             ->addColumn('use_elastic', 'boolean', ['null' => true, 'default' => '0', 'limit' => MysqlAdapter::INT_TINY, 'precision' => 3, 'after' => 'show'])
-            ->addColumn('browse_fields', 'text', ['null' => true, 'default' => '0', 'limit' => MysqlAdapter::TEXT_LONG, 'precision' => 3, 'after' => 'use_elastic'])
+            ->addColumn('browse_fields', 'text', ['null' => true, 'limit' => MysqlAdapter::TEXT_LONG, 'precision' => 3, 'after' => 'use_elastic'])
             ->save();
         }
     }
