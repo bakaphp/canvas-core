@@ -111,8 +111,6 @@ trait FileSystemModelTrait
         if (isset($data['files'])) {
             if (!empty($data['files'])) {
                 $this->uploadedFiles = $data['files'];
-            } else {
-                $this->deleteFiles();
             }
         }
 
