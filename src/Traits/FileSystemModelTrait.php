@@ -218,27 +218,25 @@ trait FileSystemModelTrait
         $companyId = $this->di->getUserData()->currentCompanyId();
 
         $bindParams = [
-            0,
             $systemModule->getId(),
             $this->getId(),
+            0,
             $companyId
         ];
 
         /**
          * We can also filter the attachements by its file type.
          */
-        $fileTypeSql = !is_null($fileType) ? 'AND file_type = ?4' : null;
+        $fileTypeSql = !is_null($fileType) ? 'AND f.file_type = ?4' : null;
         if ($fileTypeSql) {
             $bindParams[] = $fileType;
         }
 
-        return FileSystem::find([
-            'conditions' => '
-                is_deleted = ?0 AND companies_id = ?3 AND  id in 
-                    (SELECT 
-                        filesystem_id from \Canvas\Models\FileSystemEntities e
-                        WHERE e.system_modules_id = ?1 AND e.entity_id = ?2 AND e.is_deleted = ?0
-                    )' . $fileTypeSql,
+        return FileSystemEntities::find([
+            'conditions' => 'system_modules_id = ?0 AND entity_id = ?1 AND is_deleted = ?2 and companies_id = ?3
+                            AND filesystem_id IN (SELECT f.id from \Canvas\Models\FileSystem f WHERE
+                                f.is_deleted = ?2 AND f.companies_id = ?3 ' . $fileTypeSql . '
+                            )',
             'bind' => $bindParams
         ]);
     }
@@ -270,7 +268,7 @@ trait FileSystemModelTrait
         $fileMapper = new FileMapper($this->getId(), $systemModule->getId());
 
         //add a mapper
-        $this->di->getDtoConfig()->registerMapping(FileSystem::class, Files::class)
+        $this->di->getDtoConfig()->registerMapping(FileSystemEntities::class, Files::class)
             ->useCustomMapper($fileMapper);
 
         return $this->di->getMapper()->mapMultiple($attachments, Files::class);
@@ -316,13 +314,13 @@ trait FileSystemModelTrait
             $fileMapper = new FileMapper($this->getId(), $systemModule->getId());
 
             //add a mapper
-            $this->di->getDtoConfig()->registerMapping(FileSystem::class, Files::class)
+            $this->di->getDtoConfig()->registerMapping(FileSystemEntities::class, Files::class)
                 ->useCustomMapper($fileMapper);
 
             /**
              * @todo create a mapper for entity so we dont have to look for the relationship?
              */
-            return $this->di->getMapper()->map($fileEntity->file, Files::class);
+            return $this->di->getMapper()->map($fileEntity, Files::class);
         }
 
         return null;
