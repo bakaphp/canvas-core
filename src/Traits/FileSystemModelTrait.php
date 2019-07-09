@@ -178,8 +178,8 @@ trait FileSystemModelTrait
             }
 
             //check if we are updating the attachment
-            if (array_key_exists('id', $file) && (int) $file['id']) {
-                $fileSystemEntities = FileSystemEntities::getByIdWithSystemModule($file['id'], $systemModule);
+            if ($id = (int) $file['id']) {
+                $fileSystemEntities = FileSystemEntities::getByIdWithSystemModule($id, $systemModule);
             }
 
             //new attachment
