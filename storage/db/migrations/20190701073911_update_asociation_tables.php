@@ -89,7 +89,7 @@ class UpdateAsociationTables extends AbstractMigration
             'after' => 'with_realtime',
         ])
         ->changeColumn('updated_at', 'datetime', [
-            'null' => true
+            'null' => true,
             'after' => 'created_at',
         ])
         ->changeColumn('is_deleted', 'integer', [
@@ -189,7 +189,7 @@ class UpdateAsociationTables extends AbstractMigration
             'after' => 'read',
         ])
         ->changeColumn('updated_at', 'datetime', [
-            'null' => true
+            'null' => true,
             'after' => 'created_at',
         ])
         ->changeColumn('is_deleted', 'integer', [
