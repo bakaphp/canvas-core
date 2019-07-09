@@ -4,20 +4,18 @@ declare(strict_types=1);
 
 namespace Canvas\Traits;
 
-use Canvas\Models\SystemModules;
-use Canvas\Models\FileSystem;
-use RuntimeException;
-use Phalcon\Mvc\Model\Resultset\Simple;
-use Canvas\Models\FileSystemEntities;
 use Canvas\Dto\Files;
 use Canvas\Mapper\FileMapper;
+use Canvas\Models\FileSystem;
+use Canvas\Models\FileSystemEntities;
+use Canvas\Models\SystemModules;
 use Phalcon\Di;
 use Phalcon\Mvc\Model\ResultsetInterface;
+use RuntimeException;
 
 /**
  * Trait ResponseTrait.
  *
- * @package Canvas\Traits
  *
  * @property Users $user
  * @property AppsPlans $appPlan
@@ -25,7 +23,6 @@ use Phalcon\Mvc\Model\ResultsetInterface;
  * @property Companies $company
  * @property UserCompanyApps $app
  * @property \Phalcon\Di $di
- *
  */
 trait FileSystemModelTrait
 {
@@ -35,12 +32,10 @@ trait FileSystemModelTrait
      * Associated the list of uploaded files to this entity.
      *
      * call on the after saves
-     *
-     * @return void
      */
     protected function associateFileSystem(): bool
     {
-        if (!empty($this->uploadedFiles) && is_array($this->uploadedFiles)) {
+        if (!empty($this->uploadedFiles) && \is_array($this->uploadedFiles)) {
             foreach ($this->uploadedFiles as $file) {
                 if (!isset($file['filesystem_id'])) {
                     continue;
@@ -50,7 +45,7 @@ trait FileSystemModelTrait
                     $this->attach([[
                         'id' => $file['id'] ?: 0,
                         'file' => $fileSystem,
-                        'field_name' => $file['field_name'] ?? ''
+                        'field_name' => $file['field_name'] ?? '',
                     ]]);
                 }
             }
@@ -64,7 +59,10 @@ trait FileSystemModelTrait
      *
      * @param array data
      * @param array whiteList
-     * @return boolean
+     * @param mixed|null $data
+     * @param mixed|null $whiteList
+     *
+     * @return bool
      */
     public function update($data = null, $whiteList = null): bool
     {
@@ -103,7 +101,10 @@ trait FileSystemModelTrait
      *
      * @param array data
      * @param array whiteList
-     * @return boolean
+     * @param mixed|null $data
+     * @param mixed|null $whiteList
+     *
+     * @return bool
      */
     public function save($data = null, $whiteList = null): bool
     {
@@ -111,6 +112,8 @@ trait FileSystemModelTrait
         if (isset($data['files'])) {
             if (!empty($data['files'])) {
                 $this->uploadedFiles = $data['files'];
+            } else {
+                $this->deleteFiles();
             }
         }
 
@@ -138,7 +141,8 @@ trait FileSystemModelTrait
     /**
      * Given the ID delete the file from this entity.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return bool
      */
     public function deleteFile(int $id)
@@ -147,7 +151,7 @@ trait FileSystemModelTrait
 
         $file = FileSystemEntities::findFirstOrFail([
             'contidions' => 'id = ?0 AND entity_id = ?1 AND system_modules_id = ?2 AND is_deleted = ?3',
-            'bind' => [$id, $this->getId(), $systemModule->getId(), 0]
+            'bind' => [$id, $this->getId(), $systemModule->getId(), 0],
         ]);
 
         return $file->softDelete();
@@ -161,7 +165,6 @@ trait FileSystemModelTrait
      * ];.
      *
      * @param array $files
-     * @return void
      */
     public function attach(array $files): bool
     {
@@ -169,7 +172,7 @@ trait FileSystemModelTrait
 
         foreach ($files as $file) {
             //im looking for the file inside an array
-            if (!array_key_exists('file', $file)) {
+            if (!\array_key_exists('file', $file)) {
                 continue;
             }
 
@@ -178,12 +181,12 @@ trait FileSystemModelTrait
             }
 
             //check if we are updating the attachment
-            if (array_key_exists('id', $file) && (int) $file['id']) {
-                $fileSystemEntities = FileSystemEntities::getByIdWithSystemModule($file['id'], $systemModule);
+            if ($id = (int) $file['id']) {
+                $fileSystemEntities = FileSystemEntities::getByIdWithSystemModule($id, $systemModule);
             }
 
             //new attachment
-            if (!is_object($fileSystemEntities)) {
+            if (!\is_object($fileSystemEntities)) {
                 $fileSystemEntities = new FileSystemEntities();
                 $fileSystemEntities->system_modules_id = $systemModule->getId();
                 $fileSystemEntities->companies_id = $file['file']->companies_id;
@@ -193,10 +196,10 @@ trait FileSystemModelTrait
 
             $fileSystemEntities->filesystem_id = $file['file']->getId();
             $fileSystemEntities->field_name = $file['field_name'] ?? null;
-            $fileSystemEntities->is_deleted = 0 ;
+            $fileSystemEntities->is_deleted = 0;
             $fileSystemEntities->saveOrFail();
 
-            if (!is_null($this->filesNewAttachedPath())) {
+            if (null !== $this->filesNewAttachedPath()) {
                 $file['file']->move($this->filesNewAttachedPath());
             }
         }
@@ -208,9 +211,10 @@ trait FileSystemModelTrait
      * Get all the files attach for the given module.
      *
      * @param string $fileType filter the files by their type
+     *
      * @return array
      */
-    public function getAttachments(string $fileType = null) : ResultsetInterface
+    public function getAttachments(string $fileType = null): ResultsetInterface
     {
         $systemModule = SystemModules::getSystemModuleByModelName(self::class);
         $companyId = $this->di->getUserData()->currentCompanyId();
@@ -219,13 +223,13 @@ trait FileSystemModelTrait
             $systemModule->getId(),
             $this->getId(),
             0,
-            $companyId
+            $companyId,
         ];
 
         /**
          * We can also filter the attachements by its file type.
          */
-        $fileTypeSql = !is_null($fileType) ? 'AND f.file_type = ?4' : null;
+        $fileTypeSql = null !== $fileType ? 'AND f.file_type = ?4' : null;
         if ($fileTypeSql) {
             $bindParams[] = $fileType;
         }
@@ -235,7 +239,7 @@ trait FileSystemModelTrait
                             AND filesystem_id IN (SELECT f.id from \Canvas\Models\FileSystem f WHERE
                                 f.is_deleted = ?2 AND f.companies_id = ?3 ' . $fileTypeSql . '
                             )',
-            'bind' => $bindParams
+            'bind' => $bindParams,
         ]);
     }
 
@@ -244,6 +248,7 @@ trait FileSystemModelTrait
      * to the given user.
      *
      * @deprecated version 0.2
+     *
      * @return array
      */
     public function getFilesystem(): array
@@ -279,8 +284,8 @@ trait FileSystemModelTrait
      * when a company has over 1k images
      *
      * @deprecated version 0.2
+     *
      * @param string $name
-     * @return void
      */
     public function getAttachmentByName(string $fieldName)
     {
@@ -292,7 +297,7 @@ trait FileSystemModelTrait
                             AND filesystem_id IN (SELECT f.id from \Canvas\Models\FileSystem f WHERE
                                 f.is_deleted = ?2 AND f.companies_id = ?4
                             )',
-            'bind' => [$systemModule->getId(), $this->getId(), 0, $fieldName, $companyId]
+            'bind' => [$systemModule->getId(), $this->getId(), 0, $fieldName, $companyId],
         ]);
     }
 
@@ -300,6 +305,7 @@ trait FileSystemModelTrait
      * Undocumented function.
      *
      * @param string $fieldName
+     *
      * @return string|null
      */
     public function getFileByName(string $fieldName): ?object
@@ -315,7 +321,7 @@ trait FileSystemModelTrait
             $this->di->getDtoConfig()->registerMapping(FileSystemEntities::class, Files::class)
                 ->useCustomMapper($fileMapper);
 
-            /**
+            /*
              * @todo create a mapper for entity so we dont have to look for the relationship?
              */
             return $this->di->getMapper()->map($fileEntity, Files::class);
@@ -328,6 +334,7 @@ trait FileSystemModelTrait
      * Given this entity define a new path.
      *
      * @param string $path
+     *
      * @return string
      */
     protected function filesNewAttachedPath(): ?string
