@@ -284,7 +284,7 @@ trait FileSystemModelTrait
      * @param string $name
      * @return void
      */
-    public function getAttachementByName(string $fieldName)
+    public function getAttachmentByName(string $fieldName)
     {
         $systemModule = SystemModules::getSystemModuleByModelName(self::class);
         $companyId = $this->di->getUserData()->currentCompanyId();
@@ -308,7 +308,7 @@ trait FileSystemModelTrait
     {
         $systemModule = SystemModules::getSystemModuleByModelName(self::class);
 
-        $fileEntity = $this->getAttachementByName($fieldName);
+        $fileEntity = $this->getAttachmentByName($fieldName);
 
         if ($fileEntity) {
             $fileMapper = new FileMapper($this->getId(), $systemModule->getId());
