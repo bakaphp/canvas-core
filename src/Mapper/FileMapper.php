@@ -32,26 +32,16 @@ class FileMapper extends CustomMapper
      * @param Canvas\Dto\Files $fileDto
      * @return Files
      */
-    public function mapToObject($file, $fileDto, array $context = [])
+    public function mapToObject($fileEntity, $fileDto, array $context = [])
     {
-        $fileEntity = FileSystemEntities::findFirst([
-            'conditions' => 'system_modules_id = ?0 AND entity_id = ?1 AND filesystem_id = ?2 AND companies_id = ?3 AND is_deleted = 0',
-            'bind' => [$this->systemModuleId, $this->entityId, $file->getId(), $file->companies_id]
-        ]);
-
-        //cant type check 
-        if (!is_object($fileEntity) || !is_object($file)) {
-            return ;
-        }
-
         $fileDto->id = $fileEntity->getId();
-        $fileDto->filesystem_id = $file->getId();
-        $fileDto->name = $file->name;
-        $fileDto->field_name = $fileEntity ? $fileEntity->field_name : null;
-        $fileDto->url = $file->url;
-        $fileDto->size = $file->size;
-        $fileDto->file_type = $file->file_type;
-        $fileDto->attributes = $file->getAllSettings();
+        $fileDto->filesystem_id = $fileEntity->filesystem_id;
+        $fileDto->name = $fileEntity->file->name;
+        $fileDto->field_name = $fileEntity->field_name;
+        $fileDto->url = $fileEntity->file->url;
+        $fileDto->size = $fileEntity->file->size;
+        $fileDto->file_type = $fileEntity->file->file_type;
+        $fileDto->attributes = $fileEntity->file->getAllSettings();
 
         return $fileDto;
     }
