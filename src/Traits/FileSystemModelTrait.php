@@ -71,6 +71,12 @@ trait FileSystemModelTrait
         //associate uploaded files
         if (isset($data['files'])) {
             if (!empty($data['files'])) {
+                /**
+                 * @todo for now lets delete them all and updated them
+                 * look for a better solution later, this can since we are not using transactions
+                 */
+                $this->deleteFiles();
+
                 $this->uploadedFiles = $data['files'];
             } else {
                 $this->deleteFiles();
@@ -127,9 +133,9 @@ trait FileSystemModelTrait
         $systemModule = SystemModules::getSystemModuleByModelName(self::class);
 
         if ($files = FileSystemEntities::getAllByEntityId($this->getId(), $systemModule)) {
-            foreach ($files as $file) {
+            $files->update([], function ($file) {
                 $file->softDelete();
-            }
+            });
         }
 
         return true;
@@ -150,7 +156,11 @@ trait FileSystemModelTrait
             'bind' => [$id, $this->getId(), $systemModule->getId(), 0]
         ]);
 
-        return $file->softDelete();
+        if ($file) {
+            $file->softDelete();
+        }
+
+        return false;
     }
 
     /**
@@ -174,12 +184,12 @@ trait FileSystemModelTrait
             }
 
             if (!$file['file'] instanceof FileSystem) {
-                throw new RuntimeException('Cant attach a one Filesytem to this entity');
+                throw new RuntimeException('Cant attach a none Filesytem to this entity');
             }
 
             //check if we are updating the attachment
             if ($id = (int) $file['id']) {
-                $fileSystemEntities = FileSystemEntities::getByIdWithSystemModule($id, $systemModule);
+                $fileSystemEntities = FileSystemEntities::getByIdWithSystemModule($id, $systemModule, true);
             }
 
             //new attachment
@@ -193,7 +203,7 @@ trait FileSystemModelTrait
 
             $fileSystemEntities->filesystem_id = $file['file']->getId();
             $fileSystemEntities->field_name = $file['field_name'] ?? null;
-            $fileSystemEntities->is_deleted = 0 ;
+            $fileSystemEntities->is_deleted = 0;
             $fileSystemEntities->saveOrFail();
 
             if (!is_null($this->filesNewAttachedPath())) {

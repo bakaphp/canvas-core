@@ -7,6 +7,7 @@ use Phalcon\Di;
 use Canvas\Exception\ModelException;
 use Phalcon\Validation;
 use Phalcon\Validation\Validator\Uniqueness;
+
 class FileSystemEntities extends AbstractModel
 {
     /**
@@ -78,7 +79,6 @@ class FileSystemEntities extends AbstractModel
         );
     }
 
-
     /**
      * Validate the model.
      *
@@ -91,7 +91,7 @@ class FileSystemEntities extends AbstractModel
             ['filesystem_id', 'entity_id', 'system_modules_id'],
             new Uniqueness(
                 [
-                    'message' => $this->filesystem_id.' - Cant be attached a to the same entity twice',
+                    'message' => $this->filesystem_id . ' - Cant be attached a to the same entity twice',
                 ]
             )
         );
@@ -113,17 +113,18 @@ class FileSystemEntities extends AbstractModel
      *
      * @param integer $id
      * @param SystemModules $systemModules
+     * @param bool $isDeleted
      * @return void
      */
-    public static function getByIdWithSystemModule(int $id, SystemModules $systemModules)
+    public static function getByIdWithSystemModule(int $id, SystemModules $systemModules, bool $isDeleted = false)
     {
         $app = Di::getDefault()->getApp();
         $companyId = Di::getDefault()->getUserData()->currentCompanyId();
 
         return self::findFirst([
-            'conditions' => 'id = ?0 AND  system_modules_id = ?1 AND companies_id = ?2 AND  is_deleted = 0 AND 
+            'conditions' => 'id = ?0 AND  system_modules_id = ?1 AND companies_id = ?2 AND  is_deleted = ?4 AND 
                                 filesystem_id in (SELECT s.id from \Canvas\Models\FileSystem s WHERE s.apps_id = ?3 AND s.is_deleted = 0)',
-            'bind' => [$id, $systemModules->getId(), $companyId, $app->getId()]
+            'bind' => [$id, $systemModules->getId(), $companyId, $app->getId(), (int) $isDeleted]
         ]);
     }
 
