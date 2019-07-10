@@ -184,7 +184,7 @@ trait FileSystemModelTrait
             }
 
             if (!$file['file'] instanceof FileSystem) {
-                throw new RuntimeException('Cant attach a noe Filesytem to this entity');
+                throw new RuntimeException('Cant attach a none Filesytem to this entity');
             }
 
             //check if we are updating the attachment
