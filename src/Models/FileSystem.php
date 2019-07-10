@@ -230,7 +230,7 @@ class FileSystem extends AbstractModel
             $this->di->get('filesystem')->rename($this->path, $newPath);
             $this->path = $newPath;
             $this->url = $newUrl;
-            $this->updateOrFail();
+            return $this->updateOrFail();
         } catch (Exception $e) {
             $this->di->get('log')->info($e->getMessage());
         }
