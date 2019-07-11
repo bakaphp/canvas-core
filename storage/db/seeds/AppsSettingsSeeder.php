@@ -39,14 +39,14 @@ class AppsSettingsSeeder extends AbstractSeed
             ],
             [
                 'apps_id' => 1,
-                'name' => 'bg-image',
-                'value' => 'Example Image',
+                'name' => 'background_image',
+                'value' => 'https://mc-canvas.s3.amazonaws.com/default-background-auth.jpg',
                 'created_at' => date('Y-m-d H:m:s'),
             ],
             [
                 'apps_id' => 1,
                 'name' => 'logo',
-                'value' => 'Example Logo Image',
+                'value' => 'https://mc-canvas.s3.amazonaws.com/gewaer-logo-dark.png',
                 'created_at' => date('Y-m-d H:m:s'),
             ],
             [
@@ -58,19 +58,13 @@ class AppsSettingsSeeder extends AbstractSeed
             [
                 'apps_id' => 1,
                 'name' => 'favicon',
-                'value' => 'Example Image',
+                'value' => 'https://mc-canvas.s3.amazonaws.com/gewaer-logo-dark.png',
                 'created_at' => date('Y-m-d H:m:s'),
             ],
             [
                 'apps_id' => 1,
                 'name' => 'titles',
                 'value' => 'Example Title',
-                'created_at' => date('Y-m-d H:m:s'),
-            ],
-            [
-                'apps_id' => 1,
-                'name' => 'has-subscriptions',
-                'value' => 1,
                 'created_at' => date('Y-m-d H:m:s'),
             ]
         ];
