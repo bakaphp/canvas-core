@@ -7,6 +7,7 @@ namespace Canvas\Models;
 use Baka\Database\Contracts\HashTableTrait;
 use Canvas\Exception\ModelException;
 use Phalcon\Di;
+use Exception;
 
 /**
  * Classs for FileSystem.
@@ -232,7 +233,7 @@ class FileSystem extends AbstractModel
             $this->url = $newUrl;
             $this->updateOrFail();
         } catch (Exception $e) {
-            $this->di->get('log')->info($e->getMessage());
+            $this->di->get('log')->info($e->getMessage() . 'For ' . get_class($this) . ' ' . $this->getId());
         }
 
         return true;
