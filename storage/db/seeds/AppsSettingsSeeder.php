@@ -37,6 +37,42 @@ class AppsSettingsSeeder extends AbstractSeed
                 'value' => '1',
                 'created_at' => date('Y-m-d H:m:s'),
             ],
+            [
+                'apps_id' => 1,
+                'name' => 'bg-image',
+                'value' => 'Example Image',
+                'created_at' => date('Y-m-d H:m:s'),
+            ],
+            [
+                'apps_id' => 1,
+                'name' => 'logo',
+                'value' => 'Example Logo Image',
+                'created_at' => date('Y-m-d H:m:s'),
+            ],
+            [
+                'apps_id' => 1,
+                'name' => 'registered',
+                'value' => 1,
+                'created_at' => date('Y-m-d H:m:s'),
+            ],
+            [
+                'apps_id' => 1,
+                'name' => 'favicon',
+                'value' => 'Example Image',
+                'created_at' => date('Y-m-d H:m:s'),
+            ],
+            [
+                'apps_id' => 1,
+                'name' => 'titles',
+                'value' => 'Example Title',
+                'created_at' => date('Y-m-d H:m:s'),
+            ],
+            [
+                'apps_id' => 1,
+                'name' => 'has-subscriptions',
+                'value' => 1,
+                'created_at' => date('Y-m-d H:m:s'),
+            ]
         ];
 
         $posts = $this->table('apps_settings');
