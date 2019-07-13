@@ -18,6 +18,7 @@ use Canvas\Traits\FileSystemModelTrait;
 use Phalcon\Security\Random;
 use Baka\Database\Contracts\HashTableTrait;
 use Canvas\Contracts\Notifications\NotifiableTrait;
+use Phalcon\Traits\EventManagerAwareTrait;
 
 /**
  * Class Users.
@@ -38,6 +39,7 @@ class Users extends \Baka\Auth\Models\Users
     use FileSystemModelTrait;
     use HashTableTrait;
     use NotifiableTrait;
+    use EventManagerAwareTrait;
 
     /**
      * Default Company Branch.
@@ -301,7 +303,7 @@ class Users extends \Baka\Auth\Models\Users
      */
     public function isFirstSignup(): bool
     {
-        return empty($this->default_company) ? true : false;
+        return empty($this->default_company);
     }
 
     /**
@@ -311,7 +313,7 @@ class Users extends \Baka\Auth\Models\Users
      */
     public function hasRole(): bool
     {
-        return !empty($this->roles_id) ? true : false;
+        return !empty($this->roles_id);
     }
 
     /**
@@ -436,58 +438,7 @@ class Users extends \Baka\Auth\Models\Users
             $this->di->setShared('userData', $this);
         }
 
-        /**
-         * User signing up for a new app / plan
-         * How do we know? well he doesnt have a default_company.
-         */
-        if ($isFirstSignup) {
-            $company = new Companies();
-            $company->name = $this->defaultCompanyName;
-            $company->users_id = $this->getId();
-
-            if (!$company->save()) {
-                throw new Exception((string) current($company->getMessages()));
-            }
-
-            $this->default_company = $company->getId();
-
-            if (!$this->update()) {
-                throw new ServerErrorHttpException((string) current($this->getMessages()));
-            }
-
-            $this->stripe_id = $company->getPaymentGatewayCustomerId();
-            $this->default_company_branch = $this->defaultCompany->branch->getId();
-            $this->update();
-
-        //update default subscription free trial
-            //$company->app->subscriptions_id = $this->startFreeTrial()->getId();
-            //$company->update();
-        } else {
-            //we have the company id
-            if (empty($this->default_company_branch)) {
-                $this->default_company_branch = $this->defaultCompany->branch->getId();
-            }
-
-            /**
-             * asociate user to app.
-             * @todo move most of the aftersave function to events
-             */
-            $this->di->getApp()->associate($this, $this->defaultCompany);
-        }
-
-        //Create new company associated company
-        $this->defaultCompany->associate($this, $this->defaultCompany);
-
-        //Insert record into user_roles
-        $userRole = new UserRoles();
-        $userRole->users_id = $this->id;
-        $userRole->roles_id = $this->roles_id;
-        $userRole->apps_id = $this->di->getApp()->getId();
-        $userRole->companies_id = $this->default_company;
-
-        if (!$userRole->save()) {
-            throw new ServerErrorHttpException((string)current($userRole->getMessages()));
-        }
+        $this->fire('user:afterSignup', $this, $isFirstSignup);
 
         //update user activity when its not a empty user
         if (!$isFirstSignup) {

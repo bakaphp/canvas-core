@@ -10,7 +10,7 @@ use Canvas\Models\Companies;
 use Exception;
 
 /**
- * Trait ResponseTrait
+ * Trait ResponseTrait.
  *
  * @package Canvas\Traits
  *
@@ -25,7 +25,7 @@ use Exception;
 trait UsersAssociatedTrait
 {
     /**
-     * create new related User Associated instance dynamicly
+     * create new related User Associated instance dynamicly.
      * @param Users $user
      * @param Companies $company
      * @return void
@@ -41,10 +41,9 @@ trait UsersAssociatedTrait
         $usersAssociatedModel->identify_id = $user->getId();
         $usersAssociatedModel->user_active = 1;
         $usersAssociatedModel->user_role = $user->roles_id;
+        $usersAssociatedModel->created_at = date('Y-m-d H:i:s');
 
-        if (!$usersAssociatedModel->save()) {
-            throw new Exception((string)current($usersAssociatedModel->getMessages()));
-        }
+        $usersAssociatedModel->saveOrFail();
 
         return $usersAssociatedModel->toArray();
     }
