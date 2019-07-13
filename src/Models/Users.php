@@ -551,6 +551,6 @@ class Users extends \Baka\Auth\Models\Users
      */
     public function getPhoto()
     {
-        return $this->getAttachementByName('photo');
+        return $this->getFileByName('photo');
     }
 }

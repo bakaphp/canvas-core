@@ -7,6 +7,7 @@ namespace Canvas\Models;
 use Baka\Database\Contracts\HashTableTrait;
 use Canvas\Exception\ModelException;
 use Phalcon\Di;
+use Exception;
 
 /**
  * Classs for FileSystem.
@@ -225,11 +226,15 @@ class FileSystem extends AbstractModel
 
         $newPath = $location . '/' . basename($this->path);
         $newUrl = $fileSystemConfig->cdn . DIRECTORY_SEPARATOR . $newPath;
-        $this->di->get('filesystem')->rename($this->path, $newPath);
 
-        $this->path = $newPath;
-        $this->url = $newUrl;
-        $this->updateOrFail();
+        try {
+            $this->di->get('filesystem')->rename($this->path, $newPath);
+            $this->path = $newPath;
+            $this->url = $newUrl;
+            $this->updateOrFail();
+        } catch (Exception $e) {
+            $this->di->get('log')->info($e->getMessage() . 'For ' . get_class($this) . ' ' . $this->getId());
+        }
 
         return true;
     }
