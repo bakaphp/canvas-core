@@ -109,7 +109,7 @@ class Notification implements NotificationInterfase
      *
      * @return void
      */
-    protected function toReatime()
+    protected function toRealtime()
     {
         //set the channel
         //key_user_id

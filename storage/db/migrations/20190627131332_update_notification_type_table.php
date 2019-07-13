@@ -54,7 +54,6 @@ class UpdateNotificationTypeTable extends AbstractMigration
         ])
         ->changeColumn('updated_at', 'datetime', [
             'null' => true,
-            'default' => 'NULL',
             'after' => 'created_at',
         ])
         ->changeColumn('is_deleted', 'integer', [
