@@ -44,7 +44,7 @@ class AppsSettingsController extends BakaBaseController
     /**
      * Format output.
      *
-     * @param [type] $results
+     * @param mixed $results
      * @return void
      */
     protected function processOutput($results)

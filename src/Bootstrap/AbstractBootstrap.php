@@ -12,7 +12,7 @@ use Phalcon\Di\ServiceProviderInterface;
 use Phalcon\Mvc\Micro;
 
 /**
- * Absstract class that provides the boostrap structure for any Micro PhalconPHP App
+ * Absstract class that provides the boostrap structure for any Micro PhalconPHP App.
  */
 abstract class AbstractBootstrap
 {
@@ -58,7 +58,7 @@ abstract class AbstractBootstrap
     abstract public function run();
 
     /**
-     * Runs the application
+     * Runs the application.
      */
     public function setup()
     {
@@ -68,7 +68,7 @@ abstract class AbstractBootstrap
     }
 
     /**
-     * Setup the application object in the container
+     * Setup the application object in the container.
      *
      * @return void
      */
@@ -80,11 +80,11 @@ abstract class AbstractBootstrap
     }
 
     /**
-     * Registers available services
+     * Registers available services.
      *
      * @return void
      */
-    private function registerServices()
+    protected function registerServices()
     {
         /** @var ServiceProviderInterface $provider */
         foreach ($this->providers as $provider) {
