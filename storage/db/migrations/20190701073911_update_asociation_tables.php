@@ -198,6 +198,6 @@ class UpdateAsociationTables extends AbstractMigration
             'limit' => '3',
             'after' => 'updated_at',
         ])
-            ->save();
+        ->save();
     }
 }
