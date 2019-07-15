@@ -9,6 +9,12 @@ use Canvas\Models\Apps;
 
 class AppsCest
 {
+    /**
+     * Inject the database provider to container
+     *
+     * @param UnitTester $I
+     * @return void
+     */
     public function setDatabaseProvider(UnitTester $I){
         $diContainer = new FactoryDefault();
         $provider = new DatabaseProvider();
@@ -19,6 +25,7 @@ class AppsCest
 
     /**
      * @param UnitTester $I
+     * @return void
      */
     public function getACLAppTest(UnitTester $I)
     {
@@ -30,6 +37,7 @@ class AppsCest
      * Validate is an app has an active status or not
      *
      * @param UnitTester $I
+     * @return void
      */
     public function isActiveTest(UnitTester $I)
     {
