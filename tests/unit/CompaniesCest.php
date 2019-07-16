@@ -15,7 +15,7 @@ class CompaniesCest
 {
     private $diContainer;
 
-    public function setDatabaseProvider(UnitTester $I){
+    public function setProvidersInContainer(UnitTester $I){
         
         $this->diContainer = new FactoryDefault();
 

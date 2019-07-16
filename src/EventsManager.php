@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Canvas;
 
-use Phalcon\Traits\EventManagerAwareTrait;
+use Canvas\Traits\EventManagerAwareTrait;
 
 /**
  * New event Manager to allow use to use fireToQueue.
