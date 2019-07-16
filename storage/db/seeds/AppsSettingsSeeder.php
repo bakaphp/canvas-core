@@ -37,6 +37,36 @@ class AppsSettingsSeeder extends AbstractSeed
                 'value' => '1',
                 'created_at' => date('Y-m-d H:m:s'),
             ],
+            [
+                'apps_id' => 1,
+                'name' => 'background_image',
+                'value' => 'https://mc-canvas.s3.amazonaws.com/default-background-auth.jpg',
+                'created_at' => date('Y-m-d H:m:s'),
+            ],
+            [
+                'apps_id' => 1,
+                'name' => 'logo',
+                'value' => 'https://mc-canvas.s3.amazonaws.com/gewaer-logo-dark.png',
+                'created_at' => date('Y-m-d H:m:s'),
+            ],
+            [
+                'apps_id' => 1,
+                'name' => 'registered',
+                'value' => 1,
+                'created_at' => date('Y-m-d H:m:s'),
+            ],
+            [
+                'apps_id' => 1,
+                'name' => 'favicon',
+                'value' => 'https://mc-canvas.s3.amazonaws.com/gewaer-logo-dark.png',
+                'created_at' => date('Y-m-d H:m:s'),
+            ],
+            [
+                'apps_id' => 1,
+                'name' => 'titles',
+                'value' => 'Example Title',
+                'created_at' => date('Y-m-d H:m:s'),
+            ]
         ];
 
         $posts = $this->table('apps_settings');

@@ -164,14 +164,10 @@ class SystemModules extends AbstractModel
      */
     public static function getById($id): SystemModules
     {
-        $module = SystemModules::findFirst([
+        $module = SystemModules::findFirstOrFail([
             'conditions' => 'id = ?0 and apps_id = ?1',
             'bind' => [$id, Di::getDefault()->getApp()->getId()]
         ]);
-
-        if (!is_object($module)) {
-            throw new ModelException('System Module not found');
-        }
 
         return $module;
     }

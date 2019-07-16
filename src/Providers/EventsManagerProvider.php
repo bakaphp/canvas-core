@@ -7,6 +7,8 @@ use Phalcon\DiInterface;
 use Canvas\Listener\Subscription;
 use Canvas\EventsManager;
 use Canvas\Listener\User;
+use Canvas\Listener\Notification;
+use Canvas\Listener\Company;
 
 class EventsManagerProvider implements ServiceProviderInterface
 {
@@ -25,6 +27,8 @@ class EventsManagerProvider implements ServiceProviderInterface
     protected $canvasListeners = [
         'subscription' => Subscription::class,
         'user' => User::class,
+        'company' => Company::class,
+        'notification' => Notification::class,
     ];
 
     /**

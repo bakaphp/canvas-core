@@ -187,6 +187,7 @@ trait FileSystemModelTrait
                 throw new RuntimeException('Cant attach a none Filesytem to this entity');
             }
 
+            $fileSystemEntities = null;
             //check if we are updating the attachment
             if ($id = (int) $file['id']) {
                 $fileSystemEntities = FileSystemEntities::getByIdWithSystemModule($id, $systemModule, true);

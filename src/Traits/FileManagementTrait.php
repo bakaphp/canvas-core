@@ -203,13 +203,15 @@ trait FileManagementTrait
         $files = [];
         foreach ($this->request->getUploadedFiles() as $file) {
             //validate this current file
-            $errors = $validator->validate(['file' => [
-                'name' => $file->getName(),
-                'type' => $file->getType(),
-                'tmp_name' => $file->getTempName(),
-                'error' => $file->getError(),
-                'size' => $file->getSize(),
-            ]]);
+            $errors = $validator->validate([
+                'file' => [
+                    'name' => $file->getName(),
+                    'type' => $file->getType(),
+                    'tmp_name' => $file->getTempName(),
+                    'error' => $file->getError(),
+                    'size' => $file->getSize(),
+                ]
+            ]);
 
             /**
              * @todo figure out why this failes

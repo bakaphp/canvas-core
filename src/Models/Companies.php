@@ -13,6 +13,7 @@ use Baka\Blameable\BlameableTrait;
 use Canvas\Traits\UsersAssociatedTrait;
 use Canvas\Traits\FileSystemModelTrait;
 use Baka\Blameable\Blameable;
+use Phalcon\Traits\EventManagerAwareTrait;
 
 /**
  * Class Companies.
@@ -36,6 +37,7 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
     use UsersAssociatedTrait;
     use FileSystemModelTrait;
     use BlameableTrait;
+    use EventManagerAwareTrait;
 
     const DEFAULT_COMPANY = 'DefaulCompany';
     const PAYMENT_GATEWAY_CUSTOMER_KEY = 'payment_gateway_customer_id';
@@ -388,66 +390,7 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
     {
         parent::afterCreate();
 
-        //setup the user notificatoin setting
-        $this->set('notifications', $this->user->email);
-        $this->set('paid', '1');
-
-        //now thta we setup de company and associated with the user we need to setup this as its default company
-        if (!UserConfig::findFirst(['conditions' => 'users_id = ?0 and name = ?1', 'bind' => [$this->user->getId(), self::DEFAULT_COMPANY]])) {
-            $userConfig = new UserConfig();
-            $userConfig->users_id = $this->user->getId();
-            $userConfig->name = self::DEFAULT_COMPANY;
-            $userConfig->value = $this->getId();
-
-            if (!$userConfig->save()) {
-                throw new Exception((string)current($userConfig->getMessages()));
-            }
-        }
-
-        $this->associate($this->user, $this);
-        $this->di->getApp()->associate($this->user, $this);
-
-        /**
-         * @var CompaniesBranches
-         */
-        $branch = new CompaniesBranches();
-        $branch->companies_id = $this->getId();
-        $branch->users_id = $this->user->getId();
-        $branch->name = 'Default';
-        $branch->is_default = 1;
-        if (!$branch->save()) {
-            throw new ServerErrorHttpException((string)current($branch->getMessages()));
-        }
-
-        //look for the default plan for this app
-        $companyApps = new UserCompanyApps();
-        $companyApps->companies_id = $this->getId();
-        $companyApps->apps_id = $this->di->getApp()->getId();
-        //$companyApps->subscriptions_id = 0;
-
-        //we need to assign this company to a plan
-        if (empty($this->appPlanId)) {
-            $plan = AppsPlans::getDefaultPlan();
-            $companyApps->stripe_id = $plan->stripe_id;
-        }
-
-        $appsSubscriptionStatus = AppsSettings::findFirst([
-            'conditions' => 'apps_id = ?0 and name = ?1 and is_deleted = 0',
-            'bind' => [$this->di->getApp()->getId(), 'subscription-based']
-        ]);
-
-        //If the newly created company is not the default then we create a new subscription with the same user
-        if (($this->di->getUserData()->default_company != $this->getId()) && $appsSubscriptionStatus->value) {
-            $this->set(self::PAYMENT_GATEWAY_CUSTOMER_KEY, $this->startFreeTrial());
-            $companyApps->subscriptions_id = $this->subscription->getId();
-        }
-
-        $companyApps->created_at = date('Y-m-d H:i:s');
-        $companyApps->is_deleted = 0;
-
-        if (!$companyApps->save()) {
-            throw new ServerErrorHttpException((string)current($companyApps->getMessages()));
-        }
+        $this->fire('company:afterSignup', $this);
     }
 
     /**
