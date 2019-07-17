@@ -13,7 +13,7 @@ use Baka\Blameable\BlameableTrait;
 use Canvas\Traits\UsersAssociatedTrait;
 use Canvas\Traits\FileSystemModelTrait;
 use Baka\Blameable\Blameable;
-use Phalcon\Traits\EventManagerAwareTrait;
+use Canvas\Traits\EventManagerAwareTrait;
 
 /**
  * Class Companies.

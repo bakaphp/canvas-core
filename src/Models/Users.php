@@ -18,7 +18,7 @@ use Canvas\Traits\FileSystemModelTrait;
 use Phalcon\Security\Random;
 use Baka\Database\Contracts\HashTableTrait;
 use Canvas\Contracts\Notifications\NotifiableTrait;
-use Phalcon\Traits\EventManagerAwareTrait;
+use Canvas\Traits\EventManagerAwareTrait;
 
 /**
  * Class Users.

@@ -10,7 +10,6 @@ use Canvas\Providers\DatabaseProvider;
 use Canvas\Providers\ErrorHandlerProvider;
 use Canvas\Providers\LoggerProvider;
 use Canvas\Providers\ModelsMetadataProvider;
-use Canvas\Providers\RouterProvider;
 use Canvas\Providers\SessionProvider;
 use Canvas\Providers\QueueProvider;
 use Canvas\Providers\MailProvider;
@@ -31,7 +30,6 @@ return [
     DatabaseProvider::class,
     ModelsMetadataProvider::class,
     RequestProvider::class,
-    RouterProvider::class,
     CacheDataProvider::class,
     SessionProvider::class,
     QueueProvider::class,

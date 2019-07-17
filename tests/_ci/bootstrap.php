@@ -1,10 +1,10 @@
 <?php
 
-use Canvas\Bootstrap\Tests;
+use Canvas\Bootstrap\IntegrationTests;
 
 require_once __DIR__ . '/../../src/Core/functions.php';
 
-$bootstrap = new Tests();
+$bootstrap = new IntegrationTests();
 $bootstrap->setup();
 
 return $bootstrap->run();
