@@ -3,6 +3,8 @@
 namespace Gewaer\Tests\integration\library\Models;
 
 use Canvas\Models\Apps;
+use Canvas\Models\Users;
+use Canvas\Models\Subscription;
 use IntegrationTester;
 use Canvas\Providers\ConfigProvider;
 use Phalcon\Di\FactoryDefault;
@@ -74,5 +76,16 @@ class UsersCest
     public function getByUserActivationEmail(IntegrationTester $I)
     {
         $I->assertTrue($I->grabFromDi('userData')->getByUserActivationEmail($I->grabFromDi('userData')->user_activation_email) instanceof Users);
+    }
+
+    /**
+     * Start Free Trial
+     *
+     * @param IntegrationTester $I
+     * @return void
+     */
+    public function startFreeTrial(IntegrationTester $I)
+    {
+        $I->assertTrue($I->grabFromDi('userData')->startFreeTrial() instanceof Subscription);
     }
 }
