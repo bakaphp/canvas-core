@@ -17,8 +17,7 @@ class UserCompanyAppsActivitiesCest
      */
     public function set(IntegrationTester $I)
     {
-        $random = new Random();
-        $userCompanyAppsActivities = UserCompanyAppsActivities::set($random->base58(), 'example');
+        $userCompanyAppsActivities = UserCompanyAppsActivities::set('mQsVRvorhqBJOijxkC4MB4hHFVcVTJeef', 'example');
         $I->assertTrue(gettype($userCompanyAppsActivities) == 'boolean');
     }
 
@@ -30,7 +29,7 @@ class UserCompanyAppsActivitiesCest
      */
     public function get(IntegrationTester $I)
     {
-        $userCompanyAppsActivities = UserCompanyAppsActivities::get('mQsVRvorhqBJOijxkC4MB4hHFVcVTJia');
+        $userCompanyAppsActivities = UserCompanyAppsActivities::get('mQsVRvorhqBJOijxkC4MB4hHFVcVTJeef');
         $I->assertTrue(gettype($userCompanyAppsActivities) == 'string');
     }
 }
