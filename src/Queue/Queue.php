@@ -21,9 +21,9 @@ class Queue
      *
      * @param string $name
      * @param array|object|mixed $msg
-     * @return void
+     * @return bool
      */
-    public static function send(string $name, $msg): void
+    public static function send(string $name, $msg): bool
     {
         $queue = Di::getDefault()->get('queue');
 
@@ -45,7 +45,7 @@ class Queue
         $channel->basic_publish($msg, '', $name);
         $channel->close();
 
-        return;
+        return true;
     }
 
 
