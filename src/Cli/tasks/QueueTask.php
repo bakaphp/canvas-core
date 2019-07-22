@@ -3,10 +3,8 @@
 namespace Canvas\Cli\Tasks;
 
 use Phalcon\Cli\Task as PhTask;
-use Canvas\Models\UserLinkedSources;
 use Canvas\Models\Users;
-use Throwable;
-use Phalcon\Di;
+use Canvas\Queue\Queue;
 
 /**
  * CLI To send push ontification and pusher msg.
@@ -22,137 +20,76 @@ use Phalcon\Di;
  */
 class QueueTask extends PhTask
 {
+
     /**
      * Queue action for mobile notifications.
      * @return void
      */
-    public function mobileNotificationsAction(): void
+    public function mainAction(array $params): void
     {
-        $channel = $this->queue->channel();
-
-        // Create the queue if it doesnt already exist.
-        $channel->queue_declare(
-            $queue = 'notifications',
-            $passive = false,
-            $durable = true,
-            $exclusive = false,
-            $auto_delete = false,
-            $nowait = false,
-            $arguments = null,
-            $ticket = null
-        );
-
-        echo ' [*] Waiting for notifications. To exit press CTRL+C', "\n";
-
-        $callback = function ($msg) {
-            $msgObject = json_decode($msg->body);
-
-            echo ' [x] Received from system module: ',$msgObject->system_module, "\n";
-
-            /**
-             * Look for current user in database.
-             */
-            $currentUser = Users::findFirst($msgObject->users_id);
-
-            /**
-             * Lets determine what type of notification we are dealing with.
-             */
-
-            /**
-             * Trigger Event Manager.
-             */
-            //Di::getDefault()->getManager()->trigger($notification);
-
-            /**
-             * Log the delivery info.
-             */
-            $msg->delivery_info['channel']->basic_ack($msg->delivery_info['delivery_tag']);
-        };
-
-        $channel->basic_qos(null, 1, null);
-
-        $channel->basic_consume(
-            $queue = 'notifications',
-            $consumer_tag = '',
-            $no_local = false,
-            $no_ack = false,
-            $exclusive = false,
-            $nowait = false,
-            $callback
-        );
-
-        while (count($channel->callbacks)) {
-            $channel->wait();
+        if (empty($queueName = $params[0])) {
+            echo 'Need a queue name on your first params';
+            return;
         }
 
-        $channel->close();
-        $this->queue->close();
+        $callback = function ($msg) {
+            echo ' [x] Received ', $msg->body, "\n";
+        };
+
+        //process the queue
+        Queue::process($queueName, $callback);
     }
 
     /**
-     * Queue action for email notifications.
+     * Queue to process internal Canvas Events.
+     *
      * @return void
      */
-    public function emailNotificationsAction(): void
+    public function eventsAction()
     {
-        $channel = $this->queue->channel();
-
-        // Create the queue if it doesnt already exist.
-        $channel->queue_declare(
-            $queue = 'notifications',
-            $passive = false,
-            $durable = true,
-            $exclusive = false,
-            $auto_delete = false,
-            $nowait = false,
-            $arguments = null,
-            $ticket = null
-        );
-
-        echo ' [*] Waiting for email notifications. To exit press CTRL+C', "\n";
-
         $callback = function ($msg) {
-            $msgObject = json_decode($msg->body);
 
-            echo ' [x] Received from system module: ',$msgObject->system_module, "\n";
 
-            /**
-             * Look for current user in database.
-             */
-            $currentUser = Users::findFirst($msgObject->users_id);
+            //we get the data from our event trigger and unserialize 
+            $event = unserialize($msg->body);
 
-            /**
-             * Lets determine what type of notification we are dealing with.
-             */
+            //overwrite the user who is running this process
+            if (isset($event['userData']) && $event['userData'] instanceof Users) {
+                $this->di->setShared('userData', $event['userData']);
+            }
 
-            /**
-             * Trigger Event Manager.
-             */
-            //Di::getDefault()->getManager()->trigger($notification);
+            //lets fire the event
+            $this->events->fire($event['event'], $event['source'], $event['data']);
+           // $events->fire('user:test', Users::findFirst(), ['d']);
 
-            /**
-             * Log the delivery info.
-             */
-            $msg->delivery_info['channel']->basic_ack($msg->delivery_info['delivery_tag']);
         };
 
-        $channel->basic_qos(null, 1, null);
+        Queue::process(QUEUE::EVENTS, $callback);
+    }
 
-        $channel->basic_consume(
-            $queue = 'notifications',
-            $consumer_tag = '',
-            $no_local = false,
-            $no_ack = false,
-            $exclusive = false,
-            $nowait = false,
-            $callback
-        );
+    /**
+     * Queue to process internal Canvas Events.
+     *
+     * @return void
+     */
+    public function notificationsAction()
+    {
+        $callback = function ($msg) {
 
-        while (count($channel->callbacks)) {
-            $channel->wait();
-        }
 
-        $channel->close();
-        $this->queue->close();
+            //we get the data from our event trigger and unserialize 
+            $notification = unserialize($msg->body);
+
+            //overwrite the user who is running this process
+            if (isset($notification['from']) && $notification['from'] instanceof Users) {
+                $this->di->setShared('userData', $notification['from']);
+            }
+
+            //lets fire the event
+            $notification->notification->process();
+
+        };
+
+        Queue::process(QUEUE::EVENTS, $callback);
     }
 }
