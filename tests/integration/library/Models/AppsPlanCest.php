@@ -33,16 +33,4 @@ class AppsPlansCest
         $appPlan = AppsPlans::findFirst(1);
         $I->assertTrue(gettype($appPlan->get('example123456')) == 'string');
     }
-
-    // /**
-    //  * Validate is an app has an active status or not
-    //  *
-    //  * @param UnitTester $I
-    //  * @return void
-    //  */
-    // public function isActive(IntegrationTester $I)
-    // {
-    //     $app = Apps::getACLApp('Default');
-    //     $I->assertTrue(gettype($app->isActive()) == 'boolean');
-    // }
 }
