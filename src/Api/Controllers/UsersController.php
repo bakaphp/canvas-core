@@ -95,7 +95,7 @@ class UsersController extends \Baka\Auth\UsersController
         if (array_key_exists('roles', $user)) {
             $accesList = AccessList::find([
                 'conditions' => 'roles_name = ?0 and apps_id = ?1 and allowed = 0',
-                'bind' => [$user['roles'][0]->name, $this->config->app->id]
+                'bind' => [$user['roles'][0]->name, $this->app->getId()]
             ]);
 
             if (count($accesList) > 0) {
