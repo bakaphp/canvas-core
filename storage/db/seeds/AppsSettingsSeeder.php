@@ -66,6 +66,17 @@ class AppsSettingsSeeder extends AbstractSeed
                 'name' => 'titles',
                 'value' => 'Example Title',
                 'created_at' => date('Y-m-d H:m:s'),
+            ],[
+                'apps_id' => 1,
+                'name' => 'base_color',
+                'value' => '#61c2cc',
+                'created_at' => date('Y-m-d H:m:s'),
+            ],
+            [
+                'apps_id' => 1,
+                'name' => 'secondary_color',
+                'value' => '#9ee5b5',
+                'created_at' => date('Y-m-d H:m:s'),
             ]
         ];
 
