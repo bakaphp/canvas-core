@@ -63,9 +63,9 @@ class CustomFieldsController extends BaseController
 
         return $request;
     }
-    
+
     /**
-     * Format output
+     * Format output.
      *
      * @param mixed $results
      * @return mixed
@@ -73,7 +73,7 @@ class CustomFieldsController extends BaseController
     public function processOutput($results)
     {
         //decode json to format output
-        if (isset($results->attributes) && !empty($results->attributes)) {
+        if (isset($results->attributes) && !empty($results->attributes) && !is_array($results->attributes)) {
             $results->attributes = json_decode($results->attributes);
         }
 
