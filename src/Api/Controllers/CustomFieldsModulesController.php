@@ -68,7 +68,7 @@ class CustomFieldsModulesController extends BaseController
 
         //List all Custom Fields by module_id, apps and companies
         $customFields = CustomFields::find([
-            'conditions' => 'companies_id = ?0 and custom_fields_modules_id = ?1  apps_id = ?2 and is_deleted = 0',
+            'conditions' => 'companies_id = ?0 and custom_fields_modules_id = ?1 and apps_id = ?2 and is_deleted = 0',
             'bind' => [$this->userData->currentCompanyId(),$module->id, $this->app->getId()]
         ]);
 
