@@ -40,5 +40,13 @@ class AclTask extends PhTask
         $this->acl->addResource('CRM.Users', ['read', 'list', 'create', 'update', 'delete']);
         $this->acl->allow('Users', 'CRM.Users', ['read', 'list', 'create']);
         $this->acl->deny('Users', 'CRM.Users', ['update', 'delete']);
+
+        //Apps Settings
+        $this->acl->addResource('CRM.AppsSettings', ['read', 'list', 'create', 'update', 'delete']);
+        $this->acl->allow('Users', 'CRM.AppsSettings', ['read', 'list', 'create','update','delete']);
+
+        //Companies Settings
+        $this->acl->addResource('CRM.CompaniesSettings', ['read', 'list', 'create', 'update', 'delete']);
+        $this->acl->allow('Users', 'CRM.CompaniesSettings', ['read', 'list', 'create','update','delete']);
     }
 }
