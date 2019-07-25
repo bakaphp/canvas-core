@@ -12,6 +12,8 @@ use Canvas\Models\Users;
 use Canvas\Models\Notifications;
 use Phalcon\Traits\EventManagerAwareTrait;
 use Phalcon\Di;
+use Canvas\Queue\Queue;
+use Phalcon\Mvc\Model;
 
 class Notification implements NotificationInterfase
 {
@@ -59,7 +61,7 @@ class Notification implements NotificationInterfase
      *
      * @param AbstractModel $entity
      */
-    public function __construct(AbstractModel $entity)
+    public function __construct(Model $entity)
     {
         $this->entity = $entity;
     }
@@ -138,6 +140,16 @@ class Notification implements NotificationInterfase
     }
 
     /**
+     * Disable this notification queue in runtime
+     *
+     * @return void
+     */
+    public function disableQueue(): void
+    {
+        $this->useQueue = false;
+    }
+
+    /**
      * Process the notification
      *  - handle the db
      *  - trigger the notification
@@ -157,12 +169,31 @@ class Notification implements NotificationInterfase
         }
 
         if ($this->useQueue) {
+            $this->sendToQueue();
             return true; //send it to the queue
         }
 
         $this->trigger();
 
         return true;
+    }
+
+    /**
+     * Send to our internal Notification queue
+     *
+     * @return boolean
+     */
+    protected function sendToQueue(): bool
+    {
+        $notificationData = [
+            'from' => $this->fromUser,
+            'to' => $this->toUser,
+            'entity' => $this->entity,
+            'type' => $this->type,
+            'notification' => get_class($this)
+        ];
+
+        return Queue::send(Queue::NOTIFICATIONS, serialize($notificationData));
     }
 
     /**
