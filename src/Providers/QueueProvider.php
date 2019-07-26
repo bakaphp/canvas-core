@@ -4,7 +4,6 @@ namespace Canvas\Providers;
 
 use Phalcon\Di\ServiceProviderInterface;
 use Phalcon\DiInterface;
-use Phalcon\Queue\Beanstalk\Extended as Beanstalk;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use function Canvas\Core\envValue;
 
