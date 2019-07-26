@@ -30,7 +30,6 @@ class Api extends AbstractBootstrap
     public function run()
     {
         try {
-    //        dd($this->application);
             return $this->application->handle();
         } catch (Throwable $e) {
             $this->handleException($e)->send();
@@ -69,7 +68,7 @@ class Api extends AbstractBootstrap
 
         //only log when server error production is seerver error or dev
         if ($e instanceof ServerErrorHttpException || strtolower($config->app->env) != Flags::PRODUCTION) {
-            $this->container->getLog()->error($e->getTraceAsString());
+            $this->container->getLog()->error($e->getMessage(), [$e->getTraceAsString()]);
         }
 
         return $response;
@@ -87,7 +86,7 @@ class Api extends AbstractBootstrap
         /**
         * @todo Find a better way to handle unit test file include
         */
-        $this->providers =  require appPath('api/config/providers.php');
+        $this->providers = require appPath('api/config/providers.php');
 
         //run my parents setup
         parent::setup();
