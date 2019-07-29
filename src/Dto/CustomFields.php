@@ -63,6 +63,12 @@ class CustomFields
      *
      * @var array
      */
+    public $type;
+
+    /**
+     *
+     * @var array
+     */
     public $values;
 
     /**
