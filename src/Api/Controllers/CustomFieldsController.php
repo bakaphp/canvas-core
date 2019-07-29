@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Canvas\Api\Controllers;
 
 use Canvas\CustomFields\CustomFields;
+use function Canvas\Core\isJson;
 
 /**
  * Class LanguagesController.
@@ -61,6 +62,10 @@ class CustomFieldsController extends BaseController
             $request['attributes'] = json_encode($request['attributes']);
         }
 
+        if (!empty($request['value']) && is_array($request['value'])) {
+            $request['value'] = json_encode($request['value']);
+        }
+
         return $request;
     }
 
@@ -75,6 +80,10 @@ class CustomFieldsController extends BaseController
         //decode json to format output
         if (isset($results->attributes) && !empty($results->attributes) && !is_array($results->attributes)) {
             $results->attributes = json_decode($results->attributes);
+        }
+
+        if (isJson($results->value)) {
+            $results->value = json_decode($results->value);
         }
 
         return $results;
