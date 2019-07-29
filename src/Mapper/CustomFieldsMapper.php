@@ -27,6 +27,7 @@ class CustomFieldsMapper extends CustomMapper
 
         $customFieldDto->attributes = !empty($customField->attributes) && isJson($customField->attributes) ? json_decode($customField->attributes) : null;
         $customFieldDto->values = $customField->values ? $this->getValues($customField->values) : null;
+        $customFieldDto->type = $customField->type ? $customField->type->toArray() : null;
 
         $customFieldDto->created_at = $customField->created_at;
         $customFieldDto->updated_at = $customField->updated_at;
