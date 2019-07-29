@@ -62,8 +62,8 @@ class CustomFieldsController extends BaseController
             $request['attributes'] = json_encode($request['attributes']);
         }
 
-        if (!empty($request['value']) && is_array($request['value'])) {
-            $request['value'] = json_encode($request['value']);
+        if (!empty($request['values']) && is_array($request['values'])) {
+            $request['values'] = json_encode($request['values']);
         }
 
         return $request;
@@ -82,8 +82,8 @@ class CustomFieldsController extends BaseController
             $results->attributes = json_decode($results->attributes);
         }
 
-        if (isJson($results->value)) {
-            $results->value = json_decode($results->value);
+        if (isJson($results->values)) {
+            $results->values = json_decode($results->values);
         }
 
         return $results;
