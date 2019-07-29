@@ -3,7 +3,8 @@ declare(strict_types=1);
 
 namespace Canvas\CustomFields;
 
-use  Baka\Database\CustomFields\CustomFields as BakaCustomFields;
+use Baka\Database\CustomFields\CustomFields as BakaCustomFields;
+use Canvas\Models\CustomFieldsValues;
 
 class CustomFields extends BakaCustomFields
 {
@@ -48,5 +49,37 @@ class CustomFields extends BakaCustomFields
             'custom_fields_id',
             ['alias' => 'fields-values']
         );
+
+        $this->hasMany(
+            'id',
+            'Canvas\Models\CustomFieldsValues',
+            'custom_fields_id',
+            ['alias' => 'values']
+        );
+    }
+
+    /**
+     * Given an array of values, add it to this custom fields
+     * related module.
+     *
+     * @param array $values
+     * @return bool
+     */
+    public function addValues(array $values): bool
+    {
+        if ($this->values) {
+            $this->values->delete();
+        }
+
+        foreach ($values as $key => $value) {
+            $customFieldsValue = new CustomFieldsValues();
+            $customFieldsValue->custom_fields_id = $this->getId();
+            $customFieldsValue->label = $value;
+            $customFieldsValue->value = $key;
+            $customFieldsValue->saveOrFail();
+        }
+
+        
+        return true;
     }
 }

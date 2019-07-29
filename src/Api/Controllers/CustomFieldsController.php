@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace Canvas\Api\Controllers;
 
 use Canvas\CustomFields\CustomFields;
-use function Canvas\Core\isJson;
+use Phalcon\Mvc\ModelInterface;
+use Phalcon\Http\Request;
+use Canvas\Dto\CustomFields as CustomFieldsDto;
+use Canvas\Mapper\CustomFieldsMapper;
 
 /**
  * Class LanguagesController.
@@ -62,30 +65,62 @@ class CustomFieldsController extends BaseController
             $request['attributes'] = json_encode($request['attributes']);
         }
 
-        if (!empty($request['values']) && is_array($request['values'])) {
-            $request['values'] = json_encode($request['values']);
-        }
-
         return $request;
     }
 
     /**
-     * Format output.
+     * Pass the resultset to a DTO Mapper.
      *
      * @param mixed $results
-     * @return mixed
+     * @return void
      */
-    public function processOutput($results)
+    protected function processOutput($results)
     {
-        //decode json to format output
-        if (isset($results->attributes) && !empty($results->attributes) && !is_array($results->attributes)) {
-            $results->attributes = json_decode($results->attributes);
+        $this->dtoConfig->registerMapping(CustomFields::class, CustomFieldsDto::class)
+            ->useCustomMapper(new CustomFieldsMapper());
+
+        return is_iterable($results) ?
+        $this->mapper->mapMultiple($results, CustomFieldsDto::class)
+        : $this->mapper->map($results, CustomFieldsDto::class);
+    }
+
+    /**
+    * Process the create request and trecurd the boject.
+    *
+    * @return ModelInterface
+    * @throws Exception
+    */
+    protected function processCreate(Request $request): ModelInterface
+    {
+        $model = parent::processCreate($request);
+        $request = $request->getPostData();
+
+        //add values to the custom field
+        if (is_array($request['values'])) {
+            $model->addValues($request['values']);
         }
 
-        if (isJson($results->values)) {
-            $results->values = json_decode($results->values);
-        }
+        return $model;
+    }
 
-        return $results;
+    /**
+     * Process the update request and return the object.
+     *
+     * @param Request $request
+     * @param ModelInterface $record
+     * @throws Exception
+     * @return ModelInterface
+     */
+    protected function processEdit(Request $request, ModelInterface $record): ModelInterface
+    {
+        //process the input
+        $record = parent::processEdit($request, $record);
+        $request = $request->getPostData();
+
+        //add values to the custom field
+        if (is_array($request['values'])) {
+            $record->addValues($request['values']);
+        }
+        return $record;
     }
 }
