@@ -181,7 +181,8 @@ class Roles extends AbstractModel
     {
         $role = self::findFirst([
             'conditions' => 'name = ?0 AND apps_id in (?1, ?3) AND companies_id in (?2, ?3) AND is_deleted = 0',
-            'bind' => [$name, Di::getDefault()->getAcl()->getApp()->getId(), Di::getDefault()->getAcl()->getCompany()->getId(), Apps::CANVAS_DEFAULT_APP_ID]
+            'bind' => [$name, Di::getDefault()->getAcl()->getApp()->getId(), Di::getDefault()->getAcl()->getCompany()->getId(), Apps::CANVAS_DEFAULT_APP_ID],
+            'order' => 'apps_id DESC'
         ]);
 
         if (!is_object($role)) {
@@ -201,7 +202,8 @@ class Roles extends AbstractModel
     {
         return self::findFirst([
             'conditions' => 'id = ?0 AND companies_id in (?1, ?2) AND apps_id in (?3, ?4) AND is_deleted = 0',
-            'bind' => [$id, Di::getDefault()->getUserData()->currentCompanyId(), Apps::CANVAS_DEFAULT_APP_ID, Di::getDefault()->getApp()->getId(), Apps::CANVAS_DEFAULT_APP_ID]
+            'bind' => [$id, Di::getDefault()->getUserData()->currentCompanyId(), Apps::CANVAS_DEFAULT_APP_ID, Di::getDefault()->getApp()->getId(), Apps::CANVAS_DEFAULT_APP_ID],
+            'order' => 'apps_id DESC'
         ]);
     }
 

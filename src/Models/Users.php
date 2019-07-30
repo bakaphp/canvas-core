@@ -392,7 +392,7 @@ class Users extends \Baka\Auth\Models\Users
 
         //Assign admin role to the system if we dont get a specify role
         if (!$this->hasRole()) {
-            $role = Roles::findFirstByName('Admins');
+            $role = Roles::getByName('Admins');
             $this->roles_id = $role->getId();
         }
     }
