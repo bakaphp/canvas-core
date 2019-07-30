@@ -18,7 +18,6 @@ class UpdateCustomFieldsValues extends AbstractMigration
         ])
         ->changeColumn('key', 'string', [
             'null' => true,
-            'default' => 'NULL',
             'limit' => 128,
             'collation' => 'utf8mb4_unicode_ci',
             'encoding' => 'utf8mb4',
@@ -26,7 +25,6 @@ class UpdateCustomFieldsValues extends AbstractMigration
         ])
         ->changeColumn('payments_active', 'integer', [
             'null' => true,
-            'default' => 'NULL',
             'limit' => '10',
             'after' => 'key',
         ])
@@ -38,23 +36,19 @@ class UpdateCustomFieldsValues extends AbstractMigration
             ])
         ->changeColumn('is_public', 'integer', [
             'null' => true,
-            'default' => 'NULL',
             'limit' => '10',
             'after' => 'ecosystem_login',
         ])
         ->changeColumn('created_at', 'datetime', [
             'null' => true,
-            'default' => 'NULL',
             'after' => 'is_public',
         ])
         ->changeColumn('updated_at', 'datetime', [
             'null' => true,
-            'default' => 'NULL',
             'after' => 'created_at',
         ])
         ->changeColumn('is_deleted', 'integer', [
             'null' => true,
-            'default' => 'NULL',
             'limit' => '10',
             'after' => 'updated_at',
         ])
@@ -70,7 +64,7 @@ class UpdateCustomFieldsValues extends AbstractMigration
         ])
             ->addColumn('password', 'string', [
                 'null' => true,
-                'default' => 'NULL',
+
                 'limit' => 255,
                 'collation' => 'utf8mb4_unicode_ci',
                 'encoding' => 'utf8mb4',
@@ -82,7 +76,6 @@ class UpdateCustomFieldsValues extends AbstractMigration
         ])
         ->changeColumn('updated_at', 'datetime', [
             'null' => true,
-            'default' => 'NULL',
             'after' => 'created_at',
         ])
         ->changeColumn('is_deleted', 'integer', [
