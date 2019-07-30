@@ -367,7 +367,7 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
      */
     public function userAssociatedToCompany(Users $user): bool
     {
-        return is_object($this->getUsersAssociatedCompanies('users_id =' . $user->getId()));
+        return $this->countUsersAssociatedCompanies('users_id =' . $user->getId()) > 0;
     }
 
     /**

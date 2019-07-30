@@ -112,14 +112,7 @@ class UsersInviteController extends BaseController
         }
 
         //Check if user was already was invited to current company and return message
-        $invitedUser = $this->model::findFirst([
-            'conditions' => 'email = ?0 and companies_id = ?1 and role_id = ?2',
-            'bind' => [$request['email'], $this->userData->default_company, $request['role_id']]
-        ]);
-
-        if (is_object($invitedUser)) {
-            throw new ModelException('User already invited to this company and added with this role');
-        }
+        UsersInvite::isValid($request['email'], (int) $request['role_id']);
 
         //Save data to users_invite table and generate a hash for the invite
         $userInvite = $this->model;
@@ -140,7 +133,7 @@ class UsersInviteController extends BaseController
         $tempUser->id = 0;
         $tempUser->email = $request['email'];
         $tempUser->notify(new Invitation($userInvite));
-        
+
         return $this->response($userInvite);
     }
 
