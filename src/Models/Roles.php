@@ -179,11 +179,6 @@ class Roles extends AbstractModel
      */
     public static function getByName(string $name): Roles
     {
-        /**
-         * @todo we need to think the way we handle the default app thing
-         * if we continue to do so we will need to order it by app id and get
-         * the last value not the first hit
-         */
         $role = self::findFirst([
             'conditions' => 'name = ?0 AND apps_id in (?1, ?3) AND companies_id in (?2, ?3) AND is_deleted = 0',
             'bind' => [$name, Di::getDefault()->getAcl()->getApp()->getId(), Di::getDefault()->getAcl()->getCompany()->getId(), Apps::CANVAS_DEFAULT_APP_ID],

@@ -484,7 +484,7 @@ class Manager extends Adapter
         $role = $this->setAppByRole($role);
         //resoure always overwrites the role app?
         $resource = $this->setAppByResource($resource);
-        $roleObj = RolesDB::getByName(($role));
+        $roleObj = RolesDB::getByName($role);
 
         $sql = implode(' ', [
             'SELECT ' . $this->connection->escapeIdentifier('allowed') . ' FROM access_list AS a',
