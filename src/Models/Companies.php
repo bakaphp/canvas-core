@@ -166,6 +166,19 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
             ['alias' => 'branches']
         );
 
+        $this->hasOne(
+            'id',
+            'Canvas\Models\CompaniesBranches',
+            'companies_id',
+            [
+                'alias' => 'defaultBranch',
+                'params' => [
+                    'conditions' => 'is_default = 1'
+                ]
+            ]
+        );
+
+
         $this->hasMany(
             'id',
             'Canvas\Models\CompaniesCustomFields',
