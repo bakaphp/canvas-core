@@ -18,6 +18,7 @@ use Phalcon\Http\Response;
 use Exception;
 use Canvas\Exception\ModelException;
 use Canvas\Traits\AuthTrait;
+use Canvas\Notifications\Invitation;
 
 /**
  * Class LanguagesController.
@@ -134,36 +135,13 @@ class UsersInviteController extends BaseController
             throw new UnprocessableEntityHttpException((string) current($userInvite->getMessages()));
         }
 
-        $this->sendInviteEmail($request['email'], $userInvite->invite_hash);
+        //create temp invite users
+        $tempUser = new Users();
+        $tempUser->id = 0;
+        $tempUser->email = $request['email'];
+        $tempUser->notify(new Invitation($userInvite));
+        
         return $this->response($userInvite);
-    }
-
-    /**
-     * Send users invite email.
-     * @param string $email
-     * @return void
-     */
-    private function sendInviteEmail(string $email, string $hash): void
-    {
-        $userExists = Users::findFirst([
-            'conditions' => 'email = ?0 and is_deleted = 0',
-            'bind' => [$email]
-        ]);
-
-        $invitationUrl = $this->config->app->frontEndUrl . '/users/invites/' . $hash;
-
-        if (is_object($userExists)) {
-            $invitationUrl = $this->config->app->frontEndUrl . '/users/link/' . $hash;
-        }
-
-        if (!defined('API_TESTS')) {
-            $subject = _('You have been invited!');
-            $this->mail
-            ->to($email)
-            ->subject($subject)
-            ->content($invitationUrl)
-            ->sendNow();
-        }
     }
 
     /**
