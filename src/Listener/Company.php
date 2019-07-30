@@ -69,7 +69,7 @@ class Company
 
         $appsSubscriptionStatus = AppsSettings::findFirst([
             'conditions' => 'apps_id = ?0 and name = ?1 and is_deleted = 0',
-            'bind' => [$company->getDI()->getApp()->getId(), 'subscription_based']
+            'bind' => [$company->getDI()->getApp()->getId(), AppsSettings::SUBSCRIPTION_BASED]
         ]);
 
         //If the newly created company is not the default then we create a new subscription with the same user
