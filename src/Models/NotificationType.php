@@ -110,8 +110,8 @@ class NotificationType extends AbstractModel
         $app = Di::getDefault()->getApp();
 
         return self::findFirstOrFail([
-            'conditions' => 'apps_id = ?0 AND key = ?1',
-            'bind' => [$app->getId(), $key]
+            'conditions' => 'apps_id in (?0, ?1) AND key = ?2',
+            'bind' => [$app->getId(), Apps::CANVAS_DEFAULT_APP_ID, $key]
         ]);
     }
 }
