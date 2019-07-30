@@ -504,4 +504,22 @@ class Users extends \Baka\Auth\Models\Users
     {
         return $this->getFileByName('photo');
     }
+
+    /**
+     * Update the user current default company.
+     *
+     * @param integer $companyId
+     * @return void
+     */
+    public function switchDefaultCompanyByBranch(int $branchId): void
+    {
+        if ($branch = CompaniesBranches::findFirst($branchId)) {
+            if ($branch->company) {
+                if ($branch->company->userAssociatedToCompany($this)) {
+                    $this->default_company = $branch->company->getId();
+                    $this->default_company_branch = $branch->getId();
+                }
+            }
+        }
+    }
 }
