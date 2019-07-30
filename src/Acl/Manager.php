@@ -20,6 +20,7 @@ use Phalcon\Acl\Adapter;
 use BadMethodCallException;
 use Canvas\Exception\ModelException;
 use Canvas\Models\ResourcesAccesses;
+use Phalcon\Di;
 
 /**
  * Class Manager
@@ -129,9 +130,7 @@ class Manager extends Adapter
     public function getApp() : Apps
     {
         if (!is_object($this->app)) {
-            $this->app = new Apps();
-            $this->app->id = 1;
-            $this->app->name = 'Canvas';
+            $this->app = Di::getDefault()->getApp();
         }
 
         return $this->app;
