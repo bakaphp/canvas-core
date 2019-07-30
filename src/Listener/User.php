@@ -53,7 +53,7 @@ class User
              * asociate user to app.
              * @todo move most of the aftersave function to events
              */
-            $user->di->getApp()->associate($user, $user->defaultCompany);
+            $user->getDI()->getApp()->associate($user, $user->defaultCompany);
         }
 
         //Create new company associated company
@@ -63,7 +63,7 @@ class User
         $userRole = new UserRoles();
         $userRole->users_id = $user->id;
         $userRole->roles_id = $user->roles_id;
-        $userRole->apps_id = $user->di->getApp()->getId();
+        $userRole->apps_id = $user->getDI()->getApp()->getId();
         $userRole->companies_id = $user->default_company;
 
         if (!$userRole->save()) {
