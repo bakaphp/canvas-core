@@ -151,14 +151,14 @@ class UsersController extends \Baka\Auth\UsersController
             unset($request['password']);
         }
 
-        //change my default company
-        if (array_key_exists('default_company', $request)) {
-            if ($company = Companies::findFirst($request['default_company'])) {
-                if ($company->userAssociatedToCompany($this->userData)) {
-                    $user->default_company = $company->getId();
-                    unset($request['default_company']);
-                }
-            }
+        //change my default company , the #teamfrontend is sending us the branchid instead of the company id
+        //on this value so we use is as the branch
+        if (array_key_exists('default_company', $request) && !array_key_exists('default_company_branch', $request)) {
+            $user->switchDefaultCompanyByBranch((int) $request['default_company']);
+            unset($request['default_company'], $request['default_company_branch']);
+        } else {
+            $user->switchDefaultCompanyByBranch((int) $request['default_company_branch']);
+            unset($request['default_company'], $request['default_company_branch']);
         }
 
         //update

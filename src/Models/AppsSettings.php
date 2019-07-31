@@ -43,6 +43,11 @@ class AppsSettings extends AbstractModel
     public $is_deleted;
 
     /**
+     * Sub based app key word
+     */
+    const SUBSCRIPTION_BASED = 'subscription_based';
+
+    /**
      * Initialize method for model.
      */
     public function initialize()
