@@ -25,7 +25,6 @@ class ProvidersCest
         $I->assertEquals(DatabaseProvider::class, $providers[3]);
         $I->assertEquals(ModelsMetadataProvider::class, $providers[4]);
         $I->assertEquals(RequestProvider::class, $providers[5]);
-        $I->assertEquals(RouterProvider::class, $providers[6]);
     }
 
     public function checkCliProviders(UnitTester $I)

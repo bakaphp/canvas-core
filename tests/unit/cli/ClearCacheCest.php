@@ -21,7 +21,7 @@ class ClearCacheCest
     {
         require appPath('vendor/autoload.php');
 
-        $path = appPath('/storage/cache/data/app/storage/cache/data/');
+        $path = appPath('storage/cache/data/');
         $container = new Cli();
         $cache = new CacheDataProvider();
         $cache->register($container);
@@ -57,7 +57,7 @@ class ClearCacheCest
 
     private function createFile()
     {
-        $name = appPath('/storage/cache/data/app/storage/cache/data/') . uniqid('tmp_') . '.cache';
+        $name = appPath('storage/cache/data/') . uniqid('tmp_') . '.cache';
         $pointer = fopen($name, 'wb');
         fwrite($pointer, 'test');
         fclose($pointer);
