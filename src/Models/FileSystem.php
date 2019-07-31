@@ -208,7 +208,7 @@ class FileSystem extends AbstractModel
         ]);
 
         if (!is_object($file)) {
-            throw new ModelException('File not found');
+            throw new ModelException('FileSystem '.(int) $id.'  not found');
         }
 
         return $file;

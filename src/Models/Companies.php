@@ -166,6 +166,19 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
             ['alias' => 'branches']
         );
 
+        $this->hasOne(
+            'id',
+            'Canvas\Models\CompaniesBranches',
+            'companies_id',
+            [
+                'alias' => 'defaultBranch',
+                'params' => [
+                    'conditions' => 'is_default = 1'
+                ]
+            ]
+        );
+
+
         $this->hasMany(
             'id',
             'Canvas\Models\CompaniesCustomFields',
@@ -354,7 +367,7 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
      */
     public function userAssociatedToCompany(Users $user): bool
     {
-        return is_object($this->getUsersAssociatedCompanies('users_id =' . $user->getId()));
+        return $this->countUsersAssociatedCompanies('users_id =' . $user->getId()) > 0;
     }
 
     /**

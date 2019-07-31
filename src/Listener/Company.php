@@ -41,7 +41,7 @@ class Company
         }
 
         $company->associate($company->user, $company);
-        $company->di->getApp()->associate($company->user, $company);
+        $company->getDI()->getApp()->associate($company->user, $company);
 
         /**
          * @var CompaniesBranches
@@ -58,7 +58,7 @@ class Company
         //look for the default plan for this app
         $companyApps = new UserCompanyApps();
         $companyApps->companies_id = $company->getId();
-        $companyApps->apps_id = $company->di->getApp()->getId();
+        $companyApps->apps_id = $company->getDI()->getApp()->getId();
         //$companyApps->subscriptions_id = 0;
 
         //we need to assign this company to a plan
@@ -69,11 +69,11 @@ class Company
 
         $appsSubscriptionStatus = AppsSettings::findFirst([
             'conditions' => 'apps_id = ?0 and name = ?1 and is_deleted = 0',
-            'bind' => [$company->di->getApp()->getId(), 'subscription-based']
+            'bind' => [$company->getDI()->getApp()->getId(), AppsSettings::SUBSCRIPTION_BASED]
         ]);
 
         //If the newly created company is not the default then we create a new subscription with the same user
-        if (($company->di->getUserData()->default_company != $company->getId()) && $appsSubscriptionStatus->value) {
+        if (($company->getDI()->getUserData()->default_company != $company->getId()) && $appsSubscriptionStatus->value) {
             $company->set(Companies::PAYMENT_GATEWAY_CUSTOMER_KEY, $company->startFreeTrial());
             $companyApps->subscriptions_id = $company->subscription->getId();
         }
