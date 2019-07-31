@@ -37,9 +37,9 @@ class App extends Auth
         self::loginAttempsValidation($user);
 
         //check if the user exist on this app
-        $currentAppUserInfo = $user->getApps([
-            'conditions' => 'companies_id = ?0 AND apps_id = ?1',
-            'bind' => [$user->currentCompanyId(), Di::getDefault()->getApp()->getId()]
+        $currentAppUserInfo = $user->getApp([
+            'conditions' => 'companies_id = ?0',
+            'bind' => [$user->currentCompanyId()]
         ]);
 
         if (!is_object($currentAppUserInfo)) {
@@ -118,5 +118,28 @@ class App extends Auth
         $user->saveOrFail();
 
         return $user;
+    }
+
+    /**
+     * Update the password for the current app of all the companies, FOR NOW.
+     *
+     * @param Users $user
+     * @param string $password
+     * @return bool
+     */
+    public static function updatePassword(Users $user, string $password): bool
+    {
+        $app = Di::getDefault()->getApp();
+
+        $userApps = $user->getApps([
+            'conditions' => 'apps_id = ?0',
+            'bind' => [$app->getId()]
+        ]);
+
+        if (is_object($userApps)) {
+            $userApps->update(['password' => Users::passwordHash($password)]);
+        }
+
+        return true;
     }
 }

@@ -40,6 +40,7 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
     use EventManagerAwareTrait;
 
     const DEFAULT_COMPANY = 'DefaulCompany';
+    const DEFAULT_COMPANY_APP = 'DefaulCompanyApp_';
     const PAYMENT_GATEWAY_CUSTOMER_KEY = 'payment_gateway_customer_id';
 
     /**

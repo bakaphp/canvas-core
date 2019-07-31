@@ -21,6 +21,7 @@ use Phalcon\Validation\Validator\PresenceOf;
 use Phalcon\Validation\Validator\StringLength;
 use Baka\Auth\Models\Sessions;
 use Canvas\Auth\App;
+use Canvas\Auth\Factory;
 
 /**
  * Class AuthController.
@@ -87,11 +88,8 @@ class AuthController extends \Baka\Auth\AuthController
         /**
          * Login the user via ecosystem or app.
          */
-        if ($this->app->ecosystemLogin()) {
-            $userData = Users::login($email, $password, $remember, $admin, $userIp);
-        } else {
-            $userData = App::login($email, $password, $remember, $admin, $userIp);
-        }
+        $auth = Factory::create($this->app->ecosystemAuth());
+        $userData = $auth::login($email, $password, $remember, $admin, $userIp);
         $token = $userData->getToken();
 
         //start session

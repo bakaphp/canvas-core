@@ -49,10 +49,6 @@ class User
                 $user->default_company_branch = $user->defaultCompany->branch->getId();
             }
 
-            /**
-             * asociate user to app.
-             * @todo move most of the aftersave function to events
-             */
             $user->getDI()->getApp()->associate($user, $user->defaultCompany);
         }
 

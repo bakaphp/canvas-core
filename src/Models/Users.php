@@ -7,7 +7,6 @@ use Canvas\Traits\PermissionsTrait;
 use Canvas\Traits\SubscriptionPlanLimitTrait;
 use Phalcon\Cashier\Billable;
 use Canvas\Exception\ServerErrorHttpException;
-use Exception;
 use Carbon\Carbon;
 use Phalcon\Validation;
 use Phalcon\Validation\Validator\Email;
@@ -20,7 +19,9 @@ use Baka\Database\Contracts\HashTableTrait;
 use Canvas\Contracts\Notifications\NotifiableTrait;
 use Phalcon\Traits\EventManagerAwareTrait;
 use Phalcon\Di;
-use RuntimeException;
+use Canvas\Auth\App;
+use Exception;
+use Canvas\Validations\PasswordValidation;
 
 /**
  * Class Users.
@@ -189,6 +190,17 @@ class Users extends \Baka\Auth\Models\Users
             'users_id',
             [
                 'alias' => 'apps',
+            ]
+        );
+
+        $this->hasOne(
+            'id',
+            'Canvas\Models\UsersAssociatedApps',
+            'users_id',
+            [
+                'alias' => 'app',
+                'params' => 'apps_id = ?0',
+                'bind' => [Di::getDefault()->getApp()->getId()]
             ]
         );
 
@@ -520,8 +532,52 @@ class Users extends \Baka\Auth\Models\Users
                 if ($branch->company->userAssociatedToCompany($this)) {
                     $this->default_company = $branch->company->getId();
                     $this->default_company_branch = $branch->getId();
+                    //set the default company id per the specific app , we do this so we can have multip default companies per diff apps
+                    $this->set(Companies::DEFAULT_COMPANY_APP . $this->getDI()->getDefault()->getApp()->getId(), $this->default_company);
                 }
             }
         }
+    }
+
+    /**
+     * Update the password for a current user.
+     *
+     * @param string $newPassword
+     * @return boolean
+     */
+    public function updatePassword(string $currentPassword, string $newPassword, string $verifyPassword) : bool
+    {
+        $currentPassword = trim($currentPassword);
+        $newPassword = trim($newPassword);
+        $verifyPassword = trim($verifyPassword);
+
+        $app = Di::getDefault()->getApp();
+
+        if ($app->ecosystemAuth()) {
+            $userAppData = $this->getApp([
+                'conditions' => 'companies_id = ?0',
+                'bind' => [$this->currentCompanyId()]
+            ]);
+
+            $password = $userAppData->password;
+        } else {
+            $password = $this->password;
+        }
+
+        // First off check that the current password matches the current password
+        if (password_verify($currentPassword, $password)) {
+          
+            PasswordValidation::validate($newPassword, $verifyPassword);
+            
+            if ($app->ecosystemAuth()) {
+                //update all companies password for the current user app
+                App::updatePassword($this, $newPassword);
+            } else {
+                $this->password = self::passwordHash($newPassword);
+            }
+            return true;
+        }
+
+        throw new Exception(_(' Your current password is incorrect .'));
     }
 }

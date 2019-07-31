@@ -53,7 +53,7 @@ class Apps extends \Baka\Database\Apps
     /**
      * @var integer
      */
-    public $ecosystem_login;
+    public $ecosystem_auth;
 
     /**
      * @var integer
@@ -174,8 +174,8 @@ class Apps extends \Baka\Database\Apps
      *
      * @return boolean
      */
-    public function ecosystemLogin(): bool
+    public function ecosystemAuth(): bool
     {
-        return (bool) $this->ecosystem_login;
+        return (bool) $this->ecosystem_auth;
     }
 }
