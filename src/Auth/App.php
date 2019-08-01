@@ -87,7 +87,7 @@ class App extends Auth
         ]);
 
         if (is_object($userApps)) {
-            $userApps->update(['password' => Users::passwordHash($password)]);
+            $userApps->update(['password' => $password]);
         }
 
         return true;

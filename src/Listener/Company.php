@@ -68,7 +68,6 @@ class Company
             $companyApps->stripe_id = $plan->stripe_id;
         }
 
-
         //If the newly created company is not the default then we create a new subscription with the same user
         if (($company->getDI()->getUserData()->default_company != $company->getId()) && $app->subscriptioBased()) {
             $company->set(Companies::PAYMENT_GATEWAY_CUSTOMER_KEY, $company->startFreeTrial());
