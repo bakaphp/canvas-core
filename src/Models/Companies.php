@@ -293,8 +293,10 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
             'entity_id',
             [
                 'alias' => 'files',
-                'conditions' => 'system_modules_id = ?0',
-                'bind' => [$systemModule->getId()]
+                'params'   => [
+                    'conditions' => 'system_modules_id = ?0',
+                    'bind' => [$systemModule->getId()]
+                ]
             ]
         );
 
@@ -304,8 +306,10 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
             'entity_id',
             [
                 'alias' => 'logo',
-                'conditions' => 'system_modules_id = ?0',
-                'bind' => [$systemModule->getId()]
+                'params'   => [
+                    'conditions' => 'system_modules_id = ?0',
+                    'bind' => [$systemModule->getId()]
+                ]
             ]
         );
     }

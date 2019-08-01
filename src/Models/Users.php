@@ -19,11 +19,11 @@ use Baka\Database\Contracts\HashTableTrait;
 use Canvas\Contracts\Notifications\NotifiableTrait;
 use Phalcon\Traits\EventManagerAwareTrait;
 use Phalcon\Di;
-use Canvas\Auth\App;
+use Canvas\Auth\App as AppAuth;
 use Exception;
 use Canvas\Validations\PasswordValidation;
 use Baka\Auth\Models\Users as BakUser;
-use Canvas\Hassing\Password;
+use Canvas\Hashing\Password;
 
 /**
  * Class Users.
@@ -179,10 +179,14 @@ class Users extends \Baka\Auth\Models\Users
 
         $this->hasMany(
             'id',
-            'Canvas\Models\UsersAssociatedCompanies',
+            'Canvas\Models\UsersAssociatedApps',
             'users_id',
             [
                 'alias' => 'companies',
+                'params' => [
+                    'conditions' => 'apps_id = ?0',
+                    'bind' => [$this->di->getApp()->getId()],
+                ]
             ]
         );
 
@@ -201,8 +205,10 @@ class Users extends \Baka\Auth\Models\Users
             'users_id',
             [
                 'alias' => 'app',
-                'conditions' => 'apps_id = ?0',
-                'bind' => [Di::getDefault()->getApp()->getId()]
+                'params' => [
+                    'conditions' => 'apps_id = ?0',
+                    'bind' => [Di::getDefault()->getApp()->getId()]
+                ]
             ]
         );
 
@@ -220,8 +226,10 @@ class Users extends \Baka\Auth\Models\Users
             'entity_id',
             [
                 'alias' => 'files',
-                'conditions' => 'system_modules_id = ?0',
-                'bind' => [$systemModule->getId()]
+                'params' => [
+                    'conditions' => 'system_modules_id = ?0',
+                    'bind' => [$systemModule->getId()]
+                ]
             ]
         );
 
@@ -231,8 +239,10 @@ class Users extends \Baka\Auth\Models\Users
             'entity_id',
             [
                 'alias' => 'photo',
-                'conditions' => 'system_modules_id = ?0',
-                'bind' => [$systemModule->getId()]
+                'params' => [
+                    'conditions' => 'system_modules_id = ?0',
+                    'bind' => [$systemModule->getId()]
+                ]
             ]
         );
     }
@@ -563,7 +573,7 @@ class Users extends \Baka\Auth\Models\Users
 
             if ($app->ecosystemAuth()) {
                 //update all companies password for the current user app
-                App::updatePassword($this, $newPassword);
+                AppAuth::updatePassword($this, $newPassword);
             } else {
                 $this->password = Password::make($newPassword);
             }
@@ -595,14 +605,16 @@ class Users extends \Baka\Auth\Models\Users
                 $userAppData = $user->countApps('apps_id = ' . $this->getDI()->getDefault()->getApp()->getId());
 
                 if ($userAppData > 0) {
-                    throw new Exception('This email already has an account');
+                    throw new Exception('This email already has an account.');
                 }
+                
+                //assign user role for the current app
+                $user->roles_id = Roles::getByName(Roles::DEFAULT)->getId();
 
-                //assign the user to this app
-                $user->getDI()->getDefault()->getApp()->associate($user, $user->defaultCompany);
+                $this->fire('user:afterSignup', $user, true);
 
                 //update the passwords for the current app
-                App::updatePassword($user, Password::make($this->password));
+                AppAuth::updatePassword($user, Password::make($this->password));
 
                 //overwrite the current user object
                 $this->id = $user->getId();
@@ -612,7 +624,7 @@ class Users extends \Baka\Auth\Models\Users
                 $user = parent::signUp();
 
                 //update all the password for the apps
-                App::updatePassword($user, $this->password);
+                AppAuth::updatePassword($user, $this->password);
             }
         } else {
             $user = parent::signUp();

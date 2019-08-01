@@ -8,7 +8,7 @@ use Canvas\Models\Users;
 use Exception;
 use Phalcon\Di;
 use RuntimeException;
-use Canvas\Hassing\Password;
+use Canvas\Hashing\Password;
 
 class App extends Auth
 {
@@ -46,7 +46,7 @@ class App extends Auth
         }
 
         //password verification
-        if (Password::check($password, trim($currentAppUserInfo->password)) && $user->isActive()) {
+        if (Password::check($password, $currentAppUserInfo->password) && $user->isActive()) {
             //rehash password
             Password::rehash($password, $currentAppUserInfo);
 
@@ -57,7 +57,7 @@ class App extends Auth
             // Only store a failed login attempt for an active user - inactive users can't login even with a correct password
             self::updateLoginTries($user);
 
-            throw new Exception(_('Invalid Username or Password.'));
+            throw new Exception(_('Invalid Username or Password..'));
         } elseif ($user->isBanned()) {
             throw new Exception(_('User has not been banned, please check your email for the activation link.'));
         } else {

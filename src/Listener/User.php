@@ -38,13 +38,12 @@ class User
 
             $user->updateOrFail();
 
-            $user->stripe_id = $company->getPaymentGatewayCustomerId();
-            $user->default_company_branch = $user->defaultCompany->branch->getId();
-            $user->updateOrFail();
+            if (empty($user->stripe_id)) {
+                $user->stripe_id = $company->getPaymentGatewayCustomerId();
+                $user->default_company_branch = $user->defaultCompany->branch->getId();
+                $user->updateOrFail();
+            }
 
-        //update default subscription free trial
-            //$company->app->subscriptions_id = $user->startFreeTrial()->getId();
-            //$company->update();
         } else {
             //we have the company id
             if (empty($user->default_company_branch)) {

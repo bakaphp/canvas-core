@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Canvas\Hassing;
+namespace Canvas\Hashing;
 
 use Canvas\Models\Users;
 
@@ -71,7 +71,7 @@ class Password
      * @param object $entity
      * @return boolean
      */
-    protected static function rehash(string $password, object $entity) : bool
+    public static function rehash(string $password, object $entity) : bool
     {
         if (self::needsRehash($entity->password)) {
             $entity->password = self::make($password);

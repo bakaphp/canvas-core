@@ -116,12 +116,6 @@ class AuthController extends \Baka\Auth\AuthController
     {
         $user = $this->userModel;
 
-        $request = $this->request->getPost();
-
-        if (empty($request)) {
-            $request = $this->request->getJsonRawBody(true);
-        }
-
         $user->email = $this->request->getPost('email', 'email');
         $user->firstname = ltrim(trim($this->request->getPost('firstname', 'string')));
         $user->lastname = ltrim(trim($this->request->getPost('lastname', 'string')));

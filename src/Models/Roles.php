@@ -12,7 +12,7 @@ use Phalcon\Acl\Role as AclRole;
 use Canvas\Exception\ModelException;
 
 /**
- * Class Roles
+ * Class Roles.
  *
  * @package Canvas\Models
  *
@@ -76,11 +76,12 @@ class Roles extends AbstractModel
     public $is_deleted;
 
     /**
-     * Default ACL company
+     * Default ACL company.
      *
      */
     const DEFAULT_ACL_COMPANY_ID = 1;
     const DEFAULT_ACL_APP_ID = 1;
+    const DEFAULT = 'Admins';
 
     /**
      * Initialize method for model.
@@ -98,7 +99,7 @@ class Roles extends AbstractModel
     }
 
     /**
-     * Validations and business logic
+     * Validations and business logic.
      */
     public function validation()
     {
@@ -142,7 +143,7 @@ class Roles extends AbstractModel
     }
 
     /**
-     * Check if the role existe in the db
+     * Check if the role existe in the db.
      *
      * @param AclRole $role
      * @return int
@@ -158,7 +159,7 @@ class Roles extends AbstractModel
     /**
      * check if this string is already a role
      * whats the diff with exist or why not merge them? exist uses the alc object and only check
-     * with your current app, this also check with de defautl company ap
+     * with your current app, this also check with de defautl company ap.
      *
      * @param string $roleName
      * @return boolean
@@ -172,7 +173,7 @@ class Roles extends AbstractModel
     }
 
     /**
-     * Get the entity by its name
+     * Get the entity by its name.
      *
      * @param string $name
      * @return Roles
@@ -193,7 +194,7 @@ class Roles extends AbstractModel
     }
 
     /**
-     * Get the entity by its name
+     * Get the entity by its name.
      *
      * @param string $name
      * @return Roles
@@ -208,7 +209,7 @@ class Roles extends AbstractModel
     }
 
     /**
-     * Get the Role by it app name
+     * Get the Role by it app name.
      *
      * @param string $role
      * @return Roles
@@ -236,7 +237,7 @@ class Roles extends AbstractModel
     }
 
     /**
-     * Duplicate a role with it access list
+     * Duplicate a role with it access list.
      *
      * @return Roles
      */
@@ -267,7 +268,7 @@ class Roles extends AbstractModel
     }
 
     /**
-     * Add inherit to a given role
+     * Add inherit to a given role.
      *
      * @param string $roleName
      * @param string $roleToInherit
@@ -302,7 +303,7 @@ class Roles extends AbstractModel
     }
 
     /**
-     * After update
+     * After update.
      *
      * @return void
      */
@@ -318,7 +319,7 @@ class Roles extends AbstractModel
     }
 
     /**
-     * Check if role exists by its id
+     * Check if role exists by its id.
      * @param integer $role_id
      * @return Roles
      */
@@ -331,5 +332,21 @@ class Roles extends AbstractModel
         }
 
         return $role;
+    }
+
+    /**
+     * Assign the default app role to a given user.
+     *
+     * @param Users $user
+     * @return bool
+     */
+    public static function assignDefault(Users $user): bool
+    {
+        $userRole = new UserRoles();
+        $userRole->users_id = $user->id;
+        $userRole->roles_id = Roles::getByName(Roles::DEFAULT)->getId();
+        $userRole->apps_id = Di::getDefault()->getApp()->getId();
+        $userRole->companies_id = $user->default_company;
+        return $userRole->saveOrFail();
     }
 }
