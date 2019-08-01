@@ -29,7 +29,7 @@ class User
         if ($isFirstSignup) {
             $company = new Companies();
             //for signups that dont send a company name
-            $company->name = empty($user->defaultCompanyName) ? $user->defaultCompanyName : $user->displayname.'CP';
+            $company->name = !empty($user->defaultCompanyName) ? $user->defaultCompanyName : $user->displayname.'CP';
             $company->users_id = $user->getId();
 
             $company->saveOrFail();
@@ -70,7 +70,7 @@ class User
     }
 
     /**
-     * After inviting a user
+     * Events after a user is invited to the system
      *
      * @param Event $event
      * @param Users $user

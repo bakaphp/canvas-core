@@ -23,6 +23,7 @@ use Canvas\Auth\App;
 use Exception;
 use Canvas\Validations\PasswordValidation;
 use Baka\Auth\Models\Users as BakUser;
+use Canvas\Hassing\Password;
 
 /**
  * Class Users.
@@ -200,7 +201,7 @@ class Users extends \Baka\Auth\Models\Users
             'users_id',
             [
                 'alias' => 'app',
-                'params' => 'apps_id = ?0',
+                'conditions' => 'apps_id = ?0',
                 'bind' => [Di::getDefault()->getApp()->getId()]
             ]
         );
@@ -557,14 +558,14 @@ class Users extends \Baka\Auth\Models\Users
         }
 
         // First off check that the current password matches the current password
-        if (password_verify($currentPassword, $password)) {
+        if (Password::check($currentPassword, $password)) {
             PasswordValidation::validate($newPassword, $verifyPassword);
 
             if ($app->ecosystemAuth()) {
                 //update all companies password for the current user app
                 App::updatePassword($this, $newPassword);
             } else {
-                $this->password = self::passwordHash($newPassword);
+                $this->password = Password::make($newPassword);
             }
             return true;
         }
@@ -601,7 +602,7 @@ class Users extends \Baka\Auth\Models\Users
                 $user->getDI()->getDefault()->getApp()->associate($user, $user->defaultCompany);
 
                 //update the passwords for the current app
-                App::updatePassword($user, $this->password);
+                App::updatePassword($user, Password::make($this->password));
 
                 //overwrite the current user object
                 $this->id = $user->getId();

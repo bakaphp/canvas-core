@@ -72,28 +72,4 @@ abstract class Auth
 
         return false;
     }
-
-    /**
-     * Check if the user password needs to ve rehash
-     * why? php shit with the new API http://www.php.net/manual/en/function.password-needs-rehash.php.
-     *
-     * @param string $password
-     * @return boolean
-     */
-    protected static function passwordNeedRehash(string $password, object $entity) : bool
-    {
-        $options = [
-            //'salt' => mcrypt_create_iv(22, MCRYPT_DEV_URANDOM), // Never use a static salt or one that is not randomly generated.
-            'cost' => 12, // the default cost is 10
-        ];
-
-        if (password_needs_rehash($entity->password, PASSWORD_DEFAULT, $options)) {
-            $entity->password = self::passwordHash($password);
-            $entity->updateOrFail();
-
-            return true;
-        }
-
-        return false;
-    }
 }

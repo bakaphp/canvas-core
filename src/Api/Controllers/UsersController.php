@@ -14,6 +14,7 @@ use Canvas\Exception\ModelException;
 use Canvas\Exception\NotFoundHttpException;
 use Canvas\Models\AccessList;
 use Canvas\Exception\ServerErrorHttpException;
+use Zend\Http\Header\Server;
 
 /**
  * Class UsersController.
@@ -93,6 +94,9 @@ class UsersController extends \Baka\Auth\UsersController
 
         //if you search for roles we give you the access for this app
         if (array_key_exists('roles', $user)) {
+            if(!isset($user['roles'][0])){
+                throw new ServerErrorHttpException('User with no Role , please contact system admin');
+            }
             $accesList = AccessList::find([
                 'conditions' => 'roles_name = ?0 and apps_id = ?1 and allowed = 0',
                 'bind' => [$user['roles'][0]->name, $this->app->getId()]

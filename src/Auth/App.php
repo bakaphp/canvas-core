@@ -7,6 +7,8 @@ namespace Canvas\Auth;
 use Canvas\Models\Users;
 use Exception;
 use Phalcon\Di;
+use RuntimeException;
+use Canvas\Hassing\Password;
 
 class App extends Auth
 {
@@ -37,23 +39,16 @@ class App extends Auth
         self::loginAttempsValidation($user);
 
         //check if the user exist on this app
-        $currentAppUserInfo = $user->getApp([
-            'conditions' => 'companies_id = ?0',
-            'bind' => [$user->currentCompanyId()]
-        ]);
-
-        if (!is_object($currentAppUserInfo)) {
-            throw new RuntimeException('User not found for this current app');
-        }
-
-        if (empty($currentAppUserInfo->password)) {
+        $currentAppUserInfo = $user->getApp();
+    
+        if (!is_object($currentAppUserInfo) || empty($currentAppUserInfo->password)) {
             throw new Exception(_('Invalid Username or Password.'));
         }
 
         //password verification
-        if (password_verify($password, trim($currentAppUserInfo->password)) && $user->isActive()) {
+        if (Password::check($password, trim($currentAppUserInfo->password)) && $user->isActive()) {
             //rehash password
-            self::passwordNeedRehash($password, $currentAppUserInfo);
+            Password::rehash($password, $currentAppUserInfo);
 
             // Reset login tries
             self::resetLoginTries($user);
@@ -91,5 +86,10 @@ class App extends Auth
         }
 
         return true;
+    }
+
+    public static function signup(string $email)
+    {
+
     }
 }

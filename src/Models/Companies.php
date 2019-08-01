@@ -416,10 +416,7 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
     public static function getDefaultByUser(Users $user): Companies
     {
         //verify the user has a default company
-        $defaultCompany = UserConfig::findFirst([
-            'conditions' => 'users_id = ?0 and name = ?1',
-            'bind' => [$user->getId(), self::DEFAULT_COMPANY],
-        ]);
+        $defaultCompany = $user->get(self::DEFAULT_COMPANY);
 
         //found it
         if (is_object($defaultCompany)) {
