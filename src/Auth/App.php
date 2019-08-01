@@ -58,7 +58,7 @@ class App extends Auth
             // Reset login tries
             self::resetLoginTries($user);
             return $user;
-        } elseif ($user->isActive) {
+        } elseif ($user->isActive()) {
             // Only store a failed login attempt for an active user - inactive users can't login even with a correct password
             self::updateLoginTries($user);
 
@@ -68,56 +68,6 @@ class App extends Auth
         } else {
             throw new Exception(_('User has not been activated, please check your email for the activation link.'));
         }
-    }
-
-    /**
-    * user signup to the service.
-    *
-    * @return Users
-    */
-    public function signUp() : Users
-    {
-        $user = new Users();
-        $user->sex = 'U';
-
-        if (empty($user->firstname)) {
-            $user->firstname = ' ';
-        }
-
-        if (empty($user->lastname)) {
-            $user->lastname = ' ';
-        }
-
-        $user->displayname = empty($user->displayname) && !empty($user->firstname) ? $user->generateDisplayName($user->firstname) : $user->displayname;
-        $user->dob = date('Y-m-d');
-        $user->lastvisit = date('Y-m-d H:i:s');
-        $user->registered = date('Y-m-d H:i:s');
-        $user->timezone = 'America/New_York';
-        $user->user_level = 3;
-        $user->user_active = 1;
-        $user->status = 1;
-        $user->banned = 'N';
-        $user->profile_header = ' ';
-        $user->user_login_tries = 0;
-        $user->user_last_login_try = 0;
-
-        //if the user didnt specify a default company
-        if (empty($user->default_company)) {
-            $user->default_company = 0;
-        }
-        $user->session_time = time();
-        $user->session_page = time();
-        $user->password = self::passwordHash($user->password);
-
-        if (empty($user->language)) {
-            $user->language = $user->usingSpanish() ? 'ES' : 'EN';
-        }
-
-        $user->user_activation_key = $user->generateActivationKey();
-
-        $user->saveOrFail();
-
-        return $user;
     }
 
     /**

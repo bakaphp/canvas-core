@@ -8,6 +8,7 @@ use Phalcon\Events\Event;
 use Canvas\Models\Users;
 use Canvas\Models\Companies;
 use Canvas\Models\UserRoles;
+use Canvas\Auth\App;
 
 class User
 {
@@ -27,7 +28,8 @@ class User
         */
         if ($isFirstSignup) {
             $company = new Companies();
-            $company->name = $user->defaultCompanyName;
+            //for signups that dont send a company name
+            $company->name = empty($user->defaultCompanyName) ? $user->defaultCompanyName : $user->displayname.'CP';
             $company->users_id = $user->getId();
 
             $company->saveOrFail();
@@ -54,7 +56,7 @@ class User
 
         //Create new company associated company
         $user->defaultCompany->associate($user, $user->defaultCompany);
-
+        
         //Insert record into user_roles
         $userRole = new UserRoles();
         $userRole->users_id = $user->id;
@@ -64,6 +66,21 @@ class User
 
         if (!$userRole->save()) {
             throw new ServerErrorHttpException((string)current($userRole->getMessages()));
+        }
+    }
+
+    /**
+     * After inviting a user
+     *
+     * @param Event $event
+     * @param Users $user
+     * @return void
+     */
+    public function afterInvite(Event $event, Users $user)
+    {
+        //if its a ecosystem app and we are inviting a user to it, we need to move the user password to it
+        if ($user->getDI()->getApp()->ecosystemAuth()) {
+            App::updatePassword($user, $user->password);
         }
     }
 }

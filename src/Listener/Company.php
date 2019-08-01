@@ -29,6 +29,7 @@ class Company
         //setup the user notificatoin setting
         $company->set('notifications', $company->user->email);
         $company->set('paid', '1');
+        $app = $company->getDI()->getApp();
 
         //now thta we setup de company and associated with the user we need to setup this as its default company
         if (!UserConfig::findFirst(['conditions' => 'users_id = ?0 and name = ?1', 'bind' => [$company->user->getId(), Companies::DEFAULT_COMPANY]])) {
@@ -41,7 +42,7 @@ class Company
         }
 
         $company->associate($company->user, $company);
-        $company->getDI()->getApp()->associate($company->user, $company);
+        $app->associate($company->user, $company);
 
         /**
          * @var CompaniesBranches
@@ -58,7 +59,7 @@ class Company
         //look for the default plan for this app
         $companyApps = new UserCompanyApps();
         $companyApps->companies_id = $company->getId();
-        $companyApps->apps_id = $company->getDI()->getApp()->getId();
+        $companyApps->apps_id = $app->getId();
         //$companyApps->subscriptions_id = 0;
 
         //we need to assign this company to a plan
@@ -67,13 +68,9 @@ class Company
             $companyApps->stripe_id = $plan->stripe_id;
         }
 
-        $appsSubscriptionStatus = AppsSettings::findFirst([
-            'conditions' => 'apps_id = ?0 and name = ?1 and is_deleted = 0',
-            'bind' => [$company->getDI()->getApp()->getId(), AppsSettings::SUBSCRIPTION_BASED]
-        ]);
 
         //If the newly created company is not the default then we create a new subscription with the same user
-        if (($company->getDI()->getUserData()->default_company != $company->getId()) && $appsSubscriptionStatus->value) {
+        if (($company->getDI()->getUserData()->default_company != $company->getId()) && $app->subscriptioBased()) {
             $company->set(Companies::PAYMENT_GATEWAY_CUSTOMER_KEY, $company->startFreeTrial());
             $companyApps->subscriptions_id = $company->subscription->getId();
         }

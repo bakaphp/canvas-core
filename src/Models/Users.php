@@ -22,6 +22,7 @@ use Phalcon\Di;
 use Canvas\Auth\App;
 use Exception;
 use Canvas\Validations\PasswordValidation;
+use Baka\Auth\Models\Users as BakUser;
 
 /**
  * Class Users.
@@ -254,15 +255,6 @@ class Users extends \Baka\Auth\Models\Users
             new PresenceOf([
                 'field' => 'displayname',
                 'required' => true,
-            ])
-        );
-
-        $validator->add(
-            'displayname',
-            new Regex([
-                'field' => 'displayname',
-                'message' => _('Please use alphanumerics only.'),
-                'pattern' => '/^[A-Za-z0-9_-]{1,32}$/',
             ])
         );
 
@@ -566,9 +558,8 @@ class Users extends \Baka\Auth\Models\Users
 
         // First off check that the current password matches the current password
         if (password_verify($currentPassword, $password)) {
-          
             PasswordValidation::validate($newPassword, $verifyPassword);
-            
+
             if ($app->ecosystemAuth()) {
                 //update all companies password for the current user app
                 App::updatePassword($this, $newPassword);
@@ -579,5 +570,53 @@ class Users extends \Baka\Auth\Models\Users
         }
 
         throw new Exception(_(' Your current password is incorrect .'));
+    }
+
+    /**
+     * user signup to the service.
+     *
+     * @return Users
+     */
+    public function signUp() : BakUser
+    {
+        $app = Di::getDefault()->getApp();
+
+        if ($app->ecosystemAuth()) {
+            try {
+                //did we find the email?
+                //does it have access to this app?
+                // no?
+                //ok les register / associate to this app
+                // yes?
+                //it meas he was invites so get the fuck out?
+                $user = self::getByEmail($this->email);
+
+                $userAppData = $user->countApps('apps_id = ' . $this->getDI()->getDefault()->getApp()->getId());
+
+                if ($userAppData > 0) {
+                    throw new Exception('This email already has an account');
+                }
+
+                //assign the user to this app
+                $user->getDI()->getDefault()->getApp()->associate($user, $user->defaultCompany);
+
+                //update the passwords for the current app
+                App::updatePassword($user, $this->password);
+
+                //overwrite the current user object
+                $this->id = $user->getId();
+                $this->email = $user->getEmail();
+            } catch (Exception $e) {
+                //if we cant find the user normal signup
+                $user = parent::signUp();
+
+                //update all the password for the apps
+                App::updatePassword($user, $this->password);
+            }
+        } else {
+            $user = parent::signUp();
+        }
+
+        return $user;
     }
 }

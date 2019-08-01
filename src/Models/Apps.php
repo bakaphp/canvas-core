@@ -178,4 +178,14 @@ class Apps extends \Baka\Database\Apps
     {
         return (bool) $this->ecosystem_auth;
     }
+
+    /**
+     * Is this app subscription based?
+     *
+     * @return boolean
+     */
+    public function subscriptioBased(): bool
+    {
+        return (bool) $this->payments_active;
+    }
 }

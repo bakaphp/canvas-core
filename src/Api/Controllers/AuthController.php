@@ -127,8 +127,8 @@ class AuthController extends \Baka\Auth\AuthController
         $user->lastname = ltrim(trim($this->request->getPost('lastname', 'string')));
         $user->password = ltrim(trim($this->request->getPost('password', 'string')));
         $userIp = !defined('API_TESTS') ? $this->request->getClientAddress() : '127.0.0.1'; //help getting the client ip on scrutinizer :(
-        $user->displayname = ltrim(trim($this->request->getPost('displayname', 'string')));
-        $user->defaultCompanyName = ltrim(trim($this->request->getPost('default_company', 'string')));
+        $user->displayname = ltrim(trim($this->request->getPost('displayname', 'string', '')));
+        $user->defaultCompanyName = ltrim(trim($this->request->getPost('default_company', 'string', '')));
 
         //Ok let validate user password
         $validation = new Validation();

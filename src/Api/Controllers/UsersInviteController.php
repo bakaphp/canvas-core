@@ -220,6 +220,7 @@ class UsersInviteController extends BaseController
 
         //associate the user and the app + company
         $this->app->associate($newUser, $usersInvite->company);
+        $this->events->fire('user:afterInvite', $newUser);
 
         //Lets login the new user
         $authInfo = $this->loginUsers($usersInvite->email, $password);
