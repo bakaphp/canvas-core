@@ -28,9 +28,7 @@ class Validation extends PhalconValidation
         $validate = parent::validate($data, $entity);
 
         if (count($validate)) {
-            foreach ($validate as $message) {
-                throw new UnprocessableRequestException((string) $message);
-            }
+            throw new UnprocessableRequestException((string) current($validate));
         }
     }
 }

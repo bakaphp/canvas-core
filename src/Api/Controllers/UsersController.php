@@ -5,16 +5,13 @@ declare(strict_types=1);
 namespace Canvas\Api\Controllers;
 
 use Canvas\Models\Users;
-use Canvas\Models\Companies;
 use Phalcon\Http\Response;
 use Phalcon\Validation;
 use Phalcon\Validation\Validator\PresenceOf;
 use Canvas\Exception\BadRequestHttpException;
-use Canvas\Exception\ModelException;
-use Canvas\Exception\NotFoundHttpException;
 use Canvas\Models\AccessList;
 use Canvas\Exception\ServerErrorHttpException;
-use Zend\Http\Header\Server;
+use \Baka\Auth\UsersController as BakaUsersController;
 
 /**
  * Class UsersController.
@@ -26,21 +23,54 @@ use Zend\Http\Header\Server;
  * @property Config $config
  * @property Apps $app
  */
-class UsersController extends \Baka\Auth\UsersController
+class UsersController extends BakaUsersController
 {
     /*
      * fields we accept to create
      *
      * @var array
      */
-    protected $createFields = ['name', 'firstname', 'lastname', 'displayname', 'language', 'country_id', 'timezone', 'email', 'password', 'created_at', 'updated_at', 'default_company', 'default_company_branch', 'family', 'cell_phone_number', 'country_id'];
+    protected $createFields = [
+        'name',
+        'firstname',
+        'lastname',
+        'displayname',
+        'language',
+        'country_id',
+        'timezone',
+        'email',
+        'password',
+        'created_at',
+        'updated_at',
+        'default_company',
+        'default_company_branch',
+        'family',
+        'cell_phone_number',
+        'country_id'
+    ];
 
     /*
      * fields we accept to create
      *
      * @var array
      */
-    protected $updateFields = ['name', 'firstname', 'lastname', 'displayname', 'language', 'country_id', 'timezone', 'email', 'password', 'created_at', 'updated_at', 'default_company', 'default_company_branch', 'cell_phone_number', 'country_id'];
+    protected $updateFields = [
+        'name',
+        'firstname',
+        'lastname',
+        'displayname',
+        'language',
+        'country_id',
+        'timezone',
+        'email',
+        'password',
+        'created_at',
+        'updated_at',
+        'default_company',
+        'default_company_branch',
+        'cell_phone_number',
+        'country_id'
+    ];
 
     /**
      * set objects.
