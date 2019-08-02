@@ -130,8 +130,20 @@ class Users extends \Baka\Auth\Models\Users
         $this->hasMany('id', 'Baka\Auth\Models\Sessions', 'users_id', ['alias' => 'sessions']);
         $this->hasMany('id', 'Canvas\Models\UserConfig', 'users_id', ['alias' => 'config']);
         $this->hasMany('id', 'Canvas\Models\UserLinkedSources', 'users_id', ['alias' => 'sources']);
-        $this->hasOne('default_company', 'Canvas\Models\Companies', 'id', ['alias' => 'defaultCompany']);
-        $this->hasOne('default_company', 'Canvas\Models\Companies', 'id', ['alias' => 'currentCompany']);
+
+        $this->hasOne(
+            'default_company',
+            'Canvas\Models\Companies',
+            'id',
+            ['alias' => 'defaultCompany']
+        );
+
+        $this->hasOne(
+            'default_company',
+            'Canvas\Models\Companies',
+            'id',
+            ['alias' => 'currentCompany']
+        );
 
         $this->hasOne(
             'id',
@@ -422,7 +434,22 @@ class Users extends \Baka\Auth\Models\Users
      */
     public function currentCompanyId(): int
     {
-        return (int) $this->default_company;
+        $defaultCompanyId = $this->get(Companies::cacheKey());
+        return !is_null($defaultCompanyId) ? (int) $defaultCompanyId : (int) $this->default_company;
+    }
+
+    /**
+     * Overwrite the user relationship.
+     * use Phalcon Registry to assure we mantian the same instance accross the request
+     */
+    public function getDefaultCompany(): Companies
+    {
+        $registry = Di::getDefault()->getRegistry();
+        $key = 'company_' . Di::getDefault()->getApp()->getId() . '_' . $this->getId();
+        if (!isset($registry[$key])) {
+            $registry[$key] = Companies::findFirstOrFail($this->currentCompanyId());
+        }
+        return  $registry[$key];
     }
 
     /**
@@ -536,7 +563,7 @@ class Users extends \Baka\Auth\Models\Users
                     $this->default_company = $branch->company->getId();
                     $this->default_company_branch = $branch->getId();
                     //set the default company id per the specific app , we do this so we can have multip default companies per diff apps
-                    $this->set(Companies::DEFAULT_COMPANY_APP . $this->getDI()->getDefault()->getApp()->getId(), $this->default_company);
+                    $this->set(Companies::cacheKey(), $this->default_company);
                 }
             }
         }
@@ -607,7 +634,7 @@ class Users extends \Baka\Auth\Models\Users
                 if ($userAppData > 0) {
                     throw new Exception('This email already has an account.');
                 }
-                
+
                 //assign user role for the current app
                 $user->roles_id = Roles::getByName(Roles::DEFAULT)->getId();
 

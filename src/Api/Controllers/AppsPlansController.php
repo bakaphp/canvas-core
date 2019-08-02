@@ -85,7 +85,7 @@ class AppsPlansController extends BaseController
         }
 
         $stripeId = $this->request->getPost('stripe_id');
-        $company = $this->userData->defaultCompany;
+        $company = $this->userData->getDefaultCompany();
         $cardNumber = $this->request->getPost('card_number');
         $expMonth = $this->request->getPost('card_exp_month');
         $expYear = $this->request->getPost('card_exp_year');

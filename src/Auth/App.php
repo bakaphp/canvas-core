@@ -87,9 +87,4 @@ class App extends Auth
 
         return true;
     }
-
-    public static function signup(string $email)
-    {
-
-    }
 }

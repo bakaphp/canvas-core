@@ -35,8 +35,8 @@ class Company
         $app = $company->getDI()->getApp();
 
         //now thta we setup de company and associated with the user we need to setup this as its default company
-        if (!$company->user->get(Companies::DEFAULT_COMPANY)) {
-            $company->user->set(Companies::DEFAULT_COMPANY, $company->getId());
+        if (!$company->user->get(Companies::cacheKey())) {
+            $company->user->set(Companies::cacheKey(), $company->getId());
         }
 
         $company->associate($company->user, $company);

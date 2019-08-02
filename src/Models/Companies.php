@@ -14,6 +14,7 @@ use Canvas\Traits\UsersAssociatedTrait;
 use Canvas\Traits\FileSystemModelTrait;
 use Baka\Blameable\Blameable;
 use Phalcon\Traits\EventManagerAwareTrait;
+use Phalcon\Di;
 
 /**
  * Class Companies.
@@ -179,7 +180,6 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
             ]
         );
 
-
         $this->hasMany(
             'id',
             'Canvas\Models\CompaniesCustomFields',
@@ -293,7 +293,7 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
             'entity_id',
             [
                 'alias' => 'files',
-                'params'   => [
+                'params' => [
                     'conditions' => 'system_modules_id = ?0',
                     'bind' => [$systemModule->getId()]
                 ]
@@ -306,7 +306,7 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
             'entity_id',
             [
                 'alias' => 'logo',
-                'params'   => [
+                'params' => [
                     'conditions' => 'system_modules_id = ?0',
                     'bind' => [$systemModule->getId()]
                 ]
@@ -502,5 +502,17 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
     public function getLogo()
     {
         return $this->getFileByName('logo');
+    }
+
+    /**
+     * Get the default company key for the current app
+     * this is use to store in redis the default company id for the current
+     * user in session everytime they switch between companies on the diff apps
+     * 
+     * @return string
+     */
+    public static function cacheKey(): string
+    {
+        return self::DEFAULT_COMPANY_APP.Di::getDefault()->getApp()->getId();
     }
 }
