@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Canvas\Contracts\Controllers;
 
 use Canvas\Exception\ServerErrorHttpException;
+use AutoMapperPlus\DataType;
+use StdClass;
 
 trait ProcessOutputMapperTrait
 {
@@ -21,8 +23,11 @@ trait ProcessOutputMapperTrait
     {
         $this->canUseMapper();
 
-        //add a mapper
-        $this->dtoConfig->registerMapping(get_class($this->model), $this->dto)
+        //if we have relationships we use StdClass to allow use to overwrite the array as we see fit in the Dto
+        $mapperModel = !$this->request->hasQuery('relationships') ? get_class($this->model) : DataType::ARRAY;
+        $this->dto = !$this->request->hasQuery('relationships') ? $this->dto : StdClass::class;
+
+        $this->dtoConfig->registerMapping($mapperModel, $this->dto)
             ->useCustomMapper($this->dtoMapper);
 
         if (is_array($results) && isset($results['data'])) {
@@ -30,6 +35,7 @@ trait ProcessOutputMapperTrait
             return  $results;
         }
 
+        //return $this->mapper->map($results, $this->dto, $this->getMapperOptions());
         return is_iterable($results) ?
             $this->mapper->mapMultiple($results, $this->dto)
             : $this->mapper->map($results, $this->dto);
@@ -47,5 +53,21 @@ trait ProcessOutputMapperTrait
         }
 
         return true;
+    }
+
+    /**
+     * If we have relationships send them as addicontal context to the mapper.
+     *
+     * @return array
+     */
+    protected function getMapperOptions(): array
+    {
+        if ($this->request->hasQuery('relationships')) {
+            return [
+                'relationships' => explode(',', $this->request->getQuery('relationships'))
+            ];
+        }
+
+        return [];
     }
 }
