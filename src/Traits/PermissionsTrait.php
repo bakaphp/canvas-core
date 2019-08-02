@@ -25,7 +25,7 @@ trait PermissionsTrait
      */
     public function assignRole(string $role): bool
     {
-        $role = Roles::getByAppName($role, $this->defaultCompany);
+        $role = Roles::getByAppName($role, $this->getDefaultCompany());
 
         if (!is_object($role)) {
             throw new ServerErrorHttpException('Role not found in DB');
@@ -59,7 +59,7 @@ trait PermissionsTrait
      */
     public function removeRole(string $role): bool
     {
-        $role = Roles::getByAppName($role, $this->defaultCompany);
+        $role = Roles::getByAppName($role, $this->getDefaultCompany());
 
         if (!is_object($role)) {
             throw new ServerErrorHttpException('Role not found in DB');
@@ -85,7 +85,7 @@ trait PermissionsTrait
      */
     public function hasRole(string $role): bool
     {
-        $role = Roles::getByAppName($role, $this->defaultCompany);
+        $role = Roles::getByAppName($role, $this->getDefaultCompany());
 
         if (!is_object($role)) {
             throw new ServerErrorHttpException('Role not found in DB');

@@ -342,11 +342,21 @@ class Roles extends AbstractModel
      */
     public static function assignDefault(Users $user): bool
     {
-        $userRole = new UserRoles();
-        $userRole->users_id = $user->id;
-        $userRole->roles_id = Roles::getByName(Roles::DEFAULT)->getId();
-        $userRole->apps_id = Di::getDefault()->getApp()->getId();
-        $userRole->companies_id = $user->default_company;
-        return $userRole->saveOrFail();
+        $apps = Di::getDefault()->getApp();
+        $userRoles = UserRoles::findFirst([
+            'conditions' => 'users_id = ?0 AND apps_id = ?1 AND companies_id = ?2 AND is_deleted = 0',
+            'bind' => [$user->getId(), $apps->getId(), $user->getDefaultCompany()->getId()]
+        ]);
+
+        if (!is_object($userRoles)) {
+            $userRole = new UserRoles();
+            $userRole->users_id = $user->getId();
+            $userRole->roles_id = Roles::getByName(Roles::DEFAULT)->getId();
+            $userRole->apps_id = $apps->getId();
+            $userRole->companies_id = $user->getDefaultCompany()->getId();
+            return $userRole->saveOrFail();
+        }
+
+        return true;
     }
 }

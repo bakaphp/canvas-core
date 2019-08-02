@@ -305,9 +305,9 @@ class AppsPlansController extends BaseController
         $zipcode = $this->request->getPut('zipcode', 'string');
 
         //update the default company info
-        $this->userData->defaultCompany->address = $address;
-        $this->userData->defaultCompany->zipcode = $zipcode;
-        $this->userData->defaultCompany->update();
+        $this->userData->getDefaultCompany()->address = $address;
+        $this->userData->getDefaultCompany()->zipcode = $zipcode;
+        $this->userData->getDefaultCompany()->update();
 
         $customerId = $this->userData->stripe_id;
 

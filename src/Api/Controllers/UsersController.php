@@ -59,7 +59,7 @@ class UsersController extends \Baka\Auth\UsersController
         } else {
             //admin get all the users for this company
             $this->additionalSearchFields = [
-                ['id', ':', implode('|', $this->userData->currentCompany->getAssociatedUsersByApp())],
+                ['id', ':', implode('|', $this->userData->getDefaultCompany()->getAssociatedUsersByApp())],
             ];
         }
     }
@@ -88,13 +88,15 @@ class UsersController extends \Baka\Auth\UsersController
             'id = ?0 AND is_deleted = 0',
             'bind' => [$id],
         ]);
+        $userObject = $user;
 
         //get the results and append its relationships
         $user = $this->appendRelationshipsToResult($this->request, $user);
 
         //if you search for roles we give you the access for this app
+        //@todo move this to DTO
         if (array_key_exists('roles', $user)) {
-            if(!isset($user['roles'][0])){
+            if (!isset($user['roles'][0])) {
                 throw new ServerErrorHttpException('User with no Role , please contact system admin');
             }
             $accesList = AccessList::find([
@@ -107,6 +109,8 @@ class UsersController extends \Baka\Auth\UsersController
                     $user['access_list'][strtolower($access->resources_name)][$access->access_name] = 0;
                 }
             }
+
+            $user['default_company'] = $userObject->getDefaultCompany()->getId();
         }
 
         return $this->response($this->processOutput($user));

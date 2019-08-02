@@ -90,7 +90,7 @@ class RolesAccesListController extends BaseController
         }
 
         //set the company and app
-        $this->acl->setCompany($this->userData->DefaultCompany);
+        $this->acl->setCompany($this->userData->getDefaultCompany());
         $this->acl->setApp($this->app);
 
         $scope = 1;
@@ -173,7 +173,7 @@ class RolesAccesListController extends BaseController
         }
 
         //set the company and app
-        $this->acl->setCompany($this->userData->DefaultCompany);
+        $this->acl->setCompany($this->userData->getDefaultCompany());
         $this->acl->setApp($this->app);
 
         $role->name = $request['roles']['name'];

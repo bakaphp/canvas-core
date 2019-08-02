@@ -9,6 +9,7 @@ use Canvas\Models\Users;
 use Canvas\Models\Companies;
 use Canvas\Models\UserRoles;
 use Canvas\Auth\App;
+use Canvas\Models\Roles;
 
 class User
 {
@@ -40,28 +41,28 @@ class User
 
             if (empty($user->stripe_id)) {
                 $user->stripe_id = $company->getPaymentGatewayCustomerId();
-                $user->default_company_branch = $user->defaultCompany->branch->getId();
+                $user->default_company_branch = $user->getDefaultCompany()->branch->getId();
                 $user->updateOrFail();
             }
 
         } else {
             //we have the company id
             if (empty($user->default_company_branch)) {
-                $user->default_company_branch = $user->defaultCompany->branch->getId();
+                $user->default_company_branch = $user->getDefaultCompany()->branch->getId();
             }
 
-            $user->getDI()->getApp()->associate($user, $user->defaultCompany);
+            $user->getDI()->getApp()->associate($user, $user->getDefaultCompany());
         }
 
         //Create new company associated company
-        $user->defaultCompany->associate($user, $user->defaultCompany);
+        $user->getDefaultCompany()->associate($user, $user->getDefaultCompany());
         
         //Insert record into user_roles
         $userRole = new UserRoles();
         $userRole->users_id = $user->id;
         $userRole->roles_id = $user->roles_id;
         $userRole->apps_id = $user->getDI()->getApp()->getId();
-        $userRole->companies_id = $user->default_company;
+        $userRole->companies_id = $user->getDefaultCompany()->getId();
 
         if (!$userRole->save()) {
             throw new ServerErrorHttpException((string)current($userRole->getMessages()));
@@ -81,5 +82,7 @@ class User
         if ($user->getDI()->getApp()->ecosystemAuth()) {
             App::updatePassword($user, $user->password);
         }
+
+        Roles::assignDefault($user);
     }
 }

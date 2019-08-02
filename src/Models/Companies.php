@@ -420,11 +420,11 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
     public static function getDefaultByUser(Users $user): Companies
     {
         //verify the user has a default company
-        $defaultCompany = $user->get(self::DEFAULT_COMPANY);
+        $defaultCompany = $user->get(self::cacheKey());
 
         //found it
-        if (is_object($defaultCompany)) {
-            return self::findFirst($defaultCompany->value);
+        if (!is_null($defaultCompany)) {
+            return self::findFirst($defaultCompany);
         }
 
         //second try

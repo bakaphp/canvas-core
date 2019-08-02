@@ -116,7 +116,7 @@ class UsersInviteController extends BaseController
 
         //Save data to users_invite table and generate a hash for the invite
         $userInvite = $this->model;
-        $userInvite->companies_id = $this->userData->default_company;
+        $userInvite->companies_id = $this->userData->getDefaultCompany()->getId();
         $userInvite->users_id = $this->userData->getId();
         $userInvite->app_id = $this->app->getId();
         $userInvite->role_id = Roles::existsById((int)$request['role_id'])->id;
@@ -190,7 +190,7 @@ class UsersInviteController extends BaseController
 
         if (is_object($userExists)) {
             $newUser = $userExists;
-            $this->userData->defaultCompany->associate($userExists, $this->userData->defaultCompany);
+            $this->userData->getDefaultCompany()->associate($userExists, $this->userData->getDefaultCompany());
         } else {
             $newUser = new Users();
             $newUser->firstname = $request['firstname'];
