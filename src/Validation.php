@@ -30,5 +30,7 @@ class Validation extends PhalconValidation
         if (count($validate)) {
             throw new UnprocessableRequestException((string) current($validate));
         }
+
+        return $validate;
     }
 }
