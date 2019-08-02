@@ -10,6 +10,7 @@ use Canvas\Models\Companies;
 use Canvas\Models\UserRoles;
 use Canvas\Auth\App;
 use Canvas\Models\Roles;
+use Canvas\Models\UsersInvite;
 
 class User
 {
@@ -76,8 +77,13 @@ class User
      * @param Users $user
      * @return void
      */
-    public function afterInvite(Event $event, Users $user)
+    public function afterInvite(Event $event, Users $user, UsersInvite $usersInvite)
     {
+        //assign default company
+        if (!$user->get(Companies::cacheKey())) {
+            $user->set(Companies::cacheKey(), $usersInvite->company->getId());
+        }
+
         //if its a ecosystem app and we are inviting a user to it, we need to move the user password to it
         if ($user->getDI()->getApp()->ecosystemAuth()) {
             App::updatePassword($user, $user->password);

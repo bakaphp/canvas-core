@@ -180,6 +180,7 @@ class UsersInviteController extends BaseController
             throw new NotFoundHttpException('Users Invite not found');
         }
 
+        //set userData as the user who is inviting the user
         $this->setUserDataById((int)$usersInvite->users_id);
 
         //Check if user already exists
