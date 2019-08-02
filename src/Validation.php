@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Canvas;
 
 use Phalcon\Validation as PhalconValidation;
-use Canvas\Exception\ServerErrorHttpException;
+use Canvas\Exception\UnprocessableRequestException;
 
 /**
  * Class Validation.
@@ -29,7 +29,7 @@ class Validation extends PhalconValidation
 
         if (count($validate)) {
             foreach ($validate as $message) {
-                throw new ServerErrorHttpException((string) $message);
+                throw new UnprocessableRequestException((string) $message);
             }
         }
     }

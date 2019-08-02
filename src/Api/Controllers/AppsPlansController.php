@@ -15,9 +15,10 @@ use Canvas\Exception\UnprocessableEntityHttpException;
 use Phalcon\Cashier\Subscription;
 use Canvas\Models\UserCompanyApps;
 use function Canvas\Core\paymentGatewayIsActive;
+use Canvas\Validation as CanvasValidation;
 
 /**
- * Class LanguagesController
+ * Class LanguagesController.
  *
  * @package Canvas\Api\Controllers
  *
@@ -44,7 +45,7 @@ class AppsPlansController extends BaseController
     protected $updateFields = [];
 
     /**
-     * set objects
+     * set objects.
      *
      * @return void
      */
@@ -58,7 +59,7 @@ class AppsPlansController extends BaseController
     }
 
     /**
-     * Given the app plan stripe id , subscribe the current company to this aps
+     * Given the app plan stripe id , subscribe the current company to this aps.
      *
      * @return Response
      */
@@ -69,7 +70,7 @@ class AppsPlansController extends BaseController
         }
 
         //Ok let validate user password
-        $validation = new Validation();
+        $validation = new CanvasValidation();
         $validation->add('stripe_id', new PresenceOf(['message' => _('The plan is required.')]));
         $validation->add('card_number', new PresenceOf(['message' => _('Credit Card Number is required.')]));
         $validation->add('card_exp_month', new PresenceOf(['message' => _('Credit Card expiration month is required.')]));
@@ -160,7 +161,7 @@ class AppsPlansController extends BaseController
     }
 
     /**
-     * Update a given subscription
+     * Update a given subscription.
      *
      * @param string $stripeId
      * @return Response
@@ -224,7 +225,7 @@ class AppsPlansController extends BaseController
     }
 
     /**
-     * Cancel a given subscription
+     * Cancel a given subscription.
      *
      * @param string $stripeId
      * @return Response
@@ -260,26 +261,21 @@ class AppsPlansController extends BaseController
     }
 
     /**
-     * Update payment method
+     * Update payment method.
      * @param integer $id
      * @return Response
      */
     public function updatePaymentMethod(int $id): Response
     {
         if (empty($this->request->hasPut('card_token'))) {
-            $validation = new Validation();
+            $validation = new CanvasValidation();
             $validation->add('card_number', new PresenceOf(['message' => _('Credit Card Number is required.')]));
             $validation->add('card_exp_month', new PresenceOf(['message' => _('Credit Card expiration month is required.')]));
             $validation->add('card_exp_year', new PresenceOf(['message' => _('Credit Card expiration year is required.')]));
             $validation->add('card_cvc', new PresenceOf(['message' => _('CVC is required.')]));
 
             //validate this form for password
-            $messages = $validation->validate($this->request->getPut());
-            if (count($messages)) {
-                foreach ($messages as $message) {
-                    throw new UnprocessableEntityHttpException((string) $message);
-                }
-            }
+            $validation->validate($this->request->getPut());
 
             $cardNumber = $this->request->getPut('card_number', 'string');
             $expMonth = $this->request->getPut('card_exp_month', 'string');
@@ -288,12 +284,12 @@ class AppsPlansController extends BaseController
 
             //Create a new card token
             $token = StripeToken::create([
-            'card' => [
-                'number' => $cardNumber,
-                'exp_month' => $expMonth,
-                'exp_year' => $expYear,
-                'cvc' => $cvc,
-            ],
+                'card' => [
+                    'number' => $cardNumber,
+                    'exp_month' => $expMonth,
+                    'exp_year' => $expYear,
+                    'cvc' => $cvc,
+                ],
             ], [
                 'api_key' => $this->config->stripe->secret
             ])->id;
