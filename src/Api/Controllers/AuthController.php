@@ -20,8 +20,8 @@ use Phalcon\Validation\Validator\Email as EmailValidator;
 use Phalcon\Validation\Validator\PresenceOf;
 use Phalcon\Validation\Validator\StringLength;
 use Baka\Auth\Models\Sessions;
-use Canvas\Auth\App;
 use Canvas\Auth\Factory;
+use Canvas\Validation as CanvasValidation;
 
 /**
  * Class AuthController.
@@ -73,17 +73,12 @@ class AuthController extends \Baka\Auth\AuthController
         $remember = $this->request->getPost('remember', 'int', 1);
 
         //Ok let validate user password
-        $validation = new Validation();
+        $validation = new CanvasValidation();
         $validation->add('email', new PresenceOf(['message' => _('The email is required.')]));
         $validation->add('password', new PresenceOf(['message' => _('The password is required.')]));
 
         //validate this form for password
-        $messages = $validation->validate($this->request->getPost());
-        if (count($messages)) {
-            foreach ($messages as $message) {
-                throw new Exception($message);
-            }
-        }
+        $validation->validate($this->request->getPost());
 
         /**
          * Login the user via ecosystem or app.
@@ -125,7 +120,7 @@ class AuthController extends \Baka\Auth\AuthController
         $user->defaultCompanyName = ltrim(trim($this->request->getPost('default_company', 'string', '')));
 
         //Ok let validate user password
-        $validation = new Validation();
+        $validation = new CanvasValidation();
         $validation->add('password', new PresenceOf(['message' => _('The password is required.')]));
         $validation->add('firstname', new PresenceOf(['message' => _('The firstname is required.')]));
         $validation->add('email', new EmailValidator(['message' => _('The email is not valid.')]));
@@ -144,12 +139,7 @@ class AuthController extends \Baka\Auth\AuthController
         ]));
 
         //validate this form for password
-        $messages = $validation->validate($this->request->getPost());
-        if (count($messages)) {
-            foreach ($messages as $message) {
-                throw new Exception($message);
-            }
-        }
+        $validation->validate($this->request->getPost());
 
         //user registration
         try {

@@ -6,6 +6,7 @@ namespace Canvas\Traits;
 
 use Canvas\Models\Users;
 use Baka\Auth\Models\Sessions;
+use Canvas\Exception\NotFoundException;
 
 /**
  * Trait ResponseTrait.
@@ -80,14 +81,10 @@ trait AuthTrait
      */
     private function setUserDataById(int $usersId): void
     {
-        $hostUser = Users::findFirst([
+        $hostUser = Users::findFirstOrFail([
             'conditions' => 'id = ?0 and status = 1 and is_deleted = 0',
             'bind' => [$usersId]
         ]);
-
-        if (is_object($hostUser)) {
-            throw new ModelException('Host User not found');
-        }
 
         /**
          * Set the host in di.

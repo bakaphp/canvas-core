@@ -120,6 +120,20 @@ class UsersInvite extends AbstractModel
     }
 
     /**
+     * Get the invite by hash
+     *
+     * @param string $hash
+     * @return UsersInvite
+     */
+    public static function getByHash(string $hash): UsersInvite
+    {
+        return self::findFirstOrFail([
+            'conditions' => 'invite_hash = ?0 and is_deleted = 0',
+            'bind' => [$hash]
+        ]);
+    }
+
+    /**
      * Validate if the current email is valid to invite.
      *
      * @throws Exception
@@ -152,5 +166,28 @@ class UsersInvite extends AbstractModel
         }
 
         return true;
+    }
+
+    /**
+     * Given the form request return a new user invite.
+     *
+     * @param array $requets
+     * @return void
+     */
+    public function newUser(array $request): Users
+    {
+        $user = new Users();
+        $user->firstname = $request['firstname'];
+        $user->lastname = $request['lastname'];
+        $user->displayname = $request['displayname'];
+        $user->password = $request['password'];
+        $user->email = $this->email;
+        $user->user_active = 1;
+        $user->roles_id = $this->role_id;
+        $user->created_at = date('Y-m-d H:m:s');
+        $user->default_company = $this->companies_id;
+        $user->default_company_branch = $this->company->branch->getId();
+
+        return $user;
     }
 }
