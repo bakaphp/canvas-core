@@ -66,9 +66,9 @@ class AuthController extends \Baka\Auth\AuthController
      */
     public function login() : Response
     {
-        $email = $this->request->getPost('email', 'string');
-        $password = $this->request->getPost('password', 'string');
-        $admin = $this->request->getPost('is_admin', 'int', 0);
+        $email = trim($this->request->getPost('email', 'string', ''));
+        $password = trim($this->request->getPost('password', 'string', ''));
+        $admin = 0;
         $userIp = !defined('API_TESTS') ? $this->request->getClientAddress() : '127.0.0.1'; //help getting the client ip on scrutinizer :(
         $remember = $this->request->getPost('remember', 'int', 1);
 
@@ -112,9 +112,9 @@ class AuthController extends \Baka\Auth\AuthController
         $user = $this->userModel;
 
         $user->email = $this->request->getPost('email', 'email');
-        $user->firstname = ltrim(trim($this->request->getPost('firstname', 'string')));
-        $user->lastname = ltrim(trim($this->request->getPost('lastname', 'string')));
-        $user->password = ltrim(trim($this->request->getPost('password', 'string')));
+        $user->firstname = ltrim(trim($this->request->getPost('firstname', 'string', '')));
+        $user->lastname = ltrim(trim($this->request->getPost('lastname', 'string', '')));
+        $user->password = ltrim(trim($this->request->getPost('password', 'string', '')));
         $userIp = !defined('API_TESTS') ? $this->request->getClientAddress() : '127.0.0.1'; //help getting the client ip on scrutinizer :(
         $user->displayname = ltrim(trim($this->request->getPost('displayname', 'string', '')));
         $user->defaultCompanyName = ltrim(trim($this->request->getPost('default_company', 'string', '')));
