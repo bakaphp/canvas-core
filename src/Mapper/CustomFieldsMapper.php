@@ -18,6 +18,7 @@ class CustomFieldsMapper extends CustomMapper
     public function mapToObject($customField, $customFieldDto, array $context = [])
     {
         $customFieldDto->id = $customField->getId();
+        $customFieldDto->apps_id = $customField->apps_id;
         $customFieldDto->users_id = $customField->users_id;
         $customFieldDto->companies_id = $customField->companies_id;
         $customFieldDto->name = $customField->name;

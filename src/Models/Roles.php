@@ -201,7 +201,7 @@ class Roles extends AbstractModel
      */
     public static function getById(int $id): Roles
     {
-        return self::findFirst([
+        return self::findFirstOrFail([
             'conditions' => 'id = ?0 AND companies_id in (?1, ?2) AND apps_id in (?3, ?4) AND is_deleted = 0',
             'bind' => [$id, Di::getDefault()->getUserData()->currentCompanyId(), Apps::CANVAS_DEFAULT_APP_ID, Di::getDefault()->getApp()->getId(), Apps::CANVAS_DEFAULT_APP_ID],
             'order' => 'apps_id DESC'

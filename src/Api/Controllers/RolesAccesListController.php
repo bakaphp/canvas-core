@@ -14,9 +14,10 @@ use Canvas\Exception\NotFoundHttpException;
 use Canvas\Exception\ServerErrorHttpException;
 use Canvas\Models\Roles;
 use Baka\Http\QueryParser;
+use Canvas\Validation as CanvasValidation;
 
 /**
- * Class RolesController
+ * Class RolesController.
  *
  * @package Canvas\Api\Controllers
  *
@@ -45,7 +46,7 @@ class RolesAccesListController extends BaseController
     protected $updateFields = [];
 
     /**
-     * set objects
+     * set objects.
      *
      * @return void
      */
@@ -61,7 +62,7 @@ class RolesAccesListController extends BaseController
     }
 
     /**
-     * Add a new item
+     * Add a new item.
      *
      * @method POST
      * @url /v1/roles-acceslist
@@ -70,24 +71,15 @@ class RolesAccesListController extends BaseController
      */
     public function create() : Response
     {
-        $request = $this->request->getPost();
-
-        if (empty($request)) {
-            $request = $this->request->getJsonRawBody(true);
-        }
+        $request = $this->request->getPostData();
 
         //Ok let validate user password
-        $validation = new Validation();
+        $validation = new CanvasValidation();
         $validation->add('roles', new PresenceOf(['message' => _('Role information is required.')]));
         $validation->add('access', new PresenceOf(['message' => _('Access list is required.')]));
 
         //validate this form for password
-        $messages = $validation->validate($request);
-        if (count($messages)) {
-            foreach ($messages as $message) {
-                throw new ServerErrorHttpException((string)$message);
-            }
-        }
+        $validation->validate($request);
 
         //set the company and app
         $this->acl->setCompany($this->userData->getDefaultCompany());
@@ -99,7 +91,7 @@ class RolesAccesListController extends BaseController
 
         /**
          * we always deny permision, by default the canvas set allow to all
-         * so we only have to take away permissions
+         * so we only have to take away permissions.
          */
         foreach ($request['access'] as $access) {
             $this->acl->deny($request['roles']['name'], $access['resources_name'], $access['access_name']);
@@ -109,7 +101,7 @@ class RolesAccesListController extends BaseController
     }
 
     /**
-     * get item
+     * get item.
      *
      * @param mixed $id
      *
@@ -140,7 +132,7 @@ class RolesAccesListController extends BaseController
     }
 
     /**
-     * Update a new Entry
+     * Update a new Entry.
      *
      * @method PUT
      * @url /v1/roles-acceslist/{id}
@@ -149,28 +141,17 @@ class RolesAccesListController extends BaseController
      */
     public function edit($id) : Response
     {
-        if (!$role = Roles::getById((int) $id)) {
-            throw new NotFoundHttpException('Record not found');
-        }
+        $role = Roles::getById((int) $id);
 
-        $request = $this->request->getPut();
-
-        if (empty($request)) {
-            $request = $this->request->getJsonRawBody(true);
-        }
+        $request = $this->request->getPutData();
 
         //Ok let validate user password
-        $validation = new Validation();
+        $validation = new CanvasValidation();
         $validation->add('roles', new PresenceOf(['message' => _('Role information is required.')]));
         $validation->add('access', new PresenceOf(['message' => _('Access list is required.')]));
 
         //validate this form for password
-        $messages = $validation->validate($request);
-        if (count($messages)) {
-            foreach ($messages as $message) {
-                throw new ServerErrorHttpException((string)$message);
-            }
-        }
+        $validation->validate($request);
 
         //set the company and app
         $this->acl->setCompany($this->userData->getDefaultCompany());
@@ -178,16 +159,14 @@ class RolesAccesListController extends BaseController
 
         $role->name = $request['roles']['name'];
         $role->description = $request['roles']['description'];
-        if (!$role->update()) {
-            throw new ServerErrorHttpException((string) current($role->getMessages()));
-        }
+        $role->updateOrFail();
 
         //clean previous records
         $role->accesList->delete();
 
         /**
          * we always deny permision, by default the canvas set allow to all
-         * so we only have to take away permissions
+         * so we only have to take away permissions.
          */
         foreach ($request['access'] as $access) {
             $this->acl->deny($request['roles']['name'], $access['resources_name'], $access['access_name']);
@@ -197,7 +176,7 @@ class RolesAccesListController extends BaseController
     }
 
     /**
-     * Copy a existen
+     * Copy a existen.
      *
      * @param int $id
      * @return Response
@@ -212,7 +191,7 @@ class RolesAccesListController extends BaseController
     }
 
     /**
-     * delete a new Entry
+     * delete a new Entry.
      *
      * @method DELETE
      * @url /v1/roles-acceslist/{id}
@@ -221,16 +200,14 @@ class RolesAccesListController extends BaseController
      */
     public function delete($id) : Response
     {
-        if ($role = Roles::findFirst($id)) {
-            if ($this->softDelete == 1) {
-                $role->softDelete();
-            } else {
-                $role->delete();
-            }
+        $role = Roles::getById($id);
 
-            return $this->response(['Delete Successfully']);
+        if ($this->softDelete == 1) {
+            $role->softDelete();
         } else {
-            throw new NotFoundHttpException('Record not found');
+            $role->delete();
         }
+
+        return $this->response(['Delete Successfully']);
     }
 }
