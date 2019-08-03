@@ -24,8 +24,12 @@ trait ProcessOutputMapperTrait
         $this->canUseMapper();
 
         //if we have relationships we use StdClass to allow use to overwrite the array as we see fit in the Dto
-        $mapperModel = !$this->request->hasQuery('relationships') ? get_class($this->model) : DataType::ARRAY;
-        $this->dto = !$this->request->hasQuery('relationships') ? $this->dto : StdClass::class;
+        if ($this->request->hasQuery('relationships')) {
+            $mapperModel = DataType::ARRAY;
+            $this->dto = StdClass::class;
+        } else {
+            $mapperModel = get_class($this->model);
+        }
 
         $this->dtoConfig->registerMapping($mapperModel, $this->dto)
             ->useCustomMapper($this->dtoMapper);
@@ -35,10 +39,13 @@ trait ProcessOutputMapperTrait
             return  $results;
         }
 
-        //return $this->mapper->map($results, $this->dto, $this->getMapperOptions());
-        return is_iterable($results) ?
-            $this->mapper->mapMultiple($results, $this->dto)
-            : $this->mapper->map($results, $this->dto);
+        /**
+         * If position 0 is array or object it means is a result set from normal query
+         * or with relationships therefore we use multimap.
+         */
+        return is_iterable($results) && (is_array(current($results)) || is_object(current($results))) ?
+            $this->mapper->mapMultiple($results, $this->dto, $this->getMapperOptions())
+            : $this->mapper->map($results, $this->dto, $this->getMapperOptions());
     }
 
     /**

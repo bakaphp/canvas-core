@@ -12,6 +12,9 @@ use Canvas\Exception\BadRequestHttpException;
 use Canvas\Models\AccessList;
 use Canvas\Exception\ServerErrorHttpException;
 use \Baka\Auth\UsersController as BakaUsersController;
+use Canvas\Contracts\Controllers\ProcessOutputMapperTrait;
+use Canvas\Dto\User as UserDto;
+use Canvas\Mapper\UserMapper;
 
 /**
  * Class UsersController.
@@ -25,6 +28,7 @@ use \Baka\Auth\UsersController as BakaUsersController;
  */
 class UsersController extends BakaUsersController
 {
+    use ProcessOutputMapperTrait;
     /*
      * fields we accept to create
      *
@@ -80,6 +84,8 @@ class UsersController extends BakaUsersController
     public function onConstruct()
     {
         $this->model = new Users();
+        $this->dto = UserDto::class;
+        $this->dtoMapper = new UserMapper();
 
         //if you are not a admin you cant see all the users
         if (!$this->userData->hasRole('Defaults.Admins')) {
@@ -126,20 +132,6 @@ class UsersController extends BakaUsersController
         //if you search for roles we give you the access for this app
         //@todo move this to DTO
         if (array_key_exists('roles', $user)) {
-            if (!isset($user['roles'][0])) {
-                throw new ServerErrorHttpException('User with no Role , please contact system admin');
-            }
-            $accesList = AccessList::find([
-                'conditions' => 'roles_name = ?0 and apps_id = ?1 and allowed = 0',
-                'bind' => [$user['roles'][0]->name, $this->app->getId()]
-            ]);
-
-            if (count($accesList) > 0) {
-                foreach ($accesList as $access) {
-                    $user['access_list'][strtolower($access->resources_name)][$access->access_name] = 0;
-                }
-            }
-
             $user['default_company'] = $userObject->getDefaultCompany()->getId();
         }
 
@@ -202,27 +194,6 @@ class UsersController extends BakaUsersController
         //update
         $user->updateOrFail($request, $this->updateFields);
         return $this->response($this->processOutput($user));
-    }
-
-    /**
-     * Given the results we will proess the output
-     * we will check if a DTO transformer exist and if so we will send it over to change it.
-     *
-     * @param object|array $results
-     * @return void
-     */
-    protected function processOutput($results)
-    {
-        /**
-         * remove password.
-         * @todo move to DTO
-         */
-        if (is_object($results)) {
-            $results->password = null;
-            $results->bypassRoutes = null;
-        }
-
-        return $results;
     }
 
     /**
