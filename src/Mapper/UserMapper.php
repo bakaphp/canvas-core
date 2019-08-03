@@ -8,6 +8,7 @@ use AutoMapperPlus\CustomMapper\CustomMapper;
 use Canvas\Models\AccessList;
 use Phalcon\Di;
 use Canvas\Contracts\Mapper\RelationshipTrait;
+use Canvas\Models\Users;
 
 /**
  * Class UserMapper.
@@ -36,7 +37,7 @@ class UserMapper extends CustomMapper
         $userDto->city_id = $user->city_id;
         $userDto->country_id = $user->country_id;
         $userDto->created_at = $user->created_at;
-        $userDto->default_company = $user->default_company;
+        $userDto->default_company = Users::getById($user->id)->getDefaultCompany()->getId();
         $userDto->default_company_branch = $user->default_company_branch;
         $userDto->displayname = $user->displayname;
         $userDto->dob = $user->dob;

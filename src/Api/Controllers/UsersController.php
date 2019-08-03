@@ -9,7 +9,6 @@ use Phalcon\Http\Response;
 use Phalcon\Validation;
 use Phalcon\Validation\Validator\PresenceOf;
 use Canvas\Exception\BadRequestHttpException;
-use Canvas\Models\AccessList;
 use Canvas\Exception\ServerErrorHttpException;
 use \Baka\Auth\UsersController as BakaUsersController;
 use Canvas\Contracts\Controllers\ProcessOutputMapperTrait;
@@ -129,12 +128,6 @@ class UsersController extends BakaUsersController
         //get the results and append its relationships
         $user = $this->appendRelationshipsToResult($this->request, $user);
 
-        //if you search for roles we give you the access for this app
-        //@todo move this to DTO
-        if (array_key_exists('roles', $user)) {
-            $user['default_company'] = $userObject->getDefaultCompany()->getId();
-        }
-
         return $this->response($this->processOutput($user));
     }
 
@@ -161,7 +154,7 @@ class UsersController extends BakaUsersController
         }
 
         //update password
-        if (array_key_exists('new_password', $request) && (!empty($request['new_password']) && !empty($request['current_password']))) {
+        if (isset($request['new_password']) && (!empty($request['new_password']) && !empty($request['current_password']))) {
             //Ok let validate user password
             $validation = new Validation();
             $validation->add('new_password', new PresenceOf(['message' => 'The new_password is required.']));
@@ -183,7 +176,7 @@ class UsersController extends BakaUsersController
 
         //change my default company , the #teamfrontend is sending us the branchid instead of the company id
         //on this value so we use is as the branch
-        if (array_key_exists('default_company', $request) && !array_key_exists('default_company_branch', $request)) {
+        if (isset($request['default_company']) && !isset($request['default_company_branch'])) {
             $user->switchDefaultCompanyByBranch((int) $request['default_company']);
             unset($request['default_company'], $request['default_company_branch']);
         } else {

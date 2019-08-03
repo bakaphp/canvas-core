@@ -11,7 +11,7 @@ trait RelationshipTrait
     */
     private function getRelationships(object $object, object $objectDto, array $relationships): void
     {
-        if (array_key_exists('relationships', $relationships)) {
+        if (isset($relationships['relationships'])) {
             foreach ($relationships['relationships'] as $relationship) {
                 $objectDto->$relationship = $object->$relationship;
             }
