@@ -2,7 +2,7 @@
 
 use Phinx\Seed\AbstractSeed;
 
-class NotificationsSeeder extends AbstractSeed
+class UpdateNotificationsSeeder extends AbstractSeed
 {
     public function run()
     {

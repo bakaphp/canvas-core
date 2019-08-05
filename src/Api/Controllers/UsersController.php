@@ -5,15 +5,15 @@ declare(strict_types=1);
 namespace Canvas\Api\Controllers;
 
 use Canvas\Models\Users;
-use Canvas\Models\Companies;
 use Phalcon\Http\Response;
 use Phalcon\Validation;
 use Phalcon\Validation\Validator\PresenceOf;
 use Canvas\Exception\BadRequestHttpException;
-use Canvas\Exception\ModelException;
-use Canvas\Exception\NotFoundHttpException;
-use Canvas\Models\AccessList;
 use Canvas\Exception\ServerErrorHttpException;
+use \Baka\Auth\UsersController as BakaUsersController;
+use Canvas\Contracts\Controllers\ProcessOutputMapperTrait;
+use Canvas\Dto\User as UserDto;
+use Canvas\Mapper\UserMapper;
 
 /**
  * Class UsersController.
@@ -25,21 +25,55 @@ use Canvas\Exception\ServerErrorHttpException;
  * @property Config $config
  * @property Apps $app
  */
-class UsersController extends \Baka\Auth\UsersController
+class UsersController extends BakaUsersController
 {
+    use ProcessOutputMapperTrait;
     /*
      * fields we accept to create
      *
      * @var array
      */
-    protected $createFields = ['name', 'firstname', 'lastname', 'displayname', 'language', 'country_id', 'timezone', 'email', 'password', 'created_at', 'updated_at', 'default_company', 'default_company_branch', 'family', 'cell_phone_number', 'country_id'];
+    protected $createFields = [
+        'name',
+        'firstname',
+        'lastname',
+        'displayname',
+        'language',
+        'country_id',
+        'timezone',
+        'email',
+        'password',
+        'created_at',
+        'updated_at',
+        'default_company',
+        'default_company_branch',
+        'family',
+        'cell_phone_number',
+        'country_id'
+    ];
 
     /*
      * fields we accept to create
      *
      * @var array
      */
-    protected $updateFields = ['name', 'firstname', 'lastname', 'displayname', 'language', 'country_id', 'timezone', 'email', 'password', 'created_at', 'updated_at', 'default_company', 'default_company_branch', 'cell_phone_number', 'country_id'];
+    protected $updateFields = [
+        'name',
+        'firstname',
+        'lastname',
+        'displayname',
+        'language',
+        'country_id',
+        'timezone',
+        'email',
+        'password',
+        'created_at',
+        'updated_at',
+        'default_company',
+        'default_company_branch',
+        'cell_phone_number',
+        'country_id'
+    ];
 
     /**
      * set objects.
@@ -49,6 +83,8 @@ class UsersController extends \Baka\Auth\UsersController
     public function onConstruct()
     {
         $this->model = new Users();
+        $this->dto = UserDto::class;
+        $this->dtoMapper = new UserMapper();
 
         //if you are not a admin you cant see all the users
         if (!$this->userData->hasRole('Defaults.Admins')) {
@@ -58,7 +94,7 @@ class UsersController extends \Baka\Auth\UsersController
         } else {
             //admin get all the users for this company
             $this->additionalSearchFields = [
-                ['id', ':', implode('|', $this->userData->currentCompany->getAssociatedUsersByApp())],
+                ['id', ':', implode('|', $this->userData->getDefaultCompany()->getAssociatedUsersByApp())],
             ];
         }
     }
@@ -87,23 +123,10 @@ class UsersController extends \Baka\Auth\UsersController
             'id = ?0 AND is_deleted = 0',
             'bind' => [$id],
         ]);
+        $userObject = $user;
 
         //get the results and append its relationships
         $user = $this->appendRelationshipsToResult($this->request, $user);
-
-        //if you search for roles we give you the access for this app
-        if (array_key_exists('roles', $user)) {
-            $accesList = AccessList::find([
-                'conditions' => 'roles_name = ?0 and apps_id = ?1 and allowed = 0',
-                'bind' => [$user['roles'][0]->name, $this->app->getId()]
-            ]);
-
-            if (count($accesList) > 0) {
-                foreach ($accesList as $access) {
-                    $user['access_list'][strtolower($access->resources_name)][$access->access_name] = 0;
-                }
-            }
-        }
 
         return $this->response($this->processOutput($user));
     }
@@ -131,7 +154,7 @@ class UsersController extends \Baka\Auth\UsersController
         }
 
         //update password
-        if (array_key_exists('new_password', $request) && (!empty($request['new_password']) && !empty($request['current_password']))) {
+        if (isset($request['new_password']) && (!empty($request['new_password']) && !empty($request['current_password']))) {
             //Ok let validate user password
             $validation = new Validation();
             $validation->add('new_password', new PresenceOf(['message' => 'The new_password is required.']));
@@ -153,7 +176,7 @@ class UsersController extends \Baka\Auth\UsersController
 
         //change my default company , the #teamfrontend is sending us the branchid instead of the company id
         //on this value so we use is as the branch
-        if (array_key_exists('default_company', $request) && !array_key_exists('default_company_branch', $request)) {
+        if (isset($request['default_company']) && !isset($request['default_company_branch'])) {
             $user->switchDefaultCompanyByBranch((int) $request['default_company']);
             unset($request['default_company'], $request['default_company_branch']);
         } else {
@@ -164,27 +187,6 @@ class UsersController extends \Baka\Auth\UsersController
         //update
         $user->updateOrFail($request, $this->updateFields);
         return $this->response($this->processOutput($user));
-    }
-
-    /**
-     * Given the results we will proess the output
-     * we will check if a DTO transformer exist and if so we will send it over to change it.
-     *
-     * @param object|array $results
-     * @return void
-     */
-    protected function processOutput($results)
-    {
-        /**
-         * remove password.
-         * @todo move to DTO
-         */
-        if (is_object($results)) {
-            $results->password = null;
-            $results->bypassRoutes = null;
-        }
-
-        return $results;
     }
 
     /**

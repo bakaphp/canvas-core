@@ -24,6 +24,11 @@ abstract class AbstractCustomFieldsModel extends AbstractModel
      */
     public function getAllCustomFields(array $fields = [])
     {
+        //no di? ok so no custom fields
+        if (!$this->di->has('userData')) {
+            return ;
+        }
+
         //We does it only find names in plural? We need to fix this or make a workaroun
         if (!$models = CustomFieldsModules::findFirstByName($this->getSource())) {
             return;

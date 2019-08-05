@@ -7,7 +7,6 @@ use Canvas\Traits\PermissionsTrait;
 use Canvas\Traits\SubscriptionPlanLimitTrait;
 use Phalcon\Cashier\Billable;
 use Canvas\Exception\ServerErrorHttpException;
-use Exception;
 use Carbon\Carbon;
 use Phalcon\Validation;
 use Phalcon\Validation\Validator\Email;
@@ -19,6 +18,12 @@ use Phalcon\Security\Random;
 use Baka\Database\Contracts\HashTableTrait;
 use Canvas\Contracts\Notifications\NotifiableTrait;
 use Phalcon\Traits\EventManagerAwareTrait;
+use Phalcon\Di;
+use Canvas\Auth\App as AppAuth;
+use Exception;
+use Canvas\Validations\PasswordValidation;
+use Baka\Auth\Models\Users as BakUser;
+use Canvas\Hashing\Password;
 
 /**
  * Class Users.
@@ -125,8 +130,20 @@ class Users extends \Baka\Auth\Models\Users
         $this->hasMany('id', 'Baka\Auth\Models\Sessions', 'users_id', ['alias' => 'sessions']);
         $this->hasMany('id', 'Canvas\Models\UserConfig', 'users_id', ['alias' => 'config']);
         $this->hasMany('id', 'Canvas\Models\UserLinkedSources', 'users_id', ['alias' => 'sources']);
-        $this->hasOne('default_company', 'Canvas\Models\Companies', 'id', ['alias' => 'defaultCompany']);
-        $this->hasOne('default_company', 'Canvas\Models\Companies', 'id', ['alias' => 'currentCompany']);
+
+        $this->hasOne(
+            'default_company',
+            'Canvas\Models\Companies',
+            'id',
+            ['alias' => 'defaultCompany']
+        );
+
+        $this->hasOne(
+            'default_company',
+            'Canvas\Models\Companies',
+            'id',
+            ['alias' => 'currentCompany']
+        );
 
         $this->hasOne(
             'id',
@@ -174,10 +191,14 @@ class Users extends \Baka\Auth\Models\Users
 
         $this->hasMany(
             'id',
-            'Canvas\Models\UsersAssociatedCompanies',
+            'Canvas\Models\UsersAssociatedApps',
             'users_id',
             [
                 'alias' => 'companies',
+                'params' => [
+                    'conditions' => 'apps_id = ?0',
+                    'bind' => [$this->di->getApp()->getId()],
+                ]
             ]
         );
 
@@ -187,6 +208,19 @@ class Users extends \Baka\Auth\Models\Users
             'users_id',
             [
                 'alias' => 'apps',
+            ]
+        );
+
+        $this->hasOne(
+            'id',
+            'Canvas\Models\UsersAssociatedApps',
+            'users_id',
+            [
+                'alias' => 'app',
+                'params' => [
+                    'conditions' => 'apps_id = ?0',
+                    'bind' => [Di::getDefault()->getApp()->getId()]
+                ]
             ]
         );
 
@@ -204,8 +238,10 @@ class Users extends \Baka\Auth\Models\Users
             'entity_id',
             [
                 'alias' => 'files',
-                'conditions' => 'system_modules_id = ?0',
-                'bind' => [$systemModule->getId()]
+                'params' => [
+                    'conditions' => 'system_modules_id = ?0',
+                    'bind' => [$systemModule->getId()]
+                ]
             ]
         );
 
@@ -215,8 +251,10 @@ class Users extends \Baka\Auth\Models\Users
             'entity_id',
             [
                 'alias' => 'photo',
-                'conditions' => 'system_modules_id = ?0',
-                'bind' => [$systemModule->getId()]
+                'params' => [
+                    'conditions' => 'system_modules_id = ?0',
+                    'bind' => [$systemModule->getId()]
+                ]
             ]
         );
     }
@@ -240,15 +278,6 @@ class Users extends \Baka\Auth\Models\Users
             new PresenceOf([
                 'field' => 'displayname',
                 'required' => true,
-            ])
-        );
-
-        $validator->add(
-            'displayname',
-            new Regex([
-                'field' => 'displayname',
-                'message' => _('Please use alphanumerics only.'),
-                'pattern' => '/^[A-Za-z0-9_-]{1,32}$/',
             ])
         );
 
@@ -405,7 +434,22 @@ class Users extends \Baka\Auth\Models\Users
      */
     public function currentCompanyId(): int
     {
-        return (int) $this->default_company;
+        $defaultCompanyId = $this->get(Companies::cacheKey());
+        return !is_null($defaultCompanyId) ? (int) $defaultCompanyId : (int) $this->default_company;
+    }
+
+    /**
+     * Overwrite the user relationship.
+     * use Phalcon Registry to assure we mantian the same instance accross the request
+     */
+    public function getDefaultCompany(): Companies
+    {
+        $registry = Di::getDefault()->getRegistry();
+        $key = 'company_' . Di::getDefault()->getApp()->getId() . '_' . $this->getId();
+        if (!isset($registry[$key])) {
+            $registry[$key] = Companies::findFirstOrFail($this->currentCompanyId());
+        }
+        return  $registry[$key];
     }
 
     /**
@@ -518,8 +562,101 @@ class Users extends \Baka\Auth\Models\Users
                 if ($branch->company->userAssociatedToCompany($this)) {
                     $this->default_company = $branch->company->getId();
                     $this->default_company_branch = $branch->getId();
+                    //set the default company id per the specific app , we do this so we can have multip default companies per diff apps
+                    $this->set(Companies::cacheKey(), $this->default_company);
                 }
             }
         }
+    }
+
+    /**
+     * Update the password for a current user.
+     *
+     * @param string $newPassword
+     * @return boolean
+     */
+    public function updatePassword(string $currentPassword, string $newPassword, string $verifyPassword) : bool
+    {
+        $currentPassword = trim($currentPassword);
+        $newPassword = trim($newPassword);
+        $verifyPassword = trim($verifyPassword);
+
+        $app = Di::getDefault()->getApp();
+
+        if ($app->ecosystemAuth()) {
+            $userAppData = $this->getApp([
+                'conditions' => 'companies_id = ?0',
+                'bind' => [$this->currentCompanyId()]
+            ]);
+
+            $password = $userAppData->password;
+        } else {
+            $password = $this->password;
+        }
+
+        // First off check that the current password matches the current password
+        if (Password::check($currentPassword, $password)) {
+            PasswordValidation::validate($newPassword, $verifyPassword);
+
+            if ($app->ecosystemAuth()) {
+                //update all companies password for the current user app
+                AppAuth::updatePassword($this, $newPassword);
+            } else {
+                $this->password = Password::make($newPassword);
+            }
+            return true;
+        }
+
+        throw new Exception(_(' Your current password is incorrect .'));
+    }
+
+    /**
+     * user signup to the service.
+     *
+     * @return Users
+     */
+    public function signUp() : BakUser
+    {
+        $app = Di::getDefault()->getApp();
+
+        if ($app->ecosystemAuth()) {
+            try {
+                //did we find the email?
+                //does it have access to this app?
+                // no?
+                //ok les register / associate to this app
+                // yes?
+                //it meas he was invites so get the fuck out?
+                $user = self::getByEmail($this->email);
+
+                $userAppData = $user->countApps('apps_id = ' . $this->getDI()->getDefault()->getApp()->getId());
+
+                if ($userAppData > 0) {
+                    throw new Exception('This email already has an account.');
+                }
+
+                //assign user role for the current app
+                $user->roles_id = Roles::getByName(Roles::DEFAULT)->getId();
+
+                $this->fire('user:afterSignup', $user, true);
+
+                //update the passwords for the current app
+                AppAuth::updatePassword($user, Password::make($this->password));
+
+                //overwrite the current user object
+                $this->id = $user->getId();
+                $this->email = $user->getEmail();
+            } catch (Exception $e) {
+                //if we cant find the user normal signup
+                $user = parent::signUp();
+
+                //update all the password for the apps
+                AppAuth::updatePassword($user, $this->password);
+            }
+        } else {
+            $user = parent::signUp();
+        }
+
+        return $user;
     }
 }

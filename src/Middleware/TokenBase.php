@@ -33,7 +33,7 @@ abstract class TokenBase implements MiddlewareInterface
         $calledRoute = $app['router']->getMatchedRoute()->getCompiledPattern();
 
         if (isset($app['userData']) && !Subscription::getPaymentStatus($app->getDI()->getUserData())) {
-            if (!array_key_exists($calledRoute, $this->bypassRoutes)) {
+            if (!isset($this->bypassRoutes[$calledRoute])) {
                 throw new SubscriptionPlanFailureException('Subscription expired,update payment method or verify payment');
             } else {
                 if (!in_array($request->getMethod(), $this->bypassRoutes[$calledRoute])) {
