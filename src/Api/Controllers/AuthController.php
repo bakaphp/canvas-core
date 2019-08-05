@@ -322,16 +322,12 @@ class AuthController extends \Baka\Auth\AuthController
 
         if (isset($request['new_password']) && (!empty($request['new_password']) && !empty($request['current_password']))) {
             //Ok let validate user password
-            $validation = new Validation();
+            $validation = new CanvasValidation();
             $validation->add('new_password', new PresenceOf(['message' => 'The new_password is required.']));
             $validation->add('current_password', new PresenceOf(['message' => 'The current_password is required.']));
             $validation->add('confirm_new_password', new PresenceOf(['message' => 'The confirm_new_password is required.']));
-            $messages = $validation->validate($request);
-            if (count($messages)) {
-                foreach ($messages as $message) {
-                    throw new BadRequestHttpException((string)$message);
-                }
-            }
+            $validation->validate($request);
+            
             $userData->updatePassword($request['current_password'], $request['new_password'], $request['confirm_new_password']);
 
             //Lets create a new user_activation_forgot
