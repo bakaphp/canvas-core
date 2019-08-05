@@ -12,6 +12,7 @@ use Phalcon\Validation\Validator\PresenceOf;
 use Canvas\Exception\BadRequestHttpException;
 use Canvas\Exception\NotFoundHttpException;
 use Canvas\Exception\UnprocessableEntityHttpException;
+use Canvas\Validation as CanvasValidation;
 
 /**
  * Class LanguagesController.
@@ -61,18 +62,13 @@ class UserLinkedSourcesController extends BaseController
     public function devices() : Response
     {
         //Ok let validate user password
-        $validation = new Validation();
+        $validation = new CanvasValidation();
         $validation->add('app', new PresenceOf(['message' => _('App name is required.')]));
         $validation->add('deviceId', new PresenceOf(['message' => _('device ID is required.')]));
         $msg = null;
 
         //validate this form for password
-        $messages = $validation->validate($this->request->getPost());
-        if (count($messages)) {
-            foreach ($messages as $message) {
-                throw new BadRequestHttpException((string)$message);
-            }
-        }
+        $validation->validate($this->request->getPost());
 
         $app = $this->request->getPost('app', 'string');
         $deviceId = $this->request->getPost('deviceId', 'string');

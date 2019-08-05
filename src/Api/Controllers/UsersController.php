@@ -14,6 +14,7 @@ use \Baka\Auth\UsersController as BakaUsersController;
 use Canvas\Contracts\Controllers\ProcessOutputMapperTrait;
 use Canvas\Dto\User as UserDto;
 use Canvas\Mapper\UserMapper;
+use Canvas\Validation as CanvasValidation;
 
 /**
  * Class UsersController.
@@ -156,17 +157,11 @@ class UsersController extends BakaUsersController
         //update password
         if (isset($request['new_password']) && (!empty($request['new_password']) && !empty($request['current_password']))) {
             //Ok let validate user password
-            $validation = new Validation();
+            $validation = new CanvasValidation();
             $validation->add('new_password', new PresenceOf(['message' => 'The new_password is required.']));
             $validation->add('current_password', new PresenceOf(['message' => 'The current_password is required.']));
             $validation->add('confirm_new_password', new PresenceOf(['message' => 'The confirm_new_password is required.']));
-            $messages = $validation->validate($request);
-
-            if (count($messages)) {
-                foreach ($messages as $message) {
-                    throw new BadRequestHttpException((string)$message);
-                }
-            }
+            $validation->validate($request);
 
             $user->updatePassword($request['current_password'], $request['new_password'], $request['confirm_new_password']);
         } else {
