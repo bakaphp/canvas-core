@@ -7,12 +7,10 @@ namespace Canvas\Listener;
 use Phalcon\Events\Event;
 use Canvas\Models\Users;
 use Canvas\Models\Companies;
-use Canvas\Models\UserConfig;
 use Canvas\Models\CompaniesBranches;
 use Canvas\Exception\ServerErrorHttpException;
 use Baka\Auth\Models\UserCompanyApps;
 use Canvas\Models\AppsPlans;
-use Canvas\Models\AppsSettings;
 
 class Company
 {
