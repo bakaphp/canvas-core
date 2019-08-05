@@ -22,6 +22,7 @@ use Phalcon\Validation\Validator\StringLength;
 use Baka\Auth\Models\Sessions;
 use Canvas\Auth\Factory;
 use Canvas\Validation as CanvasValidation;
+use Canvas\Notifications\ResetPassword;
 
 /**
  * Class AuthController.
@@ -288,5 +289,60 @@ class AuthController extends \Baka\Auth\AuthController
         ]);
 
         return $this->response($this->providerLogin($source, $request['social_id'], $request['email']));
+    }
+
+    /**
+     * Send reset email to user
+     * @param string $email
+     * @return void
+     */
+    public function sendResetEmail(): void
+    {
+        /**
+         * Lets notify the current user about its password reset and give a link to change it. Frontend must have an endpoint called /user/reset/{key}.
+         */
+        $this->userData->notify(new ResetPassword($this->userData));
+    }
+
+    /**
+     * Reset the user password.
+     * @method PUT
+     * @url /v1/reset
+     *
+     * @return Response
+     */
+    public function processReset(string $key) : Response
+    {
+        //is the key empty or does it existe?
+        if (empty($key) || !$userData = Users::findFirst(['user_activation_forgot = :key:', 'bind' => ['key' => $key]])) {
+            throw new Exception(_('This Key to reset password doesn\'t exist'));
+        }
+
+        $request = $this->request->getPost();
+
+        if (isset($request['new_password']) && (!empty($request['new_password']) && !empty($request['current_password']))) {
+            //Ok let validate user password
+            $validation = new CanvasValidation();
+            $validation->add('new_password', new PresenceOf(['message' => 'The new_password is required.']));
+            $validation->add('current_password', new PresenceOf(['message' => 'The current_password is required.']));
+            $validation->add('confirm_new_password', new PresenceOf(['message' => 'The confirm_new_password is required.']));
+            $validation->validate($request);
+            
+            $userData->updatePassword($request['current_password'], $request['new_password'], $request['confirm_new_password']);
+
+            //Lets create a new user_activation_forgot
+            $userData->user_activation_forgot = $userData->generateActivationKey();
+            //log the user out of the site from all devices
+            if ($userData->update()) {
+                $session = new Sessions();
+                $session->end($userData);
+            }
+
+            return $this->response(_('Congratulations! You\'ve successfully changed your password.'));
+        } else {
+            //remove on any actino that doesnt involve password
+            unset($request['password']);
+            throw new Exception(_('Password are not the same'));
+        }
     }
 }

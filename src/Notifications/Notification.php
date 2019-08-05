@@ -212,7 +212,7 @@ class Notification implements NotificationInterfase
         $notification->users_id = $this->toUser->getId();
         $notification->companies_id = $this->fromUser->currentCompanyId();
         $notification->apps_id = $app->getId();
-        $notification->system_modules_id = $this->type->system_modules_id;
+        $notification->system_module_id = (int)$this->type->system_modules_id;
         $notification->notification_type_id = $this->type->getId();
         $notification->entity_id = $this->entity->getId();
         $notification->content = $content;
