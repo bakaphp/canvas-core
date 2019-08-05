@@ -491,7 +491,10 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
     {
         return array_map(function ($users) {
             return $users['users_id'];
-        }, $this->getUsersAssociatedByApps(['columns' => 'users_id'])->toArray());
+        }, $this->getUsersAssociatedByApps([
+            'columns' => 'users_id',
+            'conditions' => 'user_active = 1'
+        ])->toArray());
     }
 
     /**
@@ -507,12 +510,34 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
     /**
      * Get the default company key for the current app
      * this is use to store in redis the default company id for the current
-     * user in session everytime they switch between companies on the diff apps
-     * 
+     * user in session everytime they switch between companies on the diff apps.
+     *
      * @return string
      */
     public static function cacheKey(): string
     {
-        return self::DEFAULT_COMPANY_APP.Di::getDefault()->getApp()->getId();
+        return self::DEFAULT_COMPANY_APP . Di::getDefault()->getApp()->getId();
+    }
+
+    /**
+    * Given a user remove it from this app company.
+    *
+    * @param Users $user
+    * @return void
+    */
+    public function deactiveUser(Users $user)
+    {
+        //deactive the user from a company app, not delete
+    }
+
+    /**
+     * Given the user reactive it for this app company.
+     *
+     * @param Users $user
+     * @return void
+     */
+    public function reactiveUser(Users $user)
+    {
+        //reactive the user from a company app, not delete
     }
 }
