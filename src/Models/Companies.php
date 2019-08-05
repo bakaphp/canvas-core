@@ -14,6 +14,7 @@ use Canvas\Traits\UsersAssociatedTrait;
 use Canvas\Traits\FileSystemModelTrait;
 use Baka\Blameable\Blameable;
 use Phalcon\Traits\EventManagerAwareTrait;
+use Phalcon\Di;
 
 /**
  * Class Companies.
@@ -40,6 +41,7 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
     use EventManagerAwareTrait;
 
     const DEFAULT_COMPANY = 'DefaulCompany';
+    const DEFAULT_COMPANY_APP = 'DefaulCompanyApp_';
     const PAYMENT_GATEWAY_CUSTOMER_KEY = 'payment_gateway_customer_id';
 
     /**
@@ -178,7 +180,6 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
             ]
         );
 
-
         $this->hasMany(
             'id',
             'Canvas\Models\CompaniesCustomFields',
@@ -292,8 +293,10 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
             'entity_id',
             [
                 'alias' => 'files',
-                'conditions' => 'system_modules_id = ?0',
-                'bind' => [$systemModule->getId()]
+                'params' => [
+                    'conditions' => 'system_modules_id = ?0',
+                    'bind' => [$systemModule->getId()]
+                ]
             ]
         );
 
@@ -303,8 +306,10 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
             'entity_id',
             [
                 'alias' => 'logo',
-                'conditions' => 'system_modules_id = ?0',
-                'bind' => [$systemModule->getId()]
+                'params' => [
+                    'conditions' => 'system_modules_id = ?0',
+                    'bind' => [$systemModule->getId()]
+                ]
             ]
         );
     }
@@ -415,14 +420,11 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
     public static function getDefaultByUser(Users $user): Companies
     {
         //verify the user has a default company
-        $defaultCompany = UserConfig::findFirst([
-            'conditions' => 'users_id = ?0 and name = ?1',
-            'bind' => [$user->getId(), self::DEFAULT_COMPANY],
-        ]);
+        $defaultCompany = $user->get(self::cacheKey());
 
         //found it
-        if (is_object($defaultCompany)) {
-            return self::findFirst($defaultCompany->value);
+        if (!is_null($defaultCompany)) {
+            return self::findFirst($defaultCompany);
         }
 
         //second try
@@ -489,7 +491,10 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
     {
         return array_map(function ($users) {
             return $users['users_id'];
-        }, $this->getUsersAssociatedByApps(['columns' => 'users_id'])->toArray());
+        }, $this->getUsersAssociatedByApps([
+            'columns' => 'users_id',
+            'conditions' => 'user_active = 1'
+        ])->toArray());
     }
 
     /**
@@ -500,5 +505,39 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
     public function getLogo()
     {
         return $this->getFileByName('logo');
+    }
+
+    /**
+     * Get the default company key for the current app
+     * this is use to store in redis the default company id for the current
+     * user in session everytime they switch between companies on the diff apps.
+     *
+     * @return string
+     */
+    public static function cacheKey(): string
+    {
+        return self::DEFAULT_COMPANY_APP . Di::getDefault()->getApp()->getId();
+    }
+
+    /**
+    * Given a user remove it from this app company.
+    *
+    * @param Users $user
+    * @return void
+    */
+    public function deactiveUser(Users $user)
+    {
+        //deactive the user from a company app, not delete
+    }
+
+    /**
+     * Given the user reactive it for this app company.
+     *
+     * @param Users $user
+     * @return void
+     */
+    public function reactiveUser(Users $user)
+    {
+        //reactive the user from a company app, not delete
     }
 }

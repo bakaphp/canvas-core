@@ -12,7 +12,7 @@ use ReflectionClass;
 use Phalcon\Di;
 
 /**
- * Trait ResponseTrait
+ * Trait ResponseTrait.
  *
  * @package Canvas\Traits
  *
@@ -27,18 +27,18 @@ use Phalcon\Di;
 trait SubscriptionPlanLimitTrait
 {
     /**
-     * Array of routes that can bypass the system when subscription is inactive
+     * Array of routes that can bypass the system when subscription is inactive.
      * @todo look for a better way to handle this calls
      */
     public $bypassRoutes = [
-        '/v1/auth/logout'=> ['PUT'],
-        '/v1/auth'=> ['POST'],
-        '/v1/companies'=> ['GET','POST'],
-        '/v1/apps-plans'=> ['PUT','POST'],
+        '/v1/auth/logout' => ['PUT'],
+        '/v1/auth' => ['POST'],
+        '/v1/companies' => ['GET', 'POST'],
+        '/v1/apps-plans' => ['PUT', 'POST'],
     ];
 
     /**
-     * Get the key for the subscriptoin plan limit
+     * Get the key for the subscriptoin plan limit.
      *
      * @return string
      */
@@ -49,7 +49,7 @@ trait SubscriptionPlanLimitTrait
     }
 
     /**
-     * Validate if the current module for this app is at the limit of the paid plan
+     * Validate if the current module for this app is at the limit of the paid plan.
      *
      * @return boolean
      */
@@ -71,7 +71,9 @@ trait SubscriptionPlanLimitTrait
                 $currentCompanyAppActivityTotal = UserCompanyAppsActivities::get($this->getSubcriptionPlanLimitModelKey());
 
                 if ($currentCompanyAppActivityTotal >= $appPlanLimit) {
-                    throw new SubscriptionPlanLimitException(_($subcription->company->name . ' has reach the limit of it current plan ' . $appPlan->name . ' please upgrade or contact support'));
+                    throw new SubscriptionPlanLimitException(_(
+                        'This action cannot be performed ' . $subcription->company->name . ' has reach the limit of it current plan ' . $appPlan->name . ' please upgrade or contact support'
+                    ));
                 }
             }
         }
@@ -80,7 +82,7 @@ trait SubscriptionPlanLimitTrait
     }
 
     /**
-     * Call at the afterCreate of all modules which are part of a plan activity
+     * Call at the afterCreate of all modules which are part of a plan activity.
      *
      * @return boolean
      */

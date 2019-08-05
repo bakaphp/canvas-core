@@ -12,7 +12,16 @@ use Canvas\Exception\ModelException;
 use Baka\Auth\Models\Users as BakaUsers;
 use Canvas\Traits\AuthTrait;
 use Canvas\Traits\SocialLoginTrait;
+use Exception;
 use Phalcon\Http\Response;
+use Phalcon\Validation;
+use Phalcon\Validation\Validator\Confirmation;
+use Phalcon\Validation\Validator\Email as EmailValidator;
+use Phalcon\Validation\Validator\PresenceOf;
+use Phalcon\Validation\Validator\StringLength;
+use Baka\Auth\Models\Sessions;
+use Canvas\Auth\Factory;
+use Canvas\Validation as CanvasValidation;
 
 /**
  * Class AuthController.
@@ -46,6 +55,125 @@ class AuthController extends \Baka\Auth\AuthController
         if (!isset($this->config->jwt)) {
             throw new ServerErrorHttpException('You need to configure your app JWT');
         }
+    }
+
+    /**
+     * User Login.
+     * @method POST
+     * @url /v1/auth
+     *
+     * @return Response
+     */
+    public function login() : Response
+    {
+        $email = trim($this->request->getPost('email', 'string', ''));
+        $password = trim($this->request->getPost('password', 'string', ''));
+        $admin = 0;
+        $userIp = !defined('API_TESTS') ? $this->request->getClientAddress() : '127.0.0.1'; //help getting the client ip on scrutinizer :(
+        $remember = $this->request->getPost('remember', 'int', 1);
+
+        //Ok let validate user password
+        $validation = new CanvasValidation();
+        $validation->add('email', new PresenceOf(['message' => _('The email is required.')]));
+        $validation->add('password', new PresenceOf(['message' => _('The password is required.')]));
+
+        //validate this form for password
+        $validation->validate($this->request->getPost());
+
+        /**
+         * Login the user via ecosystem or app.
+         */
+        $auth = Factory::create($this->app->ecosystemAuth());
+        $userData = $auth::login($email, $password, $remember, $admin, $userIp);
+        $token = $userData->getToken();
+
+        //start session
+        $session = new Sessions();
+        $session->start($userData, $token['sessionId'], $token['token'], $userIp, 1);
+
+        return $this->response([
+            'token' => $token['token'],
+            'time' => date('Y-m-d H:i:s'),
+            'expires' => date('Y-m-d H:i:s', time() + $this->config->jwt->payload->exp),
+            'id' => $userData->getId(),
+        ]);
+    }
+
+    /**
+     * User Signup.
+     *
+     * @method POST
+     * @url /v1/users
+     *
+     * @return Response
+     */
+    public function signup() : Response
+    {
+        $user = $this->userModel;
+
+        $user->email = $this->request->getPost('email', 'email');
+        $user->firstname = ltrim(trim($this->request->getPost('firstname', 'string', '')));
+        $user->lastname = ltrim(trim($this->request->getPost('lastname', 'string', '')));
+        $user->password = ltrim(trim($this->request->getPost('password', 'string', '')));
+        $userIp = !defined('API_TESTS') ? $this->request->getClientAddress() : '127.0.0.1'; //help getting the client ip on scrutinizer :(
+        $user->displayname = ltrim(trim($this->request->getPost('displayname', 'string', '')));
+        $user->defaultCompanyName = ltrim(trim($this->request->getPost('default_company', 'string', '')));
+
+        //Ok let validate user password
+        $validation = new CanvasValidation();
+        $validation->add('password', new PresenceOf(['message' => _('The password is required.')]));
+        $validation->add('firstname', new PresenceOf(['message' => _('The firstname is required.')]));
+        $validation->add('email', new EmailValidator(['message' => _('The email is not valid.')]));
+
+        $validation->add(
+            'password',
+            new StringLength([
+                'min' => 8,
+                'messageMinimum' => _('Password is too short. Minimum 8 characters.'),
+            ])
+        );
+
+        $validation->add('password', new Confirmation([
+            'message' => _('Password and confirmation do not match.'),
+            'with' => 'verify_password',
+        ]));
+
+        //validate this form for password
+        $validation->validate($this->request->getPost());
+
+        //user registration
+        try {
+            $this->db->begin();
+
+            $user->signup();
+
+            $this->db->commit();
+        } catch (Exception $e) {
+            $this->db->rollback();
+
+            throw new Exception($e->getMessage());
+        }
+
+        $token = $user->getToken();
+
+        //start session
+        $session = new Sessions();
+        $session->start($user, $token['sessionId'], $token['token'], $userIp, 1);
+
+        $authSession = [
+            'token' => $token['token'],
+            'time' => date('Y-m-d H:i:s'),
+            'expires' => date('Y-m-d H:i:s', time() + $this->config->jwt->payload->exp),
+            'id' => $user->getId(),
+        ];
+
+        $user->password = null;
+        $this->sendEmail($user, 'signup');
+
+        return $this->response([
+            'user' => $user,
+            'session' => $authSession
+        ]);
     }
 
     /**

@@ -95,7 +95,7 @@ class CustomFiltersController extends BaseController
     {
         $record = parent::processEdit($request, $record);
         $request = $this->processInput($request->getPutData());
-        if (!array_key_exists('criterias', $request)) {
+        if (!isset($request['criterias'])) {
             throw new RuntimeException('Expected Criteria key on this array');
         }
 
@@ -104,7 +104,7 @@ class CustomFiltersController extends BaseController
         return $record;
     }
 
-     /**
+    /**
      * Format output.
      *
      * @param [type] $results
@@ -112,8 +112,7 @@ class CustomFiltersController extends BaseController
      */
     protected function processOutput($results)
     {
-        
-         //add a mapper
+        //add a mapper
         $this->dtoConfig->registerMapping(CustomFilters::class, CustomFilterDto::class)
             ->useCustomMapper(new CustomFilterMapper());
 

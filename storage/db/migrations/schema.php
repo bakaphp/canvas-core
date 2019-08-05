@@ -3616,11 +3616,11 @@ return array (
           'IS_GENERATED' => 'NEVER',
           'GENERATION_EXPRESSION' => NULL,
         ),
-        'ecosystem_login' => 
+        'ecosystem_auth' => 
         array (
           'TABLE_CATALOG' => 'def',
           'TABLE_NAME' => 'apps',
-          'COLUMN_NAME' => 'ecosystem_login',
+          'COLUMN_NAME' => 'ecosystem_auth',
           'ORDINAL_POSITION' => '9',
           'COLUMN_DEFAULT' => '0',
           'IS_NULLABLE' => 'NO',

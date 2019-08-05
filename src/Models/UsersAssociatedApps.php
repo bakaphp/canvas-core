@@ -42,6 +42,12 @@ class UsersAssociatedApps extends AbstractModel
     public $user_role;
 
     /**
+     *
+     * @var string
+     */
+    public $password;
+
+    /**
      * Initialize method for model.
      */
     public function initialize()

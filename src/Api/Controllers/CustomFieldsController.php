@@ -9,6 +9,7 @@ use Phalcon\Mvc\ModelInterface;
 use Phalcon\Http\Request;
 use Canvas\Dto\CustomFields as CustomFieldsDto;
 use Canvas\Mapper\CustomFieldsMapper;
+use Canvas\Contracts\Controllers\ProcessOutputMapperTrait;
 
 /**
  * Class LanguagesController.
@@ -20,6 +21,8 @@ use Canvas\Mapper\CustomFieldsMapper;
  */
 class CustomFieldsController extends BaseController
 {
+    use ProcessOutputMapperTrait;
+    
     /*
      * fields we accept to create
      *
@@ -42,6 +45,9 @@ class CustomFieldsController extends BaseController
     public function onConstruct()
     {
         $this->model = new CustomFields();
+        $this->dto = CustomFieldsDto::class;
+        $this->dtoMapper = new CustomFieldsMapper();
+
         $this->model->users_id = $this->userData->getId();
         $this->model->companies_id = $this->userData->currentCompanyId();
         $this->model->apps_id = $this->app->getId();
@@ -66,22 +72,6 @@ class CustomFieldsController extends BaseController
         }
 
         return $request;
-    }
-
-    /**
-     * Pass the resultset to a DTO Mapper.
-     *
-     * @param mixed $results
-     * @return void
-     */
-    protected function processOutput($results)
-    {
-        $this->dtoConfig->registerMapping(CustomFields::class, CustomFieldsDto::class)
-            ->useCustomMapper(new CustomFieldsMapper());
-
-        return is_iterable($results) ?
-        $this->mapper->mapMultiple($results, CustomFieldsDto::class)
-        : $this->mapper->map($results, CustomFieldsDto::class);
     }
 
     /**

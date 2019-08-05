@@ -53,6 +53,11 @@ class Apps extends \Baka\Database\Apps
     /**
      * @var integer
      */
+    public $ecosystem_auth;
+
+    /**
+     * @var integer
+     */
     public $payments_active;
 
     /**
@@ -161,5 +166,26 @@ class Apps extends \Baka\Database\Apps
     public function getSource() : string
     {
         return 'apps';
+    }
+
+    /**
+     * Those this app use ecosystem login or
+     * the its own local login?
+     *
+     * @return boolean
+     */
+    public function ecosystemAuth(): bool
+    {
+        return (bool) $this->ecosystem_auth;
+    }
+
+    /**
+     * Is this app subscription based?
+     *
+     * @return boolean
+     */
+    public function subscriptioBased(): bool
+    {
+        return (bool) $this->payments_active;
     }
 }
