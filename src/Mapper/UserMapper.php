@@ -82,13 +82,12 @@ class UserMapper extends CustomMapper
 
         $this->getRelationships($user, $userDto, $context);
 
-        if (is_array($userDto->roles)) {
-            if (!isset($userDto->roles[0])) {
-                throw new ServerErrorHttpException('User with no Role , please contact system admin');
+        if (!empty($userDto->roles)) {
+            if (isset($userDto->roles[0])) {
+                $this->accesList($userDto);
             }
         }
 
-        $this->accesList($userDto);
         return $userDto;
     }
 
