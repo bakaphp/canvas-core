@@ -42,12 +42,8 @@ class ResetPassword extends Notification implements NotificationInterfase
      */
     public function toMail(): ?Message
     {
-        // return $this->mail->to($this->toUser->getEmail())
-        //     ->subject('Password Updated')
-        //     ->content($this->message());
-        
-        return $this->mail->to('rwhite@mctekk.com')
-        ->subject('Password Updated')
-        ->content($this->message());
+        return $this->mail->to($this->toUser->getEmail())
+            ->subject('Password Reset')
+            ->content($this->message());
     }
 }
