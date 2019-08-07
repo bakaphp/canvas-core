@@ -296,8 +296,9 @@ class AuthController extends \Baka\Auth\AuthController
 
         // Has the password and set it
         $userData->resetPassword($newPassword);
+        $userData->user_activation_forgot = '';
         $userData->updateOrFail();
-        
+
         //log the user out of the site from all devices
         $session = new Sessions();
         $session->end($userData);
