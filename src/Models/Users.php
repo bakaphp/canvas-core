@@ -585,10 +585,12 @@ class Users extends \Baka\Auth\Models\Users
 
         if ($app->ecosystemAuth()) {
             $userAppData = $this->getApp([
-                'conditions' => 'companies_id = ?0',
-                'bind' => [$this->currentCompanyId()]
+                'conditions' => 'companies_id = :id:',
+                'bind' => [
+                    'id' => $this->currentCompanyId()
+                ]
             ]);
-
+            
             $password = $userAppData->password;
         } else {
             $password = $this->password;
