@@ -14,7 +14,6 @@ use Canvas\Traits\AuthTrait;
 use Canvas\Traits\SocialLoginTrait;
 use Exception;
 use Phalcon\Http\Response;
-use Phalcon\Validation;
 use Phalcon\Validation\Validator\Confirmation;
 use Phalcon\Validation\Validator\Email as EmailValidator;
 use Phalcon\Validation\Validator\PresenceOf;
