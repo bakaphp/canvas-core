@@ -440,7 +440,7 @@ class Users extends \Baka\Auth\Models\Users
 
     /**
      * Overwrite the user relationship.
-     * use Phalcon Registry to assure we mantian the same instance accross the request
+     * use Phalcon Registry to assure we mantian the same instance accross the request.
      */
     public function getDefaultCompany(): Companies
     {
@@ -585,10 +585,12 @@ class Users extends \Baka\Auth\Models\Users
 
         if ($app->ecosystemAuth()) {
             $userAppData = $this->getApp([
-                'conditions' => 'companies_id = ?0',
-                'bind' => [$this->currentCompanyId()]
+                'conditions' => 'companies_id = :id:',
+                'bind' => [
+                    'id' => $this->currentCompanyId()
+                ]
             ]);
-
+            
             $password = $userAppData->password;
         } else {
             $password = $this->password;
@@ -598,16 +600,30 @@ class Users extends \Baka\Auth\Models\Users
         if (Password::check($currentPassword, $password)) {
             PasswordValidation::validate($newPassword, $verifyPassword);
 
-            if ($app->ecosystemAuth()) {
-                //update all companies password for the current user app
-                AppAuth::updatePassword($this, $newPassword);
-            } else {
-                $this->password = Password::make($newPassword);
-            }
-            return true;
+            return $this->resetPassword($newPassword);
         }
 
         throw new Exception(_(' Your current password is incorrect .'));
+    }
+
+    /**
+     * Reset the user passwrod.
+     *
+     * @param string $newPassword
+     * @return bool
+     */
+    public function resetPassword(string $newPassword): bool
+    {
+        $app = Di::getDefault()->getApp();
+
+        if ($app->ecosystemAuth()) {
+            //update all companies password for the current user app
+            AppAuth::updatePassword($this, Password::make($newPassword));
+        } else {
+            $this->password = Password::make($newPassword);
+        }
+
+        return true;
     }
 
     /**
@@ -658,5 +674,18 @@ class Users extends \Baka\Auth\Models\Users
         }
 
         return $user;
+    }
+
+    /**
+     * Generate new forgot password hash.
+     *
+     * @return string
+     */
+    public function generateForgotHash(): string
+    {
+        $this->user_activation_forgot = $this->generateActivationKey();
+        $this->updateOrFail();
+
+        return $this->user_activation_forgot;
     }
 }
