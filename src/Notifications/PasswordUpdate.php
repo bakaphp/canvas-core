@@ -8,7 +8,7 @@ use Canvas\Contracts\Notifications\NotificationInterfase;
 use Baka\Mail\Message;
 use Phalcon\Di;
 
-class ResetPassword extends Notification implements NotificationInterfase
+class PasswordUpdate extends Notification implements NotificationInterfase
 {
     protected $type = Notification::APPS;
     //protected $useQueue = true;
@@ -22,9 +22,7 @@ class ResetPassword extends Notification implements NotificationInterfase
     {
         $app = Di::getDefault()->getApp();
 
-        $resetPasswordUrl = $app->url . '/users/reset-password/' . $this->fromUser->user_activation_forgot;
-
-        return "Hi {$this->fromUser->firstname} {$this->fromUser->lastname}, click the following link to reset your password: <a href='{$resetPasswordUrl}'>Reset Password</a> <br /><br />
+        return "Hi {$this->fromUser->firstname} {$this->fromUser->lastname}, your password for {$app->name} was updated <br /><br />
                 Thanks ";
     }
 
@@ -38,7 +36,7 @@ class ResetPassword extends Notification implements NotificationInterfase
         $app = Di::getDefault()->getApp();
 
         return $this->mail->to($this->fromUser->getEmail())
-            ->subject($app->name .' - Password Reset')
+            ->subject($app->name . ' - Password Updated')
             ->content($this->message());
     }
 }

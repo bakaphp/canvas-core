@@ -8,6 +8,7 @@ use Phalcon\Validation\Validator\PresenceOf;
 use Phalcon\Validation\Validator\Confirmation;
 use Phalcon\Validation\Validator\StringLength;
 use Exception;
+use Canvas\Validation as CanvasValidation;
 
 class PasswordValidation
 {
@@ -26,7 +27,7 @@ class PasswordValidation
         ];
 
         //Ok let validate user password
-        $validation = new Validation();
+        $validation = new CanvasValidation();
 
         $validation->add(
             'new_password',
@@ -52,12 +53,7 @@ class PasswordValidation
         );
 
         //validate this form for password
-        $messages = $validation->validate($data);
-        if (count($messages)) {
-            foreach ($messages as $message) {
-                throw new Exception($message->getMessage());
-            }
-        }
+        $validation->validate($data);
 
         return true;
     }

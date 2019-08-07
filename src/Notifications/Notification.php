@@ -56,6 +56,10 @@ class Notification implements NotificationInterfase
      */
     protected $mail;
 
+    const USERS = 'Canvas\Notifications\Users' ;
+    const SYSTEM = 'Canvas\Notifications\System';
+    const APPS = 'Canvas\Notifications\Apps';
+
     /**
      * Constructor.
      *
@@ -140,7 +144,7 @@ class Notification implements NotificationInterfase
     }
 
     /**
-     * Disable this notification queue in runtime
+     * Disable this notification queue in runtime.
      *
      * @return void
      */
@@ -162,6 +166,9 @@ class Notification implements NotificationInterfase
         //if the user didnt provide the type get it based on the class name
         if (is_null($this->type)) {
             $this->setType(NotificationType::getByKey(static::class));
+        } elseif (is_string($this->type)) {
+            //not great but for now lets use it
+            $this->setType(NotificationType::getByKey($this->type));
         }
 
         if (Di::getDefault()->has('mail')) {
@@ -179,7 +186,7 @@ class Notification implements NotificationInterfase
     }
 
     /**
-     * Send to our internal Notification queue
+     * Send to our internal Notification queue.
      *
      * @return boolean
      */
@@ -212,7 +219,7 @@ class Notification implements NotificationInterfase
         $notification->users_id = $this->toUser->getId();
         $notification->companies_id = $this->fromUser->currentCompanyId();
         $notification->apps_id = $app->getId();
-        $notification->system_module_id = (int)$this->type->system_modules_id;
+        $notification->system_modules_id = $this->type->system_modules_id;
         $notification->notification_type_id = $this->type->getId();
         $notification->entity_id = $this->entity->getId();
         $notification->content = $content;
