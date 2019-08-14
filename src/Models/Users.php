@@ -17,13 +17,13 @@ use Canvas\Traits\FileSystemModelTrait;
 use Phalcon\Security\Random;
 use Baka\Database\Contracts\HashTableTrait;
 use Canvas\Contracts\Notifications\NotifiableTrait;
+use Canvas\Traits\EventManagerAwareTrait;
 use Phalcon\Di;
 use Canvas\Auth\App as AppAuth;
 use Exception;
 use Canvas\Validations\PasswordValidation;
 use Baka\Auth\Models\Users as BakUser;
 use Canvas\Hashing\Password;
-use Canvas\Traits\EventManagerAwareTrait;
 
 /**
  * Class Users.
@@ -590,7 +590,7 @@ class Users extends \Baka\Auth\Models\Users
                     'id' => $this->currentCompanyId()
                 ]
             ]);
-            
+
             $password = $userAppData->password;
         } else {
             $password = $this->password;

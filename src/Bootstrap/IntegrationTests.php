@@ -8,7 +8,7 @@ use Phalcon\Di\FactoryDefault;
 class IntegrationTests extends Api
 {
     /**
-     * Run the application
+     * Run the application.
      *
      * @return mixed
      */
@@ -17,7 +17,7 @@ class IntegrationTests extends Api
         return $this->application;
     }
 
-      /**
+    /**
      * @return mixed
      */
     public function setup()
@@ -29,7 +29,7 @@ class IntegrationTests extends Api
         /**
         * @todo Find a better way to handle unit test file include
         */
-        $this->providers =  require appPath('tests/providers.php');
+        $this->providers = require appPath('tests/providers.php');
 
         //run my parents setup
         $this->container->set('metrics', microtime(true));

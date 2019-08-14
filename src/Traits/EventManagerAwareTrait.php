@@ -1,21 +1,6 @@
 <?php
 
-/*
-  +------------------------------------------------------------------------+
-  | Phalcon Framework                                                      |
-  +------------------------------------------------------------------------+
-  | Copyright (c) 2011-2017 Phalcon Team (https://www.phalconphp.com)      |
-  +------------------------------------------------------------------------+
-  | This source file is subject to the New BSD License that is bundled     |
-  | with this package in the file LICENSE.txt.                             |
-  |                                                                        |
-  | If you did not receive a copy of the license and are unable to         |
-  | obtain it through the world-wide-web, please send an email             |
-  | to license@phalconphp.com so we can send you a copy immediately.       |
-  +------------------------------------------------------------------------+
-  | Authors: Sergii Svyrydenko <sergey.v.sviridenko@gmail.com>             |
-  +------------------------------------------------------------------------+
-*/
+declare(strict_types=1);
 
 namespace Canvas\Traits;
 
@@ -23,7 +8,7 @@ use Phalcon\Di;
 use Phalcon\Events\ManagerInterface as EventsManager;
 
 /**
- * Phalcon\Traits\EventManagerAwareTrait
+ * Phalcon\Traits\EventManagerAwareTrait.
  *
  * Trait for event processing
  *
@@ -38,7 +23,7 @@ trait EventManagerAwareTrait
     protected $eventsManager = null;
 
     /**
-     * set event manager
+     * set event manager.
      *
      * @param EventsManager $eventsManager
      */
@@ -48,7 +33,7 @@ trait EventManagerAwareTrait
     }
 
     /**
-     * return event manager
+     * return event manager.
      *
      * @return EventsManager | null
      */
@@ -57,7 +42,7 @@ trait EventManagerAwareTrait
         $di = Di::getDefault();
 
         if (!empty($this->eventsManager)) {
-            $manager =  $this->eventsManager;
+            $manager = $this->eventsManager;
         } elseif ($di->has('eventsManager')) {
             $manager = $di->get('eventsManager');
         }
@@ -70,7 +55,7 @@ trait EventManagerAwareTrait
     }
 
     /**
-     * Checking if event manager is defined - fire event
+     * Checking if event manager is defined - fire event.
      *
      * @param string $event
      * @param object $source
