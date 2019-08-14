@@ -590,7 +590,7 @@ class Users extends \Baka\Auth\Models\Users
                     'id' => $this->currentCompanyId()
                 ]
             ]);
-            
+
             $password = $userAppData->password;
         } else {
             $password = $this->password;
