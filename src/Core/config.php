@@ -144,6 +144,7 @@ return [
     ],
     'stripe' => [
         'secretKey' => getenv('STRIPE_SECRET'),
+        'secret' => getenv('STRIPE_SECRET'),
         'public' => getenv('STRIPE_PUBLIC'),
     ],
     'throttle'=>[
