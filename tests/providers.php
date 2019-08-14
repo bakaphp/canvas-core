@@ -10,7 +10,6 @@ use Canvas\Providers\DatabaseProvider;
 use Canvas\Providers\ErrorHandlerProvider;
 use Canvas\Providers\LoggerProvider;
 use Canvas\Providers\ModelsMetadataProvider;
-use Canvas\Providers\RouterProvider;
 use Canvas\Providers\SessionProvider;
 use Canvas\Providers\QueueProvider;
 use Canvas\Providers\MailProvider;
@@ -23,6 +22,7 @@ use Canvas\Providers\FileSystemProvider;
 use Canvas\Providers\EventsManagerProvider;
 use Canvas\Providers\MapperProvider;
 use Canvas\Providers\ElasticProvider;
+use Canvas\Providers\RegistryProvider;
 
 return [
     ConfigProvider::class,
@@ -31,7 +31,6 @@ return [
     DatabaseProvider::class,
     ModelsMetadataProvider::class,
     RequestProvider::class,
-    RouterProvider::class,
     CacheDataProvider::class,
     SessionProvider::class,
     QueueProvider::class,
@@ -43,5 +42,6 @@ return [
     FileSystemProvider::class,
     EventsManagerProvider::class,
     MapperProvider::class,
-    ElasticProvider::class
+    ElasticProvider::class,
+    RegistryProvider::class
 ];

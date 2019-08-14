@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Canvas;
 
-use Phalcon\Traits\EventManagerAwareTrait;
+use Canvas\Traits\EventManagerAwareTrait;
 use Canvas\Queue\Queue;
 use Phalcon\Di;
 

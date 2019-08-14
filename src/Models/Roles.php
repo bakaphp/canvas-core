@@ -274,7 +274,7 @@ class Roles extends AbstractModel
      * @param string $roleToInherit
      * @return boolean
      */
-    public static function addInherit(string $roleName, string $roleToInherit) : bool
+    public static function addInherit(string $roleName, string $roleToInherit)
     {
         $role = self::findFirstByName($roleName);
 
@@ -289,6 +289,7 @@ class Roles extends AbstractModel
 
         if (!$inheritExist) {
             $rolesInHerits = new RolesInherits();
+            $rolesInHerits->roles_name = $role->name;
             $rolesInHerits->roles_id = $role->getId();
             $rolesInHerits->roles_inherit = (int) $roleToInherit;
 
