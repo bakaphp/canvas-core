@@ -22,6 +22,7 @@ use Canvas\Providers\FileSystemProvider;
 use Canvas\Providers\EventsManagerProvider;
 use Canvas\Providers\MapperProvider;
 use Canvas\Providers\ElasticProvider;
+use Canvas\Providers\RegistryProvider;
 
 return [
     ConfigProvider::class,
@@ -41,5 +42,6 @@ return [
     FileSystemProvider::class,
     EventsManagerProvider::class,
     MapperProvider::class,
-    ElasticProvider::class
+    ElasticProvider::class,
+    RegistryProvider::class
 ];

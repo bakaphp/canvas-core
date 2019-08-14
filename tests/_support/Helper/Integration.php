@@ -1,5 +1,7 @@
 <?php
+
 namespace Helper;
+
 use Codeception\Module;
 use Codeception\Exception\TestRuntimeException;
 use Codeception\TestInterface;
@@ -24,12 +26,13 @@ class Integration extends Module
     /**
      * @var null|PhDI
      */
-    protected $diContainer  = null;
-    protected $savedModels  = [];
+    protected $diContainer = null;
+    protected $savedModels = [];
     protected $savedRecords = [];
-    protected $config       = ['rollback' => false];
+    protected $config = ['rollback' => false];
+
     /**
-     * Test initializer
+     * Test initializer.
      */
     public function _before(TestInterface $test)
     {
@@ -46,11 +49,12 @@ class Integration extends Module
         }
 
         //Set default user
-        $user =  Users::findFirst(1);
+        $user = Users::findFirst(1);
         $this->diContainer->setShared('userData', $user);
-        $this->savedModels  = [];
+        $this->savedModels = [];
         $this->savedRecords = [];
     }
+
     public function _after(TestInterface $test)
     {
         if (!$this->config['rollback']) {
@@ -62,6 +66,7 @@ class Integration extends Module
         }
         $this->diContainer->get('db')->close();
     }
+
     /**
      * @param string $namePrefix
      * @param string $addressPrefix
@@ -79,13 +84,14 @@ class Integration extends Module
         return $this->haveRecordWithFields(
             Companies::class,
             [
-                'name'    => uniqid($namePrefix),
+                'name' => uniqid($namePrefix),
                 'address' => uniqid($addressPrefix),
-                'city'    => uniqid($cityPrefix),
-                'phone'   => uniqid($phonePrefix),
+                'city' => uniqid($cityPrefix),
+                'phone' => uniqid($phonePrefix),
             ]
         );
     }
+
     /**
      * @param int $companyId
      * @param int $productId
@@ -102,6 +108,7 @@ class Integration extends Module
             ]
         );
     }
+
     /**
      * @param string $namePrefix
      *
@@ -112,11 +119,12 @@ class Integration extends Module
         return $this->haveRecordWithFields(
             IndividualTypes::class,
             [
-                'name'        => uniqid($namePrefix),
+                'name' => uniqid($namePrefix),
                 'description' => uniqid(),
             ]
         );
     }
+
     /**
      * @param string $namePrefix
      * @param int    $comId
@@ -130,15 +138,16 @@ class Integration extends Module
             Individuals::class,
             [
                 'companyId' => $comId,
-                'typeId'    => $typeId,
-                'prefix'    => uniqid(),
-                'first'     => uniqid($namePrefix),
-                'middle'    => uniqid(),
-                'last'      => uniqid(),
-                'suffix'    => uniqid(),
+                'typeId' => $typeId,
+                'prefix' => uniqid(),
+                'first' => uniqid($namePrefix),
+                'middle' => uniqid(),
+                'last' => uniqid(),
+                'suffix' => uniqid(),
             ]
         );
     }
+
     /**
      * @param string $namePrefix
      * @param int    $typeId
@@ -150,14 +159,15 @@ class Integration extends Module
         return $this->haveRecordWithFields(
             Products::class,
             [
-                'name'        => uniqid($namePrefix),
-                'typeId'      => $typeId,
+                'name' => uniqid($namePrefix),
+                'typeId' => $typeId,
                 'description' => uniqid(),
-                'quantity'    => 25,
-                'price'       => 19.99,
+                'quantity' => 25,
+                'price' => 19.99,
             ]
         );
     }
+
     /**
      * @param string $namePrefix
      *
@@ -168,11 +178,12 @@ class Integration extends Module
         return $this->haveRecordWithFields(
             ProductTypes::class,
             [
-                'name'        => uniqid($namePrefix),
+                'name' => uniqid($namePrefix),
                 'description' => uniqid(),
             ]
         );
     }
+
     /**
      * @return mixed
      */
@@ -180,6 +191,7 @@ class Integration extends Module
     {
         return $this->diContainer;
     }
+
     /**
      * @param string $name
      *
@@ -189,8 +201,9 @@ class Integration extends Module
     {
         return $this->diContainer->get($name);
     }
+
     /**
-     * Returns the relationships that a model has
+     * Returns the relationships that a model has.
      *
      * @param string $class
      *
@@ -199,8 +212,8 @@ class Integration extends Module
     public function getModelRelationships(string $class): array
     {
         /** @var AbstractModel $class */
-        $model         = new $class();
-        $manager       = $model->getModelsManager();
+        $model = new $class();
+        $manager = $model->getModelsManager();
         $relationships = $manager->getRelations($class);
         $data = [];
         foreach ($relationships as $relationship) {
@@ -214,8 +227,9 @@ class Integration extends Module
         }
         return $data;
     }
+
     /**
-     * Get a record from $modelName with fields provided
+     * Get a record from $modelName with fields provided.
      *
      * @param string $modelName
      * @param array  $fields
@@ -227,9 +241,9 @@ class Integration extends Module
         $record = false;
         if (count($fields) > 0) {
             $conditions = '';
-            $bind       = [];
+            $bind = [];
             foreach ($fields as $field => $value) {
-                $conditions   .= sprintf(
+                $conditions .= sprintf(
                     '%s = :%s: AND ',
                     $field,
                     $field
@@ -241,12 +255,13 @@ class Integration extends Module
             $record = $modelName::findFirst(
                 [
                     'conditions' => $conditions,
-                    'bind'       => $bind,
+                    'bind' => $bind,
                 ]
             );
         }
         return $record;
     }
+
     /**
      * @param array $configData
      */
@@ -255,8 +270,9 @@ class Integration extends Module
         $config = new PhConfig($configData);
         $this->diContainer->set('config', $config);
     }
+
     /**
-     * Checks model fields
+     * Checks model fields.
      *
      * @param string $modelName
      * @param array  $fields
@@ -264,8 +280,8 @@ class Integration extends Module
     public function haveModelDefinition(string $modelName, array $fields)
     {
         /** @var AbstractModel $model */
-        $model      = new $modelName;
-        $metadata   = $model->getModelsMetaData();
+        $model = new $modelName;
+        $metadata = $model->getModelsMetaData();
         $attributes = $metadata->getAttributes($model);
         $this->assertEquals(
             count($fields),
@@ -280,8 +296,9 @@ class Integration extends Module
             );
         }
     }
+
     /**
-     * Create a record for $modelName with fields provided
+     * Create a record for $modelName with fields provided.
      *
      * @param string $modelName
      * @param array  $fields
@@ -295,11 +312,12 @@ class Integration extends Module
             $record->set($key, $val);
         }
         $this->savedModels[$modelName] = $fields;
-        $result                        = $record->save();
+        $result = $record->save();
         $this->assertNotSame(false, $result);
         $this->savedRecords[] = $record;
         return $record;
     }
+
     /**
      * @param string $name
      * @param mixed  $service
@@ -308,6 +326,7 @@ class Integration extends Module
     {
         $this->diContainer->set($name, $service);
     }
+
     /**
      * @param string $name
      */
@@ -317,9 +336,10 @@ class Integration extends Module
             $this->diContainer->remove($name);
         }
     }
+
     /**
      * Check that record created with haveRecordWithFields can be fetched and
-     * all its fields contain valid values
+     * all its fields contain valid values.
      *
      * @param       $modelName
      * @param       $by
@@ -347,7 +367,7 @@ class Integration extends Module
                 $by
             )
         );
-        $byBind     = [];
+        $byBind = [];
         foreach ($by as $byVal) {
             if (!isset($fields[$byVal])) {
                 throw new TestRuntimeException("Field $byVal is not set");
@@ -360,7 +380,7 @@ class Integration extends Module
             ],
             [
                 'conditions' => $bySelector,
-                'bind'       => $byBind,
+                'bind' => $byBind,
             ]
         );
         if (!$record) {
@@ -378,8 +398,9 @@ class Integration extends Module
         }
         return $record;
     }
+
     /**
-     * Checks that record exists and has provided fields
+     * Checks that record exists and has provided fields.
      *
      * @param $model
      * @param $by
@@ -388,11 +409,11 @@ class Integration extends Module
     public function seeRecordSaved($model, $by, $fields)
     {
         $this->savedModels[$model] = array_merge($by, $fields);
-        $record                    = $this->seeRecordFieldsValid(
+        $record = $this->seeRecordFieldsValid(
             $model,
             array_keys($by),
             array_keys($by)
         );
-        $this->savedRecords[]      = $record;
+        $this->savedRecords[] = $record;
     }
 }

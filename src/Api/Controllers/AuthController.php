@@ -12,7 +12,19 @@ use Canvas\Exception\ModelException;
 use Baka\Auth\Models\Users as BakaUsers;
 use Canvas\Traits\AuthTrait;
 use Canvas\Traits\SocialLoginTrait;
+use Exception;
 use Phalcon\Http\Response;
+use Phalcon\Validation\Validator\Confirmation;
+use Phalcon\Validation\Validator\Email as EmailValidator;
+use Phalcon\Validation\Validator\PresenceOf;
+use Phalcon\Validation\Validator\StringLength;
+use Baka\Auth\Models\Sessions;
+use Canvas\Auth\Factory;
+use Canvas\Validation as CanvasValidation;
+use Canvas\Notifications\ResetPassword;
+use Canvas\Hashing\Password;
+use Canvas\Notifications\PasswordUpdate;
+use Canvas\Validations\PasswordValidation;
 
 /**
  * Class AuthController.
@@ -49,6 +61,125 @@ class AuthController extends \Baka\Auth\AuthController
     }
 
     /**
+     * User Login.
+     * @method POST
+     * @url /v1/auth
+     *
+     * @return Response
+     */
+    public function login() : Response
+    {
+        $email = trim($this->request->getPost('email', 'string', ''));
+        $password = trim($this->request->getPost('password', 'string', ''));
+        $admin = 0;
+        $userIp = !defined('API_TESTS') ? $this->request->getClientAddress() : '127.0.0.1'; //help getting the client ip on scrutinizer :(
+        $remember = $this->request->getPost('remember', 'int', 1);
+
+        //Ok let validate user password
+        $validation = new CanvasValidation();
+        $validation->add('email', new PresenceOf(['message' => _('The email is required.')]));
+        $validation->add('password', new PresenceOf(['message' => _('The password is required.')]));
+
+        //validate this form for password
+        $validation->validate($this->request->getPost());
+
+        /**
+         * Login the user via ecosystem or app.
+         */
+        $auth = Factory::create($this->app->ecosystemAuth());
+        $userData = $auth::login($email, $password, $remember, $admin, $userIp);
+        $token = $userData->getToken();
+
+        //start session
+        $session = new Sessions();
+        $session->start($userData, $token['sessionId'], $token['token'], $userIp, 1);
+
+        return $this->response([
+            'token' => $token['token'],
+            'time' => date('Y-m-d H:i:s'),
+            'expires' => date('Y-m-d H:i:s', time() + $this->config->jwt->payload->exp),
+            'id' => $userData->getId(),
+        ]);
+    }
+
+    /**
+     * User Signup.
+     *
+     * @method POST
+     * @url /v1/users
+     *
+     * @return Response
+     */
+    public function signup() : Response
+    {
+        $user = $this->userModel;
+
+        $user->email = $this->request->getPost('email', 'email');
+        $user->firstname = ltrim(trim($this->request->getPost('firstname', 'string', '')));
+        $user->lastname = ltrim(trim($this->request->getPost('lastname', 'string', '')));
+        $user->password = ltrim(trim($this->request->getPost('password', 'string', '')));
+        $userIp = !defined('API_TESTS') ? $this->request->getClientAddress() : '127.0.0.1'; //help getting the client ip on scrutinizer :(
+        $user->displayname = ltrim(trim($this->request->getPost('displayname', 'string', '')));
+        $user->defaultCompanyName = ltrim(trim($this->request->getPost('default_company', 'string', '')));
+
+        //Ok let validate user password
+        $validation = new CanvasValidation();
+        $validation->add('password', new PresenceOf(['message' => _('The password is required.')]));
+        $validation->add('firstname', new PresenceOf(['message' => _('The firstname is required.')]));
+        $validation->add('email', new EmailValidator(['message' => _('The email is not valid.')]));
+
+        $validation->add(
+            'password',
+            new StringLength([
+                'min' => 8,
+                'messageMinimum' => _('Password is too short. Minimum 8 characters.'),
+            ])
+        );
+
+        $validation->add('password', new Confirmation([
+            'message' => _('Password and confirmation do not match.'),
+            'with' => 'verify_password',
+        ]));
+
+        //validate this form for password
+        $validation->validate($this->request->getPost());
+
+        //user registration
+        try {
+            $this->db->begin();
+
+            $user->signup();
+
+            $this->db->commit();
+        } catch (Exception $e) {
+            $this->db->rollback();
+
+            throw new Exception($e->getMessage());
+        }
+
+        $token = $user->getToken();
+
+        //start session
+        $session = new Sessions();
+        $session->start($user, $token['sessionId'], $token['token'], $userIp, 1);
+
+        $authSession = [
+            'token' => $token['token'],
+            'time' => date('Y-m-d H:i:s'),
+            'expires' => date('Y-m-d H:i:s', time() + $this->config->jwt->payload->exp),
+            'id' => $user->getId(),
+        ];
+
+        $user->password = null;
+        $this->sendEmail($user, 'signup');
+
+        return $this->response([
+            'user' => $user,
+            'session' => $authSession
+        ]);
+    }
+
+    /**
      * Send email to change current email for user.
      * @param int $id
      * @return Response
@@ -66,50 +197,6 @@ class AuthController extends \Baka\Auth\AuthController
         $this->sendEmail($user, 'email-change');
 
         return $this->response($user);
-    }
-
-    /**
-    * Set the email config array we are going to be sending.
-    *
-    * @param String $emailAction
-    * @param Users  $user
-    * @return void
-    */
-    protected function sendEmail(BakaUsers $user, string $type): void
-    {
-        $send = true;
-        $subject = null;
-        $body = null;
-        switch ($type) {
-            case 'recover':
-                $recoveryLink = $this->config->app->frontEndUrl . '/users/reset-password/' . $user->user_activation_forgot;
-                $subject = _('Password Recovery');
-                $body = sprintf(_('Click %shere%s to set a new password for your account.'), '<a href="' . $recoveryLink . '" target="_blank">', '</a>');
-                // send email to recover password
-                break;
-            case 'reset':
-                $activationUrl = $this->config->app->frontEndUrl . '/user/activate/' . $user->user_activation_key;
-                $subject = _('Password Updated!');
-                $body = sprintf(_('Your password was update please, use this link to activate your account: %sActivate account%s'), '<a href="' . $activationUrl . '">', '</a>');
-                // send email that password was update
-                break;
-            case 'email-change':
-                $emailChangeUrl = $this->config->app->frontEndUrl . '/user/' . $user->user_activation_email . '/email';
-                $subject = _('Email Change Request');
-                $body = sprintf(_('Click %shere%s to set a new email for your account.'), '<a href="' . $emailChangeUrl . '">', '</a>');
-                break;
-            default:
-                $send = false;
-                break;
-        }
-
-        if ($send) {
-            $this->mail
-            ->to($user->email)
-            ->subject($subject)
-            ->content($body)
-            ->sendNow();
-        }
     }
 
     /**
@@ -160,5 +247,109 @@ class AuthController extends \Baka\Auth\AuthController
         ]);
 
         return $this->response($this->providerLogin($source, $request['social_id'], $request['email']));
+    }
+
+    /**
+     * Send the user how filled out the form to the specify email
+     * a link to reset his password.
+     *
+     * @return Response
+     */
+    public function recover(): Response
+    {
+        $email = $this->request->getPost('email', 'email');
+
+        $validation = new CanvasValidation();
+        $validation->add('email', new PresenceOf(['message' => _('The email is required.')]));
+        $validation->add('email', new EmailValidator(['message' => _('The email is invalid.')]));
+
+        $validation->validate($this->request->getPost());
+
+        $recoverUser = Users::getByEmail($email);
+        $recoverUser->generateForgotHash();
+
+        $recoverUser->notify(new ResetPassword($recoverUser));
+
+        return $this->response(_('Check your email to recover your password'));
+    }
+
+    /**
+     * Reset the user password.
+     * @method PUT
+     * @url /v1/reset
+     *
+     * @return Response
+     */
+    public function reset(string $key) : Response
+    {
+        //is the key empty or does it existe?
+        if (empty($key) || !$userData = Users::findFirst(['user_activation_forgot = :key:', 'bind' => ['key' => $key]])) {
+            throw new Exception(_('This Key to reset password doesn\'t exist'));
+        }
+
+        // Get the new password and the verify
+        $newPassword = trim($this->request->getPost('new_password', 'string'));
+        $verifyPassword = trim($this->request->getPost('verify_password', 'string'));
+
+        //Ok let validate user password
+        PasswordValidation::validate($newPassword, $verifyPassword);
+
+        // Has the password and set it
+        $userData->resetPassword($newPassword);
+        $userData->user_activation_forgot = '';
+        $userData->updateOrFail();
+
+        //log the user out of the site from all devices
+        $session = new Sessions();
+        $session->end($userData);
+
+        $userData->notify(new PasswordUpdate($userData));
+
+        return $this->response(_('Password Updated'));
+    }
+
+    /**
+    * Set the email config array we are going to be sending.
+    *
+    * @deprecated move to notifications
+    * @param String $emailAction
+    * @param Users  $user
+    * @return void
+    */
+    protected function sendEmail(BakaUsers $user, string $type): void
+    {
+        $send = true;
+        $subject = null;
+        $body = null;
+        switch ($type) {
+            case 'recover':
+                $recoveryLink = $this->config->app->frontEndUrl . '/users/reset-password/' . $user->user_activation_forgot;
+                $subject = _('Password Recovery');
+                $body = sprintf(_('Click %shere%s to set a new password for your account.'), '<a href="' . $recoveryLink . '" target="_blank">', '</a>');
+                // send email to recover password
+                break;
+            case 'reset':
+                $activationUrl = $this->config->app->frontEndUrl . '/user/activate/' . $user->user_activation_key;
+                $subject = _('Password Updated!');
+                $body = sprintf(_('Your password was update please, use this link to activate your account: %sActivate account%s'), '<a href="' . $activationUrl . '">', '</a>');
+                // send email that password was update
+                break;
+            case 'email-change':
+                $emailChangeUrl = $this->config->app->frontEndUrl . '/user/' . $user->user_activation_email . '/email';
+                $subject = _('Email Change Request');
+                $body = sprintf(_('Click %shere%s to set a new email for your account.'), '<a href="' . $emailChangeUrl . '">', '</a>');
+                break;
+            default:
+                $send = false;
+                break;
+        }
+
+        if ($send) {
+            $this->mail
+            ->to($user->email)
+            ->subject($subject)
+            ->content($body)
+            ->sendNow();
+        }
     }
 }
