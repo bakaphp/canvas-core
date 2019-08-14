@@ -208,7 +208,7 @@ class PaymentsController extends BaseController
                 //Update companies setting
                 $paidSetting = CompaniesSettings::findFirst([
                     'conditions' => "companies_id = ?0 and name = 'paid' and is_deleted = 0",
-                    'bind' => [$user->default_company]
+                    'bind' => [$user->getDefaultCompany()->getId()]
                 ]);
 
                 $paidSetting->value = (string)$subscription->paid;

@@ -34,7 +34,7 @@ class Invitation extends Notification implements NotificationInterfase
         }
 
         return "Hi {$this->entity->email} you have been invite to the app {$app->name} to create you account please <a href='{$invitationUrl}'>click here</a> <br /><br />
-                Thanks {$this->fromUser->firstname} {$this->fromUser->lastname} ( {$this->fromUser->currentCompany->name} ) ";
+                Thanks {$this->fromUser->firstname} {$this->fromUser->lastname} ( {$this->fromUser->getDefaultCompany()->name} ) ";
     }
 
     /**

@@ -25,7 +25,7 @@ trait PermissionsTrait
      */
     public function assignRole(string $role): bool
     {
-        $role = Roles::getByAppName($role, $this->defaultCompany);
+        $role = Roles::getByAppName($role, $this->getDefaultCompany());
 
         if (!is_object($role)) {
             throw new ServerErrorHttpException('Role not found in DB');
@@ -59,7 +59,7 @@ trait PermissionsTrait
      */
     public function removeRole(string $role): bool
     {
-        $role = Roles::getByAppName($role, $this->defaultCompany);
+        $role = Roles::getByAppName($role, $this->getDefaultCompany());
 
         if (!is_object($role)) {
             throw new ServerErrorHttpException('Role not found in DB');
@@ -85,7 +85,7 @@ trait PermissionsTrait
      */
     public function hasRole(string $role): bool
     {
-        $role = Roles::getByAppName($role, $this->defaultCompany);
+        $role = Roles::getByAppName($role, $this->getDefaultCompany());
 
         if (!is_object($role)) {
             throw new ServerErrorHttpException('Role not found in DB');
@@ -123,8 +123,12 @@ trait PermissionsTrait
         $resource = $action[0];
         $action = $action[1];
         //get your user account role for this app or the canvas ecosystem
-        $role = $this->getPermission('apps_id in (' . $this->di->getApp()->getId() . ',' . Roles::DEFAULT_ACL_APP_ID . ')')->roles->name;
+        $role = $this->getPermission('apps_id in (' . $this->di->getApp()->getId() . ',' . Roles::DEFAULT_ACL_APP_ID . ')');
 
-        return $this->di->getAcl()->isAllowed($role, $resource, $action);
+        if (!is_object($role)) {
+            throw new ServerErrorHttpException('ACL - User doesnt have any set roles in this current app #' . $this->di->getApp()->getId());
+        }
+
+        return $this->di->getAcl()->isAllowed($role->roles->name, $resource, $action);
     }
 }

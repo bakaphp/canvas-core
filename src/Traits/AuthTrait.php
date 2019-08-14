@@ -6,9 +6,10 @@ namespace Canvas\Traits;
 
 use Canvas\Models\Users;
 use Baka\Auth\Models\Sessions;
+use Canvas\Exception\NotFoundException;
 
 /**
- * Trait ResponseTrait
+ * Trait ResponseTrait.
  *
  * @package Canvas\Traits
  *
@@ -22,7 +23,7 @@ use Baka\Auth\Models\Sessions;
 trait AuthTrait
 {
     /**
-     * Login user
+     * Login user.
      * @param string
      * @return array
      */
@@ -32,7 +33,6 @@ trait AuthTrait
 
         $userData = Users::login($email, $password, 1, 0, $userIp);
         $token = $userData->getToken();
-
 
         //start session
         $session = new Sessions();
@@ -47,7 +47,7 @@ trait AuthTrait
     }
 
     /**
-     * User Login Social 
+     * User Login Social.
      * @param string
      * @return array
      */
@@ -62,7 +62,6 @@ trait AuthTrait
 
         $token = $user->getToken();
 
-
         //start session
         $session = new Sessions();
         $session->start($user, $token['sessionId'], $token['token'], $userIp, 1);
@@ -76,24 +75,19 @@ trait AuthTrait
     }
 
     /**
-     * Set user into Di by id
+     * Set user into Di by id.
      * @param int $usersId
      * @return void
      */
     private function setUserDataById(int $usersId): void
     {
-        
-        $hostUser =  Users::findFirst([
-            'conditions'=> 'id = ?0 and status = 1 and is_deleted = 0',
-            'bind'=>[$usersId]
+        $hostUser = Users::findFirstOrFail([
+            'conditions' => 'id = ?0 and status = 1 and is_deleted = 0',
+            'bind' => [$usersId]
         ]);
 
-        if (is_object($invitedUser)) {
-            throw new ModelException('Host User not found');
-        }
-
         /**
-         * Set the host in di
+         * Set the host in di.
          */
         if (!$this->di->has('userData')) {
             $this->di->setShared('userData', $hostUser);

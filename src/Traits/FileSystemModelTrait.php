@@ -179,7 +179,7 @@ trait FileSystemModelTrait
 
         foreach ($files as $file) {
             //im looking for the file inside an array
-            if (!array_key_exists('file', $file)) {
+            if (!isset($file['file'])) {
                 continue;
             }
 
