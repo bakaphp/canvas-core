@@ -8,7 +8,6 @@ use Canvas\Models\Users;
 use Canvas\Queue\Queue;
 use Phalcon\Mvc\Model;
 
-
 /**
  * CLI To send push ontification and pusher msg.
  *
@@ -29,7 +28,7 @@ class QueueTask extends PhTask
      */
     public function mainAction(array $params): void
     {
-        echo 'Canvas Ecosystem Queue Jobs: events | notifications' . PHP_EOL;
+        echo 'Canvas Ecosystem Queue Jobs: events | notifications | jobs' . PHP_EOL;
     }
 
     /**
@@ -133,10 +132,12 @@ class QueueTask extends PhTask
                 return;
             }
 
-            //instance notification and pass the entity
-            $result = $job['job']->handle();
-            
-            $this->log->info("Job ({$job['class']}) ran for {$this->userData->getEmail()} - Process ID " . $msg->delivery_info['consumer_tag'], $result);
+            go(function () use ($job, $msg) {
+                //instance notification and pass the entity
+                $result = $job['job']->handle();
+
+                $this->log->info("Job ({$job['class']}) ran for {$this->userData->getEmail()} - Process ID " . $msg->delivery_info['consumer_tag'], $result);
+            });
         };
 
         Queue::process(QUEUE::JOBS, $callback);
