@@ -132,6 +132,9 @@ class QueueTask extends PhTask
                 return;
             }
 
+            /**
+             * swoole coroutine
+             */
             go(function () use ($job, $msg) {
                 //instance notification and pass the entity
                 $result = $job['job']->handle();
