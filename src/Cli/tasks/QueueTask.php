@@ -6,9 +6,8 @@ use Canvas\Contracts\Queue\QueueableJobInterfase;
 use Phalcon\Cli\Task as PhTask;
 use Canvas\Models\Users;
 use Canvas\Queue\Queue;
-use RuntimeException;
-use Canvas\Notifications\Notification;
 use Phalcon\Mvc\Model;
+
 
 /**
  * CLI To send push ontification and pusher msg.
@@ -52,7 +51,6 @@ class QueueTask extends PhTask
             //lets fire the event
             $this->events->fire($event['event'], $event['source'], $event['data']);
 
-            echo "Event Fired ({$event['event']})  - Process ID " . $msg->delivery_info['consumer_tag'] . PHP_EOL;
             $this->log->info("Notification ({$event['event']}) - Process ID " . $msg->delivery_info['consumer_tag']);
         };
 
@@ -101,7 +99,6 @@ class QueueTask extends PhTask
             //run notify for the specifiy user
             $user->notify($notification);
 
-            echo "Notification ({$notificationClass}) sent to {$user->email} - Process ID " . $msg->delivery_info['consumer_tag'] . PHP_EOL;
             $this->log->info("Notification ({$notificationClass}) sent to {$user->email} - Process ID " . $msg->delivery_info['consumer_tag']);
         };
 
@@ -121,7 +118,7 @@ class QueueTask extends PhTask
 
             //overwrite the user who is running this process
             if ($job['userData'] instanceof Users) {
-                $this->di->setShared('userData', $job['from']);
+                $this->di->setShared('userData', $job['userData']);
             }
 
             if (!class_exists($job['class'])) {
@@ -137,10 +134,9 @@ class QueueTask extends PhTask
             }
 
             //instance notification and pass the entity
-            $job['job']->handle();
-
-            echo "Job ({$job['class']}) ran for {$this->userData->getEmail()} - Process ID " . $msg->delivery_info['consumer_tag'] . PHP_EOL;
-            $this->log->info("Job ({$job['class']}) ran for {$this->userData->getEmail()} - Process ID " . $msg->delivery_info['consumer_tag']);
+            $result = $job['job']->handle();
+            
+            $this->log->info("Job ({$job['class']}) ran for {$this->userData->getEmail()} - Process ID " . $msg->delivery_info['consumer_tag'], $result);
         };
 
         Queue::process(QUEUE::JOBS, $callback);

@@ -49,7 +49,7 @@ class PendingDispatch
     {
         $jobData = [
             'userData' => Di::getDefault()->getUserData(),
-            'class' => get_class($this),
+            'class' => get_class($this->job),
             'job' => $this->job
         ];
 
