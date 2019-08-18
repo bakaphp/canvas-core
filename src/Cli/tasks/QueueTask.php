@@ -50,7 +50,9 @@ class QueueTask extends PhTask
             //lets fire the event
             $this->events->fire($event['event'], $event['source'], $event['data']);
 
-            $this->log->info("Notification ({$event['event']}) - Process ID " . $msg->delivery_info['consumer_tag']);
+            $this->log->info(
+                "Notification ({$event['event']}) - Process ID " . $msg->delivery_info['consumer_tag']
+            );
         };
 
         Queue::process(QUEUE::EVENTS, $callback);
@@ -98,7 +100,9 @@ class QueueTask extends PhTask
             //run notify for the specifiy user
             $user->notify($notification);
 
-            $this->log->info("Notification ({$notificationClass}) sent to {$user->email} - Process ID " . $msg->delivery_info['consumer_tag']);
+            $this->log->info(
+                "Notification ({$notificationClass}) sent to {$user->email} - Process ID " . $msg->delivery_info['consumer_tag']
+            );
         };
 
         Queue::process(QUEUE::NOTIFICATIONS, $callback);
@@ -139,7 +143,10 @@ class QueueTask extends PhTask
                 //instance notification and pass the entity
                 $result = $job['job']->handle();
 
-                $this->log->info("Job ({$job['class']}) ran for {$this->userData->getEmail()} - Process ID " . $msg->delivery_info['consumer_tag'], $result);
+                $this->log->info(
+                    "Job ({$job['class']}) ran for {$this->userData->getEmail()} - Process ID " . $msg->delivery_info['consumer_tag'],
+                    [$result]
+                );
             });
         };
 
