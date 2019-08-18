@@ -18,7 +18,16 @@ class PusherProvider implements ServiceProviderInterface
         $container->setShared(
             'pusher',
             function () use ($config) {
-                return new Pusher($config->pusher->key, $config->pusher->secret, $config->pusher->id, ['cluster' => $config->pusher->cluster, 'useTLS' => true]);
+                return new Pusher(
+                    $config->pusher->key,
+                    $config->pusher->secret,
+                    $config->pusher->id,
+                    [
+                        'cluster' => $config->pusher->cluster,
+                        'useTLS' => true,
+                        'debug' => true,
+                    ]
+                );
             }
         );
     }

@@ -1,6 +1,6 @@
 {
     "name": "canvas/core",
-    "description": "Saas Canvas Ecosystem Packages",
+    "description": "Saas Kanvas Ecosystem Packages",
     "license": "MIT",
     "authors": [{
         "name": "kaioken",
@@ -34,7 +34,7 @@
         "phalcon/incubator": "~3.4",
         "php-amqplib/php-amqplib": "^2.9",
         "psr/log": "^1.0",
-        "pusher/pusher-php-server": "^3.0",
+        "pusher/pusher-php-server": "^4.0",
         "robmorgan/phinx": "^0.10",
         "sentry/sentry": "^1.9",
         "sly/notification-pusher": "2.x",

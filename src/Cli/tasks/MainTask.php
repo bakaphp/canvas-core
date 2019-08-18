@@ -7,7 +7,7 @@ use Phalcon\Cli\Task as PhTask;
 class MainTask extends PhTask
 {
     /**
-     * Executes the main action of the cli mapping passed parameters to tasks
+     * Executes the main action of the cli mapping passed parameters to tasks.
      */
     public function mainAction()
     {

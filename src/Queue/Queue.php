@@ -10,14 +10,14 @@ use Phalcon\Di;
 class Queue
 {
     /**
-     * default canvas queues system name
+     * default canvas queues system name.
      */
     const EVENTS = 'events';
     const NOTIFICATIONS = 'notifications';
     const JOBS = 'jobs';
 
     /**
-     * Send a msg to Queue
+     * Send a msg to Queue.
      *
      * @param string $name
      * @param array|object|mixed $msg
@@ -48,9 +48,8 @@ class Queue
         return true;
     }
 
-
     /**
-     * Process a specify queue
+     * Process a specify queue.
      *
      * @param string $queueName
      * @param callable $callback
@@ -60,26 +59,31 @@ class Queue
     {
         $queue = Di::getDefault()->get('queue');
 
-        $channel = $queue->channel();
-        
-        $channel->queue_declare($queueName, false, true, false, false);
+        /**
+         * Use Swoole Coroutine  
+         */
+        go(function () use ($queue, $queueName, $callback) {
+            $channel = $queue->channel();
 
-        /*
-            queueName: Queue from where to get the messages
-            consumer_tag: Consumer identifier
-            no_local: Don't receive messages published by this consumer.
-            no_ack: If set to true, automatic acknowledgement mode will be used by this consumer. See https://www.rabbitmq.com/confirms.html for details.
-            exclusive: Request exclusive consumer access, meaning only this consumer can access the queue
-            nowait:
-            callback: A PHP Callback
-        */
-        $channel->basic_consume($queueName, '', false, true, false, false, $callback);
+            $channel->queue_declare($queueName, false, true, false, false);
 
-        while ($channel->is_consuming()) {
-            $channel->wait();
-        }
+            /*
+                queueName: Queue from where to get the messages
+                consumer_tag: Consumer identifier
+                no_local: Don't receive messages published by this consumer.
+                no_ack: If set to true, automatic acknowledgement mode will be used by this consumer. See https://www.rabbitmq.com/confirms.html for details.
+                exclusive: Request exclusive consumer access, meaning only this consumer can access the queue
+                nowait:
+                callback: A PHP Callback
+            */
+            $channel->basic_consume($queueName, '', false, true, false, false, $callback);
 
-        $channel->close();
-        $queue->close();
+            while ($channel->is_consuming()) {
+                $channel->wait();
+            }
+
+            $channel->close();
+            $queue->close();
+        });
     }
 }

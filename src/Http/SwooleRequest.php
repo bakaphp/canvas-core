@@ -1367,4 +1367,20 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
 
         return $data ?: [];
     }
+
+    /**
+     * @return string
+     */
+    public function getBearerTokenFromHeader(): string
+    {
+        return str_replace('Bearer ', '', $this->getHeader('Authorization'));
+    }
+
+    /**
+     * @return bool
+     */
+    public function isEmptyBearerToken(): bool
+    {
+        return true === empty($this->getBearerTokenFromHeader());
+    }
 }

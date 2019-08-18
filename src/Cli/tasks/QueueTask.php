@@ -2,11 +2,10 @@
 
 namespace Canvas\Cli\Tasks;
 
+use Canvas\Contracts\Queue\QueueableJobInterfase;
 use Phalcon\Cli\Task as PhTask;
 use Canvas\Models\Users;
 use Canvas\Queue\Queue;
-use RuntimeException;
-use Canvas\Notifications\Notification;
 use Phalcon\Mvc\Model;
 
 /**
@@ -29,7 +28,7 @@ class QueueTask extends PhTask
      */
     public function mainAction(array $params): void
     {
-        echo "Canvas Ecosystem Queue Jobs: events | notifications".PHP_EOL;
+        echo 'Canvas Ecosystem Queue Jobs: events | notifications | jobs' . PHP_EOL;
     }
 
     /**
@@ -50,9 +49,10 @@ class QueueTask extends PhTask
 
             //lets fire the event
             $this->events->fire($event['event'], $event['source'], $event['data']);
-            
-            echo "Event Fired ({$event['event']})  - Process ID " . $msg->delivery_info['consumer_tag'].PHP_EOL;
-            $this->log->info("Notification ({$event['event']}) - Process ID " . $msg->delivery_info['consumer_tag']);
+
+            $this->log->info(
+                "Notification ({$event['event']}) - Process ID " . $msg->delivery_info['consumer_tag']
+            );
         };
 
         Queue::process(QUEUE::EVENTS, $callback);
@@ -68,25 +68,25 @@ class QueueTask extends PhTask
         $callback = function ($msg) {
             //we get the data from our event trigger and unserialize
             $notification = unserialize($msg->body);
-            
+
             //overwrite the user who is running this process
             if ($notification['from'] instanceof Users) {
                 $this->di->setShared('userData', $notification['from']);
             }
 
             if (!$notification['to'] instanceof Users) {
-                echo 'Attribute TO has to be a User'.PHP_EOL;
+                echo 'Attribute TO has to be a User' . PHP_EOL;
                 return;
             }
 
             if (!class_exists($notification['notification'])) {
-                echo 'Attribute notification has to be a Notificatoin'.PHP_EOL;
+                echo 'Attribute notification has to be a Notificatoin' . PHP_EOL;
                 return;
             }
             $notificationClass = $notification['notification'];
 
             if (!$notification['entity'] instanceof Model) {
-                echo 'Attribute entity has to be a Model'.PHP_EOL;
+                echo 'Attribute entity has to be a Model' . PHP_EOL;
                 return;
             }
 
@@ -99,11 +99,57 @@ class QueueTask extends PhTask
 
             //run notify for the specifiy user
             $user->notify($notification);
-            
-            echo "Notification ({$notificationClass}) sent to {$user->email} - Process ID " . $msg->delivery_info['consumer_tag'].PHP_EOL;
-            $this->log->info("Notification ({$notificationClass}) sent to {$user->email} - Process ID " . $msg->delivery_info['consumer_tag']);
+
+            $this->log->info(
+                "Notification ({$notificationClass}) sent to {$user->email} - Process ID " . $msg->delivery_info['consumer_tag']
+            );
         };
 
         Queue::process(QUEUE::NOTIFICATIONS, $callback);
+    }
+
+    /**
+     * Queue to process Canvas Jobs.
+     *
+     * @return void
+     */
+    public function jobsAction()
+    {
+        $callback = function ($msg) {
+            //we get the data from our event trigger and unserialize
+            $job = unserialize($msg->body);
+
+            //overwrite the user who is running this process
+            if ($job['userData'] instanceof Users) {
+                $this->di->setShared('userData', $job['userData']);
+            }
+
+            if (!class_exists($job['class'])) {
+                echo 'No Job class found' . PHP_EOL;
+                $this->log->error('No Job class found');
+                return;
+            }
+
+            if (!$job['job'] instanceof QueueableJobInterfase) {
+                echo 'This Job is not queable ' . $msg->delivery_info['consumer_tag'] ;
+                $this->log->error('This Job is not queable ' . $msg->delivery_info['consumer_tag']);
+                return;
+            }
+
+            /**
+             * swoole coroutine
+             */
+            go(function () use ($job, $msg) {
+                //instance notification and pass the entity
+                $result = $job['job']->handle();
+
+                $this->log->info(
+                    "Job ({$job['class']}) ran for {$this->userData->getEmail()} - Process ID " . $msg->delivery_info['consumer_tag'],
+                    [$result]
+                );
+            });
+        };
+
+        Queue::process(QUEUE::JOBS, $callback);
     }
 }
