@@ -113,8 +113,10 @@ class QueueTask extends PhTask
      *
      * @return void
      */
-    public function jobsAction()
+    public function jobsAction(array $params)
     {
+        $queue = !isset($params[0]) ? QUEUE::JOBS : $params[0];
+
         $callback = function ($msg) {
             //we get the data from our event trigger and unserialize
             $job = unserialize($msg->body);
@@ -150,6 +152,6 @@ class QueueTask extends PhTask
             });
         };
 
-        Queue::process(QUEUE::JOBS, $callback);
+        Queue::process($queue, $callback);
     }
 }
