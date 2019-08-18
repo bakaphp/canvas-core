@@ -58,7 +58,8 @@ class Queue
     public static function process(string $queueName, callable $callback): void
     {
         $queue = Di::getDefault()->get('queue');
-
+        Di::getDefault()->get('log')->info('Starting Queue '.$queueName);
+        
         /**
          * Use Swoole Coroutine  
          */
