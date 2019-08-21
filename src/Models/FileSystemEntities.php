@@ -114,7 +114,7 @@ class FileSystemEntities extends AbstractModel
      * @param integer $id
      * @param SystemModules $systemModules
      * @param bool $isDeleted
-     * @return void
+     * @return FileSystemEntities
      */
     public static function getByIdWithSystemModule(int $id, SystemModules $systemModules, bool $isDeleted = false)
     {
@@ -133,7 +133,7 @@ class FileSystemEntities extends AbstractModel
      *
      * @param integer $id
      * @param SystemModules $systemModules
-     * @return void
+     * @return FileSystemEntities
      */
     public static function getById(int $id): FileSystemEntities
     {
@@ -158,7 +158,7 @@ class FileSystemEntities extends AbstractModel
      *
      * @param integer $id
      * @param SystemModules $systemModules
-     * @return void
+     * @return FileSystemEntities
      */
     public static function getByEntityId(int $id): FileSystemEntities
     {
@@ -182,7 +182,7 @@ class FileSystemEntities extends AbstractModel
      * Given a entity id get all its asociated files.
      *
      * @param integer $id
-     * @return void
+     * @return FileSystemEntities[]
      */
     public static function getAllByEntityId(int $id)
     {

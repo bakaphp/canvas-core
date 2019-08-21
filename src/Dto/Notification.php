@@ -18,6 +18,12 @@ class Notification
 
     /**
      *
+     * @var string
+     */
+    public $icon;
+
+    /**
+     *
      * @var int
      */
     public $users_id;
