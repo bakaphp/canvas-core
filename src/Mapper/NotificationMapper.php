@@ -7,6 +7,7 @@ namespace Canvas\Mapper;
 use AutoMapperPlus\CustomMapper\CustomMapper;
 use Canvas\Models\SystemModules;
 use ReflectionClass;
+use Exception;
 
 // You can either extend the CustomMapper, or just implement the MapperInterface
 // directly.
@@ -21,6 +22,7 @@ class NotificationMapper extends CustomMapper
     {
         $notificationDto->id = $notification->getId();
         $notificationDto->type = $notification->type->name;
+        $notificationDto->icon = $notification->type->icon_url;
         $notificationDto->users_id = $notification->users_id;
         $notificationDto->from_users_id = $notification->from_users_id;
         $notificationDto->companies_id = $notification->companies_id;
@@ -38,13 +40,18 @@ class NotificationMapper extends CustomMapper
             'avatar' => $notification->from->photo ? $notification->from->photo->url : null,
         ];
 
-        $systemModule = SystemModules::getById($notification->system_modules_id);
-        $systemModuleEntity = new $systemModule->model_name;
-        $entity = $systemModuleEntity::findFirst($notification->entity_id);
-        $notificationDto->entity = $entity->toArray();
-        $reflect = new ReflectionClass($systemModuleEntity);
-        $notificationDto->entity['type'] = $reflect->getShortName();
-        
+        try {
+            $systemModule = SystemModules::getById($notification->system_modules_id);
+            $systemModuleEntity = new $systemModule->model_name;
+            $entity = [];
+            if ($entity = $systemModuleEntity::findFirst($notification->entity_id)) {
+                $notificationDto->entity = $entity->toArray();
+            }
+            $reflect = new ReflectionClass($systemModuleEntity);
+            $notificationDto->entity['type'] = $reflect->getShortName();
+        } catch (Exception $e) {
+            $notificationDto->entity['type'] = null;
+        }
 
         return $notificationDto;
     }
