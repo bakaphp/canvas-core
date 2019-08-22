@@ -22,6 +22,10 @@ class NotificationMapper extends CustomMapper
     {
         $notificationDto->id = $notification->getId();
         $notificationDto->type = $notification->type->name;
+        /**
+         * @todo change this for a proper title
+         */
+        $notificationDto->title = 'Notification Title';
         $notificationDto->icon = $notification->type->icon_url;
         $notificationDto->users_id = $notification->users_id;
         $notificationDto->from_users_id = $notification->from_users_id;
