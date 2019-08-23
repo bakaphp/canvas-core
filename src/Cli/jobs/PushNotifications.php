@@ -78,7 +78,7 @@ class PushNotifications extends Job implements QueueableJobInterfase
             'contents' => [
                 'en' => $this->message
             ],
-            'data' => ['message' => 'Example IOS'],
+            'data' => ['message' => ''],
             'include_player_ids' => $userDevicesArray[3]
         ];
 
