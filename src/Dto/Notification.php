@@ -20,6 +20,12 @@ class Notification
      *
      * @var string
      */
+    public $title;
+
+    /**
+     *
+     * @var string
+     */
     public $icon;
 
     /**
