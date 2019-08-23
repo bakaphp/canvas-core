@@ -58,6 +58,8 @@ class PushNotifications extends Job implements QueueableJobInterfase
      */
     public function handle()
     {
+        $config = Di::getDefault()->getConfig();
+        
         if (empty($this->users)) {
             return false;
         }
@@ -81,27 +83,27 @@ class PushNotifications extends Job implements QueueableJobInterfase
 
         $pushBodyAndroid = [
             'contents' => [
-                'en' => 'Example Android'
+                'en' => $this->message
             ],
-            'data' => ['message' => 'Example Android helllo'],
+            'data' => ['message' => ''],
             'include_player_ids' => $userDevicesArray[2]
         ];
 
         $pushBodyiOS = [
             'contents' => [
-                'en' => 'Example IOS'
+                'en' => $this->message
             ],
             'data' => ['message' => 'Example IOS'],
-            'include_player_ids' => $userDevicesArray[3], //send to a group of users
+            'include_player_ids' => $userDevicesArray[3]
         ];
 
         //send push
         if (!empty($userDevicesArray[2])) {
-            self::android()->notifications->add($pushBodyAndroid);
+            self::android($config->pushNotifications->android)->notifications->add($pushBodyAndroid);
         }
-        // if (!empty($userDevicesArray[3])) {
-        //     self::iOs()->notifications->add($pushBodyiOS);
-        // }
+        if (!empty($userDevicesArray[3])) {
+            self::iOs($config->pushNotifications->ios)->notifications->add($pushBodyiOS);
+        }
 
         return true;
     }
@@ -132,21 +134,21 @@ class PushNotifications extends Job implements QueueableJobInterfase
     
     /**
      * Return the android one signal object.
-     *
+     * @param object $config
      * @return OneSignal
      */
-    private static function android(): OneSignal
+    private static function android(object $config): OneSignal
     {
-        return self::oneSignal(getenv('CANVAS_ANDROID_APP_ID'), getenv('CANVAS_ANDROID_AUTH_KEY'), getenv('CANVAS_ANDROID_APP_USER_AUTH_KEY'));
+        return self::oneSignal($config->appId, $config->authKey, $config->userAuthKey);
     }
 
     /**
      * Return the iOs one signal object.
-     *
+     * @param object $config
      * @return OneSignal
      */
-    private static function iOs(): OneSignal
+    private static function iOs(object $config): OneSignal
     {
-        return self::oneSignal(getenv('CANVAS_IOS_APP_ID'), getenv('CANVAS_IOS_AUTH_KEY'), getenv('CANVAS_IOS_APP_USER_AUTH_KEY'));
+        return self::oneSignal($config->appId, $config->authKey, $config->userAuthKey);
     }
 }
