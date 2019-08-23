@@ -59,27 +59,12 @@ class PushNotifications extends Job implements QueueableJobInterfase
     public function handle()
     {
         $config = Di::getDefault()->getConfig();
-        
+
         if (empty($this->users)) {
             return false;
         }
 
-        $userDevicesArray = [
-            2 => [],
-            3 => []
-        ];
-
-        $linkedSource = UserLinkedSources::find([
-            'conditions' => 'users_id = ?0 and source_id in (2,3)',
-            'bind' => [$this->users->getId()]
-        ]);
-
-        if ($linkedSource) {
-            //add to list of devices id
-            foreach ($linkedSource as $device) {
-                $userDevicesArray[$device->source_id][] = $device->source_users_id_text;
-            }
-        }
+        $userDevicesArray = UserLinkedSources::getMobileUserLinkedSources($this->users->getId());
 
         $pushBodyAndroid = [
             'contents' => [
