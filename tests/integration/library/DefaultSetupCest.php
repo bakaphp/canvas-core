@@ -52,7 +52,7 @@ class DefaultSetupCest
      */
     public function isActive(IntegrationTester $I)
     {
-        $I->assertTrue(gettype($this->app->isActive()) == 'boolean');
+        $I->assertTrue($this->app->isActive());
     }
 
     /**
