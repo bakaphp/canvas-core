@@ -78,7 +78,7 @@ class DefaultSetupCest
             'conditions'=> 'apps_id = ?0 and is_deleted = 0',
             'bind'=>[$this->app->id]
         ]);
-        $I->assertTrue(gettype($appSettings) == 'object');
+        $I->assertTrue(is_object($appSettings));
     }
 
     /**
@@ -104,7 +104,7 @@ class DefaultSetupCest
             'conditions'=> 'apps_id = ?0 and is_deleted = 0',
             'bind'=>[$this->app->id]
         ]);
-        $I->assertTrue(gettype($role) == 'object');
+        $I->assertTrue(is_object($role));
     }
 
     /**
