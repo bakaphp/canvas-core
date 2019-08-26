@@ -32,7 +32,7 @@
         "monolog/monolog": "^1.23",
         "namshi/notificator": " 1.0.*",
         "nesbot/carbon": "~1.18",
-        "norkunas/onesignal-php-api": "dev-master",
+        "norkunas/onesignal-php-api": "^1.12",
         "phalcon/incubator": "~3.4",
         "php-amqplib/php-amqplib": "^2.9",
         "php-http/guzzle6-adapter": "1.1",
