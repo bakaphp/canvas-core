@@ -32,7 +32,7 @@ class AclUpdateStructureAgain extends AbstractMigration
             'encoding' => 'utf8',
             'collation' => 'utf8_general_ci',
             'comment' => '',
-            'row_format' => 'Dynamic',
+            // 'row_format' => 'Dynamic',
         ]);
         $table->changeColumn('phone_number', 'string', [
             'null' => true,
