@@ -80,7 +80,7 @@ class DefaultSetupCest
         ]);
 
         //Assert true if we got the exact number of settings for the app. These are the most basic settings used by an app.
-        $I->assertTrue(count($appSettings) == AppsSettings::APP_DEFAULT_SETTINGS_NUMBER);
+        $I->assertTrue($appSettings->count() == AppsSettings::APP_DEFAULT_SETTINGS_NUMBER);
     }
 
     /**
