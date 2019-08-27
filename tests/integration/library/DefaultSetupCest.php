@@ -78,7 +78,9 @@ class DefaultSetupCest
             'conditions'=> 'apps_id = ?0 and is_deleted = 0',
             'bind'=>[$this->app->id]
         ]);
-        $I->assertTrue(is_object($appSettings));
+
+        //Assert true if we got the exact number of settings for the app. These are the most basic settings used by an app.
+        $I->assertTrue(count($appSettings) == AppsSettings::APP_DEFAULT_SETTINGS_NUMBER);
     }
 
     /**
