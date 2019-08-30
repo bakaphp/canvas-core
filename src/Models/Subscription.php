@@ -114,6 +114,12 @@ class Subscription extends PhalconSubscription
 
     /**
      *
+     * @var date
+     */
+    public $grace_period_ends;
+
+    /**
+     *
      * @var string
      */
     public $created_at;
