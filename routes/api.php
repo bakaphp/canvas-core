@@ -45,6 +45,7 @@ $privateRoutes = [
     Route::crud('/templates-variables')->controller('EmailTemplatesVariablesController'),
 
     Route::get('/timezones')->controller('TimeZonesController'),
+    Route::post('/notifications-read-all')->controller('NotificationsController')->action('cleanAll'),
     Route::post('/users/{id}/devices')->controller('UserLinkedSourcesController')->action('devices'),
     Route::delete('/users/{id}/devices/{deviceId}')->controller('UserLinkedSourcesController')->action('detachDevice'),
     Route::delete('/filesystem/{id}/attributes/{name}')->controller('FilesystemController')->action('deleteAttributes'),
