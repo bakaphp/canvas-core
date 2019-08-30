@@ -1343,4 +1343,44 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
             }
         }
     }
+
+    /**
+    * Get the data from a POST request.
+    *
+    * @return array
+    */
+    public function getPostData(): array
+    {
+        $data = $this->getPost() ?: $this->getJsonRawBody(true);
+
+        return $data ?: [];
+    }
+
+    /**
+     * Get the data from a POST request.
+     *
+     * @return void
+     */
+    public function getPutData()
+    {
+        $data = $this->getPut() ?: $this->getJsonRawBody(true);
+
+        return $data ?: [];
+    }
+
+    /**
+     * @return string
+     */
+    public function getBearerTokenFromHeader(): string
+    {
+        return str_replace('Bearer ', '', $this->getHeader('Authorization'));
+    }
+
+    /**
+     * @return bool
+     */
+    public function isEmptyBearerToken(): bool
+    {
+        return true === empty($this->getBearerTokenFromHeader());
+    }
 }

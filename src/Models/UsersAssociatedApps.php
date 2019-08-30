@@ -42,6 +42,12 @@ class UsersAssociatedApps extends AbstractModel
     public $user_role;
 
     /**
+     *
+     * @var string
+     */
+    public $password;
+
+    /**
      * Initialize method for model.
      */
     public function initialize()
@@ -58,6 +64,13 @@ class UsersAssociatedApps extends AbstractModel
             'Canvas\Models\Apps',
             'id',
             ['alias' => 'app']
+        );
+
+        $this->belongsTo(
+            'users_id',
+            'Canvas\Models\Users',
+            'id',
+            ['alias' => 'user']
         );
 
         $this->setSource('users_associated_apps');

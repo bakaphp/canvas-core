@@ -19,7 +19,11 @@ class ConfigProvider implements ServiceProviderInterface
         $container->setShared(
             'config',
             function () {
-                $data = require appPath('library/Core/config.php');
+
+                /**
+                 * @todo Find a better way to handle unit test file include
+                 */
+                $data = require appPath('src/Core/config.php');
 
                 return new Config($data);
             }

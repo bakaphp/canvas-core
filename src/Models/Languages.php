@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Canvas\Models;
 
-class Languages extends \Baka\Auth\Models\CompanySettings
+class Languages extends AbstractModel
 {
     /**
      *
@@ -52,7 +52,6 @@ class Languages extends \Baka\Auth\Models\CompanySettings
      */
     public function initialize()
     {
-        parent::initialize();
 
         $this->setSource('languages');
     }

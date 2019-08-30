@@ -5,44 +5,46 @@ declare(strict_types=1);
 namespace Canvas\Api\Controllers;
 
 use Canvas\Models\Companies;
-use Canvas\Models\CompaniesCustomFields;
 use Phalcon\Http\Response;
 use Canvas\Exception\UnauthorizedHttpException;
 use Canvas\Exception\UnprocessableEntityHttpException;
+use Baka\Http\Contracts\Api\CrudCustomFieldsBehaviorTrait;
+use Canvas\Dto\CompaniesBranches;
 
 /**
- * Class CompaniesController
+ * Class CompaniesController.
  *
  * @package Canvas\Api\Controllers
  *
  * @property Users $userData
  * @property Request $request
  */
-class CompaniesController extends BaseCustomFieldsController
+class CompaniesController extends BaseController
 {
-    /*
-     * fields we accept to create
-     *
-     * @var array
-     */
-    protected $createFields = ['name', 'profile_image', 'website', 'users_id', 'address', 'zipcode', 'email', 'language', 'timezone', 'currency_id','phone'];
+    use CrudCustomFieldsBehaviorTrait;
 
     /*
      * fields we accept to create
      *
      * @var array
      */
-    protected $updateFields = ['name', 'profile_image', 'website', 'address', 'zipcode', 'email', 'language', 'timezone', 'currency_id','phone'];
+    protected $createFields = ['name', 'profile_image', 'website', 'users_id', 'address', 'zipcode', 'email', 'language', 'timezone', 'currency_id', 'phone'];
+
+    /*
+     * fields we accept to create
+     *
+     * @var array
+     */
+    protected $updateFields = ['name', 'profile_image', 'website', 'address', 'zipcode', 'email', 'language', 'timezone', 'currency_id', 'phone'];
 
     /**
-     * set objects
+     * set objects.
      *
      * @return void
      */
     public function onConstruct()
     {
         $this->model = new Companies();
-        $this->customModel = new CompaniesCustomFields();
 
         $this->model->users_id = $this->userData->getId();
 
@@ -50,6 +52,21 @@ class CompaniesController extends BaseCustomFieldsController
         $this->additionalSearchFields = [
             ['id', ':', implode('|', $this->userData->getAssociatedCompanies())],
         ];
+    }
+
+    /**
+     * List items.
+     *
+     * @method GET
+     * url /v1/controller
+     *
+     * @param mixed $id
+     * @return \Phalcon\Http\Response
+     */
+    public function index(): Response
+    {
+        $results = $this->processIndex();
+        return $this->response($this->processOutput($results));
     }
 
     /**
@@ -65,29 +82,26 @@ class CompaniesController extends BaseCustomFieldsController
      */
     public function edit($id): Response
     {
-        if ($company = $this->model->findFirst($id)) {
-            if (!$company->userAssociatedToCompany($this->userData) && !$this->userData->hasRole('Default.Admins')) {
-                throw new UnauthorizedHttpException(_('You dont have permission to update this company info'));
-            }
+        $company = $this->model->findFirstOrFail($id);
+        if (!$company->userAssociatedToCompany($this->userData) && !$this->userData->hasRole('Default.Admins')) {
+            throw new UnauthorizedHttpException(_('You dont have permission to update this company info'));
+        }
 
-            $data = $this->request->getPut();
+        $data = $this->request->getPutData();
 
-            if (empty($data)) {
-                throw new UnprocessableEntityHttpException('No valid data sent.');
-            }
+        if (empty($data)) {
+            throw new UnprocessableEntityHttpException('No valid data sent.');
+        }
 
-            //set the custom fields to update
-            $company->setCustomFields($data);
+        //set the custom fields to update
+        $company->setCustomFields($data);
 
-            //update
-            if ($company->update($data, $this->updateFields)) {
-                return $this->getById($id);
-            } else {
-                //didnt work
-                throw new UnprocessableEntityHttpException($company->getMessages()[0]);
-            }
+        //update
+        if ($company->update($data, $this->updateFields)) {
+            return $this->response($this->processOutput($company));
         } else {
-            throw new UnprocessableEntityHttpException(_('Company doesnt exist'));
+            //didnt work
+            throw new UnprocessableEntityHttpException($company->getMessages()[0]);
         }
     }
 
@@ -104,20 +118,46 @@ class CompaniesController extends BaseCustomFieldsController
      */
     public function delete($id): Response
     {
-        if ($company = $this->model->findFirst($id)) {
-            if (!$company->userAssociatedToCompany($this->userData) && !$this->userData->hasRole('Default.Admins')) {
-                throw new UnauthorizedHttpException(_('You dont have permission to delete this company'));
-            }
-
-            if ($company->delete() === false) {
-                foreach ($company->getMessages() as $message) {
-                    throw new UnprocessableEntityHttpException($message);
-                }
-            }
-
-            return $this->response(['Delete Successfully']);
-        } else {
-            throw new UnprocessableEntityHttpException(_('Company doesnt exist'));
+        $company = $this->model->findFirstOrFail($id);
+        if (!$company->userAssociatedToCompany($this->userData) && !$this->userData->hasRole('Default.Admins')) {
+            throw new UnauthorizedHttpException(_('You dont have permission to delete this company'));
         }
+
+        $company->is_deleted = 1;
+        $company->updateOrFail();
+
+        return $this->response(['Delete Successfully']);
+    }
+
+    /**
+     * Format output.
+     *
+     * @param [type] $results
+     * @return void
+     */
+    protected function processOutput($results)
+    {
+        /**
+         * Check if the branches exists on results.
+         */
+        if (array_key_exists('branch', $results)) {
+            /**
+            * Format branches as an array of branches even if there is only one branch per company.
+            */
+            foreach ($results as $key => $value) {
+                /*   if (is_object($value['branch'])) {
+                      $results[$key]['branch'] = [$value['branch']];
+                  } */
+            }
+
+            /**
+             * Format branches as an array of branches even if there is only one branch in a unique company.
+             */
+            if (is_object(current($results)['branch'])) {
+                $results[0]['branch'] = [current($results)['branch']];
+            }
+        }
+
+        return $results;
     }
 }

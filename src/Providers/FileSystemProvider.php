@@ -21,13 +21,12 @@ class FileSystemProvider implements ServiceProviderInterface
         $container->set(
             'filesystem',
             function ($filesystem = null) use ($config, $container) {
-
                 //we ened to call it internally to avoid the test failing WTF
                 $app = $container->getShared('app');
 
                 //if its null lets get the filesystem from the app settings
                 if (is_null($filesystem)) {
-                    $filesystem = $app->getSettings('filesystem');
+                    $filesystem = $app->get('filesystem');
                 }
 
                 if ($filesystem === 'local') {

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Canvas\Middleware;
 
 use Phalcon\Mvc\Micro;
-use Phalcon\Mvc\Micro\MiddlewareInterface;
 use Canvas\Exception\ServerErrorHttpException;
 use Canvas\Exception\PermissionException;
 use Canvas\Models\Subscription;

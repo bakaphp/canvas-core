@@ -17,7 +17,7 @@ use Monolog\Handler\RavenHandler;
 class LoggerProvider implements ServiceProviderInterface
 {
     /**
-     * Registers the logger component
+     * Registers the logger component.
      *
      * @param DiInterface $container
      */
@@ -34,7 +34,7 @@ class LoggerProvider implements ServiceProviderInterface
                 $logPath = envValue('LOGGER_DEFAULT_PATH', 'storage/logs');
                 $logFile = appPath($logPath) . '/' . $logName . '.log';
 
-                $formatter = new LineFormatter("[%datetime%][%level_name%] %message%\n");
+                $formatter = new LineFormatter("[%datetime%][%level_name%] %message% %context% \n");
 
                 $logger = new Logger('api-logger');
 

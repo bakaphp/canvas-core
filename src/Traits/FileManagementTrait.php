@@ -13,6 +13,7 @@ use Canvas\Filesystem\Helper;
 use Baka\Http\QueryParser;
 use Canvas\Models\FileSystemSettings;
 use Canvas\Models\SystemModules;
+use Canvas\Models\FileSystemEntities;
 
 /**
  * Trait ResponseTrait.
@@ -42,16 +43,12 @@ trait FileManagementTrait
      */
     public function getById($id) : Response
     {
-        $records = FileSystem::getById($id);
+        $records = FileSystem::findFirstOrFail($id);
 
         //get relationship
         if ($this->request->hasQuery('relationships')) {
             $relationships = $this->request->getQuery('relationships', 'string');
             $records = QueryParser::parseRelationShips($relationships, $records);
-        }
-
-        if (!$records) {
-            throw new UnprocessableEntityHttpException('Records not found');
         }
 
         return $this->response($records);
@@ -69,7 +66,9 @@ trait FileManagementTrait
     public function create() : Response
     {
         if (!$this->request->hasFiles()) {
-            //@todo handle base64 images
+            /**
+             * @todo handle file hash to avoid uploading same files again
+             */
         }
 
         return $this->response($this->processFiles());
@@ -90,23 +89,41 @@ trait FileManagementTrait
     {
         $file = FileSystem::getById($id);
 
-        $request = $this->request->getPut();
+        $request = $this->request->getPutData();
 
-        if (empty($request)) {
-            $request = $this->request->getJsonRawBody(true);
-        }
-
-        $systemModule = isset($request['system_modules_id']) ? $request['system_modules_id'] : $file->system_modules_id;
+        $systemModule = $request['system_modules_id'] ?? 0;
         $entityId = $request['entity_id'] ?? 0;
+        $fieldName = $request['field_name'] ?? '';
 
-        $file->system_modules_id = $systemModule;
-        $file->entity_id = $entityId;
+        //associate
+        $fileSystemEntities = new FileSystemEntities();
+        $fileSystemEntities->filesystem_id = $file->getId();
+        $fileSystemEntities->entity_id = $entityId;
+        $fileSystemEntities->companies_id = $file->companies_id;
+        $fileSystemEntities->system_modules_id = $systemModule;
+        $fileSystemEntities->field_name = $fieldName;
+        $fileSystemEntities->saveOrFail();
 
-        if (!$file->update()) {
-            throw new UnprocessableEntityHttpException((string)current($file->getMessages()));
-        }
+        $file->updateOrFail($request, $this->updateFields);
 
         return $this->response($file);
+    }
+
+    /**
+     * Update a filesystem Entity,  field name.
+     *
+     * @param int $id
+     * @return Response
+     */
+    public function editEntity(int $id): Response
+    {
+        $fileEntity = FileSystemEntities::getById($id);
+        $request = $this->request->getPutData();
+
+        $fileEntity->field_name = $request['field_name'];
+        $fileEntity->updateOrFail();
+
+        return $this->response($fileEntity);
     }
 
     /**
@@ -118,20 +135,12 @@ trait FileManagementTrait
      */
     public function deleteAttributes($id, string $name): Response
     {
-        $records = FileSystem::getById($id);
+        $records = FileSystem::findFirstOrFail($id);
 
-        if (!$records) {
-            throw new UnprocessableEntityHttpException('Records not found');
-        }
-
-        $recordAttributes = FileSystemSettings::findFirst([
+        $recordAttributes = FileSystemSettings::findFirstOrFail([
             'conditions' => 'filesystem_id = ?0 and name = ?1',
             'bind' => [$records->getId(), $name]
         ]);
-
-        if (!is_object($recordAttributes)) {
-            throw new UnprocessableEntityHttpException('File attribute not found');
-        }
 
         //true true delete
         $recordAttributes->delete();
@@ -153,11 +162,20 @@ trait FileManagementTrait
          * look for a scalable way
          */
         $uploadConfig = [
-            'maxSize' => '10M',
+            'maxSize' => '100M',
             'messageSize' => ':field exceeds the max filesize (:max)',
             'allowedTypes' => [
                 'image/jpeg',
                 'image/png',
+                'image/webp',
+                'audio/mpeg',
+                'audio/mp3',
+                'audio/mpeg',
+                'application/pdf',
+                'audio/mpeg3',
+                'audio/x-mpeg-3',
+                'application/x-zip-compressed',
+                'application/octet-stream',
             ],
             'messageType' => 'Allowed file types are :types',
         ];
@@ -172,29 +190,32 @@ trait FileManagementTrait
 
     /**
      * Upload the document and save them to the filesystem.
+     * @todo add test
      *
      * @return array
      */
     protected function processFiles(): array
     {
-        //@todo validate entity id
-        $systemModule = $this->request->getPost('system_modules_id', 'int', '0');
-        $entityId = $this->request->getPost('entity_id', 'int', '0');
-        $allFields = $this->request->getPost();
+        $allFields = $this->request->getPostData();
 
         $validator = $this->validation();
 
         $files = [];
         foreach ($this->request->getUploadedFiles() as $file) {
             //validate this current file
-            $errors = $validator->validate(['file' => [
-                'name' => $file->getName(),
-                'type' => $file->getType(),
-                'tmp_name' => $file->getTempName(),
-                'error' => $file->getError(),
-                'size' => $file->getSize(),
-            ]]);
+            $errors = $validator->validate([
+                'file' => [
+                    'name' => $file->getName(),
+                    'type' => $file->getType(),
+                    'tmp_name' => $file->getTempName(),
+                    'error' => $file->getError(),
+                    'size' => $file->getSize(),
+                ]
+            ]);
 
+            /**
+             * @todo figure out why this failes
+             */
             if (!defined('API_TESTS')) {
                 if (count($errors)) {
                     foreach ($errors as $error) {
@@ -203,43 +224,11 @@ trait FileManagementTrait
                 }
             }
 
-            //get the filesystem config
-            $appSettingFileConfig = $this->di->get('app')->getSettings('filesystem');
-            $fileSystemConfig = $this->config->filesystem->{$appSettingFileConfig};
-
-            //create local filesystem , for temp files
-            $this->di->get('filesystem', ['local'])->createDir($this->config->filesystem->local->path);
-
-            //get the tem file
-            $filePath = Helper::generateUniqueName($file, $this->config->filesystem->local->path);
-            $compleFilePath = $fileSystemConfig->path . $filePath;
-            $uploadFileNameWithPath = $appSettingFileConfig == 'local' ? $filePath : $compleFilePath;
-
-            /**
-             * upload file base on temp.
-             * @todo change this to determine type of file and recreate it if its a image
-             */
-            $this->di->get('filesystem')->writeStream($uploadFileNameWithPath, fopen($file->getTempName(), 'r'));
-
-            $fileSystem = new FileSystem();
-            $fileSystem->name = $file->getName();
-            $fileSystem->system_modules_id = $systemModule;
-            $fileSystem->entity_id = $entityId;
-            $fileSystem->companies_id = $this->userData->currentCompanyId();
-            $fileSystem->apps_id = $this->app->getId();
-            $fileSystem->users_id = $this->userData->getId();
-            $fileSystem->path = $compleFilePath;
-            $fileSystem->url = $fileSystemConfig->cdn . DIRECTORY_SEPARATOR . $uploadFileNameWithPath;
-            $fileSystem->file_type = $file->getExtension();
-            $fileSystem->size = $file->getSize();
-
-            if (!$fileSystem->save()) {
-                throw new UnprocessableEntityHttpException((string)current($fileSystem->getMessages()));
-            }
+            $fileSystem = Helper::upload($file);
 
             //add settings
             foreach ($allFields as $key => $settings) {
-                $fileSystem->setSettings($key, $settings);
+                $fileSystem->set($key, $settings);
             }
 
             $files[] = $fileSystem;

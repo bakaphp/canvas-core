@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Canvas\Middleware;
 
 use Phalcon\Mvc\Micro;
-use Phalcon\Mvc\Micro\MiddlewareInterface;
+use Canvas\Exception\PermissionException;
 use Baka\Auth\Models\Sessions;
 use Canvas\Models\Users;
 use Canvas\Exception\UnauthorizedHttpException;
@@ -31,35 +31,52 @@ class AuthenticationMiddleware extends TokenBase
         $request = $api->getService('request');
 
         if ($this->isValidCheck($request, $api)) {
+
+            //cant be empty jwt
+            if (empty($request->getBearerTokenFromHeader())) {
+                throw new PermissionException('Missing Token');
+            }
+
             /**
              * This is where we will find if the user exists based on
              * the token passed using Bearer Authentication.
              */
-            $data = $this->getToken($request->getBearerTokenFromHeader());
+            $token = $this->getToken($request->getBearerTokenFromHeader());
 
             $api->getDI()->setShared(
                 'userData',
-                function () use ($config, $data, $request) {
+                function () use ($config, $token, $request) {
                     $session = new Sessions();
 
                     //all is empty and is dev, ok take use the first user
-                    if (empty($data->getClaim('sessionId')) && strtolower($config->app->env) == Flags::DEVELOPMENT) {
+                    if (empty($token->getClaim('sessionId')) && strtolower($config->app->env) == Flags::DEVELOPMENT) {
                         return Users::findFirst(1);
                     }
 
-                    if (!empty($data->getClaim('sessionId'))) {
+                    if (!empty($token->getClaim('sessionId'))) {
                         //user
-                        if (!$user = Users::getByEmail($data->getClaim('email'))) {
+                        if (!$user = Users::getByEmail($token->getClaim('email'))) {
                             throw new UnauthorizedHttpException('User not found');
                         }
 
                         $ip = !defined('API_TESTS') ? $request->getClientAddress() : '127.0.0.1';
-                        return $session->check($user, $data->getClaim('sessionId'), (string) $ip, 1);
+                        return $session->check($user, $token->getClaim('sessionId'), (string) $ip, 1);
                     } else {
                         throw new UnauthorizedHttpException('User not found');
                     }
                 }
             );
+
+            /**
+             * This is where we will validate the token that was sent to us
+             * using Bearer Authentication.
+             *
+             * Find the user attached to this token
+             */
+            if (!$token->validate(Users::getValidationData($token->getHeader('jti')))) {
+                throw new PermissionException('Invalid Token');
+                //return false;
+            }
         }
 
         return true;

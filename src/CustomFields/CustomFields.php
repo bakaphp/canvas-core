@@ -3,76 +3,17 @@ declare(strict_types=1);
 
 namespace Canvas\CustomFields;
 
-use Canvas\Models\AbstractModel;
+use Baka\Database\CustomFields\CustomFields as BakaCustomFields;
+use Canvas\Models\CustomFieldsValues;
 
-class CustomFields extends AbstractModel
+class CustomFields extends BakaCustomFields
 {
-    /**
-     *
-     * @var integer
-     */
-    public $id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $users_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $companies_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $apps_id;
-
-    /**
-     *
-     * @var string
-     */
-    public $name;
-
-    /**
-     *
-     * @var integer
-     */
-    public $custom_fields_modules_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $fields_type_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $is_deleted;
-
-    /**
-     *
-     * @var string
-     */
-    public $created_at;
-
-    /**
-     *
-     * @var string
-     */
-    public $updated_at;
-
     /**
      * Initialize method for model.
      */
     public function initialize()
     {
-        $this->setSource('custom_fields');
+        parent::initialize();
 
         $this->belongsTo(
             'custom_fields_modules_id',
@@ -108,15 +49,37 @@ class CustomFields extends AbstractModel
             'custom_fields_id',
             ['alias' => 'fields-values']
         );
+
+        $this->hasMany(
+            'id',
+            'Canvas\Models\CustomFieldsValues',
+            'custom_fields_id',
+            ['alias' => 'values']
+        );
     }
 
     /**
-     * Returns table name mapped in the model.
+     * Given an array of values, add it to this custom fields
+     * related module.
      *
-     * @return string
+     * @param array $values
+     * @return bool
      */
-    public function getSource(): string
+    public function addValues(array $values): bool
     {
-        return 'custom_fields';
+        if ($this->values) {
+            $this->values->delete();
+        }
+
+        foreach ($values as $key => $value) {
+            $customFieldsValue = new CustomFieldsValues();
+            $customFieldsValue->custom_fields_id = $this->getId();
+            $customFieldsValue->label = $value;
+            $customFieldsValue->value = $key;
+            $customFieldsValue->saveOrFail();
+        }
+
+        
+        return true;
     }
 }

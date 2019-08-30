@@ -18,6 +18,8 @@ use Phalcon\Http\Response;
 use Exception;
 use Canvas\Exception\ModelException;
 use Canvas\Traits\AuthTrait;
+use Canvas\Notifications\Invitation;
+use Canvas\Validation as CanvasValidation;
 
 /**
  * Class LanguagesController.
@@ -66,7 +68,7 @@ class UsersInviteController extends BaseController
         if ($this->di->has('userData')) {
             $additionaFields[] = ['companies_id', ':', $this->userData->currentCompanyId()];
         }
-        
+
         $this->additionalSearchFields = $additionaFields;
     }
 
@@ -111,18 +113,11 @@ class UsersInviteController extends BaseController
         }
 
         //Check if user was already was invited to current company and return message
-        $invitedUser = $this->model::findFirst([
-            'conditions' => 'email = ?0 and companies_id = ?1 and role_id = ?2',
-            'bind' => [$request['email'], $this->userData->default_company, $request['role_id']]
-        ]);
-
-        if (is_object($invitedUser)) {
-            throw new ModelException('User already invited to this company and added with this role');
-        }
+        UsersInvite::isValid($request['email'], (int) $request['role_id']);
 
         //Save data to users_invite table and generate a hash for the invite
         $userInvite = $this->model;
-        $userInvite->companies_id = $this->userData->default_company;
+        $userInvite->companies_id = $this->userData->getDefaultCompany()->getId();
         $userInvite->users_id = $this->userData->getId();
         $userInvite->app_id = $this->app->getId();
         $userInvite->role_id = Roles::existsById((int)$request['role_id'])->id;
@@ -134,36 +129,13 @@ class UsersInviteController extends BaseController
             throw new UnprocessableEntityHttpException((string) current($userInvite->getMessages()));
         }
 
-        $this->sendInviteEmail($request['email'], $userInvite->invite_hash);
+        //create temp invite users
+        $tempUser = new Users();
+        $tempUser->id = 0;
+        $tempUser->email = $request['email'];
+        $tempUser->notify(new Invitation($userInvite));
+
         return $this->response($userInvite);
-    }
-
-    /**
-     * Send users invite email.
-     * @param string $email
-     * @return void
-     */
-    private function sendInviteEmail(string $email, string $hash): void
-    {
-        $userExists = Users::findFirst([
-            'conditions' => 'email = ?0 and is_deleted = 0',
-            'bind' => [$email]
-        ]);
-
-        $invitationUrl = $this->config->app->frontEndUrl . '/users/invites/' . $hash;
-
-        if (is_object($userExists)) {
-            $invitationUrl = $this->config->app->frontEndUrl . '/users/link/' . $hash;
-        }
-
-        if (!defined('API_TESTS')) {
-            $subject = _('You have been invited!');
-            $this->mail
-            ->to($email)
-            ->subject($subject)
-            ->content($invitationUrl)
-            ->sendNow();
-        }
     }
 
     /**
@@ -172,15 +144,11 @@ class UsersInviteController extends BaseController
      */
     public function processUserInvite(string $hash): Response
     {
-        $request = $this->request->getPost();
-        $password = ltrim(trim($request['password']));
-
-        if (empty($request)) {
-            $request = $this->request->getJsonRawBody(true);
-        }
+        $request = $this->request->getPostData();
+        $request['password'] = ltrim(trim($request['password']));
 
         //Ok let validate user password
-        $validation = new Validation();
+        $validation = new CanvasValidation();
         $validation->add('password', new PresenceOf(['message' => _('The password is required.')]));
 
         $validation->add(
@@ -192,48 +160,23 @@ class UsersInviteController extends BaseController
         );
 
         //validate this form for password
-        $messages = $validation->validate($request);
-        if (count($messages)) {
-            foreach ($messages as $message) {
-                throw new ServerErrorHttpException((string)$message);
-            }
-        }
+        $validation->validate($request);
 
         //Lets find users_invite by hash on our database
-        $usersInvite = $this->model::findFirst([
-            'conditions' => 'invite_hash = ?0 and is_deleted = 0',
-            'bind' => [$hash]
-        ]);
+        $usersInvite = UsersInvite::getByHash($hash);
 
-        if (!is_object($usersInvite)) {
-            throw new NotFoundHttpException('Users Invite not found');
-        }
-
+        //set userData as the user who is inviting the user
         $this->setUserDataById((int)$usersInvite->users_id);
 
-        //Check if user already exists
-        $userExists = Users::findFirst([
-            'conditions' => 'email = ?0 and is_deleted = 0',
-            'bind' => [$usersInvite->email]
-        ]);
-
-        if (is_object($userExists)) {
-            $newUser = $this->userData->defaultCompany->associate($userExists, $this->userData->defaultCompany);
-            $this->app->associate($userExists, $this->userData->defaultCompany);
-        } else {
-            $newUser = new Users();
-            $newUser->firstname = $request['firstname'];
-            $newUser->lastname = $request['lastname'];
-            $newUser->displayname = $request['displayname'];
-            $newUser->password = $password;
-            $newUser->email = $usersInvite->email;
-            $newUser->user_active = 1;
-            $newUser->roles_id = $usersInvite->role_id;
-            $newUser->created_at = date('Y-m-d H:m:s');
-            $newUser->default_company = $usersInvite->companies_id;
-            $newUser->default_company_branch = $usersInvite->company->branch->getId();
-
+        try {
+            //Check if user already exists
+            $userExists = Users::getByEmail($usersInvite->email);
+            $newUser = $userExists;
+            $this->userData->getDefaultCompany()->associate($userExists, $this->userData->getDefaultCompany());
+        } catch (Exception $e) {
             try {
+                $newUser = $usersInvite->newUser($request);
+
                 $this->db->begin();
 
                 //signup
@@ -247,8 +190,12 @@ class UsersInviteController extends BaseController
             }
         }
 
+        //associate the user and the app + company
+        $this->app->associate($newUser, $usersInvite->company);
+        $this->events->fire('user:afterInvite', $newUser, $usersInvite);
+
         //Lets login the new user
-        $authInfo = $this->loginUsers($usersInvite->email, $password);
+        $authInfo = $this->loginUsers($usersInvite->email, $request['password']);
 
         if (!defined('API_TESTS')) {
             $usersInvite->is_deleted = 1;

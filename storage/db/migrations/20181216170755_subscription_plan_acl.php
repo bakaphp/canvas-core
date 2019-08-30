@@ -56,7 +56,10 @@ class SubscriptionPlanAcl extends AbstractMigration
             ->addColumn('apps_id', 'integer', ['null' => false, 'limit' => MysqlAdapter::INT_REGULAR, 'precision' => 10, 'after' => 'model_name'])
             ->addColumn('parents_id', 'integer', ['null' => true, 'default' => '0', 'limit' => MysqlAdapter::INT_REGULAR, 'precision' => 10, 'after' => 'apps_id'])
             ->addColumn('menu_order', 'integer', ['null' => true, 'limit' => MysqlAdapter::INT_REGULAR, 'precision' => 10, 'after' => 'parents_id'])
-            ->addColumn('created_at', 'datetime', ['null' => false, 'after' => 'menu_order'])
+            ->addColumn('show', 'integer', ['null' => true, 'default' => '1', 'limit' => MysqlAdapter::INT_REGULAR, 'precision' => 10, 'after' => 'menu_order'])
+            ->addColumn('use_elastic', 'boolean', ['null' => true, 'default' => '0', 'limit' => MysqlAdapter::INT_TINY, 'precision' => 3, 'after' => 'show'])
+            ->addColumn('browse_fields', 'text', ['null' => true, 'limit' => MysqlAdapter::TEXT_LONG, 'precision' => 3, 'after' => 'use_elastic'])
+            ->addColumn('created_at', 'datetime', ['null' => false, 'after' => 'browse_fields'])
             ->addColumn('updated_at', 'datetime', ['null' => true, 'after' => 'created_at'])
             ->addColumn('is_deleted', 'boolean', ['null' => true, 'default' => '0', 'limit' => MysqlAdapter::INT_TINY, 'precision' => 3, 'after' => 'updated_at'])
             ->save();

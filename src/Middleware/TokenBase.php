@@ -13,8 +13,6 @@ use Canvas\Exception\SubscriptionPlanFailureException;
 use Phalcon\Mvc\Micro;
 use Phalcon\Http\RequestInterface;
 use Canvas\Models\Subscription;
-use Baka\Http\RouterCollection;
-use Phalcon\Di;
 
 /**
  * Class AuthenticationMiddleware.
@@ -32,12 +30,10 @@ abstract class TokenBase implements MiddlewareInterface
      */
     protected function isValidCheck(RequestInterface $request, Micro $app): bool
     {
-        $ignoreJwt = $request->ignoreJwt($app['router']->getMatchedRoute());
-
         $calledRoute = $app['router']->getMatchedRoute()->getCompiledPattern();
 
         if (isset($app['userData']) && !Subscription::getPaymentStatus($app->getDI()->getUserData())) {
-            if (!array_key_exists($calledRoute, $this->bypassRoutes)) {
+            if (!isset($this->bypassRoutes[$calledRoute])) {
                 throw new SubscriptionPlanFailureException('Subscription expired,update payment method or verify payment');
             } else {
                 if (!in_array($request->getMethod(), $this->bypassRoutes[$calledRoute])) {
@@ -46,10 +42,6 @@ abstract class TokenBase implements MiddlewareInterface
             }
         }
 
-        if (!$ignoreJwt && $request->isEmptyBearerToken()) {
-            throw new UnauthorizedHttpException('Missing Token');
-        }
-
-        return !$ignoreJwt;
+        return true;
     }
 }

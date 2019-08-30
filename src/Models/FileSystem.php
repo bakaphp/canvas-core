@@ -1,12 +1,13 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Canvas\Models;
 
-use Canvas\Traits\ModelSettingsTrait;
+use Baka\Database\Contracts\HashTableTrait;
 use Canvas\Exception\ModelException;
 use Phalcon\Di;
-use Phalcon\Mvc\Model\ResultsetInterface;
+use Exception;
 
 /**
  * Classs for FileSystem.
@@ -19,7 +20,7 @@ use Phalcon\Mvc\Model\ResultsetInterface;
  */
 class FileSystem extends AbstractModel
 {
-    use ModelSettingsTrait;
+    use HashTableTrait;
 
     /**
      *
@@ -49,7 +50,7 @@ class FileSystem extends AbstractModel
      *
      * @var integer
      */
-    public $system_modules_id;
+    public $system_modules_id = 0;
 
     /**
      *
@@ -146,6 +147,20 @@ class FileSystem extends AbstractModel
             'filesystem_id',
             ['alias' => 'attributes']
         );
+
+        $this->hasOne(
+            'id',
+            'Canvas\Models\FileSystemSettings',
+            'filesystem_id',
+            ['alias' => 'attribute']
+        );
+
+        $this->hasMany(
+            'id',
+            'Canvas\Models\FileSystemEntities',
+            'filesystem_id',
+            ['alias' => 'entities']
+        );
     }
 
     /**
@@ -165,41 +180,19 @@ class FileSystem extends AbstractModel
      * @return FileSystem
      * @throw Exception
      */
-    public static function getByEntityId($id, SystemModules $systeModule): FileSystem
+    public static function getAllByEntityId($id, SystemModules $systeModule)
     {
-        $file = self::findFirst([
-            'conditions' => 'entity_id = ?0 AND companies_id = ?1 AND apps_id = ?2 AND system_modules_id = ?3 AND is_deleted = 0',
-            'bind' => [$id, Di::getDefault()->getUserData()->currentCompanyId(), Di::getDefault()->getConfig()->app->id, $systeModule->getId()]
+        return FileSystem::find([
+            'conditions' => '
+                is_deleted = ?0 AND apps_id = ?1 AND companies_id = ?2 AND id in 
+                    (SELECT 
+                        filesystem_id from \Canvas\Models\FileSystemEntities e
+                        WHERE e.system_modules_id = ?3 AND e.entity_id = ?4
+                    )',
+            'bind' => [0, Di::getDefault()->getApp()->getId(), Di::getDefault()->getUserData()->currentCompanyId(), $systeModule->getId(), $id]
         ]);
-
-        if (!is_object($file)) {
-            throw new ModelException('File not found');
-        }
-
-        return $file;
     }
 
-    /**
-     * Get the element by its entity id.
-     *
-     * @param string $id
-     * @return FileSystem
-     * @throw Exception
-     */
-    public static function getAllByEntityId($id, SystemModules $systeModule): ResultsetInterface
-    {
-        $file = self::find([
-            'conditions' => 'entity_id = ?0 AND companies_id = ?1 AND apps_id = ?2 AND system_modules_id = ?3 AND is_deleted = 0',
-            'bind' => [$id, Di::getDefault()->getUserData()->currentCompanyId(), Di::getDefault()->getConfig()->app->id, $systeModule->getId()]
-        ]);
-
-        if (!is_object($file)) {
-            throw new ModelException('File not found');
-        }
-
-        return $file;
-    }
-    
     /**
      * Get the element by its entity id.
      *
@@ -211,13 +204,38 @@ class FileSystem extends AbstractModel
     {
         $file = self::findFirst([
             'conditions' => 'id = ?0 AND companies_id = ?1 AND apps_id = ?2 AND is_deleted = 0',
-            'bind' => [$id, Di::getDefault()->getUserData()->currentCompanyId(), Di::getDefault()->getConfig()->app->id]
+            'bind' => [$id, Di::getDefault()->getUserData()->currentCompanyId(), Di::getDefault()->getApp()->getId()]
         ]);
 
         if (!is_object($file)) {
-            throw new ModelException('File not found');
+            throw new ModelException('FileSystem '.(int) $id.'  not found');
         }
 
         return $file;
+    }
+
+    /**
+     * Given a new string move the file to that localtion.
+     *
+     * @return bool
+     */
+    public function move(string $location): bool
+    {
+        $appSettingFileConfig = $this->di->get('app')->get('filesystem');
+        $fileSystemConfig = $this->di->get('config')->filesystem->{$appSettingFileConfig};
+
+        $newPath = $location . '/' . basename($this->path);
+        $newUrl = $fileSystemConfig->cdn . DIRECTORY_SEPARATOR . $newPath;
+
+        try {
+            $this->di->get('filesystem')->rename($this->path, $newPath);
+            $this->path = $newPath;
+            $this->url = $newUrl;
+            $this->updateOrFail();
+        } catch (Exception $e) {
+            $this->di->get('log')->info($e->getMessage() . 'For ' . get_class($this) . ' ' . $this->getId());
+        }
+
+        return true;
     }
 }

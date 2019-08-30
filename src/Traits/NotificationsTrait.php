@@ -32,7 +32,7 @@ trait NotificationsTrait
      * @param string $systemModule
      * @return void
      */
-    public static function create(array $user, string $content, int $notificationTypeId, string $systemModule): void
+    public static function create(array $entity,array $user, string $content, int $notificationTypeId, string $systemModule): void
     {
         $notification =  new Notifications();
         $notification->users_id = $user['id'];
@@ -40,7 +40,7 @@ trait NotificationsTrait
         $notification->apps_id = Di::getDefault()->getApp()->getId();
         $notification->notification_type_id = $notificationTypeId;
         $notification->system_module_id = SystemModules::getSystemModuleByModelName($systemModule)->id;
-        $notification->entity_id = $user['id'];
+        $notification->entity_id = $entity['id'];
         $notification->content = $content;
         $notification->created_at = date('Y-m-d H:i:s');
 

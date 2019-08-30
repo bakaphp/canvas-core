@@ -4,15 +4,21 @@ declare(strict_types=1);
 namespace Canvas\Models;
 
 use Canvas\Traits\UsersAssociatedTrait;
-use Canvas\Traits\ModelSettingsTrait;
+use Baka\Database\Contracts\HashTableTrait;
 
-class Apps extends \Baka\Auth\Models\Apps
+class Apps extends \Baka\Database\Apps
 {
     /**
      *
      * @var integer
      */
     public $id;
+
+    /**
+     *
+     * @var string
+     */
+    public $key;
 
     /**
      *
@@ -43,6 +49,11 @@ class Apps extends \Baka\Auth\Models\Apps
      * @var integer
      */
     public $is_actived;
+
+    /**
+     * @var integer
+     */
+    public $ecosystem_auth;
 
     /**
      * @var integer
@@ -82,15 +93,13 @@ class Apps extends \Baka\Auth\Models\Apps
     /**
      * Model Settings Trait.
      */
-    use ModelSettingsTrait;
+    use HashTableTrait;
 
     /**
      * Initialize method for model.
      */
     public function initialize()
     {
-        parent::initialize();
-
         $this->setSource('apps');
 
         $this->hasOne(
@@ -118,7 +127,7 @@ class Apps extends \Baka\Auth\Models\Apps
             'id',
             'Canvas\Models\AppsSettings',
             'apps_id',
-            ['alias' => 'settings']
+            ['alias' => 'settingsApp']
         );
     }
 
@@ -133,7 +142,7 @@ class Apps extends \Baka\Auth\Models\Apps
         if (trim($name) == self::CANVAS_DEFAULT_APP_NAME) {
             $app = self::findFirst(1);
         } else {
-            $app = self::findFirst(\Phalcon\DI::getDefault()->getConfig()->app->id);
+            $app = self::findFirstByKey(\Phalcon\DI::getDefault()->getConfig()->app->id);
         }
 
         return $app;
@@ -157,5 +166,26 @@ class Apps extends \Baka\Auth\Models\Apps
     public function getSource() : string
     {
         return 'apps';
+    }
+
+    /**
+     * Those this app use ecosystem login or
+     * the its own local login?
+     *
+     * @return boolean
+     */
+    public function ecosystemAuth(): bool
+    {
+        return (bool) $this->ecosystem_auth;
+    }
+
+    /**
+     * Is this app subscription based?
+     *
+     * @return boolean
+     */
+    public function subscriptioBased(): bool
+    {
+        return (bool) $this->payments_active;
     }
 }

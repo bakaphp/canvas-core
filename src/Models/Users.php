@@ -7,13 +7,23 @@ use Canvas\Traits\PermissionsTrait;
 use Canvas\Traits\SubscriptionPlanLimitTrait;
 use Phalcon\Cashier\Billable;
 use Canvas\Exception\ServerErrorHttpException;
-use Exception;
 use Carbon\Carbon;
 use Phalcon\Validation;
 use Phalcon\Validation\Validator\Email;
 use Phalcon\Validation\Validator\PresenceOf;
 use Phalcon\Validation\Validator\Regex;
 use Phalcon\Validation\Validator\Uniqueness;
+use Canvas\Traits\FileSystemModelTrait;
+use Phalcon\Security\Random;
+use Baka\Database\Contracts\HashTableTrait;
+use Canvas\Contracts\Notifications\NotifiableTrait;
+use Canvas\Traits\EventManagerAwareTrait;
+use Phalcon\Di;
+use Canvas\Auth\App as AppAuth;
+use Exception;
+use Canvas\Validations\PasswordValidation;
+use Baka\Auth\Models\Users as BakUser;
+use Canvas\Hashing\Password;
 
 /**
  * Class Users.
@@ -31,6 +41,10 @@ class Users extends \Baka\Auth\Models\Users
     use PermissionsTrait;
     use Billable;
     use SubscriptionPlanLimitTrait;
+    use FileSystemModelTrait;
+    use HashTableTrait;
+    use NotifiableTrait;
+    use EventManagerAwareTrait;
 
     /**
      * Default Company Branch.
@@ -95,6 +109,13 @@ class Users extends \Baka\Auth\Models\Users
     public $system_modules_id = 2;
 
     /**
+     * User email activation code.
+     *
+     * @var string
+     */
+    public $user_activation_email;
+
+    /**
      * Initialize method for model.
      */
     public function initialize()
@@ -109,9 +130,20 @@ class Users extends \Baka\Auth\Models\Users
         $this->hasMany('id', 'Baka\Auth\Models\Sessions', 'users_id', ['alias' => 'sessions']);
         $this->hasMany('id', 'Canvas\Models\UserConfig', 'users_id', ['alias' => 'config']);
         $this->hasMany('id', 'Canvas\Models\UserLinkedSources', 'users_id', ['alias' => 'sources']);
-        $this->hasMany('id', 'Baka\Auth\Models\UsersAssociatedCompany', 'users_id', ['alias' => 'companies']);
-        $this->hasOne('default_company', 'Canvas\Models\Companies', 'id', ['alias' => 'defaultCompany']);
-        $this->hasOne('default_company', 'Canvas\Models\Companies', 'id', ['alias' => 'currentCompany']);
+
+        $this->hasOne(
+            'default_company',
+            'Canvas\Models\Companies',
+            'id',
+            ['alias' => 'defaultCompany']
+        );
+
+        $this->hasOne(
+            'default_company',
+            'Canvas\Models\Companies',
+            'id',
+            ['alias' => 'currentCompany']
+        );
 
         $this->hasOne(
             'id',
@@ -138,7 +170,7 @@ class Users extends \Baka\Auth\Models\Users
                 'alias' => 'roles',
                 'params' => [
                     'limit' => 1,
-                    'conditions' => 'Canvas\Models\UserRoles.apps_id = ' . $this->di->getConfig()->app->id,
+                    'conditions' => 'Canvas\Models\UserRoles.apps_id = ' . $this->di->getApp()->getId(),
                 ]
             ]
         );
@@ -159,10 +191,36 @@ class Users extends \Baka\Auth\Models\Users
 
         $this->hasMany(
             'id',
-            'Canvas\Models\UsersAssociatedCompanies',
+            'Canvas\Models\UsersAssociatedApps',
             'users_id',
             [
                 'alias' => 'companies',
+                'params' => [
+                    'conditions' => 'apps_id = ?0',
+                    'bind' => [$this->di->getApp()->getId()],
+                ]
+            ]
+        );
+
+        $this->hasMany(
+            'id',
+            'Canvas\Models\UsersAssociatedApps',
+            'users_id',
+            [
+                'alias' => 'apps',
+            ]
+        );
+
+        $this->hasOne(
+            'id',
+            'Canvas\Models\UsersAssociatedApps',
+            'users_id',
+            [
+                'alias' => 'app',
+                'params' => [
+                    'conditions' => 'apps_id = ?0',
+                    'bind' => [Di::getDefault()->getApp()->getId()]
+                ]
             ]
         );
 
@@ -174,25 +232,29 @@ class Users extends \Baka\Auth\Models\Users
         );
 
         $systemModule = SystemModules::getSystemModuleByModelName(self::class);
-        $this->hasMany(
+        $this->hasOne(
             'id',
-            'Canvas\Models\FileSystem',
+            'Canvas\Models\FileSystemEntities',
             'entity_id',
             [
-                'alias' => 'filesystem',
-                'conditions' => 'system_modules_id = ?0',
-                'bind' => [$systemModule->getId()]
+                'alias' => 'files',
+                'params' => [
+                    'conditions' => 'system_modules_id = ?0',
+                    'bind' => [$systemModule->getId()]
+                ]
             ]
         );
 
         $this->hasOne(
             'id',
-            'Canvas\Models\FileSystem',
+            'Canvas\Models\FileSystemEntities',
             'entity_id',
             [
-                'alias' => 'logo',
-                'conditions' => "system_modules_id = ?0 and file_type in ('png','jpg','bmp','jpeg','webp')",
-                'bind' => [$systemModule->getId()]
+                'alias' => 'photo',
+                'params' => [
+                    'conditions' => 'system_modules_id = ?0',
+                    'bind' => [$systemModule->getId()]
+                ]
             ]
         );
     }
@@ -219,15 +281,6 @@ class Users extends \Baka\Auth\Models\Users
             ])
         );
 
-        $validator->add(
-            'displayname',
-            new Regex([
-                'field' => 'displayname',
-                'message' => _('Please use alphanumerics only.'),
-                'pattern' => '/^[A-Za-z0-9_-]{1,32}$/',
-            ])
-        );
-
         // Unique values
         $validator->add(
             'email',
@@ -251,11 +304,21 @@ class Users extends \Baka\Auth\Models\Users
     }
 
     /**
+    * Set hashtable settings table, userConfig ;).
+    *
+    * @return void
+    */
+    private function createSettingsModel(): void
+    {
+        $this->settingsModel = new UserConfig();
+    }
+
+    /**
      * Get the User key for redis.
      *
      * @return string
      */
-    public function getKey() : string
+    public function getKey() : int
     {
         return $this->id;
     }
@@ -269,7 +332,7 @@ class Users extends \Baka\Auth\Models\Users
      */
     public function isFirstSignup(): bool
     {
-        return empty($this->default_company) ? true : false;
+        return empty($this->default_company);
     }
 
     /**
@@ -279,7 +342,7 @@ class Users extends \Baka\Auth\Models\Users
      */
     public function hasRole(): bool
     {
-        return !empty($this->roles_id) ? true : false;
+        return !empty($this->roles_id);
     }
 
     /**
@@ -347,6 +410,8 @@ class Users extends \Baka\Auth\Models\Users
     public function beforeCreate()
     {
         parent::beforeCreate();
+        $random = new Random();
+        $this->user_activation_email = $random->uuid();
 
         //this is only empty when creating a new user
         if (!$this->isFirstSignup()) {
@@ -356,21 +421,9 @@ class Users extends \Baka\Auth\Models\Users
 
         //Assign admin role to the system if we dont get a specify role
         if (!$this->hasRole()) {
-            $role = Roles::findFirstByName('Admins');
+            $role = Roles::getByName('Admins');
             $this->roles_id = $role->getId();
         }
-    }
-
-    /**
-     * Get an array of the associates companies Ids.
-     *
-     * @return array
-     */
-    public function getAssociatedCompanies(): array
-    {
-        return array_map(function ($company) {
-            return $company['companies_id'];
-        }, $this->getCompanies(['columns' => 'companies_id'])->toArray());
     }
 
     /**
@@ -381,7 +434,22 @@ class Users extends \Baka\Auth\Models\Users
      */
     public function currentCompanyId(): int
     {
-        return (int) $this->default_company;
+        $defaultCompanyId = $this->get(Companies::cacheKey());
+        return !is_null($defaultCompanyId) ? (int) $defaultCompanyId : (int) $this->default_company;
+    }
+
+    /**
+     * Overwrite the user relationship.
+     * use Phalcon Registry to assure we mantian the same instance accross the request.
+     */
+    public function getDefaultCompany(): Companies
+    {
+        $registry = Di::getDefault()->getRegistry();
+        $key = 'company_' . Di::getDefault()->getApp()->getId() . '_' . $this->getId();
+        if (!isset($registry[$key])) {
+            $registry[$key] = Companies::findFirstOrFail($this->currentCompanyId());
+        }
+        return  $registry[$key];
     }
 
     /**
@@ -414,56 +482,210 @@ class Users extends \Baka\Auth\Models\Users
             $this->di->setShared('userData', $this);
         }
 
-        /**
-         * User signing up for a new app / plan
-         * How do we know? well he doesnt have a default_company.
-         */
-        if ($isFirstSignup) {
-            $company = new Companies();
-            $company->name = $this->defaultCompanyName;
-            $company->users_id = $this->getId();
-
-            if (!$company->save()) {
-                throw new Exception((string) current($company->getMessages()));
-            }
-
-            $this->default_company = $company->getId();
-
-            if (!$this->update()) {
-                throw new ServerErrorHttpException((string) current($this->getMessages()));
-            }
-
-            $this->stripe_id = $company->getPaymentGatewayCustomerId();
-            $this->default_company_branch = $this->defaultCompany->branch->getId();
-            $this->update();
-
-        //update default subscription free trial
-            //$company->app->subscriptions_id = $this->startFreeTrial()->getId();
-            //$company->update();
-        } else {
-            //we have the company id
-            if (empty($this->default_company_branch)) {
-                $this->default_company_branch = $this->defaultCompany->branch->getId();
-            }
-        }
-
-        //Create new company associated company
-        $this->defaultCompany->associate($this, $this->defaultCompany);
-
-        //Insert record into user_roles
-        $userRole = new UserRoles();
-        $userRole->users_id = $this->id;
-        $userRole->roles_id = $this->roles_id;
-        $userRole->apps_id = $this->di->getApp()->getId();
-        $userRole->companies_id = $this->default_company;
-
-        if (!$userRole->save()) {
-            throw new ServerErrorHttpException((string)current($userRole->getMessages()));
-        }
+        $this->fire('user:afterSignup', $this, $isFirstSignup);
 
         //update user activity when its not a empty user
         if (!$isFirstSignup) {
             $this->updateAppActivityLimit();
         }
+    }
+
+    /**
+     * Upload Files.
+     *
+     * @todo move this to the baka class
+     *
+     * @return void
+     */
+    public function afterSave()
+    {
+        $this->associateFileSystem();
+    }
+
+    /**
+     * Get the list of all the associated apps this users has.
+     *
+     * @return array
+     */
+    public function getAssociatedApps(): array
+    {
+        return array_map(function ($apps) {
+            return $apps['apps_id'];
+        }, $this->getApps(['columns' => 'apps_id', 'group' => 'apps_id'])->toArray());
+    }
+
+    /**
+     * Get an array of the associates companies Ids.
+     *
+     * @return array
+     */
+    public function getAssociatedCompanies(): array
+    {
+        return array_map(function ($company) {
+            return $company['companies_id'];
+        }, $this->getCompanies(['columns' => 'companies_id'])->toArray());
+    }
+
+    /**
+     * Get user by key.
+     * @param string $userActivationEmail
+     * @return Users
+     */
+    public static function getByUserActivationEmail(string $userActivationEmail): Users
+    {
+        return self::findFirst([
+            'conditions' => 'user_activation_email = ?0 and user_active =?1 and is_deleted = 0',
+            'bind' => [$userActivationEmail, 1],
+        ]);
+    }
+
+    /**
+     * Overwrite the relationship.
+     *
+     * @return void
+     */
+    public function getPhoto()
+    {
+        return $this->getFileByName('photo');
+    }
+
+    /**
+     * Update the user current default company.
+     *
+     * @param integer $companyId
+     * @return void
+     */
+    public function switchDefaultCompanyByBranch(int $branchId): void
+    {
+        if ($branch = CompaniesBranches::findFirst($branchId)) {
+            if ($branch->company) {
+                if ($branch->company->userAssociatedToCompany($this)) {
+                    $this->default_company = $branch->company->getId();
+                    $this->default_company_branch = $branch->getId();
+                    //set the default company id per the specific app , we do this so we can have multip default companies per diff apps
+                    $this->set(Companies::cacheKey(), $this->default_company);
+                }
+            }
+        }
+    }
+
+    /**
+     * Update the password for a current user.
+     *
+     * @param string $newPassword
+     * @return boolean
+     */
+    public function updatePassword(string $currentPassword, string $newPassword, string $verifyPassword) : bool
+    {
+        $currentPassword = trim($currentPassword);
+        $newPassword = trim($newPassword);
+        $verifyPassword = trim($verifyPassword);
+
+        $app = Di::getDefault()->getApp();
+
+        if ($app->ecosystemAuth()) {
+            $userAppData = $this->getApp([
+                'conditions' => 'companies_id = :id:',
+                'bind' => [
+                    'id' => $this->currentCompanyId()
+                ]
+            ]);
+
+            $password = $userAppData->password;
+        } else {
+            $password = $this->password;
+        }
+
+        // First off check that the current password matches the current password
+        if (Password::check($currentPassword, $password)) {
+            PasswordValidation::validate($newPassword, $verifyPassword);
+
+            return $this->resetPassword($newPassword);
+        }
+
+        throw new Exception(_(' Your current password is incorrect .'));
+    }
+
+    /**
+     * Reset the user passwrod.
+     *
+     * @param string $newPassword
+     * @return bool
+     */
+    public function resetPassword(string $newPassword): bool
+    {
+        $app = Di::getDefault()->getApp();
+
+        if ($app->ecosystemAuth()) {
+            //update all companies password for the current user app
+            AppAuth::updatePassword($this, Password::make($newPassword));
+        } else {
+            $this->password = Password::make($newPassword);
+        }
+
+        return true;
+    }
+
+    /**
+     * user signup to the service.
+     *
+     * @return Users
+     */
+    public function signUp() : BakUser
+    {
+        $app = Di::getDefault()->getApp();
+
+        if ($app->ecosystemAuth()) {
+            try {
+                //did we find the email?
+                //does it have access to this app?
+                // no?
+                //ok les register / associate to this app
+                // yes?
+                //it meas he was invites so get the fuck out?
+                $user = self::getByEmail($this->email);
+
+                $userAppData = $user->countApps('apps_id = ' . $this->getDI()->getDefault()->getApp()->getId());
+
+                if ($userAppData > 0) {
+                    throw new Exception('This email already has an account.');
+                }
+
+                //assign user role for the current app
+                $user->roles_id = Roles::getByName(Roles::DEFAULT)->getId();
+
+                $this->fire('user:afterSignup', $user, true);
+
+                //update the passwords for the current app
+                AppAuth::updatePassword($user, Password::make($this->password));
+
+                //overwrite the current user object
+                $this->id = $user->getId();
+                $this->email = $user->getEmail();
+            } catch (Exception $e) {
+                //if we cant find the user normal signup
+                $user = parent::signUp();
+
+                //update all the password for the apps
+                AppAuth::updatePassword($user, $this->password);
+            }
+        } else {
+            $user = parent::signUp();
+        }
+
+        return $user;
+    }
+
+    /**
+     * Generate new forgot password hash.
+     *
+     * @return string
+     */
+    public function generateForgotHash(): string
+    {
+        $this->user_activation_forgot = $this->generateActivationKey();
+        $this->updateOrFail();
+
+        return $this->user_activation_forgot;
     }
 }

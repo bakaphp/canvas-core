@@ -7,12 +7,12 @@ namespace Canvas\Api\Controllers;
 use Exception;
 use PDOException;
 use Phalcon\Http\Response;
-use Phalcon\Queue\Beanstalk\Exception as BeanstalkException;
 use Canvas\Exception\ServerErrorHttpException;
 use RedisException;
+use PhpAmqpLib\Exception\AMQPIOException ;
 
 /**
- * Class IndexController
+ * Class IndexController.
  *
  * @package Canvas\Api\Controllers
  *
@@ -24,7 +24,7 @@ use RedisException;
 class IndexController extends BaseController
 {
     /**
-     * Index
+     * Index.
      *
      * @method GET
      * @url /
@@ -37,7 +37,7 @@ class IndexController extends BaseController
     }
 
     /**
-     * Show the status of the diferent services
+     * Show the status of the diferent services.
      *
      * @method GET
      * @url /status
@@ -65,17 +65,17 @@ class IndexController extends BaseController
             $response['errors']['redis'] = "Redis isn't working.";
         }
 
-        //Try to connect to Beanstalk
+        //Try to connect to RabbitMQ
         try {
-            $this->queue->connect();
-        } catch (BeanstalkException $e) {
+            $this->queue;
+        } catch (AMQPIOException $e) {
             $this->log->error($e->getMessage(), $e->getTrace());
-            $response['errors']['beanstalk'] = $e->getMessage();
+            $response['errors']['RabbitMQ'] = $e->getMessage();
         } catch (Exception $e) {
-            $this->log->error("Beanstalk isn't working. {$e->getMessage()}", $e->getTrace());
-            $response['errors']['beanstalk'] = "Beanstalk isn't working.";
+            $this->log->error("RabbitMQ isn't working. {$e->getMessage()}", $e->getTrace());
+            $response['errors']['RabbitMQ'] = "RabbitMQ isn't working.";
         } finally {
-            $this->queue->disconnect();
+            $this->queue->close();
         }
 
         //Try to connect to db

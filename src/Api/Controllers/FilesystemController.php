@@ -6,7 +6,6 @@ namespace Canvas\Api\Controllers;
 
 use Canvas\Models\FileSystem;
 use Canvas\Traits\FileManagementTrait;
-use Canvas\Exception\UnprocessableEntityHttpException;
 
 /**
  * Class BaseController
@@ -35,7 +34,7 @@ class FilesystemController extends BaseController
      *
      * @var array
      */
-    protected $updateFields = [];
+    protected $updateFields = ['name', 'path', 'url', 'size', 'file_type'];
 
     /**
      * set objects

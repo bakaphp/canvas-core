@@ -2,17 +2,14 @@
 
 namespace Canvas\Cli\Tasks;
 
+use Canvas\Contracts\Queue\QueueableJobInterfase;
 use Phalcon\Cli\Task as PhTask;
-use Canvas\Models\UserLinkedSources;
 use Canvas\Models\Users;
-use Throwable;
-use Phalcon\Di;
-use Canvas\Notifications\Mobile\Apps as AppsPushNotifications;
-use Canvas\Notifications\Mobile\Users as UsersPushNotifications;
-use Canvas\Notifications\Mobile\System as SystemPushNotifications;
+use Canvas\Queue\Queue;
+use Phalcon\Mvc\Model;
 
 /**
- * CLI To send push ontification and pusher msg
+ * CLI To send push ontification and pusher msg.
  *
  * @package Canvas\Cli\Tasks
  *
@@ -25,79 +22,136 @@ use Canvas\Notifications\Mobile\System as SystemPushNotifications;
  */
 class QueueTask extends PhTask
 {
-    public function notificationAction()
+    /**
+     * Queue action for mobile notifications.
+     * @return void
+     */
+    public function mainAction(array $params): void
     {
-        $channel = $this->queue->channel();
+        echo 'Canvas Ecosystem Queue Jobs: events | notifications | jobs' . PHP_EOL;
+    }
 
-        // Create the queue if it doesnt already exist.
-        $channel->queue_declare(
-            $queue = "notifications",
-            $passive = false,
-            $durable = true,
-            $exclusive = false,
-            $auto_delete = false,
-            $nowait = false,
-            $arguments = null,
-            $ticket = null
-        );
-
-        echo ' [*] Waiting for notifications. To exit press CTRL+C', "\n";
-
+    /**
+     * Queue to process internal Canvas Events.
+     *
+     * @return void
+     */
+    public function eventsAction()
+    {
         $callback = function ($msg) {
-            $msgObject = json_decode($msg->body);
+            //we get the data from our event trigger and unserialize
+            $event = unserialize($msg->body);
 
+            //overwrite the user who is running this process
+            if (isset($event['userData']) && $event['userData'] instanceof Users) {
+                $this->di->setShared('userData', $event['userData']);
+            }
 
+            //lets fire the event
+            $this->events->fire($event['event'], $event['source'], $event['data']);
 
-            echo ' [x] Received from system module: ',$msgObject->system_module, "\n";
-
-
-            /**
-             * Lets determine what type of notification we are dealing with
-             */
-            switch ($msgObject->notification_type_id) {
-                 case 1:
-                      $notification = new AppsPushNotifications((array)$msgObject->user, $msgObject->content, $msgObject->system_module);
-                     break;
-                 case 2:
-                    $notification = new UsersPushNotifications((array)$msgObject->user, $msgObject->content, $msgObject->system_module);
-                     break;
-
-                 case 3:
-                    $notification = new SystemPushNotifications((array)$msgObject->user, $msgObject->content, $msgObject->system_module);
-                     break;
-                 default:
-                     break;
-             }
-
-
-            /**
-             * Trigger Event Manager
-             */
-            Di::getDefault()->getManager()->trigger($notification);
-
-            /**
-             * Log the delivery info
-             */
-            $msg->delivery_info['channel']->basic_ack($msg->delivery_info['delivery_tag']);
+            $this->log->info(
+                "Notification ({$event['event']}) - Process ID " . $msg->delivery_info['consumer_tag']
+            );
         };
 
-        $channel->basic_qos(null, 1, null);
+        Queue::process(QUEUE::EVENTS, $callback);
+    }
 
-        $channel->basic_consume(
-            $queue = "notifications",
-            $consumer_tag = '',
-            $no_local = false,
-            $no_ack = false,
-            $exclusive = false,
-            $nowait = false,
-            $callback
-        );
+    /**
+     * Queue to process internal Canvas Events.
+     *
+     * @return void
+     */
+    public function notificationsAction()
+    {
+        $callback = function ($msg) {
+            //we get the data from our event trigger and unserialize
+            $notification = unserialize($msg->body);
 
-        while (count($channel->callbacks)) {
-            $channel->wait();
-        }
+            //overwrite the user who is running this process
+            if ($notification['from'] instanceof Users) {
+                $this->di->setShared('userData', $notification['from']);
+            }
 
-        $channel->close();
-        $this->queue->close();
+            if (!$notification['to'] instanceof Users) {
+                echo 'Attribute TO has to be a User' . PHP_EOL;
+                return;
+            }
+
+            if (!class_exists($notification['notification'])) {
+                echo 'Attribute notification has to be a Notificatoin' . PHP_EOL;
+                return;
+            }
+            $notificationClass = $notification['notification'];
+
+            if (!$notification['entity'] instanceof Model) {
+                echo 'Attribute entity has to be a Model' . PHP_EOL;
+                return;
+            }
+
+            $user = $notification['to'];
+
+            //instance notification and pass the entity
+            $notification = new $notification['notification']($notification['entity']);
+            //disable the queue so we process it now
+            $notification->disableQueue();
+
+            //run notify for the specifiy user
+            $user->notify($notification);
+
+            $this->log->info(
+                "Notification ({$notificationClass}) sent to {$user->email} - Process ID " . $msg->delivery_info['consumer_tag']
+            );
+        };
+
+        Queue::process(QUEUE::NOTIFICATIONS, $callback);
+    }
+
+    /**
+     * Queue to process Canvas Jobs.
+     *
+     * @return void
+     */
+    public function jobsAction(array $params)
+    {
+        $queue = !isset($params[0]) ? QUEUE::JOBS : $params[0];
+
+        $callback = function ($msg) {
+            //we get the data from our event trigger and unserialize
+            $job = unserialize($msg->body);
+
+            //overwrite the user who is running this process
+            if ($job['userData'] instanceof Users) {
+                $this->di->setShared('userData', $job['userData']);
+            }
+
+            if (!class_exists($job['class'])) {
+                echo 'No Job class found' . PHP_EOL;
+                $this->log->error('No Job class found');
+                return;
+            }
+
+            if (!$job['job'] instanceof QueueableJobInterfase) {
+                echo 'This Job is not queable ' . $msg->delivery_info['consumer_tag'] ;
+                $this->log->error('This Job is not queable ' . $msg->delivery_info['consumer_tag']);
+                return;
+            }
+
+            /**
+             * swoole coroutine
+             */
+            go(function () use ($job, $msg) {
+                //instance notification and pass the entity
+                $result = $job['job']->handle();
+
+                $this->log->info(
+                    "Job ({$job['class']}) ran for {$this->userData->getEmail()} - Process ID " . $msg->delivery_info['consumer_tag'],
+                    [$result]
+                );
+            });
+        };
+
+        Queue::process($queue, $callback);
     }
 }

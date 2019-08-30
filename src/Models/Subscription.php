@@ -8,7 +8,7 @@ use Phalcon\Di;
 use Phalcon\Mvc\Micro;
 
 /**
- * Trait Subscription
+ * Trait Subscription.
  *
  * @package Canvas\Models
  *
@@ -114,6 +114,12 @@ class Subscription extends PhalconSubscription
 
     /**
      *
+     * @var date
+     */
+    public $grace_period_ends;
+
+    /**
+     *
      * @var string
      */
     public $created_at;
@@ -131,7 +137,7 @@ class Subscription extends PhalconSubscription
     public $is_deleted;
 
     /**
-     * Initialize
+     * Initialize.
      *
      * @return void
      */
@@ -162,7 +168,7 @@ class Subscription extends PhalconSubscription
     }
 
     /**
-     * Get the active subscription for this company app
+     * Get the active subscription for this company app.
      *
      * @return void
      */
@@ -181,7 +187,7 @@ class Subscription extends PhalconSubscription
     }
 
     /**
-     * Get subscription by user's default company;
+     * Get subscription by user's default company;.
      * @param Users $user
      * @return Subscription
      */
@@ -200,18 +206,19 @@ class Subscription extends PhalconSubscription
     }
 
     /**
-     * Search current company's app setting with key paid to verify payment status for current company
+     * Search current company's app setting with key paid to verify payment status for current company.
+     *
      * @param Users $user
      * @return bool
      */
     public static function getPaymentStatus(Users $user): bool
     {
-        $subscriptionPaid = CompaniesSettings::findFirst([
-            'conditions' => "companies_id = ?0 and name = 'paid' and is_deleted = 0",
-            'bind' => [$user->default_company]
-        ]);
+        //if its not subscription based return true to ignore any payment status
+        if (!Di::getDefault()->getApp()->subscriptioBased()) {
+            return true;
+        }
 
-        if (!$subscriptionPaid->value) {
+        if (!$user->defaultCompany->get('paid')) {
             return false;
         }
 

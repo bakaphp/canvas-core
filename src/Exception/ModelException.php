@@ -6,9 +6,9 @@ namespace Canvas\Exception;
 
 use Canvas\Http\Response;
 
-class ModelException extends Exception
+class ModelException extends HttpException
 {
-    protected $httpCode = Response::NOT_ACCEPTABLE;
-    protected $httpMessage = 'Not Acceptable';
+    protected $httpCode = Response::NOT_FOUND;
+    protected $httpMessage = 'Not Found';
     protected $data;
 }

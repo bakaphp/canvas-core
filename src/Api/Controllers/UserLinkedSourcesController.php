@@ -12,9 +12,10 @@ use Phalcon\Validation\Validator\PresenceOf;
 use Canvas\Exception\BadRequestHttpException;
 use Canvas\Exception\NotFoundHttpException;
 use Canvas\Exception\UnprocessableEntityHttpException;
+use Canvas\Validation as CanvasValidation;
 
 /**
- * Class LanguagesController
+ * Class LanguagesController.
  *
  * @package Canvas\Api\Controllers
  * @property UserData $userData
@@ -37,20 +38,22 @@ class UserLinkedSourcesController extends BaseController
     protected $updateFields = ['users_id', 'source_id', 'source_users_id', 'source_users_id_text', 'source_username'];
 
     /**
-     * set objects
+     * set objects.
      *
      * @return void
      */
     public function onConstruct()
     {
         $this->model = new UserLinkedSources();
+        $this->softDelete = 1;
         $this->additionalSearchFields = [
             ['is_deleted', ':', '0'],
+            ['users_id', ':', $this->userData->getId()],
         ];
     }
 
     /**
-     * Associate a Device with the corrent loggedin user
+     * Associate a Device with the corrent loggedin user.
      *
      * @url /users/{id}/device
      * @method POST
@@ -59,18 +62,13 @@ class UserLinkedSourcesController extends BaseController
     public function devices() : Response
     {
         //Ok let validate user password
-        $validation = new Validation();
+        $validation = new CanvasValidation();
         $validation->add('app', new PresenceOf(['message' => _('App name is required.')]));
         $validation->add('deviceId', new PresenceOf(['message' => _('device ID is required.')]));
         $msg = null;
 
         //validate this form for password
-        $messages = $validation->validate($this->request->getPost());
-        if (count($messages)) {
-            foreach ($messages as $message) {
-                throw new BadRequestHttpException((string)$message);
-            }
-        }
+        $validation->validate($this->request->getPost());
 
         $app = $this->request->getPost('app', 'string');
         $deviceId = $this->request->getPost('deviceId', 'string');
@@ -78,8 +76,8 @@ class UserLinkedSourcesController extends BaseController
         //get the app source
         if ($source = Sources::getByTitle($app)) {
             $userSource = UserLinkedSources::findFirst([
-                'conditions' => 'users_id = ?0 and source_users_id_text = ?1',
-                'bind' => [$this->userData->getId(), $deviceId]
+                'conditions' => 'users_id = ?0 and source_users_id_text = ?1 and source_id = ?2',
+                'bind' => [$this->userData->getId(), $deviceId, $source->getId()]
             ]);
 
             if (!is_object($userSource)) {
@@ -111,44 +109,28 @@ class UserLinkedSourcesController extends BaseController
     }
 
     /**
-     * Detach user's devices
+     * Detach user's devices.
      * @param integer $deviceId User's devices id
      * @return Response
      */
     public function detachDevice(int $id, int $deviceId): Response
     {
-        //Validation
-        $validation = new Validation();
-        $validation->add('source_id', new PresenceOf(['message' => _('Source Id is required.')]));
-
-        //validate this form for password
-        $messages = $validation->validate($this->request->getPost());
-        if (count($messages)) {
-            foreach ($messages as $message) {
-                throw new BadRequestHttpException((string)$message);
-            }
-        }
-
-        $sourceId = $this->request->getPost('source_id', 'int');
-
+        //$sourceId = $this->request->getPost('source_id', 'int');
         $userSource = UserLinkedSources::findFirst([
-                'conditions' => 'users_id = ?0 and source_id = ?1 and source_users_id_text = ?2 and is_deleted = 0',
-                'bind' => [$this->userData->getId(), $sourceId, $deviceId]
-            ]);
+            'conditions' => 'users_id = ?0  and source_users_id_text = ?1    and is_deleted = 0',
+            'bind' => [$this->userData->getId(), $deviceId]
+        ]);
 
         //Check if User Linked Sources exists by users_id and source_users_id_text
         if (!is_object($userSource)) {
             throw new NotFoundHttpException('User Linked Source not found');
         }
 
-        $userSource->is_deleted = 1;
-        if (!$userSource->update()) {
-            throw new UnprocessableEntityHttpException((string) current($userSource->getMessages()));
-        }
+        $userSource->softDelete();
 
         return $this->response([
-                'msg' => 'User Device detached',
-                'user' => $this->userData
-            ]);
+            'msg' => 'User Device detached',
+            'user' => $this->userData
+        ]);
     }
 }

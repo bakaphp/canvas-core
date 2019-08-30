@@ -12,7 +12,7 @@ use Phalcon\Acl\Role as AclRole;
 use Canvas\Exception\ModelException;
 
 /**
- * Class Roles
+ * Class Roles.
  *
  * @package Canvas\Models
  *
@@ -76,11 +76,12 @@ class Roles extends AbstractModel
     public $is_deleted;
 
     /**
-     * Default ACL company
+     * Default ACL company.
      *
      */
     const DEFAULT_ACL_COMPANY_ID = 1;
     const DEFAULT_ACL_APP_ID = 1;
+    const DEFAULT = 'Admins';
 
     /**
      * Initialize method for model.
@@ -98,7 +99,7 @@ class Roles extends AbstractModel
     }
 
     /**
-     * Validations and business logic
+     * Validations and business logic.
      */
     public function validation()
     {
@@ -142,7 +143,7 @@ class Roles extends AbstractModel
     }
 
     /**
-     * Check if the role existe in the db
+     * Check if the role existe in the db.
      *
      * @param AclRole $role
      * @return int
@@ -158,7 +159,7 @@ class Roles extends AbstractModel
     /**
      * check if this string is already a role
      * whats the diff with exist or why not merge them? exist uses the alc object and only check
-     * with your current app, this also check with de defautl company ap
+     * with your current app, this also check with de defautl company ap.
      *
      * @param string $roleName
      * @return boolean
@@ -172,7 +173,7 @@ class Roles extends AbstractModel
     }
 
     /**
-     * Get the entity by its name
+     * Get the entity by its name.
      *
      * @param string $name
      * @return Roles
@@ -181,7 +182,8 @@ class Roles extends AbstractModel
     {
         $role = self::findFirst([
             'conditions' => 'name = ?0 AND apps_id in (?1, ?3) AND companies_id in (?2, ?3) AND is_deleted = 0',
-            'bind' => [$name, Di::getDefault()->getAcl()->getApp()->getId(), Di::getDefault()->getAcl()->getCompany()->getId(), Apps::CANVAS_DEFAULT_APP_ID]
+            'bind' => [$name, Di::getDefault()->getAcl()->getApp()->getId(), Di::getDefault()->getAcl()->getCompany()->getId(), Apps::CANVAS_DEFAULT_APP_ID],
+            'order' => 'apps_id DESC'
         ]);
 
         if (!is_object($role)) {
@@ -192,21 +194,22 @@ class Roles extends AbstractModel
     }
 
     /**
-     * Get the entity by its name
+     * Get the entity by its name.
      *
      * @param string $name
      * @return Roles
      */
     public static function getById(int $id): Roles
     {
-        return self::findFirst([
+        return self::findFirstOrFail([
             'conditions' => 'id = ?0 AND companies_id in (?1, ?2) AND apps_id in (?3, ?4) AND is_deleted = 0',
-            'bind' => [$id, Di::getDefault()->getUserData()->currentCompanyId(), Apps::CANVAS_DEFAULT_APP_ID, Di::getDefault()->getApp()->getId(), Apps::CANVAS_DEFAULT_APP_ID]
+            'bind' => [$id, Di::getDefault()->getUserData()->currentCompanyId(), Apps::CANVAS_DEFAULT_APP_ID, Di::getDefault()->getApp()->getId(), Apps::CANVAS_DEFAULT_APP_ID],
+            'order' => 'apps_id DESC'
         ]);
     }
 
     /**
-     * Get the Role by it app name
+     * Get the Role by it app name.
      *
      * @param string $role
      * @return Roles
@@ -234,7 +237,7 @@ class Roles extends AbstractModel
     }
 
     /**
-     * Duplicate a role with it access list
+     * Duplicate a role with it access list.
      *
      * @return Roles
      */
@@ -265,13 +268,13 @@ class Roles extends AbstractModel
     }
 
     /**
-     * Add inherit to a given role
+     * Add inherit to a given role.
      *
      * @param string $roleName
      * @param string $roleToInherit
      * @return boolean
      */
-    public static function addInherit(string $roleName, string $roleToInherit) : bool
+    public static function addInherit(string $roleName, string $roleToInherit)
     {
         $role = self::findFirstByName($roleName);
 
@@ -286,6 +289,7 @@ class Roles extends AbstractModel
 
         if (!$inheritExist) {
             $rolesInHerits = new RolesInherits();
+            $rolesInHerits->roles_name = $role->name;
             $rolesInHerits->roles_id = $role->getId();
             $rolesInHerits->roles_inherit = (int) $roleToInherit;
 
@@ -300,7 +304,7 @@ class Roles extends AbstractModel
     }
 
     /**
-     * After update
+     * After update.
      *
      * @return void
      */
@@ -316,7 +320,7 @@ class Roles extends AbstractModel
     }
 
     /**
-     * Check if role exists by its id
+     * Check if role exists by its id.
      * @param integer $role_id
      * @return Roles
      */
@@ -329,5 +333,31 @@ class Roles extends AbstractModel
         }
 
         return $role;
+    }
+
+    /**
+     * Assign the default app role to a given user.
+     *
+     * @param Users $user
+     * @return bool
+     */
+    public static function assignDefault(Users $user): bool
+    {
+        $apps = Di::getDefault()->getApp();
+        $userRoles = UserRoles::findFirst([
+            'conditions' => 'users_id = ?0 AND apps_id = ?1 AND companies_id = ?2 AND is_deleted = 0',
+            'bind' => [$user->getId(), $apps->getId(), $user->getDefaultCompany()->getId()]
+        ]);
+
+        if (!is_object($userRoles)) {
+            $userRole = new UserRoles();
+            $userRole->users_id = $user->getId();
+            $userRole->roles_id = Roles::getByName(Roles::DEFAULT)->getId();
+            $userRole->apps_id = $apps->getId();
+            $userRole->companies_id = $user->getDefaultCompany()->getId();
+            return $userRole->saveOrFail();
+        }
+
+        return true;
     }
 }

@@ -8,8 +8,13 @@ use Phalcon\Validation\Validator\PresenceOf;
 use Canvas\Exception\ServerErrorHttpException;
 use Exception;
 use Carbon\Carbon;
-use Canvas\Traits\ModelSettingsTrait;
+use Baka\Database\Contracts\HashTableTrait;
+use Baka\Blameable\BlameableTrait;
 use Canvas\Traits\UsersAssociatedTrait;
+use Canvas\Traits\FileSystemModelTrait;
+use Baka\Blameable\Blameable;
+use Canvas\Traits\EventManagerAwareTrait;
+use Phalcon\Di;
 
 /**
  * Class Companies.
@@ -29,10 +34,14 @@ use Canvas\Traits\UsersAssociatedTrait;
  */
 class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
 {
-    use ModelSettingsTrait;
+    use HashTableTrait;
     use UsersAssociatedTrait;
+    use FileSystemModelTrait;
+    use BlameableTrait;
+    use EventManagerAwareTrait;
 
     const DEFAULT_COMPANY = 'DefaulCompany';
+    const DEFAULT_COMPANY_APP = 'DefaulCompanyApp_';
     const PAYMENT_GATEWAY_CUSTOMER_KEY = 'payment_gateway_customer_id';
 
     /**
@@ -139,6 +148,9 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
     {
         $this->setSource('companies');
 
+        $this->keepSnapshots(true);
+        $this->addBehavior(new Blameable());
+
         $this->belongsTo('users_id', 'Baka\Auth\Models\Users', 'id', ['alias' => 'user']);
         $this->hasMany('id', 'Baka\Auth\Models\CompanySettings', 'id', ['alias' => 'settings']);
 
@@ -154,6 +166,18 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
             'Canvas\Models\CompaniesBranches',
             'companies_id',
             ['alias' => 'branches']
+        );
+
+        $this->hasOne(
+            'id',
+            'Canvas\Models\CompaniesBranches',
+            'companies_id',
+            [
+                'alias' => 'defaultBranch',
+                'params' => [
+                    'conditions' => 'is_default = 1'
+                ]
+            ]
         );
 
         $this->hasMany(
@@ -182,6 +206,18 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
             'Canvas\Models\UsersAssociatedApps',
             'companies_id',
             ['alias' => 'UsersAssociatedApps']
+        );
+
+        $this->hasMany(
+            'id',
+            'Canvas\Models\UsersAssociatedApps',
+            'companies_id',
+            [
+                'alias' => 'UsersAssociatedByApps',
+                'params' => [
+                    'conditions' => 'apps_id = ' . $this->di->getApp()->getId()
+                ]
+            ]
         );
 
         $this->hasOne(
@@ -251,25 +287,29 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
         );
 
         $systemModule = SystemModules::getSystemModuleByModelName(self::class);
-        $this->hasMany(
+        $this->hasOne(
             'id',
-            'Canvas\Models\FileSystem',
+            'Canvas\Models\FileSystemEntities',
             'entity_id',
             [
-                'alias' => 'filesystem',
-                'conditions' => 'system_modules_id = ?0',
-                'bind' => [$systemModule->getId()]
+                'alias' => 'files',
+                'params' => [
+                    'conditions' => 'system_modules_id = ?0',
+                    'bind' => [$systemModule->getId()]
+                ]
             ]
         );
 
         $this->hasOne(
             'id',
-            'Canvas\Models\FileSystem',
+            'Canvas\Models\FileSystemEntities',
             'entity_id',
             [
                 'alias' => 'logo',
-                'conditions' => "system_modules_id = ?0 and file_type in ('png','jpg','bmp','jpeg','webp')",
-                'bind' => [$systemModule->getId()]
+                'params' => [
+                    'conditions' => 'system_modules_id = ?0',
+                    'bind' => [$systemModule->getId()]
+                ]
             ]
         );
     }
@@ -332,7 +372,7 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
      */
     public function userAssociatedToCompany(Users $user): bool
     {
-        return is_object($this->getUsersAssociatedCompanies('users_id =' . $user->getId()));
+        return $this->countUsersAssociatedCompanies('users_id =' . $user->getId()) > 0;
     }
 
     /**
@@ -342,7 +382,7 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
      */
     public function getPaymentGatewayCustomerId(): ?string
     {
-        return $this->getSettings(self::PAYMENT_GATEWAY_CUSTOMER_KEY);
+        return $this->get(self::PAYMENT_GATEWAY_CUSTOMER_KEY);
     }
 
     /**
@@ -354,18 +394,9 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
     {
         parent::beforeCreate();
 
-        $this->language = $this->di->getApp()->getSettings('language');
-        $this->timezone = $this->di->getApp()->getSettings('timezone');
-        $this->currency_id = Currencies::findFirstByCode($this->di->getApp()->getSettings('currency'))->getId();
-    }
-
-    /**
-     * Before insert or update Company
-     * @return void
-     */
-    public function beforeSave(): void
-    {
-        $this->trimSpacesFromPropertiesValues();
+        $this->language = $this->di->getApp()->get('language');
+        $this->timezone = $this->di->getApp()->get('timezone');
+        $this->currency_id = Currencies::findFirstByCode($this->di->getApp()->get('currency'))->getId();
     }
 
     /**
@@ -377,61 +408,7 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
     {
         parent::afterCreate();
 
-        //setup the user notificatoin setting
-        $this->setSettings('notifications', $this->user->email);
-        $this->setSettings('paid', '1');
-
-        //now thta we setup de company and associated with the user we need to setup this as its default company
-        if (!UserConfig::findFirst(['conditions' => 'users_id = ?0 and name = ?1', 'bind' => [$this->user->getId(), self::DEFAULT_COMPANY]])) {
-            $userConfig = new UserConfig();
-            $userConfig->users_id = $this->user->getId();
-            $userConfig->name = self::DEFAULT_COMPANY;
-            $userConfig->value = $this->getId();
-
-            if (!$userConfig->save()) {
-                throw new Exception((string)current($userConfig->getMessages()));
-            }
-        }
-
-        $this->associate($this->user, $this);
-        $this->di->getApp()->associate($this->user, $this);
-
-        /**
-         * @var CompaniesBranches
-         */
-        $branch = new CompaniesBranches();
-        $branch->companies_id = $this->getId();
-        $branch->users_id = $this->user->getId();
-        $branch->name = 'Default';
-        $branch->is_default = 1;
-        if (!$branch->save()) {
-            throw new ServerErrorHttpException((string)current($branch->getMessages()));
-        }
-
-        //look for the default plan for this app
-        $companyApps = new UserCompanyApps();
-        $companyApps->companies_id = $this->getId();
-        $companyApps->apps_id = $this->di->getApp()->getId();
-        //$companyApps->subscriptions_id = 0;
-
-        //we need to assign this company to a plan
-        if (empty($this->appPlanId)) {
-            $plan = AppsPlans::getDefaultPlan();
-            $companyApps->stripe_id = $plan->stripe_id;
-        }
-
-        //If the newly created company is not the default then we create a new subscription with the same user
-        if ($this->di->getUserData()->default_company != $this->getId()) {
-            $this->setSettings(self::PAYMENT_GATEWAY_CUSTOMER_KEY, $this->startFreeTrial());
-        }
-
-        $companyApps->subscriptions_id = $this->subscription->getId();
-        $companyApps->created_at = date('Y-m-d H:i:s');
-        $companyApps->is_deleted = 0;
-
-        if (!$companyApps->save()) {
-            throw new ServerErrorHttpException((string)current($companyApps->getMessages()));
-        }
+        $this->fire('company:afterSignup', $this);
     }
 
     /**
@@ -443,14 +420,11 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
     public static function getDefaultByUser(Users $user): Companies
     {
         //verify the user has a default company
-        $defaultCompany = UserConfig::findFirst([
-            'conditions' => 'users_id = ?0 and name = ?1',
-            'bind' => [$user->getId(), self::DEFAULT_COMPANY],
-        ]);
+        $defaultCompany = $user->get(self::cacheKey());
 
         //found it
-        if (is_object($defaultCompany)) {
-            return self::findFirst($defaultCompany->value);
+        if (!is_null($defaultCompany)) {
+            return self::findFirst($defaultCompany);
         }
 
         //second try
@@ -464,34 +438,6 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
         }
 
         throw new Exception(_("User doesn't have an active company"));
-    }
-
-    /**
-     * After the model was update we need to update its custom fields.
-     *
-     * @return void
-     */
-    public function afterUpdate()
-    {
-        //only clean and change custom fields if they are been sent
-        if (!empty($this->customFields)) {
-            //replace old custom with new
-            $allCustomFields = $this->getAllCustomFields();
-            if (is_array($allCustomFields)) {
-                foreach ($this->customFields as $key => $value) {
-                    $allCustomFields[$key] = $value;
-                }
-            }
-
-            if (!empty($allCustomFields)) {
-                //set
-                $this->setCustomFields($allCustomFields);
-                //clean old
-                $this->cleanCustomFields($this->getId());
-                //save new
-                $this->saveCustomFields();
-            }
-        }
     }
 
     /**
@@ -522,5 +468,76 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
         }
 
         return $this->user->stripe_id;
+    }
+
+    /**
+     * Upload Files.
+     *
+     * @todo move this to the baka class
+     * @return void
+     */
+    public function afterSave()
+    {
+        //parent::afterSave();
+        $this->associateFileSystem();
+    }
+
+    /**
+    * Get an array of the associates users for this company.
+    *
+    * @return array
+    */
+    public function getAssociatedUsersByApp(): array
+    {
+        return array_map(function ($users) {
+            return $users['users_id'];
+        }, $this->getUsersAssociatedByApps([
+            'columns' => 'users_id',
+            'conditions' => 'user_active = 1'
+        ])->toArray());
+    }
+
+    /**
+     * Overwrite the relationship.
+     *
+     * @return void
+     */
+    public function getLogo()
+    {
+        return $this->getFileByName('logo');
+    }
+
+    /**
+     * Get the default company key for the current app
+     * this is use to store in redis the default company id for the current
+     * user in session everytime they switch between companies on the diff apps.
+     *
+     * @return string
+     */
+    public static function cacheKey(): string
+    {
+        return self::DEFAULT_COMPANY_APP . Di::getDefault()->getApp()->getId();
+    }
+
+    /**
+    * Given a user remove it from this app company.
+    *
+    * @param Users $user
+    * @return void
+    */
+    public function deactiveUser(Users $user)
+    {
+        //deactive the user from a company app, not delete
+    }
+
+    /**
+     * Given the user reactive it for this app company.
+     *
+     * @param Users $user
+     * @return void
+     */
+    public function reactiveUser(Users $user)
+    {
+        //reactive the user from a company app, not delete
     }
 }

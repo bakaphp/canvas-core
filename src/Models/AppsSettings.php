@@ -7,6 +7,10 @@ use Canvas\Models\Apps;
 class AppsSettings extends AbstractModel
 {
     /**
+     * Default number of settings for an app
+     */
+    const APP_DEFAULT_SETTINGS_NUMBER = 12;
+    /**
      *
      * @var integer
      */
@@ -41,6 +45,11 @@ class AppsSettings extends AbstractModel
      * @var integer
      */
     public $is_deleted;
+
+    /**
+     * Sub based app key word
+     */
+    const SUBSCRIPTION_BASED = 'subscription_based';
 
     /**
      * Initialize method for model.

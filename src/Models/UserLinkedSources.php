@@ -49,6 +49,7 @@ class UserLinkedSources extends \Baka\Auth\Models\UserLinkedSources
         parent::initialize();
 
         $this->setSource('user_linked_sources');
+        $this->belongsTo('users_id', 'Canvas\Models\Users', 'id', ['alias' => 'user']);
     }
 
     /**
@@ -59,5 +60,34 @@ class UserLinkedSources extends \Baka\Auth\Models\UserLinkedSources
     public function getSource(): string
     {
         return 'user_linked_sources';
+    }
+
+    /**
+     * Get all user linked sources by user's id
+     * @param int $usersId
+     * @return array
+     */
+    public static function getMobileUserLinkedSources(int $usersId): array
+    {
+
+        $userDevicesArray = [
+            2 => [],
+            3 => []
+        ];
+
+        $linkedSource = UserLinkedSources::find([
+            'conditions' => 'users_id = ?0 and source_id in (2,3)',
+            'bind' => [$usersId]
+        ]);
+
+        if ($linkedSource) {
+            //add to list of devices id
+            foreach ($linkedSource as $device) {
+                $userDevicesArray[$device->source_id][] = $device->source_users_id_text;
+            }
+        }
+
+        return $userDevicesArray;
+
     }
 }
