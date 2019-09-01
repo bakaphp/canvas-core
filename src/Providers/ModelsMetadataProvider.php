@@ -19,10 +19,11 @@ class ModelsMetadataProvider implements ServiceProviderInterface
     public function register(DiInterface $container)
     {
         $config = $container->getShared('config');
+        $app = $container->getShared('app');
 
         $container->setShared(
             'modelsMetadata',
-            function () use ($config) {
+            function () use ($config, $app) {
                 if (strtolower($config->app->env) != Flags::PRODUCTION) {
                     return new MemoryMetaDataAdapter();
                 }
@@ -38,7 +39,7 @@ class ModelsMetadataProvider implements ServiceProviderInterface
                     ],
                     'client' => [
                         \Memcached::OPT_HASH => \Memcached::HASH_MD5,
-                        \Memcached::OPT_PREFIX_KEY => 'bakaapi-',
+                        \Memcached::OPT_PREFIX_KEY => $app->name.'-',
                     ],
                     'lifetime' => 3600,
                     'prefix' => $prefix . '-',

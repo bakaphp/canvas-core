@@ -80,7 +80,7 @@ class ClearcacheTask extends PhTask
         //print_r($keys);
         echo sprintf('Found %s keys', count($keys)) . PHP_EOL;
         foreach ($keys as $key) {
-            if ('bakaapi-' === substr($key, 0, 8)) {
+            if ($this->app->name.'-' === substr($key, 0, 8)) {
                 $server = $memcached->getServerByKey($key);
                 $result = $memcached->deleteByKey($server['host'], $key);
                 $resultCode = $memcached->getResultCode();

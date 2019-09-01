@@ -38,7 +38,7 @@
         "php-http/guzzle6-adapter": "1.1",
         "psr/log": "^1.0",
         "pusher/pusher-php-server": "3.4.1",
-        "robmorgan/phinx": "^0.10",
+        "robmorgan/phinx": "^0.11",
         "sentry/sentry": "^1.9",
         "sly/notification-pusher": "2.x",
         "vlucas/phpdotenv": "^2.4"
