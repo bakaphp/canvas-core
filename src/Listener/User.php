@@ -85,7 +85,7 @@ class User
         }
 
         //if its a ecosystem app and we are inviting a user to it, we need to move the user password to it
-        if ($user->getDI()->getApp()->ecosystemAuth()) {
+        if (!$user->getDI()->getApp()->ecosystemAuth()) {
             App::updatePassword($user, $user->password);
         }
 

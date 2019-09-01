@@ -583,7 +583,7 @@ class Users extends \Baka\Auth\Models\Users
 
         $app = Di::getDefault()->getApp();
 
-        if ($app->ecosystemAuth()) {
+        if (!$app->ecosystemAuth()) {
             $userAppData = $this->getApp([
                 'conditions' => 'companies_id = :id:',
                 'bind' => [
@@ -616,7 +616,7 @@ class Users extends \Baka\Auth\Models\Users
     {
         $app = Di::getDefault()->getApp();
 
-        if ($app->ecosystemAuth()) {
+        if (!$app->ecosystemAuth()) {
             //update all companies password for the current user app
             AppAuth::updatePassword($this, Password::make($newPassword));
         } else {
@@ -635,7 +635,7 @@ class Users extends \Baka\Auth\Models\Users
     {
         $app = Di::getDefault()->getApp();
 
-        if ($app->ecosystemAuth()) {
+        if (!$app->ecosystemAuth()) {
             try {
                 //did we find the email?
                 //does it have access to this app?
