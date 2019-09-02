@@ -7,7 +7,7 @@ namespace Canvas\Providers;
 use function Canvas\Core\envValue;
 use Phalcon\Di\ServiceProviderInterface;
 use Phalcon\DiInterface;
-use Phalcon\Mvc\Model\MetaData\Libmemcached;
+use Phalcon\Mvc\Model\Metadata\Memcache;
 use Phalcon\Mvc\Model\Metadata\Memory as MemoryMetaDataAdapter;
 use Canvas\Constants\Flags;
 
@@ -19,15 +19,14 @@ class ModelsMetadataProvider implements ServiceProviderInterface
     public function register(DiInterface $container)
     {
         $config = $container->getShared('config');
+        $app = envValue('GEWAER_APP_ID', 1);
 
         $container->setShared(
             'modelsMetadata',
-            function () use ($config, $container) {
+            function () use ($config, $app) {
                 if (strtolower($config->app->env) != Flags::PRODUCTION) {
                     return new MemoryMetaDataAdapter();
                 }
-
-                $app = $container->getShared('app');
 
                 $prefix = 'metadata';
                 $backOptions = [
@@ -40,13 +39,13 @@ class ModelsMetadataProvider implements ServiceProviderInterface
                     ],
                     'client' => [
                         \Memcached::OPT_HASH => \Memcached::HASH_MD5,
-                        \Memcached::OPT_PREFIX_KEY => $app->name.'-',
+                        \Memcached::OPT_PREFIX_KEY => strtolower($app) . '-',
                     ],
                     'lifetime' => 3600,
                     'prefix' => $prefix . '-',
                 ];
 
-                return new Libmemcached($backOptions);
+                return new Memcache($backOptions);
             }
         );
     }
