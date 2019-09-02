@@ -148,7 +148,7 @@ class AuthController extends \Baka\Auth\AuthController
         try {
             $this->db->begin();
 
-            $user->signup();
+            $user->signUp();
 
             $this->db->commit();
         } catch (Exception $e) {
