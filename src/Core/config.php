@@ -2,10 +2,11 @@
 
 use function Canvas\Core\appPath;
 use function Canvas\Core\envValue;
+use Canvas\Constants\Flags;
 
 return [
     'application' => [ //@todo migration to app
-        'production' => getenv('PRODUCTION'),
+        'production' => envValue('APP_ENV', 'development') == Flags::PRODUCTION ?: 0,
         'development' => getenv('DEVELOPMENT'),
         'jwtSecurity' => getenv('JWT_SECURITY'),
         'debug' => [
@@ -22,7 +23,7 @@ return [
         'timezone' => envValue('APP_TIMEZONE', 'UTC'),
         'debug' => envValue('APP_DEBUG', false),
         'env' => envValue('APP_ENV', 'development'),
-        'production ' => envValue('PRODUCTION', 0) == 1 ? 1 : 0,
+        'production ' => envValue('APP_ENV', 'development') == Flags::PRODUCTION ?: 0,
         'logsReport' => envValue('APP_LOGS_REPORT', false),
         'devMode' => boolval(
             'development' === envValue('APP_ENV', 'development')
@@ -146,21 +147,21 @@ return [
         'secret' => getenv('STRIPE_SECRET'),
         'public' => getenv('STRIPE_PUBLIC'),
     ],
-    'throttle'=>[
+    'throttle' => [
         'bucketSize' => getenv('THROTTLE_BUCKET_SIZE'),
         'refillTime' => getenv('THROTTLE_REFILL_TIME'),
         'refillAmount' => getenv('THROTTLE_REFILL_AMOUNT'),
     ],
-    'pushNotifications'=>[
-        'android'=>[
-            'appId'=>getenv('CANVAS_ANDROID_APP_ID'),
-            'authKey'=> getenv('CANVAS_ANDROID_AUTH_KEY'),
-            'userAuthKey'=> getenv('CANVAS_ANDROID_APP_USER_AUTH_KEY')
+    'pushNotifications' => [
+        'android' => [
+            'appId' => getenv('CANVAS_ANDROID_APP_ID'),
+            'authKey' => getenv('CANVAS_ANDROID_AUTH_KEY'),
+            'userAuthKey' => getenv('CANVAS_ANDROID_APP_USER_AUTH_KEY')
         ],
-        'ios'=>[
-            'appId'=>getenv('CANVAS_IOS_APP_ID'),
-            'authKey'=> getenv('CANVAS_IOS_AUTH_KEY'),
-            'userAuthKey'=> getenv('CANVAS_IOS_APP_USER_AUTH_KEY')
+        'ios' => [
+            'appId' => getenv('CANVAS_IOS_APP_ID'),
+            'authKey' => getenv('CANVAS_IOS_AUTH_KEY'),
+            'userAuthKey' => getenv('CANVAS_IOS_APP_USER_AUTH_KEY')
         ]
     ]
 ];
