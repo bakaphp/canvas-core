@@ -120,6 +120,12 @@ class Subscription extends PhalconSubscription
 
     /**
      *
+     * @var date
+     */
+    public $next_due_payment;
+
+    /**
+     *
      * @var string
      */
     public $created_at;
