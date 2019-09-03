@@ -33,7 +33,7 @@ class AppsSettingsSeeder extends AbstractSeed
             ],
             [
                 'apps_id' => 1,
-                'name' => 'subscription_based',
+                'name' => 'allow_user_registration',
                 'value' => '1',
                 'created_at' => date('Y-m-d H:m:s'),
             ],
