@@ -16,7 +16,7 @@ class AddNextDuePaymentOnSubscriptionsTable extends AbstractMigration
                 'comment' => '',
                 'row_format' => 'DYNAMIC',
             ])
-            ->addColumn('next_due_payment', 'date', [
+            ->addColumn('next_due_payment', 'datetime', [
                 'null' => true,
                 'after' => 'grace_period_ends',
             ])

@@ -120,7 +120,7 @@ class Subscription extends PhalconSubscription
 
     /**
      *
-     * @var date
+     * @var datetime
      */
     public $next_due_payment;
 
