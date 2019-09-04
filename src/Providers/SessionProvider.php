@@ -5,8 +5,7 @@ namespace Canvas\Providers;
 use function Canvas\Core\envValue;
 use Phalcon\Di\ServiceProviderInterface;
 use Phalcon\DiInterface;
-use Memcached;
-use Phalcon\Session\Adapter\Libmemcached;
+use Phalcon\Session\Adapter\Redis;
 
 class SessionProvider implements ServiceProviderInterface
 {
@@ -15,33 +14,25 @@ class SessionProvider implements ServiceProviderInterface
      */
     public function register(DiInterface $container)
     {
-        $config = $container->getShared('config');
+        $app = envValue('GEWAER_APP_ID', 1);
 
         $container->setShared(
             'session',
-            function () use ($config) {
-                $backOptions = [
-                    'servers' => [
-                        0 => [
-                            'host' => envValue('DATA_API_MEMCACHED_HOST', '127.0.0.1'),
-                            'port' => envValue('DATA_API_MEMCACHED_PORT', 11211),
-                            'weight' => envValue('DATA_API_MEMCACHED_WEIGHT', 100),
-                        ],
-                    ],
-                    'client' => [
-                        Memcached::OPT_HASH => Memcached::HASH_MD5,
-                        Memcached::OPT_PREFIX_KEY => 'bakasession' . $config->app->id . '-',
-                    ],
-                    'lifetime' => 8600,
-                    'prefix' => 'bakasession' . $config->app->id . '-',
-                    'persistent' => false
-                ];
+            function () use ($app) {
+                $session = new Redis(
+                    [
+                        'uniqueId' => $app,
+                        'host' => envValue('REDIS_HOST', '127.0.0.1'),
+                        'port' => (int) envValue('REDIS_PORT', 6379),
+                        'persistent' => false,
+                        'lifetime' => 3600,
+                        'prefix' => 'session',
+                    ]
+                );
 
-                $memcache = new Libmemcached($backOptions);
+                $session->start();
 
-                $memcache->start();
-
-                return $memcache;
+                return $session;
             }
         );
     }

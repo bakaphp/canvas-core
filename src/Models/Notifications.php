@@ -18,7 +18,7 @@ class Notifications extends AbstractModel
      * @var integer
      */
     public $from_users_id;
-    
+
     /**
      *
      * @var integer
@@ -106,7 +106,6 @@ class Notifications extends AbstractModel
             ['alias' => 'from']
         );
 
-
         $this->belongsTo(
             'notification_type_id',
             'Canvas\Models\NotificationType',
@@ -126,14 +125,14 @@ class Notifications extends AbstractModel
     }
 
     /**
-     * Mark as Read all the notification from a user
+     * Mark as Read all the notification from a user.
      *
      * @param Users $user
      * @return void
      */
     public static function markAsRead(Users $user): bool
     {
-        $result = Di::getDefault()->getDb()->prepare("UPDATE notifications set `read` = 1 WHERE users_id = ? AND companies_id = ? AND apps_id = ?");
+        $result = Di::getDefault()->getDb()->prepare('UPDATE notifications set `read` = 1 WHERE users_id = ? AND companies_id = ? AND apps_id = ?');
         $result->execute([
             $user->getId(),
             $user->currentCompanyId(),
@@ -144,14 +143,14 @@ class Notifications extends AbstractModel
     }
 
     /**
-     * Get the total notification for the current user
+     * Get the total notification for the current user.
      *
      * @return int
      */
     public static function totalUnRead(Users $user): int
     {
         return self::count([
-            'conditions' => 'read = 0 AND users_id = ?0 AND companies_id = ?1 AND apps_id = ?2',
+            'conditions' => 'is_deleted = 0 AND read = 0 AND users_id = ?0 AND companies_id = ?1 AND apps_id = ?2',
             'bind' => [$user->getId(), $user->currentCompanyId(), Di::getDefault()->getApp()->getId()]
         ]);
     }
