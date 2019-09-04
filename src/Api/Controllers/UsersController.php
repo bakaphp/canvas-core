@@ -6,11 +6,10 @@ namespace Canvas\Api\Controllers;
 
 use Canvas\Models\Users;
 use Phalcon\Http\Response;
-use Phalcon\Validation;
 use Phalcon\Validation\Validator\PresenceOf;
 use Canvas\Exception\BadRequestHttpException;
 use Canvas\Exception\ServerErrorHttpException;
-use \Baka\Auth\UsersController as BakaUsersController;
+use Baka\Auth\UsersController as BakaUsersController;
 use Canvas\Contracts\Controllers\ProcessOutputMapperTrait;
 use Canvas\Dto\User as UserDto;
 use Canvas\Mapper\UserMapper;
@@ -125,12 +124,37 @@ class UsersController extends BakaUsersController
             'id = ?0 AND is_deleted = 0',
             'bind' => [$id],
         ]);
-        $userObject = $user;
 
         //get the results and append its relationships
         $user = $this->appendRelationshipsToResult($this->request, $user);
 
         return $this->response($this->processOutput($user));
+    }
+
+    /**
+     * processOutput.
+     *
+     * @todo clean this up
+     *
+     * @param mixed $results
+     * @return mixed
+     */
+    protected function processOutput($results)
+    {
+        $defaultCompany = $this->userData->getDefaultCompany()->getId();
+
+        /**
+         * Overwrite the default company for the user.
+         */
+        if ($this->request->hasQuery('relationships')) {
+            if (isset($results['default_company'])) {
+                $results['default_company'] = $defaultCompany;
+            }
+        } elseif (is_object($results)) {
+            $results->default_company = $defaultCompany;
+        }
+
+        return $results;
     }
 
     /**
@@ -217,7 +241,7 @@ class UsersController extends BakaUsersController
     }
 
     /**
-     * Change User's active status for in current app
+     * Change User's active status for in current app.
      *
      * @param int $id
      * @param int $appsId
@@ -227,8 +251,8 @@ class UsersController extends BakaUsersController
     public function changeAppUserActiveStatus(int $id, int $appsId): Response
     {
         $userAssociatedToApp = UsersAssociatedApps::findFirstOrFail([
-            'conditions'=> 'users_id = ?0 and apps_id = ?1 and companies_id = ?2 and is_deleted = 0',
-            'bind'=> [$id,$this->app->getId(),$this->userData->getDefaultCompany()->getId()]
+            'conditions' => 'users_id = ?0 and apps_id = ?1 and companies_id = ?2 and is_deleted = 0',
+            'bind' => [$id, $this->app->getId(), $this->userData->getDefaultCompany()->getId()]
         ]);
         $userAssociatedToApp->user_active = $userAssociatedToApp->user_active ? 0 : 1;
         $userAssociatedToApp->updateOrFail();
