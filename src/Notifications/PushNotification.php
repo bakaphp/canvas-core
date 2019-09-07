@@ -19,11 +19,6 @@ class PushNotification
     public $message;
 
     /**
-     * @var string
-     */
-    public $icon;
-
-    /**
      * User Object
      * 
      * @var Users
