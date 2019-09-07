@@ -68,7 +68,7 @@ class Api extends AbstractBootstrap
 
         //only log when server error production is seerver error or dev
         if ($e instanceof ServerErrorHttpException || strtolower($config->app->env) != Flags::PRODUCTION) {
-            $this->container->getLog()->error($e->getMessage(), [$e->getTraceAsString()]);
+            $this->container->getLog()->error($e->getMessage(), [$e]);
         }
 
         return $response;

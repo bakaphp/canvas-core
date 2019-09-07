@@ -13,6 +13,7 @@ use OneSignal\Config;
 use OneSignal\OneSignal;
 use Canvas\Models\Users;
 use Canvas\Models\UserLinkedSources;
+use Canvas\Notifications\PushNotification;
 
 class PushNotifications extends Job implements QueueableJobInterfase
 {
@@ -44,11 +45,11 @@ class PushNotifications extends Job implements QueueableJobInterfase
      * @param string $event
      * @param array $params
      */
-    public function __construct(Users $users, string $message, array $params)
+    public function __construct(PushNotification $pushNotification)
     {
-        $this->users = $users;
-        $this->message = $message;
-        $this->params = $params;
+        $this->users = $pushNotification->to;
+        $this->message = $pushNotification->message;
+        $this->params = $pushNotification->params;
     }
 
     /**
@@ -84,10 +85,23 @@ class PushNotifications extends Job implements QueueableJobInterfase
 
         //send push
         if (!empty($userDevicesArray[2])) {
-            self::android($config->pushNotifications->android)->notifications->add($pushBodyAndroid);
+            self::oneSignal(
+                $config->pushNotifications->appId,
+                $config->pushNotifications->authKey,
+                $config->pushNotifications->userAuthKey
+            )->notifications->add(
+                $pushBodyAndroid
+            );
         }
+
         if (!empty($userDevicesArray[3])) {
-            self::iOs($config->pushNotifications->ios)->notifications->add($pushBodyiOS);
+            self::oneSignal(
+                $config->pushNotifications->appId,
+                $config->pushNotifications->authKey,
+                $config->pushNotifications->userAuthKey
+            )->notifications->add(
+                $pushBodyiOS
+            );
         }
 
         return true;
@@ -115,25 +129,5 @@ class PushNotifications extends Job implements QueueableJobInterfase
         $client = new HttpClient(new GuzzleAdapter($guzzle), new GuzzleMessageFactory());
 
         return  new OneSignal($config, $client);
-    }
-    
-    /**
-     * Return the android one signal object.
-     * @param object $config
-     * @return OneSignal
-     */
-    private static function android(object $config): OneSignal
-    {
-        return self::oneSignal($config->appId, $config->authKey, $config->userAuthKey);
-    }
-
-    /**
-     * Return the iOs one signal object.
-     * @param object $config
-     * @return OneSignal
-     */
-    private static function iOs(object $config): OneSignal
-    {
-        return self::oneSignal($config->appId, $config->authKey, $config->userAuthKey);
     }
 }

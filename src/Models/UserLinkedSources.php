@@ -69,12 +69,14 @@ class UserLinkedSources extends \Baka\Auth\Models\UserLinkedSources
      */
     public static function getMobileUserLinkedSources(int $usersId): array
     {
-
         $userDevicesArray = [
             2 => [],
             3 => []
         ];
 
+        /**
+         * @todo change this from ID's to use the actual definition of the android / ios apps
+         */
         $linkedSource = UserLinkedSources::find([
             'conditions' => 'users_id = ?0 and source_id in (2,3)',
             'bind' => [$usersId]

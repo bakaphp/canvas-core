@@ -99,6 +99,7 @@ class Notification implements NotificationInterfase
      */
     protected function toMail(): ?Message
     {
+        return null;
     }
 
     /**
@@ -106,8 +107,9 @@ class Notification implements NotificationInterfase
      *
      * @return void
      */
-    protected function toPushNotification()
+    protected function toPushNotification(): ?PushNotification
     {
+        return null;
     }
 
     /**
@@ -226,8 +228,14 @@ class Notification implements NotificationInterfase
         $notification->read = 0;
         $notification->saveOrFail();
 
-        if ($this->toMail() instanceof Message) {
-            $this->fire('notification:sendMail', $this->toMail());
+        $toMail = $this->toMail();
+        if ($toMail instanceof Message) {
+            $this->fire('notification:sendMail', $toMail);
+        }
+
+        $toPushNotification = $this->toPushNotification();
+        if ($toPushNotification instanceof PushNotification) {
+            $this->fire('notification:sendPushNotification', $toPushNotification);
         }
 
         /**
