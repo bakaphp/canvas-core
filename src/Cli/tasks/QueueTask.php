@@ -10,7 +10,7 @@ use Phalcon\Mvc\Model;
 use Throwable;
 
 /**
- * CLI To send push ontification and pusher msg.
+ * CLI To send push notification and pusher msg.
  *
  * @package Canvas\Cli\Tasks
  *
@@ -40,9 +40,7 @@ class QueueTask extends PhTask
     public function eventsAction()
     {
         $callback = function ($msg) {
-            //we get the data from our event trigger and unserialize
-            $event = unserialize($msg->body);
-
+            //check the db before running anything
             if (!$this->isDbConnected('db')) {
                 return ;
             }
@@ -52,6 +50,9 @@ class QueueTask extends PhTask
                     return ;
                 }
             }
+
+            //we get the data from our event trigger and unserialize
+            $event = unserialize($msg->body);
 
             //overwrite the user who is running this process
             if (isset($event['userData']) && $event['userData'] instanceof Users) {
@@ -77,9 +78,7 @@ class QueueTask extends PhTask
     public function notificationsAction()
     {
         $callback = function ($msg) {
-            //we get the data from our event trigger and unserialize
-            $notification = unserialize($msg->body);
-
+            //check the db before running anything
             if (!$this->isDbConnected('db')) {
                 return ;
             }
@@ -89,6 +88,9 @@ class QueueTask extends PhTask
                     return ;
                 }
             }
+
+            //we get the data from our event trigger and unserialize
+            $notification = unserialize($msg->body);
 
             //overwrite the user who is running this process
             if ($notification['from'] instanceof Users) {
@@ -139,9 +141,7 @@ class QueueTask extends PhTask
         $queue = !isset($params[0]) ? QUEUE::JOBS : $params[0];
 
         $callback = function ($msg) {
-            //we get the data from our event trigger and unserialize
-            $job = unserialize($msg->body);
-
+            //check the db before running anything
             if (!$this->isDbConnected('db')) {
                 return ;
             }
@@ -151,6 +151,9 @@ class QueueTask extends PhTask
                     return ;
                 }
             }
+
+            //we get the data from our event trigger and unserialize
+            $job = unserialize($msg->body);
 
             //overwrite the user who is running this process
             if ($job['userData'] instanceof Users) {
