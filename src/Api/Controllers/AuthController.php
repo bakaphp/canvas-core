@@ -22,7 +22,6 @@ use Baka\Auth\Models\Sessions;
 use Canvas\Auth\Factory;
 use Canvas\Validation as CanvasValidation;
 use Canvas\Notifications\ResetPassword;
-use Canvas\Hashing\Password;
 use Canvas\Notifications\PasswordUpdate;
 use Canvas\Validations\PasswordValidation;
 
@@ -69,19 +68,25 @@ class AuthController extends \Baka\Auth\AuthController
      */
     public function login() : Response
     {
-        $email = trim($this->request->getPost('email', 'string', ''));
-        $password = trim($this->request->getPost('password', 'string', ''));
-        $admin = 0;
+        $request = $this->request->getPostData();
+
         $userIp = !defined('API_TESTS') ? $this->request->getClientAddress() : '127.0.0.1'; //help getting the client ip on scrutinizer :(
-        $remember = $this->request->getPost('remember', 'int', 1);
+        $admin = 0;
+        $remember = 1;
 
         //Ok let validate user password
         $validation = new CanvasValidation();
-        $validation->add('email', new PresenceOf(['message' => _('The email is required.')]));
+        $validation->add('email', new EmailValidator(['message' => _('The email is not valid')]));
         $validation->add('password', new PresenceOf(['message' => _('The password is required.')]));
 
+        $validation->setFilters('name', 'trim');
+        $validation->setFilters('password', 'trim');
+
         //validate this form for password
-        $validation->validate($this->request->getPost());
+        $validation->validate($request);
+
+        $email = $validation->getValue('email');
+        $password = $validation->getValue('password');
 
         /**
          * Login the user via ecosystem or app.
@@ -114,18 +119,13 @@ class AuthController extends \Baka\Auth\AuthController
     {
         $user = $this->userModel;
 
-        $user->email = $this->request->getPost('email', 'email');
-        $user->firstname = ltrim(trim($this->request->getPost('firstname', 'string', '')));
-        $user->lastname = ltrim(trim($this->request->getPost('lastname', 'string', '')));
-        $user->password = ltrim(trim($this->request->getPost('password', 'string', '')));
-        $userIp = !defined('API_TESTS') ? $this->request->getClientAddress() : '127.0.0.1'; //help getting the client ip on scrutinizer :(
-        $user->displayname = ltrim(trim($this->request->getPost('displayname', 'string', '')));
-        $user->defaultCompanyName = ltrim(trim($this->request->getPost('default_company', 'string', '')));
+        $request = $this->request->getPostData();
 
         //Ok let validate user password
         $validation = new CanvasValidation();
         $validation->add('password', new PresenceOf(['message' => _('The password is required.')]));
         $validation->add('firstname', new PresenceOf(['message' => _('The firstname is required.')]));
+        $validation->add('lastname', new PresenceOf(['message' => _('The lastname is required.')]));
         $validation->add('email', new EmailValidator(['message' => _('The email is not valid.')]));
 
         $validation->add(
@@ -141,8 +141,20 @@ class AuthController extends \Baka\Auth\AuthController
             'with' => 'verify_password',
         ]));
 
+        $validation->setFilters('password', 'trim');
+        $validation->setFilters('displayname', 'trim');
+        $validation->setFilters('default_company', 'trim');
+
         //validate this form for password
-        $validation->validate($this->request->getPost());
+        $validation->validate($request);
+
+        $user->email = $validation->getValue('email');
+        $user->firstname = $validation->getValue('firstname');
+        $user->lastname = $validation->getValue('lastname');
+        $user->password = $validation->getValue('password');
+        $userIp = !defined('API_TESTS') ? $this->request->getClientAddress() : '127.0.0.1'; //help getting the client ip on scrutinizer :(
+        $user->displayname = $validation->getValue('displayname');
+        $user->defaultCompanyName = $validation->getValue('default_company');
 
         //user registration
         try {
@@ -206,8 +218,28 @@ class AuthController extends \Baka\Auth\AuthController
      */
     public function changeUserEmail(string $hash): Response
     {
-        $newEmail = $this->request->getPost('new_email', 'string');
-        $password = $this->request->getPost('password', 'string');
+        $request = $this->request->getPostData();
+
+        //Ok let validate user password
+        $validation = new CanvasValidation();
+        $validation->add('password', new PresenceOf(['message' => _('The password is required.')]));
+        $validation->add('new_email', new EmailValidator(['message' => _('The email is not valid.')]));
+
+        $validation->add(
+            'password',
+            new StringLength([
+                'min' => 8,
+                'messageMinimum' => _('Password is too short. Minimum 8 characters.'),
+            ])
+        );
+
+        //validate this form for password
+        $validation->setFilters('password', 'trim');
+        $validation->setFilters('default_company', 'trim');
+        $validation->validate($request);
+
+        $newEmail = $validation->getValue('new_email');
+        $password = $validation->getValue('password');
 
         //Search user by key
         $user = Users::getByUserActivationEmail($hash);
@@ -257,13 +289,14 @@ class AuthController extends \Baka\Auth\AuthController
      */
     public function recover(): Response
     {
-        $email = $this->request->getPost('email', 'email');
+        $request = $this->request->getPostData();
 
         $validation = new CanvasValidation();
-        $validation->add('email', new PresenceOf(['message' => _('The email is required.')]));
-        $validation->add('email', new EmailValidator(['message' => _('The email is invalid.')]));
+        $validation->add('email', new EmailValidator(['message' => _('The email is not valid.')]));
 
-        $validation->validate($this->request->getPost());
+        $validation->validate($request);
+
+        $email = $validation->getValue('email');
 
         $recoverUser = Users::getByEmail($email);
         $recoverUser->generateForgotHash();
@@ -287,9 +320,11 @@ class AuthController extends \Baka\Auth\AuthController
             throw new Exception(_('This Key to reset password doesn\'t exist'));
         }
 
+        $request = $this->request->getPostData();
+
         // Get the new password and the verify
-        $newPassword = trim($this->request->getPost('new_password', 'string'));
-        $verifyPassword = trim($this->request->getPost('verify_password', 'string'));
+        $newPassword = trim($request['new_password']);
+        $verifyPassword = trim($request['verify_password']);
 
         //Ok let validate user password
         PasswordValidation::validate($newPassword, $verifyPassword);
@@ -311,7 +346,7 @@ class AuthController extends \Baka\Auth\AuthController
     /**
     * Set the email config array we are going to be sending.
     *
-    * @deprecated move to notifications
+    * @todo deprecated move to notifications
     * @param String $emailAction
     * @param Users  $user
     * @return void
