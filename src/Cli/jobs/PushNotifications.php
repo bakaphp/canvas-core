@@ -85,12 +85,12 @@ class PushNotifications extends Job implements QueueableJobInterfase
          */
         //send push android
         if (!empty($userDevicesArray[2])) {
-            $pushBody['include_player_ids'] = $userDevicesArray[2];
+            $pushBody['include_player_ids'][] = $userDevicesArray[2][0];
         }
 
         //ios
         if (!empty($userDevicesArray[3])) {
-            $pushBody['include_player_ids'] = $userDevicesArray[3];
+            $pushBody['include_player_ids'][] = $userDevicesArray[3][0];
         }
 
         $this->oneSignal(
