@@ -83,6 +83,9 @@ class Queue
                 $channel->wait();
             }
 
+            Di::getDefault()->get('db')->close();
+            Di::getDefault()->reset();
+
             $channel->close();
             $queue->close();
         });
