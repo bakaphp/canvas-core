@@ -153,15 +153,8 @@ return [
         'refillAmount' => getenv('THROTTLE_REFILL_AMOUNT'),
     ],
     'pushNotifications' => [
-        'android' => [
-            'appId' => getenv('CANVAS_ANDROID_APP_ID'),
-            'authKey' => getenv('CANVAS_ANDROID_AUTH_KEY'),
-            'userAuthKey' => getenv('CANVAS_ANDROID_APP_USER_AUTH_KEY')
-        ],
-        'ios' => [
-            'appId' => getenv('CANVAS_IOS_APP_ID'),
-            'authKey' => getenv('CANVAS_IOS_AUTH_KEY'),
-            'userAuthKey' => getenv('CANVAS_IOS_APP_USER_AUTH_KEY')
-        ]
+        'appId' => getenv('CANVAS_ONESIGNAL_APP_ID'),
+        'authKey' => getenv('CANVAS_ONESIGNAL_AUTH_KEY'),
+        'userAuthKey' => getenv('CANVAS_ONESIGNAL_APP_USER_AUTH_KEY')
     ]
 ];
