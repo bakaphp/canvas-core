@@ -7,6 +7,7 @@ use Phalcon\Cli\Task as PhTask;
 use Canvas\Models\Users;
 use Canvas\Queue\Queue;
 use Phalcon\Mvc\Model;
+use Throwable;
 
 /**
  * CLI To send push ontification and pusher msg.
@@ -42,6 +43,17 @@ class QueueTask extends PhTask
             //we get the data from our event trigger and unserialize
             $event = unserialize($msg->body);
 
+            if (!$this->isDbConnected('db')) {
+                return ;
+            }
+
+            /**
+             * @todo in the future remove if neede
+             */
+            if (!$this->isDbConnected('dblocal')) {
+                return ;
+            }
+
             //overwrite the user who is running this process
             if (isset($event['userData']) && $event['userData'] instanceof Users) {
                 $this->di->setShared('userData', $event['userData']);
@@ -68,6 +80,17 @@ class QueueTask extends PhTask
         $callback = function ($msg) {
             //we get the data from our event trigger and unserialize
             $notification = unserialize($msg->body);
+
+            if (!$this->isDbConnected('db')) {
+                return ;
+            }
+
+            /**
+             * @todo in the future remove if neede
+             */
+            if (!$this->isDbConnected('dblocal')) {
+                return ;
+            }
 
             //overwrite the user who is running this process
             if ($notification['from'] instanceof Users) {
@@ -121,6 +144,17 @@ class QueueTask extends PhTask
             //we get the data from our event trigger and unserialize
             $job = unserialize($msg->body);
 
+            if (!$this->isDbConnected('db')) {
+                return ;
+            }
+
+            /**
+             * @todo in the future remove if neede
+             */
+            if (!$this->isDbConnected('dblocal')) {
+                return ;
+            }
+
             //overwrite the user who is running this process
             if ($job['userData'] instanceof Users) {
                 $this->di->setShared('userData', $job['userData']);
@@ -139,7 +173,7 @@ class QueueTask extends PhTask
             }
 
             /**
-             * swoole coroutine
+             * swoole coroutine.
              */
             go(function () use ($job, $msg) {
                 //instance notification and pass the entity
@@ -153,5 +187,28 @@ class QueueTask extends PhTask
         };
 
         Queue::process($queue, $callback);
+    }
+
+    /**
+     * Confirm if the db is connected.
+     *
+     * @return boolean
+     */
+    protected function isDbConnected(string $dbProvider): bool
+    {
+        if (!$this->di->has($dbProvider)) {
+            return false;
+        }
+
+        try {
+            $this->di->get($dbProvider)->fetchAll('SELECT 1');
+        } catch (Throwable $e) {
+            if (strpos($e->getMessage(), 'MySQL server has gone away') !== false) {
+                $this->di->get($dbProvider)->connect();
+                return true;
+            }
+            return false;
+        }
+        return true;
     }
 }
