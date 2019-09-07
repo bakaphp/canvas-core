@@ -47,11 +47,10 @@ class QueueTask extends PhTask
                 return ;
             }
 
-            /**
-             * @todo in the future remove if neede
-             */
-            if (!$this->isDbConnected('dblocal')) {
-                return ;
+            if ($this->di->has('dblocal')) {
+                if (!$this->isDbConnected('dblocal')) {
+                    return ;
+                }
             }
 
             //overwrite the user who is running this process
@@ -85,11 +84,10 @@ class QueueTask extends PhTask
                 return ;
             }
 
-            /**
-             * @todo in the future remove if neede
-             */
-            if (!$this->isDbConnected('dblocal')) {
-                return ;
+            if ($this->di->has('dblocal')) {
+                if (!$this->isDbConnected('dblocal')) {
+                    return ;
+                }
             }
 
             //overwrite the user who is running this process
@@ -148,11 +146,10 @@ class QueueTask extends PhTask
                 return ;
             }
 
-            /**
-             * @todo in the future remove if neede
-             */
-            if (!$this->isDbConnected('dblocal')) {
-                return ;
+            if ($this->di->has('dblocal')) {
+                if (!$this->isDbConnected('dblocal')) {
+                    return ;
+                }
             }
 
             //overwrite the user who is running this process
@@ -196,10 +193,6 @@ class QueueTask extends PhTask
      */
     protected function isDbConnected(string $dbProvider): bool
     {
-        if (!$this->di->has($dbProvider)) {
-            return false;
-        }
-
         try {
             $this->di->get($dbProvider)->fetchAll('SELECT 1');
         } catch (Throwable $e) {
