@@ -278,7 +278,7 @@ class AuthController extends \Baka\Auth\AuthController
             'bind' => [$request['provider']]
         ]);
 
-        return $this->response($this->providerLogin($source, $request['social_id'], $request['email']));
+        return $this->response($this->providerLogin($source, $request['social_id'], $request));
     }
 
     /**
