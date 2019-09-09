@@ -30,7 +30,7 @@ class PaymentsController extends BaseController
      */
     use StripeWebhookHandlersTrait;
 
-    /**
+    /**f
      * Handle stripe webhoook calls
      *
      * @return Response
@@ -68,6 +68,23 @@ class PaymentsController extends BaseController
         $user = Users::findFirstByStripeId($payload['data']['object']['customer']);
         if ($user) {
             //We need to send a mail to the user
+            $this->sendWebhookResponseEmail($user, $payload, $method);
+        }
+        return $this->response(['Webhook Handled']);
+    }
+
+    /**
+     * Handle customer subscription cancellation.
+     *
+     * @param  array $payload
+     * @return Response
+     */
+    protected function handleCustomerSubscriptionDeleted(array $payload, string $method): Response
+    {
+        $user = Users::findFirstByStripeId($payload['data']['object']['customer']);
+        if ($user) {
+            //Update current subscription's paid column to false and store date of payment
+            $this->updateSubscriptionPaymentStatus($user, $payload);
             $this->sendWebhookResponseEmail($user, $payload, $method);
         }
         return $this->response(['Webhook Handled']);
@@ -155,6 +172,10 @@ class PaymentsController extends BaseController
             case 'handleCustomerSubscriptionUpdated':
                 $templateName = 'users-subscription-updated';
                 break;
+            
+            case 'handleCustomerSubscriptionDeleted':
+                $templateName = 'users-subscription-canceled';
+                break;
 
             case 'handleChargeSucceeded':
                 $templateName = 'users-charge-success';
@@ -204,6 +225,12 @@ class PaymentsController extends BaseController
                 $subscription->trial_ends_days = 0;
             }
 
+            //Paid status is false if plan has been canceled
+            if ($payload['data']['object']['status'] == 'canceled') {
+                $subscription->paid = 0;
+                $subscription->charge_date = null;
+            }
+
             if ($subscription->update()) {
                 //Update companies setting
                 $paidSetting = CompaniesSettings::findFirst([
@@ -215,8 +242,8 @@ class PaymentsController extends BaseController
                 $paidSetting->update();
             }
             $this->log->info("User with id: {$user->id} charged status was {$payload['data']['object']['paid']} \n");
+        } else {
+            $this->log->error("Subscription not found\n");
         }
-
-        $this->log->error("Subscription not found\n");
     }
 }
