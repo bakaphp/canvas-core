@@ -30,7 +30,7 @@ class PaymentsController extends BaseController
      */
     use StripeWebhookHandlersTrait;
 
-    /**f
+    /**
      * Handle stripe webhoook calls
      *
      * @return Response
