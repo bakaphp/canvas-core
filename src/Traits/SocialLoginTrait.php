@@ -113,13 +113,13 @@ trait SocialLoginTrait
         $newUser = new Users();
         $newUser->firstname = $userInfo['firstname'];
         $newUser->lastname = $userInfo['lastname'];
-        $newUser->displayname =  ucfirst($source->title) . 'Login-' . $random->base58();
+        $newUser->displayname = lcfirst($userInfo['firstname']) . $userInfo['lastname'];
         $newUser->password = $password;
         $newUser->email = $userInfo['email'];
         $newUser->user_active = 1;
         $newUser->roles_id = 1;
         $newUser->created_at = date('Y-m-d H:m:s');
-        $newUser->defaultCompanyName = ucfirst($source->title) . 'Login-' . $random->base58();
+        $newUser->defaultCompanyName = $newUser->displayname . ' Company';
 
         try {
             $this->db->begin();
