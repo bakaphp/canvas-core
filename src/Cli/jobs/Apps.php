@@ -68,6 +68,7 @@ class Apps extends Job implements QueueableJobInterfase
 
         if (!$app->save()) {
             Di::getDefault()->getLog()->error('App could not be created');
+            return false;
         }
 
         /**
@@ -81,7 +82,7 @@ class Apps extends Job implements QueueableJobInterfase
 
         Di::getDefault()->getAcl()->addResource($appName .'.Users', ['read', 'list', 'create', 'update', 'delete']);
         Di::getDefault()->getAcl()->allow('Admins', $appName .'.Users', ['read', 'list', 'create', 'update', 'delete']);
-        
+
         return true;
     }
 }
