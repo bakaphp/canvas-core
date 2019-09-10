@@ -22,7 +22,7 @@ class AddThreeNewColumnsOnSystemModulesTable extends AbstractMigration
                 'collation' => 'utf8mb4_unicode_ci',
                 'encoding' => 'utf8mb4',
                 'after' => 'is_deleted',
-        ]),
+        ])
         ->addColumn('navigation_type', 'string', [
             'null' => true,
             'limit' => 64,
