@@ -11,50 +11,55 @@ use Phalcon\Security\Random;
 class UsersInviteCest
 {
     /**
-     * App
+     * App.
      *
      * @var object
      */
     private $app;
     /**
-     * random value
+     * random value.
      *
      * @var string
      */
     private $random;
 
     /**
-     * Users Invite Email
+     * Users Invite Email.
      *
      * @var string
      */
     private $usersInviteEmail;
 
+    /**
+     * Constructor.
+     *
+     * @return void
+     */
     public function onContruct()
     {
-        $this->random =  new Random();
+        $this->random = new Random();
         $this->app = Apps::getACLApp(Apps::CANVAS_DEFAULT_APP_NAME);
     }
 
     /**
-     * Check if email does not exist on system for users invite
+     * Check if email does not exist on system for users invite.
      *
      * @param IntegrationTester $I
      * @return void
      */
-    public function emailIsValidTest(IntegrationTester $I)
+    public function emailIsValidTest(IntegrationTester $I): void
     {
         $this->usersInviteEmail = $this->random->base58() . '@example.com';
         $I->assertTrue(UsersInvite::isValid($this->usersInviteEmail));
     }
 
     /**
-     * Verify if users invite exists by hash
+     * Verify if users invite exists by hash.
      *
      * @param IntegrationTester $I
      * @return void
      */
-    public function getUsersInviteByHashTest(IntegrationTester $I)
+    public function getUsersInviteByHashTest(IntegrationTester $I): void
     {
         $userInvite = new UsersInvite();
         $userInvite->companies_id = $I->grabFromDi('userData')->currentCompanyId();
