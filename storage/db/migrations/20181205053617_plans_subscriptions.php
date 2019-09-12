@@ -370,7 +370,7 @@ class PlansSubscriptions extends AbstractMigration
                         INSERT INTO `currencies` VALUES (122, 'Ukraine', 'Hryvnia', 'UAH', '₴', '2018-12-05 01:00:00', NULL, 0);
                         INSERT INTO `currencies` VALUES (123, 'United Kingdom', 'Pounds', 'GBP', '£', '2018-12-05 01:00:00', NULL, 0);
                         INSERT INTO `currencies` VALUES (124, 'United States of America', 'Dollars', 'USD', '$', '2018-12-05 01:00:00', NULL, 0);
-                        INSERT INTO `currencies` VALUES (125, 'Uruguay', 'Pesos', 'UYU', '$U', '2018-12-05 01:00:00', NULL, 0);
+                        INSERT INTO `currencies` VALUES (125, 'Uruguay', 'Pesos', 'UYU', 'U$', '2018-12-05 01:00:00', NULL, 0);
                         INSERT INTO `currencies` VALUES (126, 'Uzbekistan', 'Sums', 'UZS', 'лв', '2018-12-05 01:00:00', NULL, 0);
                         INSERT INTO `currencies` VALUES (127, 'Vatican City', 'Euro', 'EUR', '€', '2018-12-05 01:00:00', NULL, 0);
                         INSERT INTO `currencies` VALUES (128, 'Venezuela', 'Bolivares Fuertes', 'VEF', 'Bs', '2018-12-05 01:00:00', NULL, 0);
