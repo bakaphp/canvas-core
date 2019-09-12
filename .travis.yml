@@ -38,6 +38,7 @@ before_install:
   - cp storage/ci/.env.example .env
   - cp storage/ci/phinx.php.example phinx.php
   - mysql -e "CREATE DATABASE gonano"
+  - sudo redis-server /etc/redis/redis.conf --port 6379
 
 install:
   - composer self-update
