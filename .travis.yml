@@ -17,8 +17,9 @@ cache:
     - ~/cphalcon
 
 install:
-  - composer update
   - cd ~/ && rm -rf cphalcon && git clone -b 3.4.x -q --depth=1 https://github.com/phalcon/cphalcon.git && cd cphalcon/build && ./install
+  - php --ri phalcon
+  - composer update
 
 before_script:
   - mysql -e 'CREATE DATABASE baka CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;' -uroot
