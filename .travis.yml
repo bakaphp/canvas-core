@@ -21,7 +21,12 @@ install:
   - cd ~/ && rm -rf cphalcon && git clone -b 3.4.x -q --depth=1 https://github.com/phalcon/cphalcon.git && cd cphalcon/build && ./install
   - echo 'extension = "phalcon.so"' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
   - php --ri phalcon
-  - cd $TRAVIS_BUILD_DIR && composer update --no-interaction
+  - cd $TRAVIS_BUILD_DIR
+  - composer install --no-interaction
+  - composer update --no-interaction
+  - ./vendor/bin/phinx migrate -e development
+  - ./vendor/bin/phinx seed:run
+  - ./vendor/bin/codecept run integration
 
 before_script:
   - mysql -e 'CREATE DATABASE baka CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;' -uroot
