@@ -19,6 +19,9 @@ cache:
 before_install:
   - cp storage/ci/.env.example .env
   - cp storage/ci/phinx.php.example phinx.php
+  - mysql -e "CREATE DATABASE gonano"
+  - mysql -e "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('password');"
+  - mysql -e "FLUSH PRIVILEGES"
 
 install:
   - composer self-update
@@ -30,10 +33,6 @@ install:
   - composer update --no-interaction
   - ./vendor/bin/phinx migrate -e development
   - ./vendor/bin/phinx seed:run
-
-before_script:
-  - mysql -e 'CREATE DATABASE baka CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;' -uroot
-  - cat tests/_data/dump.sql | mysql -uroot baka
 
 test:
   script:
