@@ -16,27 +16,34 @@ cache:
     - $HOME/.composer/cache
 
 env:
-  global:
-    - APPLICATION_ENV="travis"
-  matrix:
-    - PHALCON_VERSION="2.0.11"
-    - PHALCON_VERSION="2.0.10"
-    - PHALCON_VERSION="2.0.9"
-    - PHALCON_VERSION="2.0.8"
-    - PHALCON_VERSION="2.0.7"
-    - PHALCON_VERSION="2.0.6"
-    - PHALCON_VERSION="2.0.5"
+  - DATA_API_MYSQL_HOST: "127.0.0.1"
+  - DATA_API_MYSQL_PASS: ""
+  - DATA_API_MYSQL_USER: "root"
+  - DATA_API_MYSQL_NAME: "baka"
+  - DATA_API_MEMCACHED_HOST: "127.0.0.1"
+  - DATA_API_MEMCACHED_PORT: 11211
+  - DATA_API_MEMCACHED_WEIGHT: 100
+  - REDIS_HOST: "127.0.0.1"
+  - REDIS_PORT: 6379
+  - APP_IP: "api.baka.ld"
+  - APP_ENV: development
+  - JWT_SECURITY: 0
+  - GEWAER_APP_ID: 1
+  - PHINX_CONFIG_DIR: "/home/scrutinizer/build/storage"
 
 install:
   - composer self-update
-  - git clone -q --depth=1 https://github.com/phalcon/cphalcon.git -b phalcon-v${PHALCON_VERSION}
-  - (cd cphalcon/ext; export CFLAGS="-g3 -O1 -fno-delete-null-pointer-checks -Wall"; phpize &> /dev/null && ./configure --silent --enable-phalcon &> /dev/null && make --silent -j4 > /dev/null && make --silent install && phpenv config-add ../unit-tests/ci/phalcon.ini &> /dev/null)
-  - php --ri phalcon
-  - composer install --prefer-source --no-interaction
+  - cd ~/ && rm -rf cphalcon && git clone -b 3.4.x -q --depth=1 https://github.com/phalcon/cphalcon.git && cd cphalcon/build && ./install
 
 before_script:
-  - mysql -e 'CREATE DATABASE baka CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;' -uroot
-  - cat tests/_data/dump.sql | mysql -uroot baka
+  - cd /home/scrutinizer/build
+  - cp storage/ci/.env.example .env
+  - cp storage/ci/phinx.php.example phinx.php
+
+script:
+  - mysql -e "CREATE DATABASE baka"
+  - mysql -e "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('password');"
+  - mysql -e "FLUSH PRIVILEGES"
 
 
 after_script:
