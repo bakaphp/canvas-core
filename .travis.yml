@@ -16,6 +16,10 @@ cache:
     - $HOME/.composer/cache
     - ~/cphalcon
 
+before_install:
+  - cp storage/ci/.env.example .env
+  - cp storage/ci/phinx.php.example phinx.php
+
 install:
   - composer self-update
   - cd ~/ && rm -rf cphalcon && git clone -b 3.4.x -q --depth=1 https://github.com/phalcon/cphalcon.git && cd cphalcon/build && ./install
@@ -26,8 +30,11 @@ install:
   - composer update --no-interaction
   - ./vendor/bin/phinx migrate -e development
   - ./vendor/bin/phinx seed:run
-  - ./vendor/bin/codecept run integration
 
 before_script:
   - mysql -e 'CREATE DATABASE baka CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;' -uroot
   - cat tests/_data/dump.sql | mysql -uroot baka
+
+test:
+  script:
+    - ./vendor/bin/codecept run integration
