@@ -17,7 +17,7 @@ cache:
     - ~/cphalcon
 
 install:
-  - composer self-update
+  - composer install
   - cd ~/ && rm -rf cphalcon && git clone -b 3.4.x -q --depth=1 https://github.com/phalcon/cphalcon.git && cd cphalcon/build && ./install
 
 before_script:
