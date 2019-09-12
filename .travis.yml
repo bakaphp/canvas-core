@@ -19,6 +19,7 @@ cache:
 install:
   - composer self-update
   - cd ~/ && rm -rf cphalcon && git clone -b 3.4.x -q --depth=1 https://github.com/phalcon/cphalcon.git && cd cphalcon/build && ./install
+  - echo 'extension = "phalcon.so"' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
   - php --ri phalcon
   - composer update --no-interaction
 
