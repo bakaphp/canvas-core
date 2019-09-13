@@ -45,6 +45,7 @@ before_install:
   - cp storage/ci/phinx.php.example phinx.php
   - mysql -e "CREATE DATABASE gonano"
   - sudo redis-server /etc/redis/redis.conf --port 6379
+  - sudo rabbitmqctl status
 
 install:
   - composer self-update
