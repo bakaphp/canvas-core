@@ -8,6 +8,7 @@ services:
   - mysql
   - memcached
   - redis-server
+  - rabbitmq
 
 sudo: false
 
