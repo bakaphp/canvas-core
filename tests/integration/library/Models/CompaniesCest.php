@@ -11,7 +11,7 @@ use Phalcon\Security\Random;
 class CompaniesCest
 {
     /**
-     * Register a new Company
+     * Register a new Company.
      *
      * @param IntegrationTester $I
      * @return void
@@ -19,12 +19,12 @@ class CompaniesCest
     public function registerTest(IntegrationTester $I)
     {
         $random = new Random();
-        $newCompany = Companies::register( $I->grabFromDi('userData'), 'TestCompany-'. $random->base58());
+        $newCompany = Companies::register($I->grabFromDi('userData'), 'TestCompany-' . $random->base58());
         $I->assertTrue($newCompany instanceof Companies);
     }
 
     /**
-     * Register a new Company
+     * Register a new Company.
      *
      * @param IntegrationTester $I
      * @return void
@@ -36,7 +36,7 @@ class CompaniesCest
     }
 
     /**
-     * Get Associated Users by App
+     * Get Associated Users by App.
      *
      * @param IntegrationTester $I
      * @return void
@@ -44,7 +44,7 @@ class CompaniesCest
     public function getAssociatedUsersByAppTest(IntegrationTester $I)
     {
         $random = new Random();
-        $newCompany = Companies::register( $I->grabFromDi('userData'), 'TestCompany-'. $random->base58());
+        $newCompany = Companies::register($I->grabFromDi('userData'), 'TestCompany-' . $random->base58());
         $I->assertTrue($newCompany instanceof Companies);
 
         $userInfo = $newCompany->getAssociatedUsersByApp()[0];
@@ -52,7 +52,7 @@ class CompaniesCest
     }
 
     /**
-     * Get Logo
+     * Get Logo.
      *
      * @param IntegrationTester $I
      * @return void

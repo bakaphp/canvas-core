@@ -151,7 +151,6 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
         $this->keepSnapshots(true);
         $this->addBehavior(new Blameable());
 
-        #$this->belongsTo('users_id', 'Baka\Auth\Models\Users', 'id', ['alias' => 'user']);
         $this->hasMany('id', 'Baka\Auth\Models\CompanySettings', 'id', ['alias' => 'settings']);
 
         $this->belongsTo(
@@ -252,18 +251,19 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
                 ]
             ]
         );
-        
+
         //users associated with this company app
         $this->hasManyToMany(
             'id',
             'Canvas\Models\UsersAssociatedApps',
-            'companies_id', 'users_id',
+            'companies_id',
+            'users_id',
             'Canvas\Models\Users',
             'id',
             [
                 'alias' => 'users',
                 'params' => [
-                    'conditions' => 'apps_id = ' . $this->di->getApp()->getId() .' AND Canvas\Models\UsersAssociatedApps.is_deleted = 0',
+                    'conditions' => 'apps_id = ' . $this->di->getApp()->getId() . ' AND Canvas\Models\UsersAssociatedApps.is_deleted = 0',
                 ]
             ]
         );
