@@ -10,6 +10,11 @@ services:
   - redis-server
   - rabbitmq
 
+addons:
+  apt:
+    packages:
+    - rabbitmq-server
+
 sudo: false
 
 env:
