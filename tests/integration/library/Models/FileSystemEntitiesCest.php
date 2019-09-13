@@ -41,7 +41,7 @@ class FileSystemEntitiesCest
      */
     public function getByEntityId(IntegrationTester $I)
     {
-        $fileSystemEntities = FileSystemEntities::getByEntityId(1);
+        $fileSystemEntities = FileSystemEntities::getByEntityId($I->grabFromDi('userData')->getDefaultCompany()->getId());
         $I->assertTrue($fileSystemEntities instanceof FileSystemEntities);
     }
 
@@ -53,7 +53,7 @@ class FileSystemEntitiesCest
      */
     public function getAllByEntityId(IntegrationTester $I)
     {
-        $fileSystemEntities = FileSystemEntities::getByEntityId(1);
+        $fileSystemEntities = FileSystemEntities::getByEntityId($I->grabFromDi('userData')->getDefaultCompany()->getId());
         $I->assertTrue($fileSystemEntities instanceof FileSystemEntities);
     }
 }
