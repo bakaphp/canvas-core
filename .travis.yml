@@ -33,24 +33,12 @@ env:
       - JWT_SECURITY: 0
       - GEWAER_APP_ID: 1
       - PHINX_CONFIG_DIR: "/home/scrutinizer/build/storage"
-      - RABBITMQ_ERLANG_COOKIE: "SWQOKODSQALRPCLNMEQG"
-      - RABBITMQ_DEFAULT_USER: guest
-      - RABBITMQ_DEFAULT_PASS: guest
-      - RABBITMQ_HOST: localhost
-      - RABBITMQ_PORT: 5672
-      - RABBITMQ_DEFAULT_VHOST: /
 
 cache:
   directories:
     - vendor
     - $HOME/.composer/cache
     - ~/cphalcon
-
-before_install:
-  - cp storage/ci/.env.example .env
-  - cp storage/ci/phinx.php.example phinx.php
-  - mysql -e "CREATE DATABASE gonano"
-  - sudo redis-server /etc/redis/redis.conf --port 6379
 
 install:
   - composer self-update
@@ -60,15 +48,16 @@ install:
   - php --ri phalcon
 
 before_script:
+  - cp storage/ci/.env.example .env
+  - cp storage/ci/phinx.php.example phinx.php
+  - mysql -e "CREATE DATABASE gonano"
+  - sudo redis-server /etc/redis/redis.conf --port 6379
   - cd $TRAVIS_BUILD_DIR
   - composer install --no-interaction
   - composer update --no-interaction
   - ./vendor/bin/phinx migrate -e development
   - ./vendor/bin/phinx seed:run
   - sudo rabbitmqctl status
-  - sudo rabbitmqctl add_user rabbitmq rabbitmq
-  - sudo rabbitmqctl add_vhost rabbitmq
-  - sudo rabbitmqctl set_permissions -p rabbitmq rabbitmq "^rabbitmq-.*" ".*" ".*"
 
 script:
   - ./vendor/bin/codecept run
