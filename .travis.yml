@@ -34,9 +34,9 @@ env:
       - GEWAER_APP_ID: 1
       - PHINX_CONFIG_DIR: "/home/scrutinizer/build/storage"
       - RABBITMQ_ERLANG_COOKIE: "SWQOKODSQALRPCLNMEQG"
-      - RABBITMQ_DEFAULT_USER: rabbitmq
-      - RABBITMQ_DEFAULT_PASS: rabbitmq
-      - RABBITMQ_HOST: rabbitmq
+      - RABBITMQ_DEFAULT_USER: guest
+      - RABBITMQ_DEFAULT_PASS: guest
+      - RABBITMQ_HOST: localhost
       - RABBITMQ_PORT: 5672
       - RABBITMQ_DEFAULT_VHOST: /
 
