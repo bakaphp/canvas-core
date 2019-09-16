@@ -7,7 +7,7 @@ use Phalcon\Cache\Backend\Libmemcached;
 use Phalcon\Cache\Frontend\Data;
 use Phalcon\Di\ServiceProviderInterface;
 use Phalcon\DiInterface;
-use Memcached;
+use Redis;
 
 class CacheDataProvider implements ServiceProviderInterface
 {
@@ -33,8 +33,8 @@ class CacheDataProvider implements ServiceProviderInterface
                         ],
                     ],
                     'client' => [
-                        Memcached::OPT_HASH => Memcached::HASH_MD5,
-                        Memcached::OPT_PREFIX_KEY => 'api-',
+                        Redis::OPT_HASH => Redis::HASH_MD5,
+                        Redis::OPT_PREFIX_KEY => 'api-',
                     ],
                     'lifetime' => 3600,
                     'prefix' => $prefix . '-',
