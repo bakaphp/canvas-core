@@ -117,10 +117,9 @@ class Notification implements NotificationInterfase
      *
      * @return void
      */
-    protected function toRealtime()
+    protected function toRealtime(): ?PusherNotification
     {
-        //set the channel
-        //key_user_id
+        return null;
     }
 
     /**
@@ -236,6 +235,11 @@ class Notification implements NotificationInterfase
         $toPushNotification = $this->toPushNotification();
         if ($toPushNotification instanceof PushNotification) {
             $this->fire('notification:sendPushNotification', $toPushNotification);
+        }
+
+        $toRealtime = $this->toRealtime();
+        if ($toRealtime instanceof PusherNotification) {
+            $this->fire('notification:sendRealtimeNotification', $toRealtime);
         }
 
         /**
