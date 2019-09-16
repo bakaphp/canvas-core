@@ -58,15 +58,13 @@ install:
   - echo 'extension = "phalcon.so"' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
   - echo "extension = redis.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
   - php --ri phalcon
+
+before_script:
   - cd $TRAVIS_BUILD_DIR
   - composer install --no-interaction
   - composer update --no-interaction
   - ./vendor/bin/phinx migrate -e development
   - ./vendor/bin/phinx seed:run
-
-
-
-before_script:
   - sudo rabbitmqctl status
   - sudo rabbitmqctl add_user rabbitmq rabbitmq
   - sudo rabbitmqctl add_vhost rabbitmq
