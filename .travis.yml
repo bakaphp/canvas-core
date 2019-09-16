@@ -48,11 +48,11 @@ install:
   - php --ri phalcon
 
 before_script:
+  - cd $TRAVIS_BUILD_DIR
   - cp storage/ci/.env.example .env
   - cp storage/ci/phinx.php.example phinx.php
   - mysql -e "CREATE DATABASE gonano"
   - sudo redis-server /etc/redis/redis.conf --port 6379
-  - cd $TRAVIS_BUILD_DIR
   - composer install --no-interaction
   - composer update --no-interaction
   - ./vendor/bin/phinx migrate -e development
