@@ -52,9 +52,9 @@ before_install:
   - mysql -e "CREATE DATABASE gonano"
   - sudo redis-server /etc/redis/redis.conf --port 6379
   - sudo rabbitmqctl status
-  - rabbitmqctl add_user rabbitmq rabbitmq
-  - rabbitmqctl add_vhost rabbitmq
-  - rabbitmqctl set_permissions -p rabbitmq rabbitmq "^rabbitmq-.*" ".*" ".*"
+  - sudo rabbitmqctl add_user rabbitmq rabbitmq
+  - sudo rabbitmqctl add_vhost rabbitmq
+  - sudo rabbitmqctl set_permissions -p rabbitmq rabbitmq "^rabbitmq-.*" ".*" ".*"
 
 install:
   - composer self-update
