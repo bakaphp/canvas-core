@@ -7,7 +7,7 @@ use Phalcon\Cache\Backend\Libmemcached;
 use Phalcon\Cache\Frontend\Data;
 use Phalcon\Di\ServiceProviderInterface;
 use Phalcon\DiInterface;
-use Phalcon\Annotations\Adapter\Memcached;
+use Memcached;
 
 class CacheDataProvider implements ServiceProviderInterface
 {
