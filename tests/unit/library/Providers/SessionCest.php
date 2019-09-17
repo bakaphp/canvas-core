@@ -6,7 +6,7 @@ use Canvas\Providers\SessionProvider;
 use Canvas\Providers\ConfigProvider;
 use Phalcon\Di\FactoryDefault;
 use UnitTester;
-use Redis;
+use Phalcon\Session\Adapter\Redis;
 
 class SessionCest
 {
