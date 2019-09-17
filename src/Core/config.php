@@ -141,6 +141,7 @@ return [
         'key' => envValue('PUSHER_KEY'),
         'secret' => envValue('PUSHER_SECRET'),
         'cluster' => envValue('PUSHER_CLUSTER'),
+        'queue' => envValue('PUSHER_QUEUE')
     ],
     'stripe' => [
         'secretKey' => getenv('STRIPE_SECRET'),

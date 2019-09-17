@@ -6,7 +6,7 @@ use Canvas\Providers\SessionProvider;
 use Canvas\Providers\ConfigProvider;
 use Phalcon\Di\FactoryDefault;
 use UnitTester;
-use Phalcon\Session\Adapter\Libmemcached;
+use Phalcon\Session\Adapter\Redis;
 
 class SessionCest
 {
@@ -25,6 +25,6 @@ class SessionCest
         $I->assertTrue($diContainer->has('session'));
 
         $session = $diContainer->getShared('session');
-        $I->assertTrue($session instanceof Libmemcached);
+        $I->assertTrue($session instanceof Redis);
     }
 }

@@ -94,7 +94,6 @@ class ConfigCest
         $I->assertTrue(isset($configArray['jwt']['payload']['exp']));
         $I->assertTrue(isset($configArray['jwt']['payload']['iss']));
 
-
         //Pusher
         $I->assertTrue(isset($configArray['pusher']));
         $I->assertTrue(isset($configArray['pusher']['id']));
@@ -105,8 +104,8 @@ class ConfigCest
 
         //Stripe
         $I->assertTrue(isset($configArray['stripe']));
-        $I->assertTrue(isset($configArray['stripe']['secret']));
-        $I->assertTrue(isset($configArray['stripe']['public']));
+        // $I->assertTrue(isset($configArray['stripe']['secret']));
+        // $I->assertTrue(isset($configArray['stripe']['public']));
 
         //Throttle
         $I->assertTrue(isset($configArray['throttle']));
