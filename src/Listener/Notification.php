@@ -7,8 +7,10 @@ namespace Canvas\Listener;
 use Phalcon\Events\Event;
 use Canvas\Contracts\Notifications\NotificationInterfase;
 use Baka\Mail\Message;
+use Canvas\Cli\Jobs\Pusher;
 use Canvas\Cli\Jobs\PushNotifications;
 use Canvas\Models\Users;
+use Canvas\Notifications\PusherNotification;
 use Canvas\Notifications\PushNotification;
 
 class Notification
@@ -46,7 +48,8 @@ class Notification
      * @param NotificationInterfase $notification
      * @return void
      */
-    public function sendRealtime(Event $event, NotificationInterfase $notification)
+    public function sendRealtime(Event $event, PusherNotification $pusherNotification)
     {
+        return Pusher::dispatch($pusherNotification);
     }
 }
