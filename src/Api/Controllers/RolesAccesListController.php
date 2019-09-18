@@ -200,7 +200,7 @@ class RolesAccesListController extends BaseController
      */
     public function delete($id) : Response
     {
-        $role = Roles::getById($id);
+        $role = Roles::getById((int) $id);
 
         if ($this->softDelete == 1) {
             $role->softDelete();
