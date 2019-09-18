@@ -40,48 +40,6 @@ build:
           GEWAER_APP_ID: 1
           PHINX_CONFIG_DIR: "/home/scrutinizer/build/storage"
 
-
-    cache:
-        directories:
-          - ~/cphalcon
-
-    dependencies:
-        before:
-          - cd /home/scrutinizer/build
-          - cp storage/ci/.env.example .env
-          - cp storage/ci/phinx.php.example phinx.php
-          -
-            command: 'cd ~/ && rm -rf cphalcon && git clone -b 3.4.x -q --depth=1 https://github.com/phalcon/cphalcon.git && cd cphalcon/build && ./install'
-          -
-            command: 'cp -v /home/scrutinizer/cphalcon/build/php7/64bits/modules/phalcon.so  /home/scrutinizer/.phpenv/versions/7.2.13/lib/php/extensions/no-debug-zts-2017071'
-            only_if: 'test -e /home/scrutinizer/cphalcon/build/php7/64bits/modules/phalcon.so'
-          - sed -i '$ a \\n[Phalcon]\nextension=phalcon.so\n' /home/scrutinizer/.phpenv/versions/7.2.13/etc/php.ini
-          - php -m | grep -i Phalcon
-          - sudo /etc/init.d/apache2 restart
-          - beanstalkd -p 11300 &
-          - mysql -e "CREATE DATABASE gonano"
-          - mysql -e "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('password');"
-          - mysql -e "FLUSH PRIVILEGES"
-          - cd /home/scrutinizer/build
-          - composer install --no-interaction
-          - composer update --no-interaction
-          - ./vendor/bin/phinx migrate -e development
-          - ./vendor/bin/phinx seed:run
-          - ./vendor/bin/codecept run integration
-
-#    project_setup:
-#        override: true
-
-    tests:
-        override:
-          - phpcs-run --standard=PSR2 --extensions=php --ignore=tests/*,storage/*,vendor/* ./
-          -
-            command: './vendor/bin/codecept run --coverage-xml'
-            coverage:
-              file: './tests/_output/coverage.xml'
-              format: 'clover'
-          - php-scrutinizer-run --enable-security-analysis
-
 filter:
   paths: ['./*']
   excluded_paths:
