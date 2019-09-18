@@ -18,6 +18,7 @@ class InitGewaer extends AbstractSeed
                 'created_at' => date('Y-m-d H:i:s'),
                 'default_apps_plan_id' => 1,
                 'payments_active' => 1,
+                'ecosystem_auth' => 1,
                 'is_actived' => 1,
                 'is_deleted' => 0
             ], [
@@ -28,6 +29,7 @@ class InitGewaer extends AbstractSeed
                 'created_at' => date('Y-m-d H:i:s'),
                 'default_apps_plan_id' => 1,
                 'payments_active' => 1,
+                'ecosystem_auth' => 1,
                 'is_actived' => 1,
                 'is_deleted' => 0
             ]
