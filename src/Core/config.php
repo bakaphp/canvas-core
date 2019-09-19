@@ -28,6 +28,7 @@ return [
         'devMode' => boolval(
             'development' === envValue('APP_ENV', 'development')
         ),
+        'viewsDir' => appPath('storage/view/'),
         'baseUri' => envValue('APP_BASE_URI'),
         'supportEmail' => envValue('APP_SUPPORT_EMAIL'),
         'time' => microtime(true),
@@ -63,6 +64,7 @@ return [
         ],
     ],
     'cache' => [
+        //@todo remove this we are not using it any more
         'data' => [
             'front' => [
                 'adapter' => 'Data',
@@ -122,6 +124,7 @@ return [
         ],
     ],
     'beanstalk' => [
+        //@todo remove this we are not using it anymore
         'host' => getenv('BEANSTALK_HOST'),
         'port' => getenv('BEANSTALK_PORT'),
         'prefix' => getenv('BEANSTALK_PREFIX'),
