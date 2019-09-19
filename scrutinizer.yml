@@ -6,12 +6,6 @@ build:
       mariadb: 10.4
 
     environment:
-        selenium: false
-        memcached: true
-        elasticsearch: false
-        postgresql: false
-        redis: true
-        node: false
         php:
           version: 7.2
           ini:
@@ -24,21 +18,15 @@ build:
             api:
               web_root: 'public'
               host: 'api.baka.ld'
-        variables:
-          DATA_API_MYSQL_HOST: "127.0.0.1"
-          DATA_API_MYSQL_PASS: ""
-          DATA_API_MYSQL_USER: "root"
-          DATA_API_MYSQL_NAME: "gonano"
-          DATA_API_MEMCACHED_HOST: "127.0.0.1"
-          DATA_API_MEMCACHED_PORT: 11211
-          DATA_API_MEMCACHED_WEIGHT: 100
-          REDIS_HOST: "127.0.0.1"
-          REDIS_PORT: 6379
-          APP_IP: "api.baka.ld"
-          APP_ENV: development
-          JWT_SECURITY: 0
-          GEWAER_APP_ID: 1
-          PHINX_CONFIG_DIR: "/home/scrutinizer/build/storage"
+
+    dependencies:
+        override:
+          - true
+
+    tests:
+        override:
+          - true
+          
 
 filter:
   paths: ['./*']
