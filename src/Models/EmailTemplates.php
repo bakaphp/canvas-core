@@ -117,15 +117,23 @@ class EmailTemplates extends AbstractModel
      */
     public static function getByName(string $name): EmailTemplates
     {
+        $di = Di::getDefault();
+        $appId = $di->getApp()->getId();
+
+        $companyId = $di->has('userData') ? $di->getUserData()->currentCompanyId() : 0;
+
         $emailTemplate = self::findFirst([
             'conditions' => 'companies_id in (?0, 0) and apps_id in (?1, 0) and name = ?2 and is_deleted = 0',
-            'bind' => [Di::getDefault()->getUserData()->currentCompanyId(), Di::getDefault()->getApp()->getId(), $name]
+            'bind' => [$companyId, $appId, $name],
+            'order' => 'id desc'
         ]);
 
         if (!is_object($emailTemplate)) {
             throw new UnprocessableEntityHttpException(_('No template ' . $name . ' found for this app ' . Di::getDefault()->getApp()->name));
         }
 
+        //@todo add company id
+        $emailTemplate->name .= '-' . $appId;
         return $emailTemplate;
     }
 }
