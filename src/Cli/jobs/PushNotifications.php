@@ -13,6 +13,7 @@ use OneSignal\Config;
 use OneSignal\OneSignal;
 use Canvas\Models\UserLinkedSources;
 use Canvas\Notifications\PushNotification;
+use Exception;
 
 class PushNotifications extends Job implements QueueableJobInterfase
 {
@@ -93,13 +94,22 @@ class PushNotifications extends Job implements QueueableJobInterfase
             $pushBody['include_player_ids'][] = $userDevicesArray[3][0];
         }
 
-        $this->oneSignal(
-            $config->pushNotifications->appId,
-            $config->pushNotifications->authKey,
-            $config->pushNotifications->userAuthKey
-        )->notifications->add(
-            $pushBody
-        );
+        try {
+            $this->oneSignal(
+                $config->pushNotifications->appId,
+                $config->pushNotifications->authKey,
+                $config->pushNotifications->userAuthKey
+            )->notifications->add(
+                $pushBody
+            );
+        } catch (Exception $e) {
+            if (Di::getDefault()->has('log')) {
+                Di::getDefault()->get('log')->error(
+                    'Error sending push notification via OneSignal - ' . $e->getMessage(),
+                    [$e->getTraceAsString()]
+                );
+            }
+        }
 
         return true;
     }
