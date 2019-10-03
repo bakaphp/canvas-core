@@ -126,6 +126,12 @@ class Subscription extends PhalconSubscription
 
     /**
      *
+     * @var integer
+     */
+    public $is_cancelled;
+
+    /**
+     *
      * @var string
      */
     public $created_at;
