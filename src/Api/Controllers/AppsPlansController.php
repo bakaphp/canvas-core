@@ -254,7 +254,7 @@ class AppsPlansController extends BaseController
             $subscription->cancel();
         }
 
-        $subscription->is_deleted = 1;
+        $subscription->is_cancelled = 1;
         $subscription->update();
 
         return $this->response($appPlan);
