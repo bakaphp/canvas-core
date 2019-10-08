@@ -180,7 +180,7 @@ class QueueTask extends PhTask
                 $result = $job['job']->handle();
 
                 $this->log->info(
-                    "Job ({$job['class']}) ran for {$this->userData->getEmail()} - Process ID " . $msg->delivery_info['consumer_tag'],
+                    "Job ({$job['class']}) ran for {$job['userData']->getEmail()} - Process ID " . $msg->delivery_info['consumer_tag'],
                     [$result]
                 );
             });
