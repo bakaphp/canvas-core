@@ -13,7 +13,7 @@ use Canvas\Http\Response;
  */
 class BadRequestHttpException extends HttpException
 {
-    protected $httpCode = Response::FORBIDDEN;
-    protected $httpMessage = 'Forbidden';
+    protected $httpCode = Response::BAD_REQUEST;
+    protected $httpMessage = 'Bad Request';
     protected $data;
 }
