@@ -20,7 +20,7 @@ class PendingDispatch
     /**
      * Create a new pending job dispatch.
      *
-     * @param  mixed  $job
+     * @param  QueueableJobInterfase  $job
      * @return void
      */
     public function __construct(QueueableJobInterfase $job)
@@ -31,7 +31,7 @@ class PendingDispatch
     /**
      * Set the desired queue for the job.
      *
-     * @param  string|null  $queue
+     * @param  string  $queue
      * @return $this
      */
     public function onQueue(string $queue)
