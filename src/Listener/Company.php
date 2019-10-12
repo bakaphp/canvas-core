@@ -27,7 +27,7 @@ class Company
         //setup the user notificatoin setting
         $company->set('notifications', $company->user->email);
         /**
-         * @todo set variable of paid by app
+         * @todo removed , we have it on suscription
          */
         $company->set('paid', '1');
         $app = $company->getDI()->getApp();
@@ -64,9 +64,13 @@ class Company
             $companyApps->stripe_id = $plan->stripe_id;
         }
 
-        //If the newly created company is not the default then we create a new subscription with the same user
+        //if the app is subscriptoin based, create a free trial for this company
         if ($app->subscriptioBased()) {
-            $company->set(Companies::PAYMENT_GATEWAY_CUSTOMER_KEY, $company->startFreeTrial());
+            $company->set(
+                Companies::PAYMENT_GATEWAY_CUSTOMER_KEY,
+                $company->startFreeTrial()
+            );
+
             $companyApps->subscriptions_id = $company->subscription->getId();
         }
 
