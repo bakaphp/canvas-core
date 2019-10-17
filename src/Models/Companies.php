@@ -440,6 +440,27 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
     {
         parent::afterCreate();
 
+        $companiesGroup = CompaniesGroups::findFirst([
+            'conditions' => 'apps_id = ?0 and users_id = ?1 and is_deleted = 0',
+            'bind'=> [Di::getDefault()->getApp()->getId(),Di::getDefault()->getUserData()->getId()]
+        ]);
+
+        if (!$companiesGroup) {
+            $companiesGroup = new CompaniesGroups();
+            $companiesGroup->name = $this->name;
+            $companiesGroup->apps_id = Di::getDefault()->getApp()->getId();
+            $companiesGroup->users_id = Di::getDefault()->getUserData()->getId();
+            $companiesGroup->saveOrFail();
+        }
+
+        /**
+         * Let's associate companies and companies_groups
+         */
+        $companiesAssoc = new CompaniesAssociations();
+        $companiesAssoc->companies_id = $this->id;
+        $companiesAssoc->companies_groups_id = $companiesGroup->id;
+        $companiesAssoc->saveOrFail();
+
         $this->fire('company:afterSignup', $this);
     }
 
@@ -512,6 +533,7 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
     {
         //parent::afterSave();
         $this->associateFileSystem();
+
     }
 
     /**

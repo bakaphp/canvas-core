@@ -31,16 +31,6 @@ class User
         * How do we know? well he doesnt have a default_company.
         */
         if ($isFirstSignup) {
-
-            /**
-             * Let's create a new Companies Group
-             */
-            $companiesGroup = new CompaniesGroups();
-            $companiesGroup->name = !empty($user->defaultCompanyName) ? $user->defaultCompanyName : $user->displayname.'CP';
-            $companiesGroup->apps_id = $user->getDI()->getApp()->getId();
-            $companiesGroup->users_id = $user->getId();
-            $companiesGroup->saveOrFail();
-
             /**
              * Let's create a new Companies
              */
@@ -50,14 +40,6 @@ class User
             $company->users_id = $user->getId();
 
             $company->saveOrFail();
-
-            /**
-             * Let's associate companies and companies_groups
-             */
-            $companiesAssoc = new CompaniesAssociations();
-            $companiesAssoc->companies_id = $company->id;
-            $companiesAssoc->companies_groups_id = $companiesGroup->id;
-            $companiesAssoc->saveOrFail();
 
             $user->default_company = $company->getId();
 
