@@ -252,6 +252,23 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
             ]
         );
 
+        $this->hasManyToMany(
+            'id',
+            CompaniesAssociations::class,
+            'companies_id',
+            'companies_groups_id',
+            CompaniesGroups::class,
+            'id',
+            ['alias' => 'companiesGroups']
+        );
+
+        $this->hasMany(
+            'id',
+            CompaniesAssociations::class,
+            'companies_id',
+            ['alias' => 'companiesAssoc']
+        );
+
         //users associated with this company app
         $this->hasManyToMany(
             'id',
