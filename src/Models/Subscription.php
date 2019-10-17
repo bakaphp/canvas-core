@@ -5,7 +5,7 @@ namespace Canvas\Models;
 use Phalcon\Cashier\Subscription as PhalconSubscription;
 use Canvas\Exception\ServerErrorHttpException;
 use Phalcon\Di;
-use Phalcon\Mvc\Micro;
+use Carbon\Carbon;
 
 /**
  * Trait Subscription.
@@ -111,6 +111,12 @@ class Subscription extends PhalconSubscription
      * @var string
      */
     public $charge_date;
+
+    /**
+     *
+     * @var string
+     */
+    public $ends_at;
 
     /**
      *
@@ -235,5 +241,41 @@ class Subscription extends PhalconSubscription
         }
 
         return true;
+    }
+
+    /**
+     * Determine if the subscription is active.
+     *
+     * @return bool
+     */
+    public function active(): bool
+    {
+        return (bool) $this->is_active;
+    }
+
+    /**
+     * Is the subscriptoin paid?
+     *
+     * @return boolean
+     */
+    public function paid(): bool
+    {
+        return (bool) $this->paid;
+    }
+
+    /**
+     * Given a not active subscription activate it
+     *
+     * @return void
+     */
+    public function activate(): bool
+    {
+        $this->is_active = 1;
+        $this->paid = 1;
+        $this->grace_period_ends = '';
+        $this->ends_at = Carbon::now()->addDays(30)->toDateTimeString();
+        $this->next_due_payment = $this->ends_at;
+        $this->is_cancelled = 0;
+        return $this->update();
     }
 }

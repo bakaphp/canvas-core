@@ -9,9 +9,10 @@ use Canvas\Exception\UnauthorizedHttpException;
 use Canvas\Exception\NotFoundHttpException;
 use Stripe\Token as StripeToken;
 use Phalcon\Http\Response;
-use Phalcon\Validation;
+use Stripe\Customer as StripeCustomer;
 use Phalcon\Validation\Validator\PresenceOf;
 use Canvas\Exception\UnprocessableEntityHttpException;
+use Canvas\Models\Subscription as CanvasSubscription;
 use Phalcon\Cashier\Subscription;
 use Canvas\Models\UserCompanyApps;
 use function Canvas\Core\paymentGatewayIsActive;
@@ -174,6 +175,9 @@ class AppsPlansController extends BaseController
             throw new NotFoundHttpException(_('This plan doesnt exist'));
         }
 
+        /**
+         * @todo change the subscription to use getActiveForThisApp , not base on the user
+         */
         $userSubscription = Subscription::findFirst([
             'conditions' => 'user_id = ?0 and companies_id = ?1 and apps_id = ?2 and is_deleted  = 0',
             'bind' => [$this->userData->getId(), $this->userData->currentCompanyId(), $this->app->getId()]
@@ -265,7 +269,7 @@ class AppsPlansController extends BaseController
      * @param integer $id
      * @return Response
      */
-    public function updatePaymentMethod(int $id): Response
+    public function updatePaymentMethod(string $id): Response
     {
         if (empty($this->request->hasPut('card_token'))) {
             $validation = new CanvasValidation();
@@ -307,10 +311,18 @@ class AppsPlansController extends BaseController
 
         $customerId = $this->userData->stripe_id;
 
-        $updatedCustomer = $this->userData->updatePaymentMethod($customerId, $token);
+        //Update default payment method with new card.
+        $stripeCustomer = $this->userData->updatePaymentMethod($customerId, $token);
 
-        if (is_object($updatedCustomer)) {
-            return $this->response($this->userData);
+        $subscription = CanvasSubscription::getActiveForThisApp();
+
+        //not valid? ok then lets charge the credit card to active your subscription
+        if (!$subscription->valid()) {
+            $subscription->activate();
+        }
+
+        if (is_object($stripeCustomer) && $stripeCustomer instanceof StripeCustomer) {
+            return $this->response($subscription);
         }
         return $this->response('Card could not be updated');
     }
