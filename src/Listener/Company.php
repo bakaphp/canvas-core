@@ -13,6 +13,7 @@ use Baka\Auth\Models\UserCompanyApps;
 use Canvas\Models\AppsPlans;
 use Canvas\Models\CompaniesGroups;
 use Canvas\Models\CompaniesAssociations;
+use Phalcon\Di;
 
 class Company
 {
