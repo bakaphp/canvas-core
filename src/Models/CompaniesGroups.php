@@ -69,6 +69,16 @@ class CompaniesGroups extends AbstractModel
             'companies_groups_id',
             ['alias' => 'companiesAssoc']
         );
+
+        $this->hasManyToMany(
+            'id',
+            CompaniesAssociations::class,
+            'companies_groups_id',
+            'companies_id',
+            Companies::class,
+            'id',
+            ['alias' => 'companies']
+        );
     }
 
     /**

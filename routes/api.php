@@ -61,7 +61,9 @@ $privateRoutes = [
     Route::get('/schema/{slug}/description')->controller('SchemaController')->action('getModelDescription'),
     Route::post('/users/{hash}/change-email')->controller('AuthController')->action('changeUserEmail'),
     Route::post('/users/{id}/request-email-change')->controller('AuthController')->action('sendEmailChange'),
-    Route::put('/users/{id}/apps/{appsId}/status')->controller('UsersController')->action('changeAppUserActiveStatus')
+    Route::put('/users/{id}/apps/{appsId}/status')->controller('UsersController')->action('changeAppUserActiveStatus'),
+    Route::get('/companies-groups')->controller('CompaniesGroupsController')->action('index'),
+    Route::get('/companies-groups/{id}')->controller('CompaniesGroupsController')->action('getById')
 ];
 
 $publicRoutesGroup = RouteGroup::from($publicRoutes)
