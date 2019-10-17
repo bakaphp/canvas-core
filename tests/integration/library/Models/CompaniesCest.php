@@ -3,6 +3,7 @@
 namespace Gewaer\Tests\integration\library\Models;
 
 use Canvas\Models\Companies;
+use Canvas\Models\Apps;
 use Canvas\Models\CompaniesGroups;
 use Canvas\Models\CompaniesAssociations;
 use IntegrationTester;
