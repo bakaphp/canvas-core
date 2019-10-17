@@ -87,7 +87,7 @@ class Company
 
         if (!$companiesGroup) {
             $companiesGroup = new CompaniesGroups();
-            $companiesGroup->name = $this->name;
+            $companiesGroup->name = $company->name;
             $companiesGroup->apps_id = Di::getDefault()->getApp()->getId();
             $companiesGroup->users_id = Di::getDefault()->getUserData()->getId();
             $companiesGroup->saveOrFail();
@@ -97,7 +97,7 @@ class Company
          * Let's associate companies and companies_groups
          */
         $companiesAssoc = new CompaniesAssociations();
-        $companiesAssoc->companies_id = $this->id;
+        $companiesAssoc->companies_id = $company->id;
         $companiesAssoc->companies_groups_id = $companiesGroup->id;
         $companiesAssoc->saveOrFail();
     }
