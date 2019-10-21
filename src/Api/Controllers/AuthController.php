@@ -24,6 +24,9 @@ use Canvas\Validation as CanvasValidation;
 use Canvas\Notifications\ResetPassword;
 use Canvas\Notifications\PasswordUpdate;
 use Canvas\Validations\PasswordValidation;
+use Canvas\Traits\TokenTrait;
+use Lcobucci\JWT\Builder;
+use Lcobucci\JWT\Signer\Hmac\Sha512;
 
 /**
  * Class AuthController.
@@ -42,6 +45,7 @@ class AuthController extends \Baka\Auth\AuthController
      * Auth Trait.
      */
     use AuthTrait;
+    use TokenTrait;
     use SocialLoginTrait;
 
     /**
@@ -99,10 +103,14 @@ class AuthController extends \Baka\Auth\AuthController
         $session = new Sessions();
         $session->start($userData, $token['sessionId'], $token['token'], $userIp, 1);
 
+        $this->response($token);
+
         return $this->response([
             'token' => $token['token'],
+            'refresh_token' => $token['refresh_token'],
             'time' => date('Y-m-d H:i:s'),
             'expires' => date('Y-m-d H:i:s', time() + $this->config->jwt->payload->exp),
+            'refresh_token_expires' => date('Y-m-d H:i:s', time() + 31536000),
             'id' => $userData->getId(),
         ]);
     }
@@ -189,6 +197,74 @@ class AuthController extends \Baka\Auth\AuthController
             'user' => $user,
             'session' => $authSession
         ]);
+    }
+
+    /**
+     * Refresh user auth
+     *
+     * @return void
+     * @todo Validate acces_token and refresh token, session's user email and relogin
+     */
+    public function refresh(): Response
+    {
+        $request = $this->request->getPostData();
+        $accessToken =  $this->getToken($request['access_token']);
+        $refreshToken =  $this->getToken($request['refresh_token']);
+        
+        // if (time() != $accessToken->getClaim('exp')) {
+        //     throw new ServerErrorHttpException('Issued Access Token has not expired');
+        // }
+
+        //Check if both tokens relate to the same user's email
+        if ($accessToken->getClaim('sessionId') == $refreshToken->getClaim('sessionId')) {
+            $user = Users::findFirstOrFail([
+                'conditions'=>'email = ?0 and is_deleted = 0',
+                'bind' => [$accessToken->getClaim('email')]
+            ]);
+        }
+
+        //Check if session is active
+        $session = new Sessions();
+        $session->check($user, $refreshToken->getClaim('sessionId'), (string)$this->request->getClientAddress(), 1);
+        $token = $this->newAuthSession($refreshToken->getClaim('sessionId'), $user->email);
+        $session->start($user, $token['sessionId'], $token['token'], (string)$this->request->getClientAddress(), 1);
+
+        return $this->response([
+            'token' => $token['token'],
+            'time' => date('Y-m-d H:i:s'),
+            'expires' => date('Y-m-d H:i:s', time() + $this->config->jwt->payload->exp),
+            'id' => $user->getId(),
+        ]);
+    }
+
+    /**
+     * Create a new session based off the refresh token session id
+     *
+     * @param string $sessionId
+     * @param string $email
+     * @return void
+     */
+    private function newAuthSession(string $sessionId, string $email)
+    {
+        $signer = new Sha512();
+        $builder = new Builder();
+        $token = $builder
+            ->setIssuer(getenv('TOKEN_AUDIENCE'))
+            ->setAudience(getenv('TOKEN_AUDIENCE'))
+            ->setId($sessionId, true)
+            ->setIssuedAt(time())
+            ->setNotBefore(time() + 500)
+            ->setExpiration(time() + $this->di->getConfig()->jwt->payload->exp)
+            ->set('sessionId', $sessionId)
+            ->set('email', $email)
+            ->sign($signer, getenv('TOKEN_PASSWORD'))
+            ->getToken();
+
+        return [
+            'sessionId' => $sessionId,
+            'token' => $token->__toString()
+        ];
+
     }
 
     /**
