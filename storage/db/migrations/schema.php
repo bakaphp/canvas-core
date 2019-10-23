@@ -3939,7 +3939,7 @@ return array (
           'TABLE_NAME' => 'subscriptions',
           'COLUMN_NAME' => 'paid',
           'ORDINAL_POSITION' => '16',
-          'COLUMN_DEFAULT' => '0',
+          'COLUMN_DEFAULT' => '1',
           'IS_NULLABLE' => 'YES',
           'DATA_TYPE' => 'int',
           'CHARACTER_MAXIMUM_LENGTH' => NULL,
