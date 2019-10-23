@@ -278,4 +278,14 @@ class Subscription extends PhalconSubscription
         $this->is_cancelled = 0;
         return $this->update();
     }
+
+    /**
+     * Determine if the subscription is within its trial period.
+     *
+     * @return int
+     */
+    public function onTrial()
+    {
+        return $this->is_freetrial ?: 0;
+    }
 }

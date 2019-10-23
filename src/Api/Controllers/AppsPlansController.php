@@ -254,7 +254,7 @@ class AppsPlansController extends BaseController
         $subscription = $this->userData->subscription($userSubscription->name);
 
         //if on trial you can cancel without going to stripe
-        if (!$subscription->is_freetrial) {
+        if (!$subscription->onTrial()) {
             $subscription->cancel();
         }
 
