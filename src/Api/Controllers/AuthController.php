@@ -103,15 +103,13 @@ class AuthController extends \Baka\Auth\AuthController
         $session = new Sessions();
         $session->start($userData, $token['sessionId'], $token['token'], $userIp, 1);
 
-        $this->response($token);
-
         return $this->response([
             'token' => $token['token'],
             'refresh_token' => $token['refresh_token'],
             'time' => date('Y-m-d H:i:s'),
             'expires' => date('Y-m-d H:i:s', time() + $this->config->jwt->payload->exp),
             'refresh_token_expires' => date('Y-m-d H:i:s', time() + 31536000),
-            'id' => $userData->getId(),
+            'id' => $userData->getId()
         ]);
     }
 
@@ -200,7 +198,7 @@ class AuthController extends \Baka\Auth\AuthController
     }
 
     /**
-     * Refresh user auth
+     * Refresh user auth.
      *
      * @return void
      * @todo Validate acces_token and refresh token, session's user email and relogin
@@ -208,9 +206,9 @@ class AuthController extends \Baka\Auth\AuthController
     public function refresh(): Response
     {
         $request = $this->request->getPostData();
-        $accessToken =  $this->getToken($request['access_token']);
-        $refreshToken =  $this->getToken($request['refresh_token']);
-        
+        $accessToken = $this->getToken($request['access_token']);
+        $refreshToken = $this->getToken($request['refresh_token']);
+
         // if (time() != $accessToken->getClaim('exp')) {
         //     throw new ServerErrorHttpException('Issued Access Token has not expired');
         // }
@@ -218,7 +216,7 @@ class AuthController extends \Baka\Auth\AuthController
         //Check if both tokens relate to the same user's email
         if ($accessToken->getClaim('sessionId') == $refreshToken->getClaim('sessionId')) {
             $user = Users::findFirstOrFail([
-                'conditions'=>'email = ?0 and is_deleted = 0',
+                'conditions' => 'email = ?0 and is_deleted = 0',
                 'bind' => [$accessToken->getClaim('email')]
             ]);
         }
@@ -238,7 +236,7 @@ class AuthController extends \Baka\Auth\AuthController
     }
 
     /**
-     * Create a new session based off the refresh token session id
+     * Create a new session based off the refresh token session id.
      *
      * @param string $sessionId
      * @param string $email
@@ -264,7 +262,6 @@ class AuthController extends \Baka\Auth\AuthController
             'sessionId' => $sessionId,
             'token' => $token->__toString()
         ];
-
     }
 
     /**
