@@ -252,6 +252,13 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
             ]
         );
 
+        $this->hasMany(
+            'id',
+            CompaniesAssociations::class,
+            'companies_id',
+            ['alias' => 'companiesAssoc']
+        );
+
         //users associated with this company app
         $this->hasManyToMany(
             'id',
@@ -495,6 +502,7 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
     {
         //parent::afterSave();
         $this->associateFileSystem();
+
     }
 
     /**
