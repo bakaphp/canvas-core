@@ -53,11 +53,10 @@ class Apps extends Job implements QueueableJobInterfase
     public function handle()
     {
         $random = new Random();
-        $appName = $this->appName;
         $appDescription = $this->appDescription;
 
         $app = new CanvasApps();
-        $app->name = $appName;
+        $app->name = $this->appName;
         $app->description = $appDescription;
         $app->key = $random->uuid();
         $app->is_public = 1;
