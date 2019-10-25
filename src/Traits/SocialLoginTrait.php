@@ -11,6 +11,7 @@ use Canvas\Models\Users;
 use Canvas\Models\UserLinkedSources;
 use Phalcon\Security\Random;
 use Canvas\Traits\AuthTrait;
+use Exception;
 
 /**
  * Trait SocialLoginTrait.
