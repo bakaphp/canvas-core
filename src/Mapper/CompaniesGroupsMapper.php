@@ -24,13 +24,12 @@ class CompaniesGroupsMapper extends CustomMapper
         $companiesGroupDto->apps_id = $companiesGroup->apps_id;
         $companyArray = [];
         /**
-         * Let's find all companies and their apps plans
+         * Let's find all companies and their apps plans.
          */
         foreach ($companiesGroup->getCompanies() as $company) {
-
             $subscription = Subscription::findFirst([
-                'conditions'=> 'user_id = ?0 and companies_id = ?1 and is_deleted = 0',
-                'bind'=>[$companiesGroup->users_id,$company->id]
+                'conditions' => 'user_id = ?0 and companies_id = ?1 and is_deleted = 0',
+                'bind' => [$companiesGroup->users_id, $company->id]
             ]);
 
             foreach ($company as $key => $value) {
@@ -43,7 +42,6 @@ class CompaniesGroupsMapper extends CustomMapper
         $companiesGroupDto->created_at = $companiesGroup->created_at;
         $companiesGroupDto->updated_at = $companiesGroup->updated_at;
         $companiesGroupDto->is_deleted = $companiesGroup->is_deleted;
-
 
         return $companiesGroupDto;
     }

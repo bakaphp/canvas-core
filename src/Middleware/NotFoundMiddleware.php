@@ -12,7 +12,7 @@ use Phalcon\Mvc\User\Plugin;
 use function Canvas\Core\isSwooleServer;
 
 /**
- * Class NotFoundMiddleware
+ * Class NotFoundMiddleware.
  *
  * @package Canvas\Middleware
  *
@@ -24,7 +24,7 @@ class NotFoundMiddleware extends Plugin implements MiddlewareInterface
     use ResponseTrait;
 
     /**
-     * Checks if the resource was found
+     * Checks if the resource was found.
      */
     public function beforeNotFound()
     {
@@ -39,7 +39,7 @@ class NotFoundMiddleware extends Plugin implements MiddlewareInterface
     }
 
     /**
-     * Call me
+     * Call me.
      *
      * @param Micro $api
      *
