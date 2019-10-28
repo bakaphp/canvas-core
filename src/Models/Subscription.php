@@ -264,7 +264,7 @@ class Subscription extends PhalconSubscription
     }
 
     /**
-     * Given a not active subscription activate it
+     * Given a not active subscription activate it.
      *
      * @return void
      */
@@ -287,5 +287,19 @@ class Subscription extends PhalconSubscription
     public function onTrial()
     {
         return (bool)$this->is_freetrial;
+    }
+
+    /**
+     * Cancel the subscription at the end of the billing period.
+     *
+     * @return $this
+     */
+    public function cancel()
+    {
+        $subscription = $this->asStripeSubscription();
+        $subscription->update(['cancel_at_period_end' => true]);
+        $this->markAsCancelled();
+        $this->save();
+        return $this;
     }
 }
