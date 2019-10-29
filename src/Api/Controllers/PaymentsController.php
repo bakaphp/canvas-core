@@ -41,7 +41,7 @@ class PaymentsController extends BaseController
         if (!$this->request->hasHeader('Stripe-Signature')) {
             throw new Exception('Route not found for this call');
         }
-        $request = $this->request->getPost();
+        $request = $this->request->getPostData();
         if (empty($request)) {
             $request = $this->request->getJsonRawBody(true);
         }
