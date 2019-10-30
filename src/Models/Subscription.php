@@ -22,7 +22,6 @@ use Carbon\Carbon;
  */
 class Subscription extends PhalconSubscription
 {
-
     const DEFAULT_GRACE_PERIOD_DAYS = 5;
     /**
      *
@@ -298,10 +297,8 @@ class Subscription extends PhalconSubscription
      */
     public function cancel()
     {
-        $subscription = $this->asStripeSubscription();
-        $subscription->update(['cancel_at_period_end' => true]);
+        $this->update(['cancel_at_period_end' => true]);
         $this->markAsCancelled();
-        $this->save();
         return $this;
     }
 }
