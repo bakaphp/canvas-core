@@ -289,15 +289,4 @@ class Subscription extends PhalconSubscription
     {
         return (bool)$this->is_freetrial;
     }
-
-    /**
-     * Cancel the subscription at the end of the billing period.
-     *
-     * @return $this
-     */
-    public function cancel()
-    {
-        $this->update(['cancel_at_period_end' => true]);
-        return $this;
-    }
 }
