@@ -22,6 +22,8 @@ use Carbon\Carbon;
  */
 class Subscription extends PhalconSubscription
 {
+
+    const DEFAULT_GRACE_PERIOD_DAYS = 5;
     /**
      *
      * @var integer
