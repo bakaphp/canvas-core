@@ -298,7 +298,6 @@ class Subscription extends PhalconSubscription
     public function cancel()
     {
         $this->update(['cancel_at_period_end' => true]);
-        $this->markAsCancelled();
         return $this;
     }
 }
