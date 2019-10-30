@@ -14,7 +14,7 @@ use Phalcon\Di;
 use Exception;
 
 /**
- * Class PaymentsController
+ * Class PaymentsController.
  *
  * Class to handle payment webhook from our cashier library
  *
@@ -26,12 +26,12 @@ use Exception;
 class PaymentsController extends BaseController
 {
     /**
-     * Stripe Webhook Handlers
+     * Stripe Webhook Handlers.
      */
     use StripeWebhookHandlersTrait;
 
     /**
-     * Handle stripe webhoook calls
+     * Handle stripe webhoook calls.
      *
      * @return Response
      */
@@ -42,9 +42,6 @@ class PaymentsController extends BaseController
             throw new Exception('Route not found for this call');
         }
         $request = $this->request->getPostData();
-        if (empty($request)) {
-            $request = $this->request->getJsonRawBody(true);
-        }
         $type = str_replace('.', '', ucwords(str_replace('_', '', $request['type']), '.'));
         $method = 'handle' . $type;
         $payloadContent = json_encode($request);
@@ -107,7 +104,7 @@ class PaymentsController extends BaseController
     }
 
     /**
-     * Handle sucessfull payment
+     * Handle sucessfull payment.
      *
      * @param array $payload
      * @return Response
@@ -124,7 +121,7 @@ class PaymentsController extends BaseController
     }
 
     /**
-     * Handle bad payment
+     * Handle bad payment.
      *
      * @param array $payload
      * @return Response
@@ -141,7 +138,7 @@ class PaymentsController extends BaseController
     }
 
     /**
-     * Handle pending payments
+     * Handle pending payments.
      *
      * @param array $payload
      * @return Response
@@ -157,7 +154,7 @@ class PaymentsController extends BaseController
     }
 
     /**
-     * Send webhook related emails to user
+     * Send webhook related emails to user.
      * @param Users $user
      * @param array $payload
      * @param string $method
@@ -172,7 +169,7 @@ class PaymentsController extends BaseController
             case 'handleCustomerSubscriptionUpdated':
                 $templateName = 'users-subscription-updated';
                 break;
-            
+
             case 'handleCustomerSubscriptionDeleted':
                 $templateName = 'users-subscription-canceled';
                 break;
@@ -204,7 +201,7 @@ class PaymentsController extends BaseController
     }
 
     /**
-     * Updates subscription payment status depending on charge event
+     * Updates subscription payment status depending on charge event.
      * @param $user
      * @param $payload
      * @return void
