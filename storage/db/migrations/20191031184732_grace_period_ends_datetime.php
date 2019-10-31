@@ -16,7 +16,7 @@ class GracePeriodEndsDatetime extends Phinx\Migration\AbstractMigration
             'comment' => '',
             'row_format' => 'DYNAMIC',
         ])
-        ->addColumn('grace_period_ends', 'datetime', [
+        ->changeColumn('grace_period_ends', 'datetime', [
             'null' => true,
             'after' => 'trial_ends_at',
         ])
