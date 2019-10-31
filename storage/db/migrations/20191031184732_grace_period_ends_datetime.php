@@ -20,7 +20,7 @@ class GracePeriodEndsDatetime extends Phinx\Migration\AbstractMigration
             'null' => true,
             'after' => 'trial_ends_at',
         ])
-        ->addColumn('next_due_payment', 'datetime', [
+        ->changeColumn('next_due_payment', 'datetime', [
             'null' => true,
             'after' => 'grace_period_ends',
         ])
