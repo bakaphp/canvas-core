@@ -289,4 +289,17 @@ class Subscription extends PhalconSubscription
     {
         return (bool)$this->is_freetrial;
     }
+
+    /**
+     * Get actual subscription
+     */
+    public static function getActiveSubscription(): self
+    {
+        $userSubscription = PhalconSubscription::findFirstOrFail([
+            'conditions' => 'user_id = ?0 and companies_id = ?1 and apps_id = ?2 and is_deleted  = 0',
+            'bind' => [Di::getDefault()->getUserData()->getId(), Di::getDefault()->getUserData()->currentCompanyId(), Di::getDefault()->getApp()->getId()]
+        ]);
+
+        return Di::getDefault()->getUserData()->subscription($userSubscription->name);
+    }
 }

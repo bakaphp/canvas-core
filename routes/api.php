@@ -30,6 +30,7 @@ $privateRoutes = [
     Route::crud('/system-modules')->controller('SystemModulesController'),
     Route::crud('/companies-branches')->controller('CompaniesBranchesController'),
     Route::crud('/apps-plans')->controller('AppsPlansController'),
+    Route::post('/apps-plans/{id}/reactivate')->controller('AppsPlansController')->action('reactivateSubscription'),
     Route::crud('/roles-acceslist')->controller('RolesAccesListController'),
     Route::crud('/permissions-resources')->controller('PermissionsResourcesController'),
     Route::crud('/permissions-resources-access')->controller('PermissionsResourcesAccessController'),
