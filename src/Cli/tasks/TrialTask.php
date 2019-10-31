@@ -10,7 +10,7 @@ use \Datetime;
 class TrialTask extends PhTask
 {
     /**
-     * Unset subscription trial_ends_at if trial has ended
+     * Unset subscription trial_ends_at if trial has ended.
      * @return void
      */
     public function unsetTrialEndsAtAction(): void
@@ -26,10 +26,8 @@ class TrialTask extends PhTask
 
             if ($formattedTrialEnds == Carbon::today()->toDateString()) {
                 $subscription->trial_ends_at = null;
-
-                if ($subscription->update()) {
-                    echo("Company: {$subscription->id} trial has ended, so its trial_ends_at is NULL \n");
-                }
+                $subscription->updateOrFail();
+                echo("Company: {$subscription->id} trial has ended, so its trial_ends_at is NULL \n");
             }
         }
     }
