@@ -42,9 +42,7 @@ trait PermissionsTrait
             $userRole->roles_id = $role->getId();
             $userRole->apps_id = $role->apps_id;
             $userRole->companies_id = $this->currentCompanyId();
-            if (!$userRole->save()) {
-                throw new ModelException((string) current($userRole->getMessages()));
-            }
+            $userRole->saveOrFail();
         }
 
         return true;
