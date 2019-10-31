@@ -92,7 +92,7 @@ class UserMapper extends CustomMapper
     }
 
     /**
-     * Attach acces list to the user
+     * Attach acces list to the user.
      *
      * @param object $userDto
      * @return void

@@ -132,32 +132,6 @@ class UsersController extends BakaUsersController
     }
 
     /**
-     * processOutput.
-     *
-     * @todo clean this up
-     *
-     * @param mixed $results
-     * @return mixed
-     */
-    protected function processOutput($results)
-    {
-        $defaultCompany = $this->userData->getDefaultCompany()->getId();
-
-        /**
-         * Overwrite the default company for the user.
-         */
-        if ($this->request->hasQuery('relationships')) {
-            if (isset($results['default_company'])) {
-                $results['default_company'] = $defaultCompany;
-            }
-        } elseif (is_object($results)) {
-            $results->default_company = $defaultCompany;
-        }
-
-        return $results;
-    }
-
-    /**
      * Update a User Info.
      *
      * @method PUT

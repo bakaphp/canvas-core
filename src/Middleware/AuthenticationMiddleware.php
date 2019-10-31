@@ -31,7 +31,6 @@ class AuthenticationMiddleware extends TokenBase
         $request = $api->getService('request');
 
         if ($this->isValidCheck($request, $api)) {
-
             //cant be empty jwt
             if (empty($request->getBearerTokenFromHeader())) {
                 throw new PermissionException('Missing Token');
