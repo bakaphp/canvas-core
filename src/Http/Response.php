@@ -7,6 +7,10 @@ namespace Canvas\Http;
 use Phalcon\Http\Response as PhResponse;
 use Phalcon\Mvc\Model\MessageInterface as ModelMessage;
 use Phalcon\Validation\Message\Group as ValidationMessage;
+use Canvas\Exception\ServerErrorHttpException;
+use Canvas\Constants\Flags;
+use Phalcon\Di;
+use Throwable;
 
 class Response extends PhResponse
 {
@@ -68,7 +72,7 @@ class Response extends PhResponse
         $eTag = sha1($content);
 
         /**
-         * At the moment we are only using this format for error msg
+         * At the moment we are only using this format for error msg.
          * @todo change in the future to implemente other formats
          */
         if ($this->getStatusCode() != 200) {
@@ -89,7 +93,7 @@ class Response extends PhResponse
                     'hash' => $hash,
                 ]
             ];
-        
+
             /**
              * Join the array again.
              */
@@ -153,6 +157,43 @@ class Response extends PhResponse
         $data = (true === isset($data['data'])) ? $data : ['data' => $data];
 
         $this->setJsonContent($data);
+
+        return $this;
+    }
+
+    /**
+     * Handle the exception we throw from our api.
+     *
+     * @param Throwable $e
+     * @return Response
+     */
+    public function handleException(Throwable $e): Response
+    {
+        $request = new Request();
+        $identifier = $request->getServerAddress();
+        $config = Di::getDefault()->getConfig();
+
+        $httpCode = (method_exists($e, 'getHttpCode')) ? $e->getHttpCode() : 404;
+        $httpMessage = (method_exists($e, 'getHttpMessage')) ? $e->getHttpMessage() : 'Not Found';
+        $data = (method_exists($e, 'getData')) ? $e->getData() : [];
+
+        $this->setHeader('Access-Control-Allow-Origin', '*'); //@todo check why this fails on nginx
+        $this->setStatusCode($httpCode, $httpMessage);
+        $this->setContentType('application/json');
+        $this->setJsonContent([
+            'errors' => [
+                'type' => $httpMessage,
+                'identifier' => $identifier,
+                'message' => $e->getMessage(),
+                'trace' => strtolower($config->app->env) != Flags::PRODUCTION ? $e->getTraceAsString() : null,
+                'data' => $data,
+            ],
+        ]);
+
+        //only log when server error production is seerver error or dev
+        if ($e instanceof ServerErrorHttpException || strtolower($config->app->env) != Flags::PRODUCTION) {
+            Di::getDefault()->getLog()->error($e->getMessage(), [$e->getTraceAsString()]);
+        }
 
         return $this;
     }

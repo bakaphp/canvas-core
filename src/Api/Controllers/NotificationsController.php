@@ -46,6 +46,7 @@ class NotificationsController extends BaseController
         $this->dto = NotificationDto::class;
         $this->dtoMapper = new NotificationMapper();
 
+        throw new \Exception('3');
         $this->additionalSearchFields = [
             ['is_deleted', ':', '0'],
             ['users_id', ':', $this->userData->getId()],
