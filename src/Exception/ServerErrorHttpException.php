@@ -7,7 +7,7 @@ namespace Canvas\Exception;
 use Canvas\Http\Response;
 
 /**
- * Using this exception for critical erros taht you need to get notify ASAP
+ * @deprecated version 0.1.5
  */
 class ServerErrorHttpException extends HttpException
 {
