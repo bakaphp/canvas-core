@@ -46,16 +46,11 @@ class NotificationsController extends BaseController
         $this->dto = NotificationDto::class;
         $this->dtoMapper = new NotificationMapper();
 
-        throw new \Exception('3');
         $this->additionalSearchFields = [
             ['is_deleted', ':', '0'],
             ['users_id', ':', $this->userData->getId()],
             ['companies_id', ':', $this->userData->currentCompanyId()],
         ];
-
-        //?rq[user]=(id:18)&sort=user.id|asc
-
-        //$this->customColumns = 'count(*) as total';
     }
 
     /**

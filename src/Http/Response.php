@@ -29,6 +29,7 @@ class Response extends PhResponse
     const INTERNAL_SERVER_ERROR = 500;
     const NOT_IMPLEMENTED = 501;
     const BAD_GATEWAY = 502;
+    const UNPROCESSABLE_ENTITY = 422;
 
     private $codes = [
         200 => 'OK',
@@ -40,6 +41,7 @@ class Response extends PhResponse
         401 => 'Unauthorized',
         403 => 'Forbidden',
         404 => 'Not Found',
+        422 => 'Unprocessable Entity',
         500 => 'Internal Server Error',
         501 => 'Not Implemented',
         502 => 'Bad Gateway',
