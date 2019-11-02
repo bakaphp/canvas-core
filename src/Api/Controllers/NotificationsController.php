@@ -51,6 +51,10 @@ class NotificationsController extends BaseController
             ['users_id', ':', $this->userData->getId()],
             ['companies_id', ':', $this->userData->currentCompanyId()],
         ];
+
+        //?rq[user]=(id:18)&sort=user.id|asc
+
+        //$this->customColumns = 'count(*) as total';
     }
 
     /**
@@ -66,7 +70,7 @@ class NotificationsController extends BaseController
     }
 
     /**
-     * Overwrite processOutput
+     * Overwrite processOutput.
      *
      * @param mixed $results
      * @return mixed
@@ -75,6 +79,7 @@ class NotificationsController extends BaseController
     {
         $results = $this->parentProcessOutput($results);
 
+        //if we are using format for listing we send the the total notifications
         if (is_array($results) && isset($results['data'])) {
             $results['total_notifications'] = Notifications::totalUnRead($this->userData);
         }

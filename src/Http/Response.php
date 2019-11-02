@@ -42,7 +42,7 @@ class Response extends PhResponse
     ];
 
     /**
-     * Returns the http code description or if not found the code itself
+     * Returns the http code description or if not found the code itself.
      * @param int $code
      *
      * @return int|string
@@ -57,45 +57,53 @@ class Response extends PhResponse
     }
 
     /**
-     * Send the response back
+     * Send the response back.
      *
      * @return PhResponse
      */
     public function send(): PhResponse
     {
         $content = $this->getContent();
-        $timestamp = date('c');
-        $hash = sha1($timestamp . $content);
+        $data = $content;
         $eTag = sha1($content);
 
-        /** @var array $content */
-        $content = json_decode($this->getContent(), true);
-
-        $jsonapi = [
-            'jsonapi' => [
-                'version' => '1.0',
-            ],
-        ];
-        $meta = [
-            'meta' => [
-                'timestamp' => $timestamp,
-                'hash' => $hash,
-            ]
-        ];
-
         /**
-         * Join the array again
+         * At the moment we are only using this format for error msg
+         * @todo change in the future to implemente other formats
          */
-        $data = $jsonapi + $content + $meta;
-        $this
-            ->setHeader('E-Tag', $eTag)
-            ->setJsonContent($data);
+        if ($this->getStatusCode() != 200) {
+            $timestamp = date('c');
+            $hash = sha1($timestamp . $content);
+
+            /** @var array $content */
+            $content = json_decode($this->getContent(), true);
+
+            $jsonapi = [
+                'jsonapi' => [
+                    'version' => '1.0',
+                ],
+            ];
+            $meta = [
+                'meta' => [
+                    'timestamp' => $timestamp,
+                    'hash' => $hash,
+                ]
+            ];
+        
+            /**
+             * Join the array again.
+             */
+            $data = $jsonapi + $content + $meta;
+            $this->setJsonContent($data);
+        }
+
+        $this->setHeader('E-Tag', $eTag);
 
         return parent::send();
     }
 
     /**
-     * Sets the payload code as Error
+     * Sets the payload code as Error.
      *
      * @param string $detail
      *
@@ -107,14 +115,14 @@ class Response extends PhResponse
             'errors' => [
                 'message' => $detail,
                 'type' => $this->codes[404]
-                ]
+            ]
         ]);
 
         return $this;
     }
 
     /**
-     * Traverses the errors collection and sets the errors in the payload
+     * Traverses the errors collection and sets the errors in the payload.
      *
      * @param ModelMessage[]|ValidationMessage $errors
      *
@@ -133,7 +141,7 @@ class Response extends PhResponse
     }
 
     /**
-     * Sets the payload code as Success
+     * Sets the payload code as Success.
      *
      * @param null|string|array $content The content
      *
