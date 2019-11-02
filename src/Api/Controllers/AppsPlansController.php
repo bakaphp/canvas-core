@@ -242,16 +242,7 @@ class AppsPlansController extends BaseController
             throw new NotFoundHttpException(_('This plan doesnt exist'));
         }
 
-        $userSubscription = Subscription::findFirst([
-            'conditions' => 'user_id = ?0 and companies_id = ?1 and apps_id = ?2 and is_deleted  = 0',
-            'bind' => [$this->userData->getId(), $this->userData->currentCompanyId(), $this->app->getId()]
-        ]);
-
-        if (!is_object($userSubscription)) {
-            throw new NotFoundHttpException(_('No current subscription found'));
-        }
-
-        $subscription = $this->userData->subscription($userSubscription->name);
+        $subscription = CanvasSubscription::getActiveSubscription();
 
         //if on trial you can cancel without going to stripe
         if (!$subscription->onTrial()) {
@@ -259,6 +250,33 @@ class AppsPlansController extends BaseController
         }
 
         $subscription->is_cancelled = 1;
+        $subscription->update();
+
+        return $this->response($appPlan);
+    }
+
+    /**
+     * Reactivate a given subscription.
+     *
+     * @param string $stripeId
+     * @return Response
+     */
+    public function reactivateSubscription($stripeId): Response
+    {
+        $appPlan = $this->model->findFirstByStripeId($stripeId);
+
+        if (!is_object($appPlan)) {
+            throw new NotFoundHttpException(_('This plan doesnt exist'));
+        }
+
+        $subscription = CanvasSubscription::getActiveSubscription();
+
+        //if on trial you can cancel without going to stripe
+        if (!$subscription->onTrial()) {
+            $subscription->reactivate();
+        }
+
+        $subscription->is_cancelled = 0;
         $subscription->update();
 
         return $this->response($appPlan);

@@ -117,15 +117,10 @@ class UserLinkedSourcesController extends BaseController
     public function detachDevice(int $id, string $deviceId): Response
     {
         //$sourceId = $this->request->getPost('source_id', 'int');
-        $userSource = UserLinkedSources::findFirst([
+        $userSource = UserLinkedSources::findFirstOrFail([
             'conditions' => 'users_id = ?0  and source_users_id_text = ?1 and is_deleted = 0',
             'bind' => [$this->userData->getId(), $deviceId]
         ]);
-
-        //Check if User Linked Sources exists by users_id and source_users_id_text
-        if (!is_object($userSource)) {
-            throw new NotFoundHttpException('User Linked Source not found');
-        }
 
         $userSource->softDelete();
 

@@ -115,7 +115,7 @@ class PlansSubscriptions extends AbstractMigration
             ->addColumn('trial_ends_days', 'integer', ['null' => true, 'limit' => MysqlAdapter::INT_REGULAR, 'precision' => 10, 'after' => 'trial_ends_at'])
             ->addColumn('is_freetrial', 'integer', ['null' => false, 'default' => '0', 'limit' => MysqlAdapter::INT_TINY, 'precision' => 3, 'after' => 'trial_ends_days'])
             ->addColumn('is_active', 'integer', ['null' => false, 'default' => '0', 'limit' => MysqlAdapter::INT_TINY, 'precision' => 3, 'after' => 'is_freetrial'])
-            ->addColumn('paid', 'integer', ['null' => true, 'default' => '1', 'limit' => MysqlAdapter::INT_TINY, 'precision' => 3, 'after' => 'is_active'])
+            ->addColumn('paid', 'integer', ['null' => true, 'default' => '0', 'limit' => MysqlAdapter::INT_TINY, 'precision' => 3, 'after' => 'is_active'])
             ->addColumn('charge_date', 'datetime', ['null' => true, 'after' => 'paid'])
             ->addColumn('ends_at', 'timestamp', ['null' => true, 'after' => 'is_active'])
             ->addColumn('created_at', 'datetime', ['null' => false, 'after' => 'ends_at'])

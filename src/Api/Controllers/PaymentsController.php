@@ -12,9 +12,10 @@ use Canvas\Models\Subscription;
 use Canvas\Models\CompaniesSettings;
 use Phalcon\Di;
 use Exception;
+use Carbon\Carbon;
 
 /**
- * Class PaymentsController
+ * Class PaymentsController.
  *
  * Class to handle payment webhook from our cashier library
  *
@@ -26,12 +27,12 @@ use Exception;
 class PaymentsController extends BaseController
 {
     /**
-     * Stripe Webhook Handlers
+     * Stripe Webhook Handlers.
      */
     use StripeWebhookHandlersTrait;
 
     /**
-     * Handle stripe webhoook calls
+     * Handle stripe webhoook calls.
      *
      * @return Response
      */
@@ -41,10 +42,7 @@ class PaymentsController extends BaseController
         if (!$this->request->hasHeader('Stripe-Signature')) {
             throw new Exception('Route not found for this call');
         }
-        $request = $this->request->getPost();
-        if (empty($request)) {
-            $request = $this->request->getJsonRawBody(true);
-        }
+        $request = $this->request->getPostData();
         $type = str_replace('.', '', ucwords(str_replace('_', '', $request['type']), '.'));
         $method = 'handle' . $type;
         $payloadContent = json_encode($request);
@@ -102,12 +100,13 @@ class PaymentsController extends BaseController
         if ($user) {
             //We need to send a mail to the user
             $this->sendWebhookResponseEmail($user, $payload, $method);
+            $this->log->info("Email was sent to: {$user->email}\n");
         }
         return $this->response(['Webhook Handled']);
     }
 
     /**
-     * Handle sucessfull payment
+     * Handle sucessfull payment.
      *
      * @param array $payload
      * @return Response
@@ -124,7 +123,7 @@ class PaymentsController extends BaseController
     }
 
     /**
-     * Handle bad payment
+     * Handle bad payment.
      *
      * @param array $payload
      * @return Response
@@ -141,7 +140,7 @@ class PaymentsController extends BaseController
     }
 
     /**
-     * Handle pending payments
+     * Handle pending payments.
      *
      * @param array $payload
      * @return Response
@@ -157,7 +156,7 @@ class PaymentsController extends BaseController
     }
 
     /**
-     * Send webhook related emails to user
+     * Send webhook related emails to user.
      * @param Users $user
      * @param array $payload
      * @param string $method
@@ -172,7 +171,7 @@ class PaymentsController extends BaseController
             case 'handleCustomerSubscriptionUpdated':
                 $templateName = 'users-subscription-updated';
                 break;
-            
+
             case 'handleCustomerSubscriptionDeleted':
                 $templateName = 'users-subscription-canceled';
                 break;
@@ -204,7 +203,7 @@ class PaymentsController extends BaseController
     }
 
     /**
-     * Updates subscription payment status depending on charge event
+     * Updates subscription payment status depending on charge event.
      * @param $user
      * @param $payload
      * @return void
@@ -219,6 +218,7 @@ class PaymentsController extends BaseController
         if (is_object($subscription)) {
             $subscription->paid = $payload['data']['object']['paid'] ? 1 : 0;
             $subscription->charge_date = $chargeDate;
+            $subscription->grace_period_ends = Carbon::now()->addDays(Subscription::DEFAULT_GRACE_PERIOD_DAYS)->toDateTimeString();
 
             if ($subscription->paid) {
                 $subscription->is_freetrial = 0;

@@ -91,11 +91,7 @@ class CompaniesBranchesController extends BaseController
      */
     public function create() : Response
     {
-        $request = $this->request->getPost();
-
-        if (empty($request)) {
-            $request = $this->request->getJsonRawBody(true);
-        }
+        $request = $this->request->getPostData();
 
         //transaction
         $this->db->begin();
@@ -126,11 +122,7 @@ class CompaniesBranchesController extends BaseController
         ]);
 
         if ($company) {
-            $request = $this->request->getPut();
-
-            if (empty($request)) {
-                $request = $this->request->getJsonRawBody(true);
-            }
+            $request = $this->request->getPutData();
 
             //update
             if ($company->update($request, $this->updateFields)) {
