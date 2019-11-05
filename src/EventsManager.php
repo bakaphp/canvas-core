@@ -16,7 +16,7 @@ class EventsManager
     use EventManagerAwareTrait;
 
     /**
-    * Checking if event manager is defined - fire event.
+    * Checking if event manager is defined - fire event to the event queue
     *
     * @param string $event
     * @param object $source

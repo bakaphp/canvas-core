@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Canvas\Providers;
 
-use Phalcon\Http\Response;
+use Canvas\Http\Response;
 use Canvas\Http\SwooleResponse;
 use Phalcon\Di\ServiceProviderInterface;
 use Phalcon\DiInterface;

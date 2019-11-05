@@ -10,7 +10,7 @@ use Baka\Http\QueryParser;
 use Canvas\Models\CompaniesBranches;
 
 /**
- * Class CompaniesController
+ * Class CompaniesController.
  *
  * @package Canvas\Api\Controllers
  *
@@ -24,17 +24,17 @@ class CompaniesBranchesController extends BaseController
      *
      * @var array
      */
-    protected $createFields = ['name', 'address','email','zipcode','phone', 'is_default'];
+    protected $createFields = ['name', 'address', 'email', 'zipcode', 'phone', 'is_default'];
 
     /*
      * fields we accept to create
      *
      * @var array
      */
-    protected $updateFields = ['name', 'address','email','zipcode','phone', 'is_default'];
+    protected $updateFields = ['name', 'address', 'email', 'zipcode', 'phone', 'is_default'];
 
     /**
-     * set objects
+     * set objects.
      *
      * @return void
      */
@@ -50,7 +50,7 @@ class CompaniesBranchesController extends BaseController
     }
 
     /**
-     * Get Uer
+     * Get Uer.
      *
      * @param mixed $id
      *
@@ -82,7 +82,7 @@ class CompaniesBranchesController extends BaseController
     }
 
     /**
-     * Add a new item
+     * Add a new item.
      *
      * @method POST
      * @url /v1/company
@@ -107,7 +107,7 @@ class CompaniesBranchesController extends BaseController
     }
 
     /**
-     * Update a User Info
+     * Update a User Info.
      *
      * @method PUT
      * @url /v1/company/{id}

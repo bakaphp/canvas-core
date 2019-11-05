@@ -2,14 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Canvas\Exception;
+namespace Canvas\Http\Exception;
 
 use Canvas\Http\Response;
+use Canvas\Exception\HttpException;
 
 /**
- * @deprecated version 0.1.5
+ * Critical error from the app , will send alerts
  */
-class ServerErrorHttpException extends HttpException
+class InternalServerErrorException extends HttpException
 {
     protected $httpCode = Response::INTERNAL_SERVER_ERROR;
     protected $httpMessage = 'Internal Server Error';

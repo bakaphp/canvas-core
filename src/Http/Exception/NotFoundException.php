@@ -2,13 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Canvas\Exception;
+namespace Canvas\Http\Exception;
 
 use Canvas\Http\Response;
+use Canvas\Exception\HttpException;
 
-/**
- * @deprecated version 0.1.5
- */
 class NotFoundException extends HttpException
 {
     protected $httpCode = Response::NOT_FOUND;

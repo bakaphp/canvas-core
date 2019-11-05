@@ -5,11 +5,9 @@ declare(strict_types=1);
 namespace Canvas\Listener;
 
 use Phalcon\Events\Event;
-use Canvas\Contracts\Notifications\NotificationInterfase;
 use Baka\Mail\Message;
 use Canvas\Cli\Jobs\Pusher;
 use Canvas\Cli\Jobs\PushNotifications;
-use Canvas\Models\Users;
 use Canvas\Notifications\PusherNotification;
 use Canvas\Notifications\PushNotification;
 
@@ -31,10 +29,8 @@ class Notification
      * From a given push notification send it to the user.
      *
      * @param Event $event
-     * @param Users $user
-     * @param string $message
-     * @param array $params
-     * @return mixed
+     * @param PusherNotification $pusherNotification
+     * @return void
      */
     public function sendPushNotification(Event $event, PushNotification $pushNotification)
     {
@@ -45,7 +41,7 @@ class Notification
      * From a given notificatino send its realtime websocket.
      *
      * @param Event $event
-     * @param NotificationInterfase $notification
+     * @param PusherNotification $pusherNotification
      * @return void
      */
     public function sendRealtime(Event $event, PusherNotification $pusherNotification)
