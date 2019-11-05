@@ -219,13 +219,7 @@ class PaymentsController extends BaseController
             $subscription->paid = $payload['data']['object']['paid'] ? 1 : 0;
             $subscription->charge_date = $chargeDate;
 
-            if (isset($subscription->grace_period_ends)) {
-                if (($subscription->charge_date == $subscription->grace_period_ends) && !$subscription->paid) {
-                    $subscription->is_active = 0;
-                }
-            } else {
-                $subscription->grace_period_ends = Carbon::now()->addDays(Subscription::DEFAULT_GRACE_PERIOD_DAYS)->toDateTimeString();
-            }
+            $subscription = $this->deactivateByGracePeriod($subscription);
 
             if ($subscription->paid) {
                 $subscription->is_freetrial = 0;
@@ -252,5 +246,25 @@ class PaymentsController extends BaseController
         } else {
             $this->log->error("Subscription not found\n");
         }
+    }
+
+    /**
+     * Validate subscription status by grace period date.
+     *
+     * @param Subscription $subscription
+     * @return Subscription
+     */
+    private function validateByGracePeriod(Subscription $subscription): Subscription
+    {
+        if (isset($subscription->grace_period_ends)) {
+            if (($subscription->charge_date == $subscription->grace_period_ends) && !$subscription->paid) {
+                $subscription->is_active = 0;
+                $subscription->grace_period_ends = Carbon::now()->addDays(Subscription::DEFAULT_GRACE_PERIOD_DAYS)->toDateTimeString();
+            }
+        } else {
+            $subscription->grace_period_ends = Carbon::now()->addDays(Subscription::DEFAULT_GRACE_PERIOD_DAYS)->toDateTimeString();
+        }
+
+        return $subscription;
     }
 }
