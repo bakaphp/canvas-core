@@ -9,6 +9,7 @@ use Phalcon\Mvc\Model\MessageInterface as ModelMessage;
 use Phalcon\Validation\Message\Group as ValidationMessage;
 use Canvas\Exception\ServerErrorHttpException;
 use Canvas\Constants\Flags;
+use Canvas\Http\Exception\InternalServerErrorException;
 use Phalcon\Di;
 use Throwable;
 
@@ -193,7 +194,7 @@ class Response extends PhResponse
         ]);
 
         //only log when server error production is seerver error or dev
-        if ($e instanceof ServerErrorHttpException || strtolower($config->app->env) != Flags::PRODUCTION) {
+        if ($e instanceof ServerErrorHttpException || $e instanceof InternalServerErrorException || strtolower($config->app->env) != Flags::PRODUCTION) {
             Di::getDefault()->getLog()->error($e->getMessage(), [$e->getTraceAsString()]);
         }
 

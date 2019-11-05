@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Canvas\Middleware;
 
 use Phalcon\Mvc\Micro;
-use Canvas\Exception\ServerErrorHttpException;
-use Canvas\Exception\PermissionException;
+use Canvas\Http\Exception\InternalServerErrorException;
+use Canvas\Http\Exception\UnauthorizedException;
 use Canvas\Models\Subscription;
 
 /**
@@ -36,12 +36,13 @@ class AclMiddleware extends TokenBase
             $userData = $api->getService('userData');
 
             $action = null;
+            $method = strtolower($request->getMethod());
             // GET -> read
             // PUT -> update
             // DELETE -> delete
             // POST -> create
 
-            switch (strtolower($request->getMethod())) {
+            switch ($method) {
                 case 'get':
                     $action = 'list';
                     if (preg_match("/\/([0-9]+)(?=[^\/]*$)/", $request->getURI())) {
@@ -59,12 +60,12 @@ class AclMiddleware extends TokenBase
                     $action = 'update';
                     break;
                 default:
-                    throw new ServerErrorHttpException('No Permission define for this action');
+                    throw new InternalServerErrorException('No Permission define for this action '. $method);
                 break;
             }
             //do you have permision
             if (!$userData->can($resource . '.' . $action)) {
-                throw new PermissionException('You dont have permission to run this action ' . $action . ' at ' . $resource);
+                throw new UnauthorizedException('You dont have permission to run this action ' . $action . ' at ' . $resource);
             }
         }
 
