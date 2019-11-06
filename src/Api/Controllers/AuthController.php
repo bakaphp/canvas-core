@@ -215,17 +215,10 @@ class AuthController extends \Baka\Auth\AuthController
 
         //Check if both tokens relate to the same user's email
         if ($accessToken->getClaim('sessionId') == $refreshToken->getClaim('sessionId')) {
-            $user = Users::findFirstOrFail([
-                'conditions' => 'email = ?0 and is_deleted = 0',
-                'bind' => [$accessToken->getClaim('email')]
-            ]);
+            $user = Users::getByEmail($accessToken->getClaim('email'));
         }
 
-        //Check if session is active
-        $session = new Sessions();
-        $session->check($user, $refreshToken->getClaim('sessionId'), (string)$this->request->getClientAddress(), 1);
-        $token = $this->newAuthSession($refreshToken->getClaim('sessionId'), $user->email);
-        $session->start($user, $token['sessionId'], $token['token'], (string)$this->request->getClientAddress(), 1);
+        $token = $this->checkSessionStatus($user, $refreshToken->getClaim('sessionId'), (string)$this->request->getClientAddress());
 
         return $this->response([
             'token' => $token['token'],
@@ -233,6 +226,23 @@ class AuthController extends \Baka\Auth\AuthController
             'expires' => date('Y-m-d H:i:s', time() + $this->config->jwt->payload->exp),
             'id' => $user->getId(),
         ]);
+    }
+
+    /**
+     * Check auth session status and create a new one if there is none.
+     *
+     * @param Users $user
+     * @param string $sessionId
+     * @param string $clientAddress
+     * @return array
+     */
+    private function checkSessionStatus(Users $user, string $sessionId, string $clientAddress): array
+    {
+        $session = new Sessions();
+        $session->check($user, $sessionId, $clientAddress, 1);
+        $token = $this->newAuthSession($sessionId, $user->email);
+        $session->start($user, $token['sessionId'], $token['token'], $clientAddress, 1);
+        return $token;
     }
 
     /**
