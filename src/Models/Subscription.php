@@ -291,7 +291,7 @@ class Subscription extends PhalconSubscription
     }
 
     /**
-     * Get actual subscription
+     * Get actual subscription.
      */
     public static function getActiveSubscription(): self
     {
@@ -301,5 +301,22 @@ class Subscription extends PhalconSubscription
         ]);
 
         return Di::getDefault()->getUserData()->subscription($userSubscription->name);
+    }
+
+    /**
+     * Validate subscription status by grace period date.
+     *
+     * @return void
+     */
+    public function validateByGracePeriod(): void
+    {
+        if (isset($this->grace_period_ends)) {
+            if (($this->charge_date == $this->grace_period_ends) && !$this->paid) {
+                $this->is_active = 0;
+                $this->grace_period_ends = Carbon::now()->addDays(Subscription::DEFAULT_GRACE_PERIOD_DAYS)->toDateTimeString();
+            }
+        } else {
+            $this->grace_period_ends = Carbon::now()->addDays(Subscription::DEFAULT_GRACE_PERIOD_DAYS)->toDateTimeString();
+        }
     }
 }
