@@ -304,7 +304,7 @@ class Subscription extends PhalconSubscription
     }
 
     /**
-     * Validate subscription status by grace period date.
+     * Validate subscription status by grace period date and update grace period date.
      *
      * @return void
      */
