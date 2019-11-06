@@ -22,6 +22,7 @@ use Carbon\Carbon;
  */
 class Subscription extends PhalconSubscription
 {
+    const DEFAULT_GRACE_PERIOD_DAYS = 5;
     /**
      *
      * @var integer
@@ -264,7 +265,7 @@ class Subscription extends PhalconSubscription
     }
 
     /**
-     * Given a not active subscription activate it
+     * Given a not active subscription activate it.
      *
      * @return void
      */
@@ -277,5 +278,45 @@ class Subscription extends PhalconSubscription
         $this->next_due_payment = $this->ends_at;
         $this->is_cancelled = 0;
         return $this->update();
+    }
+
+    /**
+     * Determine if the subscription is within its trial period.
+     *
+     * @return bool
+     */
+    public function onTrial()
+    {
+        return (bool)$this->is_freetrial;
+    }
+
+    /**
+     * Get actual subscription.
+     */
+    public static function getActiveSubscription(): self
+    {
+        $userSubscription = PhalconSubscription::findFirstOrFail([
+            'conditions' => 'user_id = ?0 and companies_id = ?1 and apps_id = ?2 and is_deleted  = 0',
+            'bind' => [Di::getDefault()->getUserData()->getId(), Di::getDefault()->getUserData()->currentCompanyId(), Di::getDefault()->getApp()->getId()]
+        ]);
+
+        return Di::getDefault()->getUserData()->subscription($userSubscription->name);
+    }
+
+    /**
+     * Validate subscription status by grace period date and update grace period date.
+     *
+     * @return void
+     */
+    public function validateByGracePeriod(): void
+    {
+        if (isset($this->grace_period_ends)) {
+            if (($this->charge_date == $this->grace_period_ends) && !$this->paid) {
+                $this->is_active = 0;
+                $this->grace_period_ends = Carbon::now()->addDays(Subscription::DEFAULT_GRACE_PERIOD_DAYS)->toDateTimeString();
+            }
+        } else {
+            $this->grace_period_ends = Carbon::now()->addDays(Subscription::DEFAULT_GRACE_PERIOD_DAYS)->toDateTimeString();
+        }
     }
 }

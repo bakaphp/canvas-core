@@ -7,9 +7,7 @@ namespace Canvas\Exception;
 use Canvas\Http\Response;
 
 /**
- * Using this exception when the user is trying to process something incorrectly
- * - Form validation
- * - Login validation
+ * @deprecated version 0.1.5
  */
 class BadRequestHttpException extends HttpException
 {

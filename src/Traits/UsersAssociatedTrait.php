@@ -28,7 +28,7 @@ trait UsersAssociatedTrait
      * create new related User Associated instance dynamicly.
      * @param Users $user
      * @param Companies $company
-     * @return void
+     * @return array
      * @todo Find a better way to handle namespaces for models
      */
     public function associate(Users $user, Companies $company): array

@@ -40,7 +40,7 @@ class App extends Auth
 
         //check if the user exist on this app
         $currentAppUserInfo = $user->getApp();
-    
+
         if (!is_object($currentAppUserInfo) || empty($currentAppUserInfo->password)) {
             throw new Exception(_('Invalid Username or Password.'));
         }

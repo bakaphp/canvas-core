@@ -31,6 +31,7 @@ $privateRoutes = [
     Route::crud('/system-modules')->controller('SystemModulesController'),
     Route::crud('/companies-branches')->controller('CompaniesBranchesController'),
     Route::crud('/apps-plans')->controller('AppsPlansController'),
+    Route::post('/apps-plans/{id}/reactivate')->controller('AppsPlansController')->action('reactivateSubscription'),
     Route::crud('/roles-acceslist')->controller('RolesAccesListController'),
     Route::crud('/permissions-resources')->controller('PermissionsResourcesController'),
     Route::crud('/permissions-resources-access')->controller('PermissionsResourcesAccessController'),
@@ -62,7 +63,9 @@ $privateRoutes = [
     Route::get('/schema/{slug}/description')->controller('SchemaController')->action('getModelDescription'),
     Route::post('/users/{hash}/change-email')->controller('AuthController')->action('changeUserEmail'),
     Route::post('/users/{id}/request-email-change')->controller('AuthController')->action('sendEmailChange'),
-    Route::put('/users/{id}/apps/{appsId}/status')->controller('UsersController')->action('changeAppUserActiveStatus')
+    Route::put('/users/{id}/apps/{appsId}/status')->controller('UsersController')->action('changeAppUserActiveStatus'),
+    Route::get('/companies-groups')->controller('CompaniesGroupsController')->action('index'),
+    Route::get('/companies-groups/{id}')->controller('CompaniesGroupsController')->action('getById')
 ];
 
 $publicRoutesGroup = RouteGroup::from($publicRoutes)

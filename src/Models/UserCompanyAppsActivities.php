@@ -8,7 +8,7 @@ use Canvas\Exception\ModelException;
 use Phalcon\Di;
 
 /**
- * Classs for UserCompanyAppsActivities
+ * Classs for UserCompanyAppsActivities.
  * @property Users $userData
  * @property Request $request
  * @property Config $config
@@ -106,7 +106,7 @@ class UserCompanyAppsActivities extends AbstractModel
     }
 
     /**
-     * Get the value of the settins by it key
+     * Get the value of the settins by it key.
      *
      * @param string $key
      * @param string $value
@@ -126,7 +126,7 @@ class UserCompanyAppsActivities extends AbstractModel
     }
 
     /**
-     * Set a setting for the given app
+     * Set a setting for the given app.
      *
      * @param string $key
      * @param string $value
@@ -147,10 +147,7 @@ class UserCompanyAppsActivities extends AbstractModel
         }
 
         $activity->value = $value;
-
-        if (!$activity->save()) {
-            throw new ModelException((string)current($activity->getMessages()));
-        }
+        $activity->saveOrFail();
 
         return true;
     }

@@ -7,6 +7,8 @@ namespace Canvas\Listener;
 use Phalcon\Events\Event;
 use Canvas\Models\Users;
 use Canvas\Models\Companies;
+use Canvas\Models\CompaniesGroups;
+use Canvas\Models\CompaniesAssociations;
 use Canvas\Models\UserRoles;
 use Canvas\Auth\App;
 use Canvas\Models\Roles;
@@ -29,6 +31,9 @@ class User
         * How do we know? well he doesnt have a default_company.
         */
         if ($isFirstSignup) {
+            /**
+             * Let's create a new Companies
+             */
             $company = new Companies();
             //for signups that dont send a company name
             $company->name = !empty($user->defaultCompanyName) ? $user->defaultCompanyName : $user->displayname.'CP';

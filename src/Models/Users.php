@@ -391,13 +391,10 @@ class Users extends \Baka\Auth\Models\Users
         $subscription->trial_ends_days = $trialEndsAt->diffInDays(Carbon::now());
         $subscription->is_freetrial = 1;
         $subscription->is_active = 1;
-
-        if (!$subscription->save()) {
-            throw new ServerErrorHttpException((string)current($this->getMessages()));
-        }
+        $subscription->saveOrFail();
 
         $this->trial_ends_at = $subscription->trial_ends_at;
-        $this->update();
+        $this->updateOrFail();
 
         return $subscription;
     }

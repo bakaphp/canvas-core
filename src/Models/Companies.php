@@ -252,6 +252,13 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
             ]
         );
 
+        $this->hasMany(
+            'id',
+            CompaniesAssociations::class,
+            'companies_id',
+            ['alias' => 'companiesAssoc']
+        );
+
         //users associated with this company app
         $this->hasManyToMany(
             'id',
@@ -361,10 +368,7 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
         $company = new self();
         $company->name = $name;
         $company->users_id = $user->getId();
-
-        if (!$company->save()) {
-            throw new Exception(current($company->getMessages()));
-        }
+        $company->saveOrFail();
 
         return $company;
     }

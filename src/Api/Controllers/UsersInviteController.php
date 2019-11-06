@@ -97,20 +97,15 @@ class UsersInviteController extends BaseController
      */
     public function insertInvite(): Response
     {
-        $request = $this->request->getPost();
+        $request = $this->request->getPostData();
         $random = new Random();
 
-        $validation = new Validation();
+        $validation = new CanvasValidation();
         $validation->add('email', new PresenceOf(['message' => _('The email is required.')]));
         $validation->add('role_id', new PresenceOf(['message' => _('The role is required.')]));
 
         //validate this form for password
-        $messages = $validation->validate($this->request->getPost());
-        if (count($messages)) {
-            foreach ($messages as $message) {
-                throw new ServerErrorHttpException((string)$message);
-            }
-        }
+        $validation->validate($request);
 
         //Check if user was already was invited to current company and return message
         UsersInvite::isValid($request['email'], (int) $request['role_id']);

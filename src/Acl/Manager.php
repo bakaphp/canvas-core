@@ -23,7 +23,7 @@ use Canvas\Models\ResourcesAccesses;
 use Phalcon\Di;
 
 /**
- * Class Manager
+ * Class Manager.
  *
  * Manages Geweaer Multi tenant ACL lists in database
  *
@@ -40,50 +40,50 @@ class Manager extends Adapter
     protected $connection;
 
     /**
-     * Roles table
+     * Roles table.
      * @var string
      */
     protected $roles;
 
     /**
-     * Resources table
+     * Resources table.
      * @var string
      */
     protected $resources;
 
     /**
-     * Resources Accesses table
+     * Resources Accesses table.
      * @var string
      */
     protected $resourcesAccesses;
 
     /**
-     * Access List table
+     * Access List table.
      * @var string
      */
     protected $accessList;
 
     /**
-     * Roles Inherits table
+     * Roles Inherits table.
      * @var string
      */
     protected $rolesInherits;
 
     /**
-     * Default action for no arguments is allow
+     * Default action for no arguments is allow.
      * @var int
      */
     protected $noArgumentsDefaultAction = Acl::ALLOW;
 
     /**
-     * Company Object
+     * Company Object.
      *
      * @var Companies
      */
     protected $company;
 
     /**
-     * App Objc
+     * App Objc.
      *
      * @var Apps
      */
@@ -101,7 +101,7 @@ class Manager extends Adapter
     }
 
     /**
-     * Set current user Company
+     * Set current user Company.
      *
      * @param Companies $company
      * @return void
@@ -112,7 +112,7 @@ class Manager extends Adapter
     }
 
     /**
-     * Set current user app
+     * Set current user app.
      *
      * @param Apps $app
      * @return void
@@ -123,7 +123,7 @@ class Manager extends Adapter
     }
 
     /**
-     * Get the current App
+     * Get the current App.
      *
      * @return void
      */
@@ -137,7 +137,7 @@ class Manager extends Adapter
     }
 
     /**
-     * Get the current App
+     * Get the current App.
      *
      * @return void
      */
@@ -186,9 +186,7 @@ class Manager extends Adapter
             $rolesDB->companies_id = $this->getCompany()->getId();
             $rolesDB->apps_id = $this->getApp()->getId();
             $rolesDB->scope = $scope;
-            if (!$rolesDB->save()) {
-                throw new ModelException((string)current($rolesDB->getMessages()));
-            }
+            $rolesDB->saveOrFail();
 
             $accessListDB = new AccessListDB();
             $accessListDB->roles_name = $role->getName();
@@ -197,10 +195,7 @@ class Manager extends Adapter
             $accessListDB->access_name = '*';
             $accessListDB->allowed = $this->_defaultAccess;
             $accessListDB->apps_id = $this->getApp()->getId();
-
-            if (!$accessListDB->save()) {
-                throw new ModelException((string)current($rolesDB->getMessages()));
-            }
+            $accessListDB->saveOrFail();
         }
 
         if ($accessInherits) {
@@ -245,7 +240,7 @@ class Manager extends Adapter
     }
 
     /**
-     * Given a resource with a dot CRM.Leads , it will set the app
+     * Given a resource with a dot CRM.Leads , it will set the app.
      *
      * @param string $resource
      * @return void
@@ -268,7 +263,7 @@ class Manager extends Adapter
     }
 
     /**
-     * Given a resource with a dot CRM.Leads , it will set the app
+     * Given a resource with a dot CRM.Leads , it will set the app.
      *
      * @param string $resource
      * @return void
@@ -301,7 +296,7 @@ class Manager extends Adapter
      * $acl->addResource(new Phalcon\Acl\Resource('customers'), ['create', 'search']);
      * $acl->addResource('customers', ['create', 'search']);
      * $acl->addResource('App.customers', ['create', 'search']);
-     * </code>
+     * </code>.
      *
      * @param  \Phalcon\Acl\Resource|string $resource
      * @param  array|string                 $accessList
@@ -321,10 +316,7 @@ class Manager extends Adapter
             $resourceDB->name = $resource->getName();
             $resourceDB->description = $resource->getDescription();
             $resourceDB->apps_id = $this->getApp()->getId();
-
-            if (!$resourceDB->save()) {
-                throw new ModelException((string)current($resourceDB->getMessages()));
-            }
+            $resourceDB->saveOrFail();
         }
 
         if ($accessList) {
@@ -362,10 +354,7 @@ class Manager extends Adapter
                 $resourceAccesses->access_name = $accessName;
                 $resourceAccesses->apps_id = $this->getApp()->getId();
                 $resourceAccesses->resources_id = $resource->getId();
-
-                if (!$resourceAccesses->save()) {
-                    throw new ModelException((string)current($resourceAccesses->getMessages()));
-                }
+                $resourceAccesses->saveOrFail();
             }
         }
         return true;
@@ -425,7 +414,7 @@ class Manager extends Adapter
      * $acl->allow('*', 'products', 'browse');
      * //Allow access to any role to browse on any resource
      * $acl->allow('*', '*', 'browse');
-     * </code>
+     * </code>.
      *
      * @param string       $roleName
      * @param string       $resourceName
@@ -450,7 +439,7 @@ class Manager extends Adapter
      * $acl->deny('*', 'products', 'browse');
      * //Deny access to any role to browse on any resource
      * $acl->deny('*', '*', 'browse');
-     * </code>
+     * </code>.
      *
      * @param  string       $roleName
      * @param  string       $resourceName
@@ -471,7 +460,7 @@ class Manager extends Adapter
      * $acl->isAllowed('Andres', 'Products', 'create');
      * //Do guests have access to any resource to edit?
      * $acl->isAllowed('guests', '*', 'edit');
-     * </code>
+     * </code>.
      *
      * @param string $role
      * @param string $resource
@@ -490,11 +479,11 @@ class Manager extends Adapter
             'SELECT ' . $this->connection->escapeIdentifier('allowed') . ' FROM access_list AS a',
             // role_name in:
             'WHERE roles_id IN (',
-                // given 'role'-parameter
+            // given 'role'-parameter
             'SELECT roles_id ',
-                // inherited role_names
+            // inherited role_names
             'UNION SELECT roles_inherit FROM roles_inherits WHERE roles_id = ?',
-                // or 'any'
+            // or 'any'
             "UNION SELECT '*'",
             ')',
             // resources_name should be given one or 'any'
@@ -518,14 +507,14 @@ class Manager extends Adapter
         }
 
         /**
-         * Return the default access action
+         * Return the default access action.
          */
         return (bool) $this->_defaultAccess;
     }
 
     /**
      * Returns the default ACL access level for no arguments provided
-     * in isAllowed action if there exists func for accessKey
+     * in isAllowed action if there exists func for accessKey.
      *
      * @return int
      */
@@ -536,7 +525,7 @@ class Manager extends Adapter
 
     /**
      * Sets the default access level for no arguments provided
-     * in isAllowed action if there exists func for accessKey
+     * in isAllowed action if there exists func for accessKey.
      *
      * @param int $defaultAccess Phalcon\Acl::ALLOW or Phalcon\Acl::DENY
      */
@@ -546,7 +535,7 @@ class Manager extends Adapter
     }
 
     /**
-     * Inserts/Updates a permission in the access list
+     * Inserts/Updates a permission in the access list.
      *
      * @param  string  $roleName
      * @param  string  $resourceName
@@ -560,7 +549,7 @@ class Manager extends Adapter
         $resourceName = $this->setAppByResource($resourceName);
 
         /**
-         * Check if the access is valid in the resource unless wildcard
+         * Check if the access is valid in the resource unless wildcard.
          */
         if ($resourceName !== '*' && $accessName !== '*') {
             $resource = ResourcesDB::getByName($resourceName);
@@ -573,7 +562,7 @@ class Manager extends Adapter
         }
 
         /**
-         * Update the access in access_list
+         * Update the access in access_list.
          */
 
         $role = RolesDB::getByName($roleName);
@@ -586,18 +575,15 @@ class Manager extends Adapter
             $accessListDB->access_name = $accessName;
             $accessListDB->allowed = $action;
             $accessListDB->apps_id = $this->getApp()->getId();
-
-            if (!$accessListDB->save()) {
-                throw new ModelException((string)current($accessListDB->getMessages()));
-            }
+            $accessListDB->saveOrFail();
         } else {
             $accessListDB = accessListDB::getBy($role, $resourceName, $accessName);
             $accessListDB->allowed = $action;
-            $accessListDB->update();
+            $accessListDB->updateOrFail();
         }
 
         /**
-         * Update the access '*' in access_list
+         * Update the access '*' in access_list.
          */
         if (!AccessListDB::exist($role, $resourceName, '*')) {
             $accessListDB = new AccessListDB();
@@ -607,17 +593,14 @@ class Manager extends Adapter
             $accessListDB->access_name = '*';
             $accessListDB->allowed = $this->_defaultAccess;
             $accessListDB->apps_id = $this->getApp()->getId();
-
-            if (!$accessListDB->save()) {
-                throw new ModelException((string)current($accessListDB->getMessages()));
-            }
+            $accessListDB->saveOrFail();
         }
 
         return true;
     }
 
     /**
-     * Inserts/Updates a permission in the access list
+     * Inserts/Updates a permission in the access list.
      *
      * @param  string       $roleName
      * @param  string       $resourceName
