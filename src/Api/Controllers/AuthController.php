@@ -200,7 +200,7 @@ class AuthController extends \Baka\Auth\AuthController
     /**
      * Refresh user auth.
      *
-     * @return void
+     * @return Response
      * @todo Validate acces_token and refresh token, session's user email and relogin
      */
     public function refresh(): Response
