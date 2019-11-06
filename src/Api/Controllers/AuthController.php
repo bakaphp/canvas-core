@@ -209,9 +209,9 @@ class AuthController extends \Baka\Auth\AuthController
         $accessToken = $this->getToken($request['access_token']);
         $refreshToken = $this->getToken($request['refresh_token']);
 
-        // if (time() != $accessToken->getClaim('exp')) {
-        //     throw new ServerErrorHttpException('Issued Access Token has not expired');
-        // }
+        if (time() != $accessToken->getClaim('exp')) {
+            throw new ServerErrorHttpException('Issued Access Token has not expired');
+        }
 
         //Check if both tokens relate to the same user's email
         if ($accessToken->getClaim('sessionId') == $refreshToken->getClaim('sessionId')) {
