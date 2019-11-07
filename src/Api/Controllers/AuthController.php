@@ -20,6 +20,7 @@ use Phalcon\Validation\Validator\PresenceOf;
 use Phalcon\Validation\Validator\StringLength;
 use Baka\Auth\Models\Sessions;
 use Canvas\Auth\Factory;
+use Canvas\Exception\NotFoundException;
 use Canvas\Validation as CanvasValidation;
 use Canvas\Notifications\ResetPassword;
 use Canvas\Notifications\PasswordUpdate;
@@ -206,6 +207,7 @@ class AuthController extends \Baka\Auth\AuthController
         $request = $this->request->getPostData();
         $accessToken = $this->getToken($request['access_token']);
         $refreshToken = $this->getToken($request['refresh_token']);
+        $user = null;
 
         if (time() != $accessToken->getClaim('exp')) {
             throw new ServerErrorHttpException('Issued Access Token has not expired');
@@ -214,9 +216,10 @@ class AuthController extends \Baka\Auth\AuthController
         //Check if both tokens relate to the same user's email
         if ($accessToken->getClaim('sessionId') == $refreshToken->getClaim('sessionId')) {
             $user = Users::getByEmail($accessToken->getClaim('email'));
-            if (!$user) {
-                throw new NotFoundHttpException(_('User not found'));
-            }
+        }
+
+        if (!$user) {
+            throw new NotFoundException();
         }
 
         $token = Sessions::restart($user, $refreshToken->getClaim('sessionId'), (string)$this->request->getClientAddress());
