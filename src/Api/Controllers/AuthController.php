@@ -218,7 +218,7 @@ class AuthController extends \Baka\Auth\AuthController
             $user = Users::getByEmail($accessToken->getClaim('email'));
         }
 
-        $token = $this->checkSessionStatus($user, $refreshToken->getClaim('sessionId'), (string)$this->request->getClientAddress());
+        $token = Sessions::restart($user, $refreshToken->getClaim('sessionId'), (string)$this->request->getClientAddress());
 
         return $this->response([
             'token' => $token['token'],
@@ -226,52 +226,6 @@ class AuthController extends \Baka\Auth\AuthController
             'expires' => date('Y-m-d H:i:s', time() + $this->config->jwt->payload->exp),
             'id' => $user->getId(),
         ]);
-    }
-
-    /**
-     * Check auth session status and create a new one if there is none.
-     *
-     * @param Users $user
-     * @param string $sessionId
-     * @param string $clientAddress
-     * @return array
-     */
-    private function checkSessionStatus(Users $user, string $sessionId, string $clientAddress): array
-    {
-        $session = new Sessions();
-        $session->check($user, $sessionId, $clientAddress, 1);
-        $token = $this->newAuthSession($sessionId, $user->email);
-        $session->start($user, $token['sessionId'], $token['token'], $clientAddress, 1);
-        return $token;
-    }
-
-    /**
-     * Create a new session based off the refresh token session id.
-     *
-     * @param string $sessionId
-     * @param string $email
-     * @return void
-     */
-    private function newAuthSession(string $sessionId, string $email)
-    {
-        $signer = new Sha512();
-        $builder = new Builder();
-        $token = $builder
-            ->setIssuer(getenv('TOKEN_AUDIENCE'))
-            ->setAudience(getenv('TOKEN_AUDIENCE'))
-            ->setId($sessionId, true)
-            ->setIssuedAt(time())
-            ->setNotBefore(time() + 500)
-            ->setExpiration(time() + $this->di->getConfig()->jwt->payload->exp)
-            ->set('sessionId', $sessionId)
-            ->set('email', $email)
-            ->sign($signer, getenv('TOKEN_PASSWORD'))
-            ->getToken();
-
-        return [
-            'sessionId' => $sessionId,
-            'token' => $token->__toString()
-        ];
     }
 
     /**
