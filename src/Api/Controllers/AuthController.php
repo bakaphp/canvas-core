@@ -219,7 +219,7 @@ class AuthController extends \Baka\Auth\AuthController
         }
 
         if (!$user) {
-            throw new NotFoundException();
+            throw new NotFoundException(_('User not found'));
         }
 
         $token = Sessions::restart($user, $refreshToken->getClaim('sessionId'), (string)$this->request->getClientAddress());
