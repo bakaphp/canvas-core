@@ -25,8 +25,6 @@ use Canvas\Notifications\ResetPassword;
 use Canvas\Notifications\PasswordUpdate;
 use Canvas\Validations\PasswordValidation;
 use Canvas\Traits\TokenTrait;
-use Lcobucci\JWT\Builder;
-use Lcobucci\JWT\Signer\Hmac\Sha512;
 
 /**
  * Class AuthController.
