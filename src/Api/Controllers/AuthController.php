@@ -20,10 +20,12 @@ use Phalcon\Validation\Validator\PresenceOf;
 use Phalcon\Validation\Validator\StringLength;
 use Baka\Auth\Models\Sessions;
 use Canvas\Auth\Factory;
+use Canvas\Exception\NotFoundException;
 use Canvas\Validation as CanvasValidation;
 use Canvas\Notifications\ResetPassword;
 use Canvas\Notifications\PasswordUpdate;
 use Canvas\Validations\PasswordValidation;
+use Canvas\Traits\TokenTrait;
 
 /**
  * Class AuthController.
@@ -42,6 +44,7 @@ class AuthController extends \Baka\Auth\AuthController
      * Auth Trait.
      */
     use AuthTrait;
+    use TokenTrait;
     use SocialLoginTrait;
 
     /**
@@ -101,9 +104,11 @@ class AuthController extends \Baka\Auth\AuthController
 
         return $this->response([
             'token' => $token['token'],
+            'refresh_token' => $token['refresh_token'],
             'time' => date('Y-m-d H:i:s'),
             'expires' => date('Y-m-d H:i:s', time() + $this->config->jwt->payload->exp),
-            'id' => $userData->getId(),
+            'refresh_token_expires' => date('Y-m-d H:i:s', time() + 31536000),
+            'id' => $userData->getId()
         ]);
     }
 
@@ -188,6 +193,42 @@ class AuthController extends \Baka\Auth\AuthController
         return $this->response([
             'user' => $user,
             'session' => $authSession
+        ]);
+    }
+
+    /**
+     * Refresh user auth.
+     *
+     * @return Response
+     * @todo Validate acces_token and refresh token, session's user email and relogin
+     */
+    public function refresh(): Response
+    {
+        $request = $this->request->getPostData();
+        $accessToken = $this->getToken($request['access_token']);
+        $refreshToken = $this->getToken($request['refresh_token']);
+        $user = null;
+
+        if (time() != $accessToken->getClaim('exp')) {
+            throw new ServerErrorHttpException('Issued Access Token has not expired');
+        }
+
+        //Check if both tokens relate to the same user's email
+        if ($accessToken->getClaim('sessionId') == $refreshToken->getClaim('sessionId')) {
+            $user = Users::getByEmail($accessToken->getClaim('email'));
+        }
+
+        if (!$user) {
+            throw new NotFoundException(_('User not found'));
+        }
+
+        $token = Sessions::restart($user, $refreshToken->getClaim('sessionId'), (string)$this->request->getClientAddress());
+
+        return $this->response([
+            'token' => $token['token'],
+            'time' => date('Y-m-d H:i:s'),
+            'expires' => date('Y-m-d H:i:s', time() + $this->config->jwt->payload->exp),
+            'id' => $user->getId(),
         ]);
     }
 
