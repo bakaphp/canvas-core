@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Canvas\Api\Controllers;
 
 use Canvas\Models\Apps;
-use Canvas\Dto\AppsSettings;
 use Phalcon\Http\Response;
 
 /**
@@ -58,7 +57,7 @@ class AppsController extends BaseController
     {
         //find the info
         $record = $this->model->findFirstOrFail([
-            'id = ?0 AND is_deleted = 0',
+            'id = ?0 AND is_deleted = 0 AND id in (' . implode(',', $this->userData->getAssociatedApps()) . ')',
             'bind' => [$id],
         ]);
 

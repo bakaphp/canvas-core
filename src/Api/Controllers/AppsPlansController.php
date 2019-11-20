@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Canvas\Api\Controllers;
 
 use Canvas\Models\AppsPlans;
-use Canvas\Exception\UnauthorizedHttpException;
-use Canvas\Exception\NotFoundHttpException;
 use Stripe\Token as StripeToken;
 use Phalcon\Http\Response;
 use Stripe\Customer as StripeCustomer;
 use Phalcon\Validation\Validator\PresenceOf;
-use Canvas\Exception\UnprocessableEntityHttpException;
+use Canvas\Http\Exception\NotFoundException;
+use Canvas\Http\Exception\UnauthorizedException;
+use Canvas\Http\Exception\UnprocessableEntityException;
 use Canvas\Models\Subscription as CanvasSubscription;
 use Phalcon\Cashier\Subscription;
 use Canvas\Models\UserCompanyApps;
@@ -67,7 +67,7 @@ class AppsPlansController extends BaseController
     public function create(): Response
     {
         if (!$this->userData->hasRole('Default.Admins')) {
-            throw new UnauthorizedHttpException(_('You dont have permission to subscribe this apps'));
+            throw new UnauthorizedException(_('You dont have permission to subscribe this apps'));
         }
 
         //Ok let validate user password
@@ -79,12 +79,7 @@ class AppsPlansController extends BaseController
         $validation->add('card_cvc', new PresenceOf(['message' => _('CVC is required.')]));
 
         //validate this form for password
-        $messages = $validation->validate($this->request->getPost());
-        if (count($messages)) {
-            foreach ($messages as $message) {
-                throw new UnprocessableEntityHttpException((string) $message);
-            }
-        }
+        $validation->validate($this->request->getPost());
 
         $stripeId = $this->request->getPost('stripe_id');
         $company = $this->userData->getDefaultCompany();
@@ -96,7 +91,7 @@ class AppsPlansController extends BaseController
         $appPlan = $this->model->findFirstByStripeId($stripeId);
 
         if (!is_object($appPlan)) {
-            throw new NotFoundHttpException(_('This plan doesnt exist'));
+            throw new NotFoundException(_('This plan doesnt exist'));
         }
 
         $userSubscription = Subscription::findFirst([
@@ -132,7 +127,7 @@ class AppsPlansController extends BaseController
                 $userSubscription->stripe_id = $this->userData->active_subscription_id;
                 if (!$userSubscription->update()) {
                     $this->db->rollback();
-                    throw new UnprocessableEntityHttpException((string)current($userSubscription->getMessages()));
+                    throw new UnprocessableEntityException((string)current($userSubscription->getMessages()));
                 }
             }
 
@@ -143,14 +138,14 @@ class AppsPlansController extends BaseController
                 $companyApp->subscriptions_id = $subscription->getId();
                 if (!$companyApp->update()) {
                     $this->db->rollback();
-                    throw new UnprocessableEntityHttpException((string)current($companyApp->getMessages()));
+                    throw new UnprocessableEntityException((string)current($companyApp->getMessages()));
                 }
 
                 //update the subscription with the plan
                 $subscription->apps_plans_id = $appPlan->getId();
                 if (!$subscription->update()) {
                     $this->db->rollback();
-                    throw new UnprocessableEntityHttpException((string)current($subscription->getMessages()));
+                    throw new UnprocessableEntityException((string)current($subscription->getMessages()));
                 }
             }
 
@@ -172,7 +167,7 @@ class AppsPlansController extends BaseController
         $appPlan = $this->model->findFirstByStripeId($stripeId);
 
         if (!is_object($appPlan)) {
-            throw new NotFoundHttpException(_('This plan doesnt exist'));
+            throw new NotFoundException(_('This plan doesnt exist'));
         }
 
         /**
@@ -184,7 +179,7 @@ class AppsPlansController extends BaseController
         ]);
 
         if (!is_object($userSubscription)) {
-            throw new NotFoundHttpException(_('No current subscription found'));
+            throw new NotFoundException(_('No current subscription found'));
         }
 
         $this->db->begin();
@@ -210,7 +205,7 @@ class AppsPlansController extends BaseController
             $companyApp->subscriptions_id = $subscription->getId();
             if (!$companyApp->update()) {
                 $this->db->rollback();
-                throw new UnprocessableEntityHttpException((string) current($companyApp->getMessages()));
+                throw new UnprocessableEntityException((string) current($companyApp->getMessages()));
             }
 
             //update the subscription with the plan
@@ -218,7 +213,7 @@ class AppsPlansController extends BaseController
             if (!$subscription->update()) {
                 $this->db->rollback();
 
-                throw new UnprocessableEntityHttpException((string) current($subscription->getMessages()));
+                throw new UnprocessableEntityException((string) current($subscription->getMessages()));
             }
         }
 
@@ -239,7 +234,7 @@ class AppsPlansController extends BaseController
         $appPlan = $this->model->findFirstByStripeId($stripeId);
 
         if (!is_object($appPlan)) {
-            throw new NotFoundHttpException(_('This plan doesnt exist'));
+            throw new NotFoundException(_('This plan doesnt exist'));
         }
 
         $subscription = CanvasSubscription::getActiveSubscription();
@@ -266,7 +261,7 @@ class AppsPlansController extends BaseController
         $appPlan = $this->model->findFirstByStripeId($stripeId);
 
         if (!is_object($appPlan)) {
-            throw new NotFoundHttpException(_('This plan doesnt exist'));
+            throw new NotFoundException(_('This plan doesnt exist'));
         }
 
         $subscription = CanvasSubscription::getActiveSubscription();

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Canvas\Api\Controllers;
 
 use Phalcon\Http\Response;
-use Canvas\Exception\UnprocessableEntityHttpException;
 use Baka\Http\QueryParser;
+use Canvas\Http\Exception\UnprocessableEntityException;
 use Canvas\Models\CompaniesBranches;
 
 /**
@@ -24,14 +24,28 @@ class CompaniesBranchesController extends BaseController
      *
      * @var array
      */
-    protected $createFields = ['name', 'address', 'email', 'zipcode', 'phone', 'is_default'];
+    protected $createFields = [
+        'name',
+        'address',
+        'email',
+        'zipcode',
+        'phone',
+        'is_default'
+    ];
 
     /*
      * fields we accept to create
      *
      * @var array
      */
-    protected $updateFields = ['name', 'address', 'email', 'zipcode', 'phone', 'is_default'];
+    protected $updateFields = [
+        'name',
+        'address',
+        'email',
+        'zipcode',
+        'phone',
+        'is_default'
+    ];
 
     /**
      * set objects.
@@ -77,7 +91,7 @@ class CompaniesBranchesController extends BaseController
         if ($company) {
             return $this->response($company);
         } else {
-            throw new UnprocessableEntityHttpException('Record not found');
+            throw new UnprocessableEntityException('Record not found');
         }
     }
 
@@ -102,7 +116,7 @@ class CompaniesBranchesController extends BaseController
             return $this->response($this->model->toArray());
         } else {
             $this->db->rollback();
-            throw new UnprocessableEntityHttpException((string) $this->model->getMessages()[0]);
+            throw new UnprocessableEntityException((string) $this->model->getMessages()[0]);
         }
     }
 
@@ -129,10 +143,10 @@ class CompaniesBranchesController extends BaseController
                 return $this->response($company);
             } else {
                 //didnt work
-                throw new UnprocessableEntityHttpException((string) current($company->getMessages()));
+                throw new UnprocessableEntityException((string) current($company->getMessages()));
             }
         } else {
-            throw new UnprocessableEntityHttpException('Record not found');
+            throw new UnprocessableEntityException('Record not found');
         }
     }
 }

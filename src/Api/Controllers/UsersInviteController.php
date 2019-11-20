@@ -8,15 +8,12 @@ use Canvas\Models\UsersInvite;
 use Canvas\Models\Users;
 use Canvas\Models\Roles;
 use Phalcon\Security\Random;
-use Phalcon\Validation;
 use Phalcon\Validation\Validator\PresenceOf;
 use Phalcon\Validation\Validator\StringLength;
-use Canvas\Exception\UnprocessableEntityHttpException;
 use Canvas\Exception\NotFoundHttpException;
-use Canvas\Exception\ServerErrorHttpException;
 use Phalcon\Http\Response;
 use Exception;
-use Canvas\Exception\ModelException;
+use Canvas\Http\Exception\UnprocessableEntityException;
 use Canvas\Traits\AuthTrait;
 use Canvas\Notifications\Invitation;
 use Canvas\Validation as CanvasValidation;
@@ -44,14 +41,26 @@ class UsersInviteController extends BaseController
      *
      * @var array
      */
-    protected $createFields = ['invite_hash', 'companies_id', 'role_id', 'app_id', 'email'];
+    protected $createFields = [
+        'invite_hash',
+        'companies_id',
+        'role_id',
+        'app_id',
+        'email'
+    ];
 
     /*
      * fields we accept to create
      *
      * @var array
      */
-    protected $updateFields = ['invite_hash', 'companies_id', 'role_id', 'app_id', 'email'];
+    protected $updateFields = [
+        'invite_hash',
+        'companies_id',
+        'role_id',
+        'app_id',
+        'email'
+    ];
 
     /**
      * set objects.
@@ -121,7 +130,7 @@ class UsersInviteController extends BaseController
         $userInvite->created_at = date('Y-m-d H:m:s');
 
         if (!$userInvite->save()) {
-            throw new UnprocessableEntityHttpException((string) current($userInvite->getMessages()));
+            throw new UnprocessableEntityException((string) current($userInvite->getMessages()));
         }
 
         //create temp invite users
@@ -181,7 +190,7 @@ class UsersInviteController extends BaseController
             } catch (Exception $e) {
                 $this->db->rollback();
 
-                throw new UnprocessableEntityHttpException($e->getMessage());
+                throw new UnprocessableEntityException($e->getMessage());
             }
         }
 
