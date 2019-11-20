@@ -12,7 +12,6 @@ use Canvas\Models\Subscription;
 use Canvas\Models\CompaniesSettings;
 use Phalcon\Di;
 use Exception;
-use Carbon\Carbon;
 
 /**
  * Class PaymentsController.
@@ -218,7 +217,8 @@ class PaymentsController extends BaseController
         if (is_object($subscription)) {
             $subscription->paid = $payload['data']['object']['paid'] ? 1 : 0;
             $subscription->charge_date = $chargeDate;
-            $subscription->grace_period_ends = Carbon::now()->addDays(Subscription::DEFAULT_GRACE_PERIOD_DAYS)->toDateTimeString();
+
+            $subscription = $subscription->validateByGracePeriod();
 
             if ($subscription->paid) {
                 $subscription->is_freetrial = 0;

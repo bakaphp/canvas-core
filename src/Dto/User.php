@@ -313,5 +313,11 @@ class User
      *
      * @var string
      */
+    public $user_activation_email;
+
+    /**
+     *
+     * @var string
+     */
     public $photo;
 }

@@ -77,6 +77,7 @@ class UserMapper extends CustomMapper
         $userDto->user_login_tries = $user->user_login_tries;
         $userDto->votes = $user->votes;
         $userDto->votes_points = $user->votes_points;
+        $userDto->user_activation_email = $user->user_activation_email;
         $userDto->welcome = $user->welcome;
         $userDto->photo = $user->photo;
 
