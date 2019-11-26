@@ -357,7 +357,7 @@ class AuthController extends \Baka\Auth\AuthController
     public function reset(string $key) : Response
     {
         //is the key empty or does it existe?
-        if (empty($key) || !$userData = Users::findFirst(['user_activation_forgot = ?0', 'bind' => [$key]])) {
+        if (empty($key) || !$userData = Users::findFirst(['user_activation_forgot = :key:', 'bind' => ['key' => $key]])) {
             throw new Exception(_('This Key to reset password doesn\'t exist'));
         }
 
