@@ -4,6 +4,7 @@ namespace Canvas\Models;
 
 use Phalcon\Cashier\Subscription as PhalconSubscription;
 use Canvas\Exception\ServerErrorHttpException;
+use Canvas\Http\Exception\InternalServerErrorException;
 use Phalcon\Di;
 use Carbon\Carbon;
 
@@ -213,12 +214,12 @@ class Subscription extends PhalconSubscription
     public static function getByDefaultCompany(Users $user): Subscription
     {
         $subscription = self::findFirst([
-            'conditions' => 'user_id = ?0 and companies_id = ?1 and apps_id = ?2 and is_deleted  = 0',
-            'bind' => [$user->getId(), $user->defaultCompany->getId(), Di::getDefault()->getApp()->getId()]
+            'conditions' => 'companies_id = ?1 and apps_id = ?2 and is_deleted  = 0',
+            'bind' => [$user->getDefaultCompany()->getId(), Di::getDefault()->getApp()->getId()]
         ]);
 
         if (!is_object($subscription)) {
-            throw new ServerErrorHttpException('No active subscription for default company');
+            throw new InternalServerErrorException('No active subscription for default company');
         }
 
         return $subscription;
@@ -237,7 +238,7 @@ class Subscription extends PhalconSubscription
             return true;
         }
 
-        if (!$user->defaultCompany->get('paid')) {
+        if (!self::getByDefaultCompany($user)->paid()) {
             return false;
         }
 
