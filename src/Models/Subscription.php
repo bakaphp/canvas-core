@@ -214,7 +214,7 @@ class Subscription extends PhalconSubscription
     public static function getByDefaultCompany(Users $user): Subscription
     {
         $subscription = self::findFirst([
-            'conditions' => 'companies_id = ?1 and apps_id = ?2 and is_deleted  = 0',
+            'conditions' => 'companies_id = ?0 and apps_id = ?1 and is_deleted  = 0',
             'bind' => [$user->getDefaultCompany()->getId(), Di::getDefault()->getApp()->getId()]
         ]);
 
