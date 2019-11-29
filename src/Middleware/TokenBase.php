@@ -29,6 +29,10 @@ abstract class TokenBase implements MiddlewareInterface
      */
     protected function isValidCheck(RequestInterface $request, Micro $app): bool
     {
+        /**
+         * update this logic to a specific middleware or?
+         */
+        /*
         $calledRoute = $app['router']->getMatchedRoute()->getCompiledPattern();
 
         $user = $app->getDI()->getUserData();
@@ -41,7 +45,7 @@ abstract class TokenBase implements MiddlewareInterface
                     throw new SubscriptionPlanFailureException('Subscription expired, update payment method or verify payment');
                 }
             }
-        }
+        } */
 
         return true;
     }

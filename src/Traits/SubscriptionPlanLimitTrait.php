@@ -30,12 +30,12 @@ trait SubscriptionPlanLimitTrait
      * Array of routes that can bypass the system when subscription is inactive.
      * @todo look for a better way to handle this calls
      */
-    public $bypassRoutes = [
+/*     public $bypassRoutes = [
         '/v1/auth/logout' => ['PUT'],
         '/v1/auth' => ['POST'],
         '/v1/companies' => ['GET', 'POST'],
         '/v1/apps-plans' => ['PUT', 'POST'],
-    ];
+    ]; */
 
     /**
      * Get the key for the subscriptoin plan limit.
