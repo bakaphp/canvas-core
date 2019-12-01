@@ -8,7 +8,6 @@ use Canvas\Http\Request;
 use Canvas\Traits\TokenTrait;
 use Canvas\Traits\SubscriptionPlanLimitTrait;
 use Phalcon\Mvc\Micro\MiddlewareInterface;
-use Canvas\Exception\UnauthorizedHttpException;
 use Canvas\Exception\SubscriptionPlanFailureException;
 use Phalcon\Mvc\Micro;
 use Phalcon\Http\RequestInterface;
@@ -30,9 +29,15 @@ abstract class TokenBase implements MiddlewareInterface
      */
     protected function isValidCheck(RequestInterface $request, Micro $app): bool
     {
+        /**
+         * update this logic to a specific middleware or?
+         */
+        /*
         $calledRoute = $app['router']->getMatchedRoute()->getCompiledPattern();
 
-        if (isset($app['userData']) && !Subscription::getPaymentStatus($app->getDI()->getUserData())) {
+        $user = $app->getDI()->getUserData();
+        $isSubscriptionActive = Subscription::getByDefaultCompany($user)->active();
+        if (isset($app['userData']) && !$isSubscriptionActive) {
             if (!isset($this->bypassRoutes[$calledRoute])) {
                 throw new SubscriptionPlanFailureException('Subscription expired, update payment method or verify payment');
             } else {
@@ -40,7 +45,7 @@ abstract class TokenBase implements MiddlewareInterface
                     throw new SubscriptionPlanFailureException('Subscription expired, update payment method or verify payment');
                 }
             }
-        }
+        } */
 
         return true;
     }
