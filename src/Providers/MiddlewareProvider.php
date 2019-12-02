@@ -8,6 +8,7 @@ use Canvas\Middleware\NotFoundMiddleware;
 use Baka\Router\Providers\MiddlewareProvider as BakaMiddlewareProvider;
 use Canvas\Middleware\AuthenticationMiddleware;
 use Canvas\Middleware\AclMiddleware;
+use Canvas\Middleware\SubscriptionMiddleware;
 use Phalcon\Mvc\Micro;
 use Phalcon\Events\Manager;
 
@@ -29,6 +30,7 @@ class MiddlewareProvider extends BakaMiddlewareProvider
     protected $canvasRouteMiddlewares = [
         'auth.jwt' => AuthenticationMiddleware::class,
         'auth.acl' => AclMiddleware::class,
+        'auth.subscription' => SubscriptionMiddleware::class
     ];
 
     /**

@@ -3,7 +3,6 @@
 namespace Canvas\Models;
 
 use Phalcon\Cashier\Subscription as PhalconSubscription;
-use Canvas\Exception\ServerErrorHttpException;
 use Canvas\Http\Exception\InternalServerErrorException;
 use Phalcon\Di;
 use Carbon\Carbon;
@@ -190,20 +189,11 @@ class Subscription extends PhalconSubscription
     /**
      * Get the active subscription for this company app.
      *
-     * @return void
+     * @return Subscription
      */
     public static function getActiveForThisApp() : Subscription
     {
-        $subscription = self::findFirst([
-            'conditions' => 'companies_id = ?0 and apps_id = ?1 and is_deleted  = 0',
-            'bind' => [Di::getDefault()->getUserData()->currentCompanyId(), Di::getDefault()->getApp()->getId()]
-        ]);
-
-        if (!is_object($subscription)) {
-            throw new ServerErrorHttpException(_('No active subscription for this app ' . Di::getDefault()->getApp()->getId() . ' at the company ' . Di::getDefault()->getUserData()->currentCompanyId()));
-        }
-
-        return $subscription;
+        return self::getByDefaultCompany(Di::getDefault()->getUserData());
     }
 
     /**
@@ -218,8 +208,8 @@ class Subscription extends PhalconSubscription
             'bind' => [$user->getDefaultCompany()->getId(), Di::getDefault()->getApp()->getId()]
         ]);
 
-        if (!is_object($subscription)) {
-            throw new InternalServerErrorException('No active subscription for default company');
+        if (!$subscription) {
+            throw new InternalServerErrorException('No active subscription for the company: ' . $user->getDefaultCompany()->name);
         }
 
         return $subscription;
@@ -252,6 +242,10 @@ class Subscription extends PhalconSubscription
      */
     public function active(): bool
     {
+        if (!Di::getDefault()->getApp()->subscriptioBased()) {
+            return true;
+        }
+
         return (bool) $this->is_active;
     }
 
@@ -262,6 +256,10 @@ class Subscription extends PhalconSubscription
      */
     public function paid(): bool
     {
+        if (!Di::getDefault()->getApp()->subscriptioBased()) {
+            return true;
+        }
+
         return (bool) $this->paid;
     }
 
@@ -288,7 +286,7 @@ class Subscription extends PhalconSubscription
      */
     public function onTrial()
     {
-        return (bool)$this->is_freetrial;
+        return (bool) $this->is_freetrial;
     }
 
     /**
@@ -297,8 +295,8 @@ class Subscription extends PhalconSubscription
     public static function getActiveSubscription(): self
     {
         $userSubscription = PhalconSubscription::findFirstOrFail([
-            'conditions' => 'user_id = ?0 and companies_id = ?1 and apps_id = ?2 and is_deleted  = 0',
-            'bind' => [Di::getDefault()->getUserData()->getId(), Di::getDefault()->getUserData()->currentCompanyId(), Di::getDefault()->getApp()->getId()]
+            'conditions' => 'companies_id = ?1 and apps_id = ?2 and is_deleted  = 0',
+            'bind' => [Di::getDefault()->getUserData()->currentCompanyId(), Di::getDefault()->getApp()->getId()]
         ]);
 
         return Di::getDefault()->getUserData()->subscription($userSubscription->name);
