@@ -295,7 +295,7 @@ class Subscription extends PhalconSubscription
     public static function getActiveSubscription(): self
     {
         $userSubscription = PhalconSubscription::findFirstOrFail([
-            'conditions' => 'companies_id = ?1 and apps_id = ?2 and is_deleted  = 0',
+            'conditions' => 'companies_id = ?0 and apps_id = ?1 and is_deleted  = 0',
             'bind' => [Di::getDefault()->getUserData()->currentCompanyId(), Di::getDefault()->getApp()->getId()]
         ]);
 
