@@ -12,6 +12,7 @@ use Canvas\Exception\ServerErrorHttpException;
 use Baka\Auth\UsersController as BakaUsersController;
 use Canvas\Contracts\Controllers\ProcessOutputMapperTrait;
 use Canvas\Dto\User as UserDto;
+use Canvas\Http\Exception\InternalServerErrorException;
 use Canvas\Mapper\UserMapper;
 use Canvas\Validation as CanvasValidation;
 use Canvas\Models\UsersAssociatedApps;
@@ -208,7 +209,9 @@ class UsersController extends BakaUsersController
     public function delete($id): Response
     {
         if ((int) $this->userData->getId() === (int) $id) {
-            throw new ServerErrorHttpException('Cant delete your own user . If you want to close your account contact support or go to app settings');
+            throw new InternalServerErrorException(
+                'Cant delete your own user . If you want to close your account contact support or go to app settings'
+            );
         }
 
         return parent::delete($id);
@@ -228,6 +231,7 @@ class UsersController extends BakaUsersController
             'conditions' => 'users_id = ?0 and apps_id = ?1 and companies_id = ?2 and is_deleted = 0',
             'bind' => [$id, $this->app->getId(), $this->userData->getDefaultCompany()->getId()]
         ]);
+
         $userAssociatedToApp->user_active = $userAssociatedToApp->user_active ? 0 : 1;
         $userAssociatedToApp->updateOrFail();
         return $this->response($userAssociatedToApp);

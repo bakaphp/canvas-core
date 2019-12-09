@@ -22,20 +22,31 @@ use Canvas\Contracts\Controllers\ProcessOutputMapperTrait;
 class CustomFieldsController extends BaseController
 {
     use ProcessOutputMapperTrait;
-    
-    /*
-     * fields we accept to create
-     *
-     * @var array
-     */
-    protected $createFields = ['name', 'label', 'custom_fields_modules_id', 'fields_type_id', 'attributes'];
 
     /*
      * fields we accept to create
      *
      * @var array
      */
-    protected $updateFields = ['name', 'label', 'custom_fields_modules_id', 'fields_type_id', 'attributes'];
+    protected $createFields = [
+        'name',
+        'label',
+        'custom_fields_modules_id',
+        'fields_type_id',
+        'attributes'];
+
+    /*
+     * fields we accept to create
+     *
+     * @var array
+     */
+    protected $updateFields = [
+        'name',
+        'label',
+        'custom_fields_modules_id',
+        'fields_type_id',
+        'attributes'
+    ];
 
     /**
      * set objects.
