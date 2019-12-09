@@ -77,7 +77,7 @@ class AppsSettingsController extends BakaBaseController
     public function getByKey($key = null): Response
     {
         //find the info
-        $record = $this->model->findFirstOrFail([
+        $record = $this->model->findFirstOrFailn([
             'key = ?0 AND is_deleted = 0',
             'bind' => [$key],
         ]);

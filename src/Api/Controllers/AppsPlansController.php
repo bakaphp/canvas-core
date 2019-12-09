@@ -90,14 +90,11 @@ class AppsPlansController extends BaseController
 
         $appPlan = $this->model->findFirstByStripeId($stripeId);
 
-        if (!is_object($appPlan)) {
+        if (!$appPlan) {
             throw new NotFoundException(_('This plan doesnt exist'));
         }
 
-        $userSubscription = Subscription::findFirst([
-            'conditions' => 'user_id = ?0 and companies_id = ?1 and apps_id = ?2 and is_deleted  = 0',
-            'bind' => [$this->userData->getId(), $this->userData->currentCompanyId(), $this->app->getId()]
-        ]);
+        $userSubscription = CanvasSubscription::getActiveForThisApp();
 
         //we can only run stripe paymenta gateway if we have the key
         if (paymentGatewayIsActive()) {
@@ -115,9 +112,14 @@ class AppsPlansController extends BaseController
             $this->db->begin();
 
             if ($appPlan->free_trial_dates == 0) {
-                $this->userData->newSubscription($appPlan->name, $appPlan->stripe_id, $company, $this->app)->create($card);
+                $this->userData
+                    ->newSubscription($appPlan->name, $appPlan->stripe_id, $company, $this->app)
+                    ->create($card);
             } else {
-                $this->userData->newSubscription($appPlan->name, $appPlan->stripe_id, $company, $this->app)->trialDays($appPlan->free_trial_dates)->create($card);
+                $this->userData
+                    ->newSubscription($appPlan->name, $appPlan->stripe_id, $company, $this->app)
+                    ->trialDays($appPlan->free_trial_dates)
+                    ->create($card);
             }
 
             //update company app
@@ -127,25 +129,26 @@ class AppsPlansController extends BaseController
                 $userSubscription->stripe_id = $this->userData->active_subscription_id;
                 if (!$userSubscription->update()) {
                     $this->db->rollback();
-                    throw new UnprocessableEntityException((string)current($userSubscription->getMessages()));
+                    throw new UnprocessableEntityException((string) current($userSubscription->getMessages()));
                 }
             }
 
             //update the company app to the new plan
-            if (is_object($companyApp)) {
+            if ($companyApp) {
                 $subscription = $this->userData->subscription($appPlan->stripe_plan);
                 $companyApp->stripe_id = $stripeId;
                 $companyApp->subscriptions_id = $subscription->getId();
+
                 if (!$companyApp->update()) {
                     $this->db->rollback();
-                    throw new UnprocessableEntityException((string)current($companyApp->getMessages()));
+                    throw new UnprocessableEntityException((string) current($companyApp->getMessages()));
                 }
 
                 //update the subscription with the plan
                 $subscription->apps_plans_id = $appPlan->getId();
                 if (!$subscription->update()) {
                     $this->db->rollback();
-                    throw new UnprocessableEntityException((string)current($subscription->getMessages()));
+                    throw new UnprocessableEntityException((string) current($subscription->getMessages()));
                 }
             }
 
@@ -170,17 +173,7 @@ class AppsPlansController extends BaseController
             throw new NotFoundException(_('This plan doesnt exist'));
         }
 
-        /**
-         * @todo change the subscription to use getActiveForThisApp , not base on the user
-         */
-        $userSubscription = Subscription::findFirst([
-            'conditions' => 'user_id = ?0 and companies_id = ?1 and apps_id = ?2 and is_deleted  = 0',
-            'bind' => [$this->userData->getId(), $this->userData->currentCompanyId(), $this->app->getId()]
-        ]);
-
-        if (!is_object($userSubscription)) {
-            throw new NotFoundException(_('No current subscription found'));
-        }
+        $userSubscription = CanvasSubscription::getActiveForThisApp();
 
         $this->db->begin();
 
