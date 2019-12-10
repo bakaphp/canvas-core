@@ -68,7 +68,7 @@ class Helper
         $di = Di::getDefault();
         $config = $di->get('config');
 
-        //get the filesystem config
+        //get the filesystem config from app settings (local | s3)
         $appSettingFileConfig = $di->get('app')->get('filesystem');
         $fileSystemConfig = $config->filesystem->{$appSettingFileConfig};
 

@@ -277,7 +277,8 @@ trait FileSystemModelTrait
         $fileMapper = new FileMapper($this->getId(), $systemModule->getId());
 
         //add a mapper
-        $this->di->getDtoConfig()->registerMapping(FileSystemEntities::class, Files::class)
+        $this->di->getDtoConfig()
+            ->registerMapping(FileSystemEntities::class, Files::class)
             ->useCustomMapper($fileMapper);
 
         return $this->di->getMapper()->mapMultiple($attachments, Files::class);
@@ -323,7 +324,8 @@ trait FileSystemModelTrait
             $fileMapper = new FileMapper($this->getId(), $systemModule->getId());
 
             //add a mapper
-            $this->di->getDtoConfig()->registerMapping(FileSystemEntities::class, Files::class)
+            $this->di->getDtoConfig()
+                ->registerMapping(FileSystemEntities::class, Files::class)
                 ->useCustomMapper($fileMapper);
 
             /**

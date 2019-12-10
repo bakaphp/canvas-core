@@ -7,7 +7,7 @@ namespace Canvas\Traits;
 use Canvas\Models\Subscription;
 use Canvas\Models\UserCompanyAppsActivities;
 use Canvas\Exception\SubscriptionPlanLimitException;
-use Canvas\Exception\ServerErrorHttpException;
+use Canvas\Http\Exception\InternalServerErrorException;
 use ReflectionClass;
 use Phalcon\Di;
 
@@ -90,7 +90,7 @@ trait SubscriptionPlanLimitTrait
             //its a varchar so lets make sure we convert it to int
             $companyAppActivityLimit->value = (int)$companyAppActivityLimit->value + 1;
             if (!$companyAppActivityLimit->save()) {
-                throw new ServerErrorHttpException((string)current($companyAppActivityLimit->getMessages()));
+                throw new InternalServerErrorException((string) current($companyAppActivityLimit->getMessages()));
             }
         } else {
             $userCopmanyAppsActivites = new UserCompanyAppsActivities();
