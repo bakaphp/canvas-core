@@ -24,6 +24,14 @@ class NotificationsSeeder extends AbstractSeed
                 'created_at' => date('Y-m-d H:m:s')
             ],
             [
+                'name' => 'Users',
+                'apps_id' => 1,
+                'system_modules_id' => 1,
+                'key' => 'Canvas\\Notifications\\Users',
+                'description' => 'Users Notification',
+                'created_at' => date('Y-m-d H:m:s')
+            ],
+            [
                 'name' => 'Signup',
                 'apps_id' => 1,
                 'system_modules_id' => 1,
