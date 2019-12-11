@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Canvas\Api\Controllers;
 
 use Phalcon\Http\Response;
-use Baka\Http\QueryParser;
 use Canvas\Http\Exception\UnprocessableEntityException;
 use Canvas\Models\CompaniesBranches;
 
@@ -73,51 +72,18 @@ class CompaniesBranchesController extends BaseController
      *
      * @return Response
      */
-    public function getById($id) : Response
+    public function getById($id): Response
     {
         //find the info
-        $company = $this->model->findFirst([
+        $record = $this->model->findFirstOrFail([
             'id = ?0 AND is_deleted = 0 and companies_id = ?1',
             'bind' => [$id, $this->userData->currentCompanyId()],
         ]);
 
-        //get relationship
-        if ($this->request->hasQuery('relationships')) {
-            $relationships = $this->request->getQuery('relationships', 'string');
+        //get the results and append its relationships
+        $result = $this->appendRelationshipsToResult($this->request, $record);
 
-            $company = QueryParser::parseRelationShips($relationships, $company);
-        }
-
-        if ($company) {
-            return $this->response($company);
-        } else {
-            throw new UnprocessableEntityException('Record not found');
-        }
-    }
-
-    /**
-     * Add a new item.
-     *
-     * @method POST
-     * @url /v1/company
-     *
-     * @return Response
-     */
-    public function create() : Response
-    {
-        $request = $this->request->getPostData();
-
-        //transaction
-        $this->db->begin();
-
-        //try to save all the fields we allow
-        if ($this->model->save($request, $this->createFields)) {
-            $this->db->commit();
-            return $this->response($this->model->toArray());
-        } else {
-            $this->db->rollback();
-            throw new UnprocessableEntityException((string) $this->model->getMessages()[0]);
-        }
+        return $this->response($this->processOutput($result));
     }
 
     /**
@@ -130,23 +96,19 @@ class CompaniesBranchesController extends BaseController
      */
     public function edit($id) : Response
     {
-        $company = $this->model->findFirst([
+        $company = $this->model->findFirstOrFail([
             'id = ?0 AND is_deleted = 0 and companies_id = ?1',
             'bind' => [$id, $this->userData->currentCompanyId()],
         ]);
 
-        if ($company) {
-            $request = $this->request->getPutData();
+        $request = $this->request->getPutData();
 
-            //update
-            if ($company->update($request, $this->updateFields)) {
-                return $this->response($company);
-            } else {
-                //didnt work
-                throw new UnprocessableEntityException((string) current($company->getMessages()));
-            }
+        //update
+        if ($company->update($request, $this->updateFields)) {
+            return $this->response($this->processOutput($company));
         } else {
-            throw new UnprocessableEntityException('Record not found');
+            //didnt work
+            throw new UnprocessableEntityException((string) current($company->getMessages()));
         }
     }
 }

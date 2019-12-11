@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Canvas\Models;
 
-use Canvas\Exception\UnprocessableEntityHttpException;
+use Canvas\Http\Exception\UnprocessableEntityException;
 use Phalcon\Di;
 
 /**
@@ -129,7 +129,7 @@ class EmailTemplates extends AbstractModel
         ]);
 
         if (!is_object($emailTemplate)) {
-            throw new UnprocessableEntityHttpException(_('No template ' . $name . ' found for this app ' . Di::getDefault()->getApp()->name));
+            throw new UnprocessableEntityException(_('No template ' . $name . ' found for this app ' . Di::getDefault()->getApp()->name));
         }
 
         //@todo add company id

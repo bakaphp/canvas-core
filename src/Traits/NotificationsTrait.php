@@ -9,7 +9,7 @@ use Canvas\Models\Notifications;
 use Phalcon\Di;
 
 /**
- * Trait ResponseTrait
+ * Trait ResponseTrait.
  *
  * @package Canvas\Traits
  *
@@ -25,16 +25,16 @@ use Phalcon\Di;
 trait NotificationsTrait
 {
     /**
-     * Create a new notification
+     * Create a new notification.
      * @param array $user
      * @param string $content
      * @param int $notificationTypeId
      * @param string $systemModule
      * @return void
      */
-    public static function create(array $entity,array $user, string $content, int $notificationTypeId, string $systemModule): void
+    public static function create(array $entity, array $user, string $content, int $notificationTypeId, string $systemModule): void
     {
-        $notification =  new Notifications();
+        $notification = new Notifications();
         $notification->users_id = $user['id'];
         $notification->companies_id = $user['default_company'];
         $notification->apps_id = Di::getDefault()->getApp()->getId();
@@ -45,7 +45,7 @@ trait NotificationsTrait
         $notification->created_at = date('Y-m-d H:i:s');
 
         if (!$notification->save()) {
-            Di::getDefault()->getLog()->error((string)current($notification->getMessages()));
+            Di::getDefault()->getLog()->error((string) current($notification->getMessages()));
         }
     }
 }

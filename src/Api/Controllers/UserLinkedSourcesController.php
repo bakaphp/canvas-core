@@ -6,12 +6,9 @@ namespace Canvas\Api\Controllers;
 
 use Canvas\Models\UserLinkedSources;
 use Baka\Auth\Models\Sources;
+use Canvas\Http\Exception\UnprocessableEntityException;
 use Phalcon\Http\Response;
-use Phalcon\Validation;
 use Phalcon\Validation\Validator\PresenceOf;
-use Canvas\Exception\BadRequestHttpException;
-use Canvas\Exception\NotFoundHttpException;
-use Canvas\Exception\UnprocessableEntityHttpException;
 use Canvas\Validation as CanvasValidation;
 
 /**
@@ -28,14 +25,26 @@ class UserLinkedSourcesController extends BaseController
      *
      * @var array
      */
-    protected $createFields = ['users_id', 'source_id', 'source_users_id', 'source_users_id_text', 'source_username'];
+    protected $createFields = [
+        'users_id',
+        'source_id',
+        'source_users_id',
+        'source_users_id_text',
+        'source_username'
+    ];
 
     /*
      * fields we accept to create
      *
      * @var array
      */
-    protected $updateFields = ['users_id', 'source_id', 'source_users_id', 'source_users_id_text', 'source_username'];
+    protected $updateFields = [
+        'users_id',
+        'source_id',
+        'source_users_id',
+        'source_users_id_text',
+        'source_username'
+    ];
 
     /**
      * set objects.
@@ -90,7 +99,7 @@ class UserLinkedSourcesController extends BaseController
                 $userSource->is_deleted = 0;
 
                 if (!$userSource->save()) {
-                    throw new UnprocessableEntityHttpException((string) current($userSource->getMessages()));
+                    throw new UnprocessableEntityException((string) current($userSource->getMessages()));
                 }
 
                 $msg = 'User Device Associated';

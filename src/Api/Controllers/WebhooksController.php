@@ -24,14 +24,26 @@ class WebhooksController extends BaseController
      *
      * @var array
      */
-    protected $createFields = ['system_modules_id', 'name', 'description', 'action', 'format'];
+    protected $createFields = [
+        'system_modules_id'
+        ,'name'
+        ,'description'
+        ,'action'
+        ,'format'
+    ];
 
     /*
      * fields we accept to create
      *
      * @var array
      */
-    protected $updateFields = ['system_modules_id', 'name', 'description', 'action', 'format'];
+    protected $updateFields = [
+        'system_modules_id'
+        ,'name'
+        ,'description'
+        ,'action'
+        ,'format'
+    ];
 
     /**
      * set objects

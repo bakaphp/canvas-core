@@ -6,8 +6,7 @@ namespace Canvas\Traits;
 
 use Canvas\Models\Roles;
 use Canvas\Models\UserRoles;
-use Canvas\Exception\ServerErrorHttpException;
-use Canvas\Exception\ModelException;
+use Canvas\Http\Exception\InternalServerErrorException;
 
 /**
  * Trait FractalTrait.
@@ -28,7 +27,7 @@ trait PermissionsTrait
         $role = Roles::getByAppName($role, $this->getDefaultCompany());
 
         if (!is_object($role)) {
-            throw new ServerErrorHttpException('Role not found in DB');
+            throw new InternalServerErrorException('Role not found in DB');
         }
 
         $userRole = UserRoles::findFirst([
@@ -60,7 +59,7 @@ trait PermissionsTrait
         $role = Roles::getByAppName($role, $this->getDefaultCompany());
 
         if (!is_object($role)) {
-            throw new ServerErrorHttpException('Role not found in DB');
+            throw new InternalServerErrorException('Role not found in DB');
         }
 
         $userRole = UserRoles::findFirst([
@@ -86,7 +85,7 @@ trait PermissionsTrait
         $role = Roles::getByAppName($role, $this->getDefaultCompany());
 
         if (!is_object($role)) {
-            throw new ServerErrorHttpException('Role not found in DB');
+            throw new InternalServerErrorException('Role not found in DB');
         }
 
         $userRole = UserRoles::findFirst([
@@ -114,7 +113,7 @@ trait PermissionsTrait
     {
         //if we find the . then les
         if (strpos($action, '.') === false) {
-            throw new ServerErrorHttpException('ACL - We are expecting the resource for this action');
+            throw new InternalServerErrorException('ACL - We are expecting the resource for this action');
         }
 
         $action = explode('.', $action);
@@ -124,7 +123,7 @@ trait PermissionsTrait
         $role = $this->getPermission('apps_id in (' . $this->di->getApp()->getId() . ',' . Roles::DEFAULT_ACL_APP_ID . ')');
 
         if (!is_object($role)) {
-            throw new ServerErrorHttpException('ACL - User doesnt have any set roles in this current app #' . $this->di->getApp()->getId());
+            throw new InternalServerErrorException('ACL - User doesnt have any set roles in this current app #' . $this->di->getApp()->getId());
         }
 
         return $this->di->getAcl()->isAllowed($role->roles->name, $resource, $action);

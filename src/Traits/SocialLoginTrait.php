@@ -6,6 +6,7 @@ namespace Canvas\Traits;
 
 use function Canvas\Core\envValue;
 use function time;
+use Canvas\Http\Exception\UnprocessableEntityException;
 use Canvas\Models\Sources;
 use Canvas\Models\Users;
 use Canvas\Models\UserLinkedSources;
@@ -136,7 +137,7 @@ trait SocialLoginTrait
         } catch (Exception $e) {
             $this->db->rollback();
 
-            throw new UnprocessableEntityHttpException($e->getMessage());
+            throw new UnprocessableEntityException($e->getMessage());
         }
 
         return $newUser;

@@ -8,7 +8,7 @@ use Canvas\Models\FileSystem;
 use Canvas\Traits\FileManagementTrait;
 
 /**
- * Class BaseController
+ * Class BaseController.
  *
  * @package Canvas\Api\Controllers
  *
@@ -34,10 +34,16 @@ class FilesystemController extends BaseController
      *
      * @var array
      */
-    protected $updateFields = ['name', 'path', 'url', 'size', 'file_type'];
+    protected $updateFields = [
+        'name',
+        'path',
+        'url',
+        'size',
+        'file_type'
+    ];
 
     /**
-     * set objects
+     * set objects.
      *
      * @return void
      */

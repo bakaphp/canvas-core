@@ -11,6 +11,7 @@ use Canvas\Exception\UnprocessableEntityHttpException;
 use Canvas\Models\FileSystem;
 use Canvas\Filesystem\Helper;
 use Baka\Http\QueryParser;
+use Canvas\Http\Exception\UnprocessableEntityException;
 use Canvas\Models\FileSystemSettings;
 use Canvas\Models\SystemModules;
 use Canvas\Models\FileSystemEntities;
@@ -30,30 +31,6 @@ use Canvas\Models\FileSystemEntities;
  */
 trait FileManagementTrait
 {
-    /**
-     * Get item.
-     *
-     * @method GET
-     * url /v1/filesystem/{id}
-     *
-     * @param mixed $id
-     *
-     * @return \Phalcon\Http\Response
-     * @throws Exception
-     */
-    public function getById($id) : Response
-    {
-        $records = FileSystem::findFirstOrFail($id);
-
-        //get relationship
-        if ($this->request->hasQuery('relationships')) {
-            $relationships = $this->request->getQuery('relationships', 'string');
-            $records = QueryParser::parseRelationShips($relationships, $records);
-        }
-
-        return $this->response($records);
-    }
-
     /**
      * Add a new item.
      *
@@ -219,7 +196,7 @@ trait FileManagementTrait
             if (!defined('API_TESTS')) {
                 if (count($errors)) {
                     foreach ($errors as $error) {
-                        throw new UnprocessableEntityHttpException((string)$error);
+                        throw new UnprocessableEntityException((string) $error);
                     }
                 }
             }

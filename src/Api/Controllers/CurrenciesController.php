@@ -7,7 +7,7 @@ namespace Canvas\Api\Controllers;
 use Canvas\Models\Currencies;
 
 /**
- * Class LanguagesController
+ * Class LanguagesController.
  *
  * @package Canvas\Api\Controllers
  *
@@ -19,17 +19,27 @@ class CurrenciesController extends BaseController
      *
      * @var array
      */
-    protected $createFields = ['country', 'currency', 'code', 'symbol'];
+    protected $createFields = [
+        'country',
+        'currency',
+        'code',
+        'symbol'
+    ];
 
     /*
      * fields we accept to create
      *
      * @var array
      */
-    protected $updateFields = ['country', 'currency', 'code', 'symbol'];
+    protected $updateFields = [
+        'country',
+        'currency',
+        'code',
+        'symbol'
+    ];
 
     /**
-     * set objects
+     * set objects.
      *
      * @return void
      */

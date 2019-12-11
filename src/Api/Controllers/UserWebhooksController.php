@@ -24,14 +24,24 @@ class UserWebhooksController extends BaseController
      *
      * @var array
      */
-    protected $createFields = ['webhooks_id', 'url', 'method', 'format'];
+    protected $createFields = [
+        'webhooks_id',
+        'url',
+        'method',
+        'format'
+    ];
 
     /*
      * fields we accept to create
      *
      * @var array
      */
-    protected $updateFields = ['webhooks_id', 'url', 'method', 'format'];
+    protected $updateFields = [
+        'webhooks_id',
+        'url',
+        'method',
+        'format'
+    ];
 
     /**
      * set objects

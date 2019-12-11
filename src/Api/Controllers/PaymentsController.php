@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Canvas\Api\Controllers;
 
+use Canvas\Http\Exception\NotFoundException;
 use Phalcon\Cashier\Traits\StripeWebhookHandlersTrait;
 use Phalcon\Http\Response;
 use Canvas\Models\Users;
-use Canvas\Models\EmailTemplates;
 use Canvas\Models\Subscription;
 use Canvas\Models\CompaniesSettings;
+use Canvas\Template;
 use Phalcon\Di;
-use Exception;
 
 /**
  * Class PaymentsController.
@@ -39,14 +39,16 @@ class PaymentsController extends BaseController
     {
         //we cant processs if we dont find the stripe header
         if (!$this->request->hasHeader('Stripe-Signature')) {
-            throw new Exception('Route not found for this call');
+            throw new NotFoundException('Route not found for this call');
         }
+
         $request = $this->request->getPostData();
         $type = str_replace('.', '', ucwords(str_replace('_', '', $request['type']), '.'));
         $method = 'handle' . $type;
         $payloadContent = json_encode($request);
         $this->log->info("Webhook Handler Method: {$method} \n");
         $this->log->info("Payload: {$payloadContent} \n");
+
         if (method_exists($this, $method)) {
             return $this->{$method}($request, $method);
         } else {
@@ -163,9 +165,13 @@ class PaymentsController extends BaseController
      */
     protected function sendWebhookResponseEmail(Users $user, array $payload, string $method): void
     {
+        $templateName = '';
+        $title = null;
+
         switch ($method) {
             case 'handleCustomerSubscriptionTrialwillend':
                 $templateName = 'users-trial-end';
+                $title = 'Free Trial Ending';
                 break;
             case 'handleCustomerSubscriptionUpdated':
                 $templateName = 'users-subscription-updated';
@@ -173,14 +179,19 @@ class PaymentsController extends BaseController
 
             case 'handleCustomerSubscriptionDeleted':
                 $templateName = 'users-subscription-canceled';
+                $title = 'Subscription Cancelled';
                 break;
 
             case 'handleChargeSucceeded':
                 $templateName = 'users-charge-success';
+                $title = 'Invoice';
+
                 break;
 
             case 'handleChargeFailed':
                 $templateName = 'users-charge-failed';
+                $title = 'Payment Failed';
+
                 break;
 
             case 'handleChargePending':
@@ -192,13 +203,15 @@ class PaymentsController extends BaseController
         }
 
         //Search for actual template by templateName
-        $emailTemplate = EmailTemplates::getByName($templateName);
+        if ($templateName) {
+            $emailTemplate = Template::generate($templateName, $user->toArray());
 
-        Di::getDefault()->getMail()
+            Di::getDefault()->getMail()
             ->to($user->email)
-            ->subject('Canvas Payments and Subscriptions')
-            ->content($emailTemplate->template)
+            ->subject($this->app->name . ' - ' . $title)
+            ->content($emailTemplate)
             ->sendNow();
+        }
     }
 
     /**
@@ -238,7 +251,7 @@ class PaymentsController extends BaseController
                     'bind' => [$user->getDefaultCompany()->getId()]
                 ]);
 
-                $paidSetting->value = (string)$subscription->paid;
+                $paidSetting->value = (string) $subscription->paid;
                 $paidSetting->update();
             }
             $this->log->info("User with id: {$user->id} charged status was {$payload['data']['object']['paid']} \n");

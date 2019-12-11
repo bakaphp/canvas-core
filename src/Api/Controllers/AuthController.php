@@ -12,6 +12,7 @@ use Canvas\Exception\ModelException;
 use Baka\Auth\Models\Users as BakaUsers;
 use Canvas\Traits\AuthTrait;
 use Canvas\Traits\SocialLoginTrait;
+use Canvas\Http\Exception\NotFoundException;
 use Exception;
 use Phalcon\Http\Response;
 use Phalcon\Validation\Validator\Confirmation;
@@ -20,10 +21,11 @@ use Phalcon\Validation\Validator\PresenceOf;
 use Phalcon\Validation\Validator\StringLength;
 use Baka\Auth\Models\Sessions;
 use Canvas\Auth\Factory;
-use Canvas\Exception\NotFoundException;
 use Canvas\Validation as CanvasValidation;
 use Canvas\Notifications\ResetPassword;
 use Canvas\Notifications\PasswordUpdate;
+use Canvas\Notifications\Signup;
+use Canvas\Notifications\UpdateEmail;
 use Canvas\Validations\PasswordValidation;
 use Canvas\Traits\TokenTrait;
 
@@ -188,7 +190,7 @@ class AuthController extends \Baka\Auth\AuthController
         ];
 
         $user->password = null;
-        $this->sendEmail($user, 'signup');
+        $user->notify(new Signup($user));
 
         return $this->response([
             'user' => $user,
@@ -243,11 +245,10 @@ class AuthController extends \Baka\Auth\AuthController
         $user = Users::getById($id);
 
         if (!is_object($user)) {
-            throw new NotFoundHttpException(_('User not found'));
+            throw new NotFoundException(_('User not found'));
         }
 
-        //Send email
-        $this->sendEmail($user, 'email-change');
+        $user->notify(new UpdateEmail($user));
 
         return $this->response($user);
     }
@@ -286,7 +287,7 @@ class AuthController extends \Baka\Auth\AuthController
         $user = Users::getByUserActivationEmail($hash);
 
         if (!is_object($user)) {
-            throw new NotFoundHttpException(_('User not found'));
+            throw new NotFoundException(_('User not found'));
         }
 
         $this->db->begin();
@@ -294,7 +295,7 @@ class AuthController extends \Baka\Auth\AuthController
         $user->email = $newEmail;
 
         if (!$user->update()) {
-            throw new ModelException((string)current($user->getMessages()));
+            throw new ModelException((string) current($user->getMessages()));
         }
 
         if (!$userData = $this->loginUsers($user->email, $password)) {
@@ -394,38 +395,6 @@ class AuthController extends \Baka\Auth\AuthController
     */
     protected function sendEmail(BakaUsers $user, string $type): void
     {
-        $send = true;
-        $subject = null;
-        $body = null;
-        switch ($type) {
-            case 'recover':
-                $recoveryLink = $this->config->app->frontEndUrl . '/users/reset-password/' . $user->user_activation_forgot;
-                $subject = _('Password Recovery');
-                $body = sprintf(_('Click %shere%s to set a new password for your account.'), '<a href="' . $recoveryLink . '" target="_blank">', '</a>');
-                // send email to recover password
-                break;
-            case 'reset':
-                $activationUrl = $this->config->app->frontEndUrl . '/user/activate/' . $user->user_activation_key;
-                $subject = _('Password Updated!');
-                $body = sprintf(_('Your password was update please, use this link to activate your account: %sActivate account%s'), '<a href="' . $activationUrl . '">', '</a>');
-                // send email that password was update
-                break;
-            case 'email-change':
-                $emailChangeUrl = $this->config->app->frontEndUrl . '/user/' . $user->user_activation_email . '/email';
-                $subject = _('Email Change Request');
-                $body = sprintf(_('Click %shere%s to set a new email for your account.'), '<a href="' . $emailChangeUrl . '">', '</a>');
-                break;
-            default:
-                $send = false;
-                break;
-        }
-
-        if ($send) {
-            $this->mail
-            ->to($user->email)
-            ->subject($subject)
-            ->content($body)
-            ->sendNow();
-        }
+        return ;
     }
 }

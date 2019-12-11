@@ -7,7 +7,7 @@ namespace Canvas\Api\Controllers;
 use Exception;
 use PDOException;
 use Phalcon\Http\Response;
-use Canvas\Exception\ServerErrorHttpException;
+use Canvas\Http\Exception\InternalServerErrorException;
 use RedisException;
 use PhpAmqpLib\Exception\AMQPIOException ;
 
@@ -93,6 +93,6 @@ class IndexController extends BaseController
             return $this->response(['OK']);
         }
 
-        throw new ServerErrorHttpException(json_encode($response));
+        throw new InternalServerErrorException(json_encode($response));
     }
 }
