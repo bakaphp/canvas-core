@@ -22,7 +22,7 @@ class Signup extends Notification implements NotificationInterfase
      */
     public function message(): string
     {
-        return Template::generate('signup', $this->entity->toArray());
+        return Template::generate('users-registration', $this->entity->toArray());
     }
 
     /**

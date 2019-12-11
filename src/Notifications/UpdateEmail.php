@@ -25,7 +25,7 @@ class UpdateEmail extends Notification implements NotificationInterfase
         //$body = sprintf(_('Click %shere%s to set a new email for your account.'), '<a href="' . $emailChangeUrl . '">', '</a>');
         //break;
 
-        return Template::generate('update-email', $this->entity->toArray());
+        return Template::generate('users-charge-success', $this->entity->toArray());
     }
 
     /**
