@@ -134,7 +134,7 @@ class UpdateNofiticationTables extends AbstractMigration
         ])
             ->removeColumn('system_module_id')
         ->addIndex(['system_modules_id'], [
-            'name' => 'system_module_id',
+            'name' => 'notification_system_module_id',
             'unique' => false,
         ])
         ->addIndex(['from_users_id'], [
