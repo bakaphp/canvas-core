@@ -16,7 +16,6 @@ class NotificationTypeCest
      */
     public function getByKey(IntegrationTester $I)
     {
-        #$notificationType = NotificationType::getByKey('Canvas\Notifications\Signup');
         $notificationType = NotificationType::getByKey('Canvas\Notifications\Users');
         $I->assertTrue($notificationType instanceof NotificationType);
     }
