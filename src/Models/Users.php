@@ -508,7 +508,7 @@ class Users extends \Baka\Auth\Models\Users
     {
         $apps = $this->getApps(['columns' => 'apps_id', 'group' => 'apps_id']);
 
-        if ($apps->count() > 0) {
+        if ($apps->count()) {
             return array_map(function ($apps) {
                 return $apps['apps_id'];
             }, $apps->toArray());
@@ -526,7 +526,7 @@ class Users extends \Baka\Auth\Models\Users
     {
         $companies = $this->getCompanies(['columns' => 'companies_id']);
 
-        if ($companies->count() > 0) {
+        if ($companies->count()) {
             return array_map(function ($company) {
                 return $company['companies_id'];
             }, $companies->toArray());
