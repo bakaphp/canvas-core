@@ -6,8 +6,8 @@ namespace Canvas\Api\Controllers;
 
 use Canvas\Models\Companies;
 use Phalcon\Http\Response;
-use Canvas\Exception\UnauthorizedHttpException;
 use Baka\Http\Contracts\Api\CrudCustomFieldsBehaviorTrait;
+use Canvas\Http\Exception\UnauthorizedException;
 
 /**
  * Class CompaniesController.
@@ -105,7 +105,7 @@ class CompaniesController extends BaseController
         $company = $this->model->findFirstOrFail($id);
 
         if (!$company->userAssociatedToCompany($this->userData) && !$this->userData->hasRole('Default.Admins')) {
-            throw new UnauthorizedHttpException(_('You dont have permission to update this company info'));
+            throw new UnauthorizedException(_('You dont have permission to update this company info'));
         }
 
         //process the input
@@ -129,7 +129,7 @@ class CompaniesController extends BaseController
     {
         $company = $this->model->findFirstOrFail($id);
         if (!$company->userAssociatedToCompany($this->userData) && !$this->userData->hasRole('Default.Admins')) {
-            throw new UnauthorizedHttpException(_('You dont have permission to delete this company'));
+            throw new UnauthorizedException(_('You dont have permission to delete this company'));
         }
 
         $company->is_deleted = 1;
@@ -141,8 +141,8 @@ class CompaniesController extends BaseController
     /**
      * Format output.
      *
-     * @param [type] $results
-     * @return void
+     * @param mixed $results
+     * @return mixed
      */
     protected function processOutput($results)
     {
