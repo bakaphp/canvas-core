@@ -506,9 +506,15 @@ class Users extends \Baka\Auth\Models\Users
      */
     public function getAssociatedApps(): array
     {
-        return array_map(function ($apps) {
-            return $apps['apps_id'];
-        }, $this->getApps(['columns' => 'apps_id', 'group' => 'apps_id'])->toArray());
+        $apps = $this->getApps(['columns' => 'apps_id', 'group' => 'apps_id']);
+
+        if ($apps->count()) {
+            return array_map(function ($apps) {
+                return $apps['apps_id'];
+            }, $apps->toArray());
+        }
+
+        return [0];
     }
 
     /**
@@ -518,9 +524,15 @@ class Users extends \Baka\Auth\Models\Users
      */
     public function getAssociatedCompanies(): array
     {
-        return array_map(function ($company) {
-            return $company['companies_id'];
-        }, $this->getCompanies(['columns' => 'companies_id'])->toArray());
+        $companies = $this->getCompanies(['columns' => 'companies_id']);
+
+        if ($companies->count()) {
+            return array_map(function ($company) {
+                return $company['companies_id'];
+            }, $companies->toArray());
+        }
+
+        return [0];
     }
 
     /**
@@ -626,6 +638,13 @@ class Users extends \Baka\Auth\Models\Users
     /**
      * user signup to the service.
      *
+     * did we find the email?
+     * does it have access to this app?
+     * no?
+     * ok lets register / associate to this app
+     * yes?
+     * it meas he was invites so get the fuck out?
+     *
      * @return Users
      */
     public function signUp() : BakUser
@@ -634,12 +653,6 @@ class Users extends \Baka\Auth\Models\Users
 
         if (!$app->ecosystemAuth()) {
             try {
-                //did we find the email?
-                //does it have access to this app?
-                // no?
-                //ok les register / associate to this app
-                // yes?
-                //it meas he was invites so get the fuck out?
                 $user = self::getByEmail($this->email);
 
                 $userAppData = $user->countApps('apps_id = ' . $this->getDI()->getDefault()->getApp()->getId());

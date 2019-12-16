@@ -13,6 +13,7 @@ use Baka\Blameable\BlameableTrait;
 use Canvas\Traits\UsersAssociatedTrait;
 use Canvas\Traits\FileSystemModelTrait;
 use Baka\Blameable\Blameable;
+use Canvas\Http\Exception\InternalServerErrorException;
 use Canvas\Traits\EventManagerAwareTrait;
 use Phalcon\Di;
 
@@ -483,7 +484,7 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
         $subscription->payment_frequency_id = 1;
 
         if (!$subscription->save()) {
-            throw new ServerErrorHttpException((string)'Subscription for new company couldnt be created ' . current($this->getMessages()));
+            throw new InternalServerErrorException((string) 'Subscription for new company couldnt be created ' . current($this->getMessages()));
         }
 
         return $this->user->stripe_id;
