@@ -59,105 +59,105 @@ class AppsPlansController extends BaseController
         ];
     }
 
-    /**
-     * Given the app plan stripe id , subscribe the current company to this aps.
-     *
-     * @return Response
-     */
-    public function create(): Response
-    {
-        if (!$this->userData->hasRole('Default.Admins')) {
-            throw new UnauthorizedException(_('You dont have permission to subscribe this apps'));
-        }
+    // /**
+    //  * Given the app plan stripe id , subscribe the current company to this aps.
+    //  *
+    //  * @return Response
+    //  */
+    // public function create(): Response
+    // {
+    //     if (!$this->userData->hasRole('Default.Admins')) {
+    //         throw new UnauthorizedException(_('You dont have permission to subscribe this apps'));
+    //     }
 
-        //Ok let validate user password
-        $validation = new CanvasValidation();
-        $validation->add('stripe_id', new PresenceOf(['message' => _('The plan is required.')]));
-        $validation->add('card_number', new PresenceOf(['message' => _('Credit Card Number is required.')]));
-        $validation->add('card_exp_month', new PresenceOf(['message' => _('Credit Card expiration month is required.')]));
-        $validation->add('card_exp_year', new PresenceOf(['message' => _('Credit Card expiration year is required.')]));
-        $validation->add('card_cvc', new PresenceOf(['message' => _('CVC is required.')]));
+    //     //Ok let validate user password
+    //     $validation = new CanvasValidation();
+    //     $validation->add('stripe_id', new PresenceOf(['message' => _('The plan is required.')]));
+    //     $validation->add('card_number', new PresenceOf(['message' => _('Credit Card Number is required.')]));
+    //     $validation->add('card_exp_month', new PresenceOf(['message' => _('Credit Card expiration month is required.')]));
+    //     $validation->add('card_exp_year', new PresenceOf(['message' => _('Credit Card expiration year is required.')]));
+    //     $validation->add('card_cvc', new PresenceOf(['message' => _('CVC is required.')]));
 
-        //validate this form for password
-        $validation->validate($this->request->getPost());
+    //     //validate this form for password
+    //     $validation->validate($this->request->getPost());
 
-        $stripeId = $this->request->getPost('stripe_id');
-        $company = $this->userData->getDefaultCompany();
-        $cardNumber = $this->request->getPost('card_number');
-        $expMonth = $this->request->getPost('card_exp_month');
-        $expYear = $this->request->getPost('card_exp_year');
-        $cvc = $this->request->getPost('card_cvc');
+    //     $stripeId = $this->request->getPost('stripe_id');
+    //     $company = $this->userData->getDefaultCompany();
+    //     $cardNumber = $this->request->getPost('card_number');
+    //     $expMonth = $this->request->getPost('card_exp_month');
+    //     $expYear = $this->request->getPost('card_exp_year');
+    //     $cvc = $this->request->getPost('card_cvc');
 
-        $appPlan = $this->model->findFirstByStripeId($stripeId);
+    //     $appPlan = $this->model->findFirstByStripeId($stripeId);
 
-        if (!$appPlan) {
-            throw new NotFoundException(_('This plan doesnt exist'));
-        }
+    //     if (!$appPlan) {
+    //         throw new NotFoundException(_('This plan doesnt exist'));
+    //     }
 
-        $userSubscription = CanvasSubscription::getActiveForThisApp();
+    //     $userSubscription = CanvasSubscription::getActiveForThisApp();
 
-        //we can only run stripe paymenta gateway if we have the key
-        if (paymentGatewayIsActive()) {
-            $card = StripeToken::create([
-                'card' => [
-                    'number' => $cardNumber,
-                    'exp_month' => $expMonth,
-                    'exp_year' => $expYear,
-                    'cvc' => $cvc,
-                ],
-            ], [
-                'api_key' => $this->config->stripe->secret
-            ])->id;
+    //     //we can only run stripe paymenta gateway if we have the key
+    //     if (paymentGatewayIsActive()) {
+    //         $card = StripeToken::create([
+    //             'card' => [
+    //                 'number' => $cardNumber,
+    //                 'exp_month' => $expMonth,
+    //                 'exp_year' => $expYear,
+    //                 'cvc' => $cvc,
+    //             ],
+    //         ], [
+    //             'api_key' => $this->config->stripe->secret
+    //         ])->id;
 
-            $this->db->begin();
+    //         $this->db->begin();
 
-            if ($appPlan->free_trial_dates == 0) {
-                $this->userData
-                    ->newSubscription($appPlan->name, $appPlan->stripe_id, $company, $this->app)
-                    ->create($card);
-            } else {
-                $this->userData
-                    ->newSubscription($appPlan->name, $appPlan->stripe_id, $company, $this->app)
-                    ->trialDays($appPlan->free_trial_dates)
-                    ->create($card);
-            }
+    //         if ($appPlan->free_trial_dates == 0) {
+    //             $this->userData
+    //                 ->newSubscription($appPlan->name, $appPlan->stripe_id, $company, $this->app)
+    //                 ->create($card);
+    //         } else {
+    //             $this->userData
+    //                 ->newSubscription($appPlan->name, $appPlan->stripe_id, $company, $this->app)
+    //                 ->trialDays($appPlan->free_trial_dates)
+    //                 ->create($card);
+    //         }
 
-            //update company app
-            $companyApp = UserCompanyApps::getCurrentApp();
+    //         //update company app
+    //         $companyApp = UserCompanyApps::getCurrentApp();
 
-            if ($userSubscription) {
-                $userSubscription->stripe_id = $this->userData->active_subscription_id;
-                if (!$userSubscription->update()) {
-                    $this->db->rollback();
-                    throw new UnprocessableEntityException((string) current($userSubscription->getMessages()));
-                }
-            }
+    //         if ($userSubscription) {
+    //             $userSubscription->stripe_id = $this->userData->active_subscription_id;
+    //             if (!$userSubscription->update()) {
+    //                 $this->db->rollback();
+    //                 throw new UnprocessableEntityException((string) current($userSubscription->getMessages()));
+    //             }
+    //         }
 
-            //update the company app to the new plan
-            if ($companyApp) {
-                $subscription = $this->userData->subscription($appPlan->stripe_plan);
-                $companyApp->stripe_id = $stripeId;
-                $companyApp->subscriptions_id = $subscription->getId();
+    //         //update the company app to the new plan
+    //         if ($companyApp) {
+    //             $subscription = $this->userData->subscription($appPlan->stripe_plan);
+    //             $companyApp->stripe_id = $stripeId;
+    //             $companyApp->subscriptions_id = $subscription->getId();
 
-                if (!$companyApp->update()) {
-                    $this->db->rollback();
-                    throw new UnprocessableEntityException((string) current($companyApp->getMessages()));
-                }
+    //             if (!$companyApp->update()) {
+    //                 $this->db->rollback();
+    //                 throw new UnprocessableEntityException((string) current($companyApp->getMessages()));
+    //             }
 
-                //update the subscription with the plan
-                $subscription->apps_plans_id = $appPlan->getId();
-                if (!$subscription->update()) {
-                    $this->db->rollback();
-                    throw new UnprocessableEntityException((string) current($subscription->getMessages()));
-                }
-            }
+    //             //update the subscription with the plan
+    //             $subscription->apps_plans_id = $appPlan->getId();
+    //             if (!$subscription->update()) {
+    //                 $this->db->rollback();
+    //                 throw new UnprocessableEntityException((string) current($subscription->getMessages()));
+    //             }
+    //         }
 
-            $this->db->commit();
-        }
+    //         $this->db->commit();
+    //     }
 
-        //sucess
-        return $this->response($appPlan);
-    }
+    //     //sucess
+    //     return $this->response($appPlan);
+    // }
 
     /**
      * Update a given subscription.

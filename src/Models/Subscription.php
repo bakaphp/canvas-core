@@ -191,7 +191,7 @@ class Subscription extends PhalconSubscription
      *
      * @return Subscription
      */
-    public static function getActiveForThisApp()
+    public static function getActiveForThisApp(): Subscription
     {
         return self::getByDefaultCompany(Di::getDefault()->getUserData());
     }
@@ -201,12 +201,18 @@ class Subscription extends PhalconSubscription
      * @param Users $user
      * @return Subscription
      */
-    public static function getByDefaultCompany(Users $user)
+    public static function getByDefaultCompany(Users $user): Subscription
     {
-        return $subscription = self::findFirst([
+        $subscription = self::findFirst([
             'conditions' => 'companies_id = ?0 and apps_id = ?1 and is_deleted  = 0',
             'bind' => [$user->getDefaultCompany()->getId(), Di::getDefault()->getApp()->getId()]
         ]);
+
+        if (!$subscription) {
+            throw new InternalServerErrorException('No active subscription for the company: ' . $user->getDefaultCompany()->name);
+        }
+
+        return $subscription;
     }
 
     /**
