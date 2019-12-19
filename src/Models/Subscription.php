@@ -191,7 +191,7 @@ class Subscription extends PhalconSubscription
      *
      * @return Subscription
      */
-    public static function getActiveForThisApp() : Subscription
+    public static function getActiveForThisApp(): Subscription
     {
         return self::getByDefaultCompany(Di::getDefault()->getUserData());
     }
