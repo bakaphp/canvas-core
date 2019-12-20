@@ -190,7 +190,7 @@ trait FileSystemModelTrait
             $fileSystemEntities = null;
             //check if we are updating the attachment
             if ($id = (int) $file['id']) {
-                $fileSystemEntities = FileSystemEntities::getByIdWithSystemModule($id, $systemModule, true);
+                $fileSystemEntities = FileSystemEntities::getByIdWithSystemModule($id, $systemModule);
             }
 
             //new attachment
