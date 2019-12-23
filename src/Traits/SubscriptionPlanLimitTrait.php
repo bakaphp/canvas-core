@@ -40,11 +40,17 @@ trait SubscriptionPlanLimitTrait
     /**
      * Validate if the current module for this app is at the limit of the paid plan.
      *
+     * @throws SubscriptionPlanLimitException
      * @return boolean
      */
     public function isAtLimit() : bool
     {
         if (!Di::getDefault()->has('userData')) {
+            return false;
+        }
+
+        //if its not a subscription based app top this
+        if (!Di::getDefault()->get('app')->subscriptioBased()) {
             return false;
         }
 
@@ -73,11 +79,17 @@ trait SubscriptionPlanLimitTrait
     /**
      * Call at the afterCreate of all modules which are part of a plan activity.
      *
+     * @throws InternalServerErrorException
      * @return boolean
      */
     public function updateAppActivityLimit() : bool
     {
         if (!Di::getDefault()->has('userData')) {
+            return false;
+        }
+
+        //if its not a subscription based app top this
+        if (!Di::getDefault()->get('app')->subscriptioBased()) {
             return false;
         }
 
