@@ -202,10 +202,12 @@ class UsersInviteController extends BaseController
         $authInfo = $this->loginUsers($usersInvite->email, $request['password']);
 
         if (!defined('API_TESTS')) {
-            $usersInvite->is_deleted = 1;
-            $usersInvite->update();
+            $usersInvite->softDelete();
 
-            return $this->response($authInfo);
+            return $this->response([
+                'user' => $newUser,
+                'session' => $authInfo
+            ]);
         }
 
         return $this->response($newUser);
