@@ -205,7 +205,10 @@ class UsersInviteController extends BaseController
             $usersInvite->is_deleted = 1;
             $usersInvite->update();
 
-            return $this->response($authInfo);
+            return $this->response([
+                'user' => $newUser,
+                'session' => $authInfo
+            ]);
         }
 
         return $this->response($newUser);
