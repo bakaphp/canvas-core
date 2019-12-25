@@ -17,7 +17,7 @@ class NotificationsCest
 
     public function notifyAll(IntegrationTester $I)
     {
-        $users = Users::find('id in (1|2)');
+        $users = Users::find('id in (1, 2)');
         $user = Users::findFirst();
         Notify::all($users, new PasswordUpdate($user));
     }
