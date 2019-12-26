@@ -70,8 +70,8 @@ class ConfigCest
         $I->assertTrue(isset($configArray['email']['driver']));
         $I->assertTrue(isset($configArray['email']['host']));
         $I->assertTrue(isset($configArray['email']['port']));
-        $I->assertTrue(isset($configArray['email']['username']));
-        $I->assertTrue(isset($configArray['email']['password']));
+        //$I->assertTrue(isset($configArray['email']['username']));
+        //$I->assertTrue(isset($configArray['email']['password']));
         $I->assertTrue(isset($configArray['email']['from']));
         $I->assertTrue(isset($configArray['email']['from']['email']));
         $I->assertTrue(isset($configArray['email']['from']['name']));
