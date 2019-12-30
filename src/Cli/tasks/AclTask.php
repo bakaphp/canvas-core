@@ -26,7 +26,8 @@ class AclTask extends PhTask
 
         $this->acl->addResource('Default.Users', ['read', 'list', 'create', 'update', 'delete']);
         $this->acl->allow('Admins', 'Default.Users', ['read', 'list', 'create', 'update', 'delete']);
-        //$this->acl->deny('Admins', 'Default.Users', []);
+
+        $this->kanvas();
     }
 
     /**
@@ -55,7 +56,7 @@ class AclTask extends PhTask
      *
      * @return void
      */
-    public function kanvasAction()
+    public function kanvas(): void
     {
         $this->acl->addResource(
             'Default.SettingsMenu',
