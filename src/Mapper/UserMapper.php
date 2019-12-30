@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Canvas\Mapper;
 
 use AutoMapperPlus\CustomMapper\CustomMapper;
+use Baka\Auth\Models\Apps;
 use Canvas\Models\AccessList;
 use Phalcon\Di;
 use Canvas\Contracts\Mapper\RelationshipTrait;
@@ -100,9 +101,10 @@ class UserMapper extends CustomMapper
      */
     private function accesList(object $userDto): void
     {
+        $app = Di::getDefault()->getApp();
         $accesList = AccessList::find([
-            'conditions' => 'roles_name = ?0 and apps_id = ?1 and allowed = 0',
-            'bind' => [$userDto->roles[0]->name, Di::getDefault()->getApp()->getId()]
+            'conditions' => 'roles_name = ?0 and apps_id in (?1 OR ?2) and allowed = 0',
+            'bind' => [$userDto->roles[0]->name, $app->getId(), $app::CANVAS_DEFAULT_APP_ID]
         ]);
 
         if (count($accesList) > 0) {
