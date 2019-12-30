@@ -5,7 +5,7 @@ namespace Canvas\Cli\Tasks;
 use Phalcon\Cli\Task as PhTask;
 
 /**
- * Class AclTask
+ * Class AclTask.
  *
  * @package Canvas\Cli\Tasks;
  *
@@ -14,7 +14,7 @@ use Phalcon\Cli\Task as PhTask;
 class AclTask extends PhTask
 {
     /**
-     * Create the default roles of the system
+     * Create the default roles of the system.
      *
      * @return void
      */
@@ -26,11 +26,12 @@ class AclTask extends PhTask
 
         $this->acl->addResource('Default.Users', ['read', 'list', 'create', 'update', 'delete']);
         $this->acl->allow('Admins', 'Default.Users', ['read', 'list', 'create', 'update', 'delete']);
-        //$this->acl->deny('Admins', 'Default.Users', []);
+
+        $this->kanvas();
     }
 
     /**
-     * Default roles for the crm system
+     * Default roles for the crm system.
      *
      * @return void
      */
@@ -43,10 +44,71 @@ class AclTask extends PhTask
 
         //Apps Settings
         $this->acl->addResource('CRM.AppsSettings', ['read', 'list', 'create', 'update', 'delete']);
-        $this->acl->allow('Users', 'CRM.AppsSettings', ['read', 'list', 'create','update','delete']);
+        $this->acl->allow('Users', 'CRM.AppsSettings', ['read', 'list', 'create', 'update', 'delete']);
 
         //Companies Settings
         $this->acl->addResource('CRM.CompaniesSettings', ['read', 'list', 'create', 'update', 'delete']);
-        $this->acl->allow('Users', 'CRM.CompaniesSettings', ['read', 'list', 'create','update','delete']);
+        $this->acl->allow('Users', 'CRM.CompaniesSettings', ['read', 'list', 'create', 'update', 'delete']);
+    }
+
+    /**
+     * Default ecosystem ACL.
+     *
+     * @return void
+     */
+    public function kanvas(): void
+    {
+        $this->acl->addResource(
+            'Default.SettingsMenu',
+            [
+                'company-settings',
+                'app-settings',
+                'companies-manager',
+            ]
+        );
+
+        $defaultResources = [
+            'Default.CompanyBranches',
+            'Default.CompanyUsers',
+            'Default.CompanyRoles',
+            'Default.CompanySubscriptions',
+            'Default.CustomFields',
+            'Default.CompaniesManager',
+        ];
+
+        foreach ($defaultResources as $resource) {
+            $this->acl->addResource(
+                $resource,
+                [
+                    'read',
+                    'list',
+                    'create',
+                    'update',
+                    'delete'
+                ]
+            );
+
+            $this->acl->allow(
+                'Admins',
+                $resource,
+                [
+                    'read',
+                    'list',
+                    'create',
+                    'update',
+                    'delete'
+                ]
+            );
+        }
+
+        $this->acl->allow(
+            'Admins',
+            'Default.SettingsMenu',
+            [
+                'company-settings',
+                'app-settings',
+                'companies-manager',
+            ]
+        );
     }
 }
