@@ -45,6 +45,7 @@ class UsersController extends BakaUsersController
         'timezone',
         'email',
         'password',
+        'roles_id',
         'created_at',
         'updated_at',
         'default_company',
@@ -69,6 +70,7 @@ class UsersController extends BakaUsersController
         'timezone',
         'email',
         'password',
+        'roles_id',
         'created_at',
         'updated_at',
         'default_company',
@@ -117,6 +119,8 @@ class UsersController extends BakaUsersController
         if (!$this->userData->hasRole('Default.Admins') || (int) $id === 0) {
             $id = $this->userData->getId();
         }
+
+        $this->userData->can('SettingsMenu.company-settings');
 
         /**
          * @todo filter only by user from this app / company
