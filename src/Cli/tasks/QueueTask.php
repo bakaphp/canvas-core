@@ -162,7 +162,7 @@ class QueueTask extends PhTask
 
             if (!class_exists($job['class'])) {
                 echo 'No Job class found' . PHP_EOL;
-                $this->log->error('No Job class found');
+                $this->log->error('No Job class found ' . $job['class']);
                 return;
             }
 

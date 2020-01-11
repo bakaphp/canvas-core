@@ -28,7 +28,7 @@ class UserMapper extends CustomMapper
     public function mapToObject($user, $userDto, array $context = [])
     {
         if (is_array($user)) {
-            $user = (object) $user;
+            $user = Users::getById($user['id']);
         }
 
         $userDto->id = $user->id;
@@ -38,8 +38,6 @@ class UserMapper extends CustomMapper
         $userDto->city_id = $user->city_id;
         $userDto->country_id = $user->country_id;
         $userDto->created_at = $user->created_at;
-        $userDto->default_company = Users::getById($user->id)->getDefaultCompany()->getId();
-        $userDto->default_company_branch = $user->default_company_branch;
         $userDto->displayname = $user->displayname;
         $userDto->dob = $user->dob;
         $userDto->email = $user->email;
@@ -59,7 +57,6 @@ class UserMapper extends CustomMapper
         $userDto->profile_privacy = $user->profile_privacy;
         $userDto->profile_remote_image = $user->profile_remote_image;
         $userDto->registered = $user->registered;
-        $userDto->roles_id = $user->roles_id;
         $userDto->session_id = $user->session_id;
         $userDto->session_key = $user->session_key;
         $userDto->session_page = $user->session_page;
@@ -81,6 +78,14 @@ class UserMapper extends CustomMapper
         $userDto->user_activation_email = $user->user_activation_email;
         $userDto->welcome = $user->welcome;
         $userDto->photo = $user->photo;
+
+        /**
+         * Properties we need to overwrite base on the
+         * current app and company the user is running.
+         */
+        $userDto->default_company = $user->getDefaultCompany()->getId();
+        $userDto->default_company_branch = $user->getDefaultCompany()->default_company_branch;
+        $userDto->roles_id = $user->getPermission()->roles_id;
 
         $this->getRelationships($user, $userDto, $context);
 

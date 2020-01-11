@@ -155,7 +155,7 @@ class UsersController extends BakaUsersController
         $request = $this->request->getPutData();
 
         if (empty($request)) {
-            throw new BadRequestHttpException(_('No data to update this account with '));
+            throw new InternalServerErrorException(_('No data to update this account with '));
         }
 
         //update password
