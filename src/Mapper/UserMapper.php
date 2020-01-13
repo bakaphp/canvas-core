@@ -84,7 +84,7 @@ class UserMapper extends CustomMapper
          * current app and company the user is running.
          */
         $userDto->default_company = $user->getDefaultCompany()->getId();
-        $userDto->default_company_branch = $user->getDefaultCompany()->default_company_branch;
+        $userDto->default_company_branch = $user->getDefaultCompany()->defaultBranch->getId();
         $userDto->roles_id = $user->getPermission()->roles_id;
 
         $this->getRelationships($user, $userDto, $context);
