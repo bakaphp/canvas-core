@@ -149,14 +149,26 @@ class Users extends \Baka\Auth\Models\Users
             'id',
             'Canvas\Models\UserRoles',
             'users_id',
-            ['alias' => 'permission']
+            [
+                'alias' => 'userRole',
+                'params' => [
+                    'limit' => 1,
+                    'conditions' => 'Canvas\Models\UserRoles.apps_id = ?0',
+                    'bind' => [$this->di->getApp()->getId()],
+                ]
+            ]
         );
 
         $this->hasMany(
             'id',
             'Canvas\Models\UserRoles',
             'users_id',
-            ['alias' => 'permissions']
+            [
+                'alias' => 'permissions',
+                'params' => [
+                    'conditions' => 'Canvas\Models\UserRoles.apps_id = ' . $this->di->getApp()->getId(),
+                ]
+            ]
         );
 
         $this->hasManyToMany(
@@ -497,11 +509,38 @@ class Users extends \Baka\Auth\Models\Users
     public function afterSave()
     {
         $this->associateFileSystem();
+        $this->updatePermissionRoles();
+    }
+
+    /**
+     * update user role for the specific app.
+     *
+     * @return void
+     */
+    protected function updatePermissionRoles(): bool
+    {
+        if ($permission = $this->getPermission()) {
+            $permission->roles_id = $this->roles_id;
+            return $permission->updateOrFail();
+        }
+
+        return false;
+    }
+
+    /**
+     * Overwrite the permission relationship to force the user of company id
+     * 
+     * @return UserRoles
+     */
+    public function getPermission()
+    {
+        return $this->getUserRole('companies_id =' . $this->currentCompanyId());
     }
 
     /**
      * Get the list of all the associated apps this users has.
-     *
+     *:w
+
      * @return array
      */
     public function getAssociatedApps(): array

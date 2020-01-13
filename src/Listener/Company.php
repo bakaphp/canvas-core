@@ -10,6 +10,7 @@ use Canvas\Models\Companies;
 use Canvas\Models\CompaniesBranches;
 use Canvas\Exception\ServerErrorHttpException;
 use Baka\Auth\Models\UserCompanyApps;
+use Canvas\Http\Exception\InternalServerErrorException;
 use Canvas\Models\AppsPlans;
 use Canvas\Models\CompaniesGroups;
 use Canvas\Models\CompaniesAssociations;
@@ -81,12 +82,12 @@ class Company
         $companyApps->is_deleted = 0;
 
         if (!$companyApps->save()) {
-            throw new ServerErrorHttpException((string)current($companyApps->getMessages()));
+            throw new InternalServerErrorException((string)current($companyApps->getMessages()));
         }
 
         $companiesGroup = CompaniesGroups::findFirst([
             'conditions' => 'apps_id = ?0 and users_id = ?1 and is_deleted = 0',
-            'bind'=> [Di::getDefault()->getApp()->getId(),Di::getDefault()->getUserData()->getId()]
+            'bind' => [Di::getDefault()->getApp()->getId(), Di::getDefault()->getUserData()->getId()]
         ]);
 
         if (!$companiesGroup) {
@@ -98,7 +99,7 @@ class Company
         }
 
         /**
-         * Let's associate companies and companies_groups
+         * Let's associate companies and companies_groups.
          */
         $companiesAssoc = new CompaniesAssociations();
         $companiesAssoc->companies_id = $company->id;
