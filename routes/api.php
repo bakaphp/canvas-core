@@ -70,6 +70,7 @@ $privateSubscriptionRoutes = [
 
     Route::post('/email-templates/{id}/copy')->controller('EmailTemplatesController')->action('copy'),
     Route::post('/email-templates/test')->controller('EmailTemplatesController')->action('sendTestEmail'),
+    Route::post('/user-webhooks/{id}/test')->controller('UserWebhooksController')->action('test'),
 ];
 
 $publicRoutesGroup = RouteGroup::from($publicRoutes)

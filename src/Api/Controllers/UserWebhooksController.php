@@ -5,9 +5,13 @@ declare(strict_types=1);
 namespace Canvas\Api\Controllers;
 
 use Canvas\Models\UserWebhooks;
+use Exception;
+use Phalcon\Http\Response;
+use GuzzleHttp\Client;
+use Canvas\Webhooks;
 
 /**
- * Class LanguagesController
+ * Class LanguagesController.
  *
  * @package Canvas\Api\Controllers
  *
@@ -44,7 +48,7 @@ class UserWebhooksController extends BaseController
     ];
 
     /**
-     * set objects
+     * set objects.
      *
      * @return void
      */
@@ -59,5 +63,19 @@ class UserWebhooksController extends BaseController
             ['apps_id', ':', $this->app->getId()],
             ['companies_id', ':', '0|' . $this->userData->currentCompanyId()],
         ];
+    }
+
+    /**
+    * Given the weebhook id, we run a test for it.
+    *
+    * @param integer $id
+    * @return Response
+    */
+    public function execute(int $id): Response
+    {
+        $request = $this->request->getPostData();
+        $data = $request['data'];
+
+        return $this->response(Webhooks::run($id, $data));
     }
 }
