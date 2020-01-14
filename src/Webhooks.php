@@ -36,8 +36,11 @@ class Webhooks
          * later - add job for all system module to execute a queue when CRUD acction are run, maybe the middleware would do this?
          * 
          * for the SDK
-         *  - pass the class name so that we dont look for it by id,
-         *  - then we send it over
+         *  - pass the system module classname or classname\namespace
+         *  - pass the action you are doing from the CRUD
+         *  - get all the hooks from the user that match this action
+         *  - pass the data you are sending 
+         *  - then we send it over to the URl
          */
         $userWebhook = UserWebhooks::getById($id);
 
