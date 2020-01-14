@@ -105,6 +105,12 @@ class InitGewaer extends AbstractSeed
                 'created_at' => date('Y-m-d H:i:s'),
                 'is_deleted' => 0
             ],
+            [
+                'title' => 'github',
+                'url' => 'github.com',
+                'created_at' => date('Y-m-d H:i:s'),
+                'is_deleted' => 0
+            ]
         ];
 
         $table = $this->table('sources');

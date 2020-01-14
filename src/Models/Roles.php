@@ -151,11 +151,13 @@ class Roles extends AbstractModel
      */
     public static function exist(AclRole $role): int
     {
+        $companyId = Di::getDefault()->has('userData') ? Di::getDefault()->getUserData()->currentCompanyId() : Di::getDefault()->getAcl()->getCompany()->getId();
+
         return self::count([
             'conditions' => 'name = ?0 AND companies_id = ?1 AND apps_id = ?2',
             'bind' => [
                 $role->getName(),
-                Di::getDefault()->getUserData()->currentCompanyId(),
+                $companyId,
                 Di::getDefault()->getAcl()->getApp()->getId()
             ]
         ]);
@@ -171,12 +173,13 @@ class Roles extends AbstractModel
      */
     public static function isRole(string $roleName) : bool
     {
+        $companyId = Di::getDefault()->has('userData') ? Di::getDefault()->getUserData()->currentCompanyId() : Di::getDefault()->getAcl()->getCompany()->getId();
         return (bool) self::count([
             'conditions' => 'name = ?0 AND apps_id in (?1, ?3) AND companies_id in (?2, ?3)',
             'bind' => [
                 $roleName,
                 Di::getDefault()->getAcl()->getApp()->getId(),
-                Di::getDefault()->getUserData()->currentCompanyId(),
+                $companyId,
                 Apps::CANVAS_DEFAULT_APP_ID
             ]
         ]);
@@ -190,12 +193,14 @@ class Roles extends AbstractModel
      */
     public static function getByName(string $name): Roles
     {
+        $companyId = Di::getDefault()->has('userData') ? Di::getDefault()->getUserData()->currentCompanyId() : Di::getDefault()->getAcl()->getCompany()->getId();
+
         $role = self::findFirst([
             'conditions' => 'name = ?0 AND apps_id in (?1, ?3) AND companies_id in (?2, ?3) AND is_deleted = 0',
             'bind' => [
                 $name,
                 Di::getDefault()->getAcl()->getApp()->getId(),
-                Di::getDefault()->getUserData()->currentCompanyId(),
+                $companyId,
                 Apps::CANVAS_DEFAULT_APP_ID
             ],
             'order' => 'apps_id DESC'
@@ -216,11 +221,13 @@ class Roles extends AbstractModel
      */
     public static function getById(int $id): Roles
     {
+        $companyId = Di::getDefault()->has('userData') ? Di::getDefault()->getUserData()->currentCompanyId() : Di::getDefault()->getAcl()->getCompany()->getId();
+
         return self::findFirstOrFail([
             'conditions' => 'id = ?0 AND companies_id in (?1, ?2) AND apps_id in (?3, ?4) AND is_deleted = 0',
             'bind' => [
                 $id,
-                Di::getDefault()->getUserData()->currentCompanyId(),
+                $companyId,
                 Apps::CANVAS_DEFAULT_APP_ID,
                 Di::getDefault()->getApp()->getId(),
                 Apps::CANVAS_DEFAULT_APP_ID
