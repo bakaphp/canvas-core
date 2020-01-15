@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace Canvas\Api\Controllers;
 
 use Canvas\Models\UserWebhooks;
+use Canvas\Validation;
 use Exception;
 use Phalcon\Http\Response;
 use GuzzleHttp\Client;
 use Canvas\Webhooks;
+use Phalcon\Validation\Validator\PresenceOf;
 
 /**
  * Class LanguagesController.
@@ -71,11 +73,24 @@ class UserWebhooksController extends BaseController
     * @param integer $id
     * @return Response
     */
-    public function execute(int $id): Response
+    public function execute(string $name): Response
     {
         $request = $this->request->getPostData();
-        $data = $request['data'];
 
-        return $this->response(Webhooks::run($id, $data));
+        $validation = new Validation();
+        $validation->add('module', new PresenceOf(['message' => 'module is required to know what webhook to run']));
+        $validation->add('data', new PresenceOf(['message' => 'data is required']));
+        $validation->add('action', new PresenceOf(['message' => 'action is required']));
+        $validation->validate($request);
+
+        $systemModule = $request['module'];
+        $data = $request['data'];
+        $action = $request['action'];
+
+        return $this->response(Webhooks::process(
+            $systemModule,
+            $data,
+            $action
+        ));
     }
 }

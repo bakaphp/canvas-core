@@ -8,6 +8,8 @@ use Canvas\Models\UserWebhooks;
 use Exception;
 use Phalcon\Http\Response;
 use GuzzleHttp\Client;
+use Phalcon\Di;
+use Canvas\Models\SystemModules;
 
 /**
  * Class Validation.
@@ -34,13 +36,7 @@ class Webhooks
          * 6- return the response from the webhook.
          *
          * later - add job for all system module to execute a queue when CRUD acction are run, maybe the middleware would do this?
-         * 
-         * for the SDK
-         *  - pass the system module classname or classname\namespace
-         *  - pass the action you are doing from the CRUD
-         *  - get all the hooks from the user that match this action
-         *  - pass the data you are sending 
-         *  - then we send it over to the URl
+         *
          */
         $userWebhook = UserWebhooks::getById($id);
 
@@ -65,5 +61,50 @@ class Webhooks
         }
 
         return $response;
+    }
+
+    /**
+     * Execute the the webhook for the given app company providing the system module
+     * for the SDK
+     *  - pass the system module classname or classname\namespace
+     *  - pass the action you are doing from the CRUD
+     *  - get all the hooks from the user that match this action
+     *  - pass the data you are sending
+     *  - then we send it over to the URl.
+     *
+     * @param string $model
+     * @param mixed $data
+     * @param string $action
+     * @throws Exception
+     * @return bool
+     */
+    public static function process(string $module, $data, string $action): bool
+    {
+        $appId = Di::getDefault()->getApp()->getId();
+        $company = Di::getDefault()->getUserData()->getDefaultCompany();
+
+        $systemModule = SystemModules::getByModelName($module);
+
+        $webhooks = UserWebhooks::find([
+            'conditions' => 'apps_id = ?0 AND companies_id = ?1 
+                            AND webhooks_id in 
+                                (SELECT id FROM Canvas\Models\Webhooks WHERE apps_id = ?0 AND system_modules_id = ?2 AND action = ?3)',
+            'bind' => [
+                $appId,
+                $company->getId(),
+                $systemModule->getId(),
+                $action
+            ]
+        ]);
+
+        if ($webhook->count()) {
+            foreach ($webhooks as $webhook) {
+                self::run($webhook->getId(), $data);
+            }
+
+            return true;
+        }
+
+        return false;
     }
 }

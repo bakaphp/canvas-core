@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Canvas\Models;
 
 use Phalcon\Di;
-use Canvas\Exception\ModelException;
+use Canvas\Http\Exception\InternalServerErrorException;
 
 class SystemModules extends AbstractModel
 {
@@ -139,6 +139,8 @@ class SystemModules extends AbstractModel
 
     /**
      * Get System Module by its model_name.
+     * 
+     * @deprecated v2
      * @param string $model_name
      * @return SystemModules
      */
@@ -150,10 +152,21 @@ class SystemModules extends AbstractModel
         ]);
 
         if (!is_object($module)) {
-            throw new ModelException('No system module for ' . $modelName);
+            throw new InternalServerErrorException('No system module for ' . $modelName);
         }
 
         return $module;
+    }
+
+    /**
+     * Get System Module by its model_name.
+     * 
+     * @param string $model_name
+     * @return SystemModules
+     */
+    public static function getByModelName(string $modelName): SystemModules
+    {
+        return self::getSystemModuleByModelName($modelName);
     }
 
     /**
