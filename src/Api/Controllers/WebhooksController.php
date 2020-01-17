@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Canvas\Api\Controllers;
 
 use Canvas\Models\Webhooks;
-use Phalcon\Http\Response;
 
 /**
  * Class LanguagesController.
