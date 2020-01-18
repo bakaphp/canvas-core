@@ -4,13 +4,11 @@ declare(strict_types=1);
 
 namespace Canvas\Api\Controllers;
 
+use Canvas\Http\Exception\UnprocessableEntityException;
 use Canvas\Models\UserWebhooks;
 use Canvas\Validation;
-use Exception;
 use Phalcon\Http\Response;
-use GuzzleHttp\Client;
 use Canvas\Webhooks;
-use Phalcon\Mvc\Model\ValidationFailed;
 use Phalcon\Validation\Validator\PresenceOf;
 use function Canvas\Core\isJson;
 
@@ -79,20 +77,22 @@ class UserWebhooksController extends BaseController
     {
         $request = $this->request->getPostData();
         $validation = new Validation();
+        $validateJson = false;
         $validation->add('module', new PresenceOf(['message' => 'module is required to know what webhook to run']));
         $validation->add('action', new PresenceOf(['message' => 'action is required']));
 
-        if (isset($request['data'])) {
-            $validation->add('data', new PresenceOf(['message' => 'data is required']));
+        if (isset($request['data']) && !empty($request['data'])) {
             if (!isJson($request['data'])) {
-                throw new ValidationFailed('Data is not a valid json format text');
+                throw new UnprocessableEntityException('Data is not a valid json format text');
             }
+            $validation->add('data', new PresenceOf(['message' => 'data is required']));
+            $validateJson = true;
         }
 
         $validation->validate($request);
 
         $systemModule = $request['module'];
-        $data = isset($request['data']) ? json_decode($request['data'], true) : [];
+        $data = $validateJson ? json_decode($request['data'], true) : [];
         $action = $request['action'];
 
         return $this->response(
