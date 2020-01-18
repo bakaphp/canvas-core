@@ -44,6 +44,9 @@ class Webhooks
         $client = new Client();
 
         try {
+            /**
+             * @todo move the guzzle reqeust to Async for faster performance
+             */
             $clientRequest = $client->request(
                 $userWebhook->method,
                 $userWebhook->url,
