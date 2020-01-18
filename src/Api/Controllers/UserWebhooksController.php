@@ -10,7 +10,9 @@ use Exception;
 use Phalcon\Http\Response;
 use GuzzleHttp\Client;
 use Canvas\Webhooks;
+use Phalcon\Mvc\Model\ValidationFailed;
 use Phalcon\Validation\Validator\PresenceOf;
+use function Canvas\Core\isJson;
 
 /**
  * Class LanguagesController.
@@ -76,21 +78,29 @@ class UserWebhooksController extends BaseController
     public function execute(string $name): Response
     {
         $request = $this->request->getPostData();
-
         $validation = new Validation();
         $validation->add('module', new PresenceOf(['message' => 'module is required to know what webhook to run']));
-        $validation->add('data', new PresenceOf(['message' => 'data is required']));
         $validation->add('action', new PresenceOf(['message' => 'action is required']));
+
+        if (isset($request['data'])) {
+            $validation->add('data', new PresenceOf(['message' => 'data is required']));
+            if (!isJson($request['data'])) {
+                throw new ValidationFailed('Data is not a valid json format text');
+            }
+        }
+
         $validation->validate($request);
 
         $systemModule = $request['module'];
-        $data = $request['data'];
+        $data = isset($request['data']) ? json_decode($request['data'], true) : [];
         $action = $request['action'];
 
-        return $this->response(Webhooks::process(
-            $systemModule,
-            $data,
-            $action
-        ));
+        return $this->response(
+            Webhooks::process(
+                $systemModule,
+                $data,
+                $action
+            )
+        );
     }
 }

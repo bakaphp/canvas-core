@@ -178,7 +178,13 @@ class SystemModules extends AbstractModel
      */
     public static function getByName(string $name): ModelInterface
     {
-        return self::getSystemModuleByName($name);
+        return self::findFirstOrFail([
+            'conditions' => 'name = ?0 and apps_id = ?1',
+            'bind' => [
+                $name,
+                Di::getDefault()->getApp()->getId()
+            ]
+        ]);
     }
 
     /**

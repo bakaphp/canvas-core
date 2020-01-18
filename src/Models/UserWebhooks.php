@@ -150,7 +150,7 @@ class UserWebhooks extends AbstractModel
     public static function getById($id): self
     {
         return self::findFirstOrFail([
-            'conditions' => 'webhooks_id = ?0 AND apps_id = ?1 AND companies_id = ?2',
+            'conditions' => 'id = ?0 AND apps_id = ?1 AND companies_id = ?2 and is_deleted = 0',
             'bind' => [
                 $id,
                 Di::getDefault()->getApp()->getId(),

@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace Canvas;
 
 use Canvas\Models\UserWebhooks;
-use Exception;
+use Throwable;
 use Phalcon\Http\Response;
 use GuzzleHttp\Client;
 use Phalcon\Di;
 use Canvas\Models\SystemModules;
+use function Canvas\Core\isJson;
 
 /**
  * Class Validation.
@@ -25,7 +26,7 @@ class Webhooks
     * @param mixed $data
     * @return Response
     */
-    public static function run(int $id, $data)
+    public static function run(int $id, array $data)
     {
         /**
          * 1- verify it s acorrect url
@@ -41,23 +42,18 @@ class Webhooks
         $userWebhook = UserWebhooks::getById($id);
 
         $client = new Client();
-        $parse = function ($error) {
-            if ($error->hasResponse()) {
-                return $error->getResponse();
-            }
-            return json_decode($error->getMessage());
-        };
 
         try {
             $clientRequest = $client->request(
                 $userWebhook->method,
                 $userWebhook->url,
-                $data
+                self::formatData($userWebhook->method, $data)
             );
 
-            $response = $clientRequest->getBody();
-        } catch (Exception $error) {
-            $response = $parse($error);
+            $responseContent = $clientRequest->getBody()->getContents();
+            $response = isJson($responseContent) ? json_decode($responseContent, true) : $responseContent;
+        } catch (Throwable $error) {
+            $response = $error->getMessage();
         }
 
         return $response;
@@ -78,7 +74,7 @@ class Webhooks
      * @throws Exception
      * @return bool
      */
-    public static function process(string $module, $data, string $action): bool
+    public static function process(string $module, array $data, string $action): array
     {
         $appId = Di::getDefault()->getApp()->getId();
         $company = Di::getDefault()->getUserData()->getDefaultCompany();
@@ -88,7 +84,11 @@ class Webhooks
         $webhooks = UserWebhooks::find([
             'conditions' => 'apps_id = ?0 AND companies_id = ?1 
                             AND webhooks_id in 
-                                (SELECT id FROM Canvas\Models\Webhooks WHERE apps_id = ?0 AND system_modules_id = ?2 AND action = ?3)',
+                                (SELECT Canvas\Models\Webhooks.id FROM Canvas\Models\Webhooks 
+                                    WHERE Canvas\Models\Webhooks.apps_id = ?0 
+                                    AND Canvas\Models\Webhooks.system_modules_id = ?2 
+                                    AND Canvas\Models\Webhooks.action = ?3
+                                )',
             'bind' => [
                 $appId,
                 $company->getId(),
@@ -97,16 +97,54 @@ class Webhooks
             ]
         ]);
 
-        if ($webhook->count()) {
-            foreach ($webhooks as $webhook) {
-                self::run($webhook->getId(), $data);
+        $results = [];
+
+        if ($webhooks->count()) {
+            foreach ($webhooks as $userWebhook) {
+                $results[$userWebhook->webhook->name][$action][] = [
+                    $userWebhook->url => [
+                        'results' => self::run($userWebhook->getId(), $data),
+                    ]
+                ];
             }
 
-            return true;
+            return $results;
         }
 
-        return false;
+        return [
+            'message' => 'No user configure webhooks found for : ',
+            'module' => $module,
+            'data' => $data,
+            'action' => $action
+        ];
+    }
+
+    /**
+     * Format the data for guzzle correct usage
+     *
+     * @return array
+     */
+    public static function formatData(string $method, array $data): array
+    {
+        switch (ucwords($method)) {
+            case 'GET':
+                $updateDataFormat = [
+                    'query' => $data
+                ];
+                break;
+
+            case 'PUT':
+            case 'POST':
+                    $updateDataFormat = [
+                        'json' => $data,
+                        'form_params' => $data
+                    ];
+                break;
+            default:
+                $updateDataFormat = [];
+                break;
+        }
+
+        return $updateDataFormat;
     }
 }
-
-Webhooks::process('Companies', $this->toArray(), 'create');
