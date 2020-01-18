@@ -5,6 +5,7 @@ namespace Canvas\Models;
 
 use Phalcon\Di;
 use Canvas\Http\Exception\InternalServerErrorException;
+use Phalcon\Mvc\ModelInterface;
 
 class SystemModules extends AbstractModel
 {
@@ -139,12 +140,12 @@ class SystemModules extends AbstractModel
 
     /**
      * Get System Module by its model_name.
-     * 
+     *
      * @deprecated v2
      * @param string $model_name
-     * @return SystemModules
+     * @return ModelInterface
      */
-    public static function getSystemModuleByModelName(string $modelName): SystemModules
+    public static function getSystemModuleByModelName(string $modelName): ModelInterface
     {
         $module = SystemModules::findFirst([
             'conditions' => 'model_name = ?0 and apps_id = ?1',
@@ -160,22 +161,33 @@ class SystemModules extends AbstractModel
 
     /**
      * Get System Module by its model_name.
-     * 
+     *
      * @param string $model_name
-     * @return SystemModules
+     * @return ModelInterface
      */
-    public static function getByModelName(string $modelName): SystemModules
+    public static function getByModelName(string $modelName): ModelInterface
     {
         return self::getSystemModuleByModelName($modelName);
+    }
+
+    /**
+     * Get System Module by Name.
+     *
+     * @param string $name
+     * @return ModelInterface
+     */
+    public static function getByName(string $name): ModelInterface
+    {
+        return self::getSystemModuleByName($name);
     }
 
     /**
      * Get System Module by id.
      *
      * @param int $id
-     * @return SystemModules
+     * @return ModelInterface
      */
-    public static function getById($id): SystemModules
+    public static function getById($id): ModelInterface
     {
         $module = SystemModules::findFirstOrFail([
             'conditions' => 'id = ?0 and apps_id = ?1',
@@ -189,9 +201,9 @@ class SystemModules extends AbstractModel
      * Get System Module by id.
      *
      * @param int $id
-     * @return SystemModules
+     * @return ModelInterface
      */
-    public static function getBySlug(string $slug): SystemModules
+    public static function getBySlug(string $slug): ModelInterface
     {
         $module = SystemModules::findFirstOrFail([
             'conditions' => 'slug = ?0 and apps_id = ?1',

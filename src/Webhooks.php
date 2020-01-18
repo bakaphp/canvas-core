@@ -83,7 +83,7 @@ class Webhooks
         $appId = Di::getDefault()->getApp()->getId();
         $company = Di::getDefault()->getUserData()->getDefaultCompany();
 
-        $systemModule = SystemModules::getByModelName($module);
+        $systemModule = SystemModules::getByName($module);
 
         $webhooks = UserWebhooks::find([
             'conditions' => 'apps_id = ?0 AND companies_id = ?1 
@@ -108,3 +108,5 @@ class Webhooks
         return false;
     }
 }
+
+Webhooks::process('Companies', $this->toArray(), 'create');

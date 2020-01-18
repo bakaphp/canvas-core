@@ -22,7 +22,8 @@ class QueueProvider implements ServiceProviderInterface
                     envValue('RABBITMQ_HOST', 'localhost'),
                     envValue('RABBITMQ_PORT', 5672),
                     envValue('RABBITMQ_DEFAULT_USER', 'guest'),
-                    envValue('RABBITMQ_DEFAULT_PASS', 'guest')
+                    envValue('RABBITMQ_DEFAULT_PASS', 'guest'),
+                    envValue('RABBITMQ_DEFAULT_VHOST', '/')
                 );
 
                 return $queue;
