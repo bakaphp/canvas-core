@@ -94,12 +94,14 @@ class UserWebhooksController extends BaseController
         $systemModule = $request['module'];
         $data = $validateJson ? json_decode($request['data'], true) : [];
         $action = $request['action'];
+        $headers = isJson((string) $request['headers']) ? json_decode($request['headers'], true) : [];
 
         return $this->response(
             Webhooks::process(
                 $systemModule,
                 $data,
-                $action
+                $action,
+                $headers
             )
         );
     }

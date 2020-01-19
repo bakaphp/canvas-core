@@ -11,6 +11,7 @@ use GuzzleHttp\Client;
 use Phalcon\Di;
 use Canvas\Models\SystemModules;
 use function Canvas\Core\isJson;
+use Canvas\Http\Exception\UnprocessableEntityException;
 
 /**
  * Class Validation.
@@ -26,7 +27,7 @@ class Webhooks
     * @param mixed $data
     * @return Response
     */
-    public static function run(int $id, array $data)
+    public static function run(int $id, array $data, array $headers = [])
     {
         /**
          * 1- verify it s acorrect url
@@ -50,7 +51,7 @@ class Webhooks
             $clientRequest = $client->request(
                 $userWebhook->method,
                 $userWebhook->url,
-                self::formatData($userWebhook->method, $data)
+                self::formatData($userWebhook->method, $data, $headers)
             );
 
             $responseContent = $clientRequest->getBody()->getContents();
@@ -77,7 +78,7 @@ class Webhooks
      * @throws Exception
      * @return bool
      */
-    public static function process(string $module, array $data, string $action): array
+    public static function process(string $module, array $data, string $action, array $headers = []): array
     {
         $appId = Di::getDefault()->getApp()->getId();
         $company = Di::getDefault()->getUserData()->getDefaultCompany();
@@ -106,7 +107,7 @@ class Webhooks
             foreach ($webhooks as $userWebhook) {
                 $results[$userWebhook->webhook->name][$action][] = [
                     $userWebhook->url => [
-                        'results' => self::run($userWebhook->getId(), $data),
+                        'results' => self::run($userWebhook->getId(), $data, $headers),
                     ]
                 ];
             }
@@ -123,11 +124,11 @@ class Webhooks
     }
 
     /**
-     * Format the data for guzzle correct usage
+     * Format the data for guzzle correct usage.
      *
      * @return array
      */
-    public static function formatData(string $method, array $data): array
+    public static function formatData(string $method, array $data, array $headers = []): array
     {
         switch (ucwords($method)) {
             case 'GET':
@@ -146,6 +147,10 @@ class Webhooks
             default:
                 $updateDataFormat = [];
                 break;
+        }
+
+        if (!empty($headers)) {
+            $updateDataFormat['headers'] = $headers;
         }
 
         return $updateDataFormat;
