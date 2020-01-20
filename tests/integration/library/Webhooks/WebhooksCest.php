@@ -9,7 +9,7 @@ use IntegrationTester;
 
 class WebhooksCest
 {
-    public function formatDataGet(IntegrationTester $I)
+    public function formatDataGet(IntegrationTester $I): void
     {
         $data = Webhooks::formatData('GET', ['test' => 'test']);
 
@@ -17,7 +17,7 @@ class WebhooksCest
         $I->assertTrue($data['query']['test'] == 'test');
     }
 
-    public function formatDataPost(IntegrationTester $I)
+    public function formatDataPost(IntegrationTester $I): void
     {
         $data = Webhooks::formatData('POST', ['test' => 'test']);
 
@@ -27,7 +27,7 @@ class WebhooksCest
         $I->assertTrue($data['form_params']['test'] == 'test');
     }
 
-    public function formatDataPut(IntegrationTester $I)
+    public function formatDataPut(IntegrationTester $I): void
     {
         $data = Webhooks::formatData('PUT', ['test' => 'test']);
 
@@ -37,7 +37,7 @@ class WebhooksCest
         $I->assertTrue($data['form_params']['test'] == 'test');
     }
 
-    public function formatDataPutWithHeader(IntegrationTester $I)
+    public function formatDataPutWithHeader(IntegrationTester $I): void
     {
         $data = Webhooks::formatData('PUT', ['test' => 'test'], ['Authorization' => 'token']);
 
@@ -49,7 +49,7 @@ class WebhooksCest
         $I->assertTrue($data['headers']['Authorization'] == 'token');
     }
 
-    public function formatDataPostWithHeader(IntegrationTester $I)
+    public function formatDataPostWithHeader(IntegrationTester $I): void
     {
         $data = Webhooks::formatData('POST', ['test' => 'test'], ['Authorization' => 'token']);
 
@@ -61,7 +61,7 @@ class WebhooksCest
         $I->assertTrue($data['headers']['Authorization'] == 'token');
     }
 
-    public function formatDataGettWithHeader(IntegrationTester $I)
+    public function formatDataGettWithHeader(IntegrationTester $I): void
     {
         $data = Webhooks::formatData('GET', ['test' => 'test'], ['Authorization' => 'token']);
 
@@ -70,7 +70,7 @@ class WebhooksCest
         $I->assertTrue($data['headers']['Authorization'] == 'token');
     }
 
-    public function run(IntegrationTester $I)
+    public function run(IntegrationTester $I): void
     {
         $userData = $I->grabFromDi('userData');
         $app = $I->grabFromDi('app');
@@ -97,7 +97,7 @@ class WebhooksCest
      * @param IntegrationTester $I
      * @return void
      */
-    public function process(IntegrationTester $I)
+    public function process(IntegrationTester $I): void
     {
         $userData = $I->grabFromDi('userData');
         $app = $I->grabFromDi('app');
