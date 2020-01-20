@@ -115,8 +115,9 @@ class WebhooksCest
         }
 
         $results = Webhooks::process('Companies', ['test' => 'test'], 'create');
-        $I->assertArrayHasKey('Companies', $results);
-        $I->assertArrayHasKey('create', $results['Companies']);
-        $I->assertTrue(is_array($results['Companies']['create'][0]));
+        $keys = array_keys($results);
+
+        $I->assertTrue(is_array($results[$keys[0]]));
+        $I->assertTrue(is_array($results[$keys[0]]['create'][0]));
     }
 }
