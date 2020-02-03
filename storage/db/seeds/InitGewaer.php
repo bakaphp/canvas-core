@@ -263,6 +263,7 @@ class InitGewaer extends AbstractSeed
                     }
                 ]',
                 'show' => 1,
+                'protected' => 1,
                 'created_at' => date('Y-m-d H:i:s')
             ], [
                 'id' => 2,
@@ -272,7 +273,8 @@ class InitGewaer extends AbstractSeed
                 'apps_id' => 1,
                 'parents_id' => 0,
                 'menu_order' => 2,
-                'show' => 1,
+                'show' => 0,
+                'protected' => 1,
                 'use_elastic' => 0,
                 'browse_fields' => '[
                     {
@@ -304,6 +306,84 @@ class InitGewaer extends AbstractSeed
                         "searchable": true
                     }
                 ]',
+                'created_at' => date('Y-m-d H:i:s')
+            ], [
+                'id' => 3,
+                'name' => 'Companies Branches',
+                'slug' => 'companies-branches',
+                'model_name' => 'Canvas\Models\CompaniesBranches',
+                'apps_id' => 1,
+                'parents_id' => 0,
+                'menu_order' => 2,
+                'show' => 0,
+                'use_elastic' => 0,
+                'protected' => 1,
+                'browse_fields' => '[]',
+                'created_at' => date('Y-m-d H:i:s')
+            ], [
+                'id' => 4,
+                'name' => 'Users Invite',
+                'slug' => 'users-invite',
+                'model_name' => 'Canvas\Models\UsersInvite',
+                'apps_id' => 1,
+                'parents_id' => 0,
+                'menu_order' => 2,
+                'show' => 0,
+                'use_elastic' => 0,
+                'protected' => 1,
+                'browse_fields' => '[]',
+                'created_at' => date('Y-m-d H:i:s')
+            ], [
+                'id' => 5,
+                'name' => 'Roles',
+                'slug' => 'roles',
+                'model_name' => 'Canvas\Models\Roles',
+                'apps_id' => 1,
+                'parents_id' => 0,
+                'menu_order' => 2,
+                'show' => 0,
+                'use_elastic' => 0,
+                'protected' => 1,
+                'browse_fields' => '[]',
+                'created_at' => date('Y-m-d H:i:s')
+            ], [
+                'id' => 6,
+                'name' => 'Custom Fields',
+                'slug' => 'custom-fields',
+                'model_name' => 'Canvas\CustomFields\CustomFields',
+                'apps_id' => 1,
+                'parents_id' => 0,
+                'menu_order' => 2,
+                'show' => 0,
+                'use_elastic' => 0,
+                'protected' => 1,
+                'browse_fields' => '[]',
+                'created_at' => date('Y-m-d H:i:s')
+            ], [
+                'id' => 7,
+                'name' => 'Webhooks',
+                'slug' => 'webhooks',
+                'model_name' => 'Canvas\Models\Webhooks',
+                'apps_id' => 1,
+                'parents_id' => 0,
+                'menu_order' => 2,
+                'show' => 0,
+                'use_elastic' => 0,
+                'protected' => 1,
+                'browse_fields' => '[]',
+                'created_at' => date('Y-m-d H:i:s')
+            ], [
+                'id' => 8,
+                'name' => 'Webhooks',
+                'slug' => 'webhooks',
+                'model_name' => 'Canvas\Models\Webhooks',
+                'apps_id' => 1,
+                'parents_id' => 0,
+                'menu_order' => 2,
+                'show' => 0,
+                'use_elastic' => 0,
+                'protected' => 1,
+                'browse_fields' => '[]',
                 'created_at' => date('Y-m-d H:i:s')
             ]
         ];
