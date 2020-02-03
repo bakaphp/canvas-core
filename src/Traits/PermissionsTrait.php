@@ -32,7 +32,12 @@ trait PermissionsTrait
 
         $userRole = UserRoles::findFirst([
             'conditions' => 'users_id = ?0 and roles_id = ?1 and apps_id = ?2 and companies_id = ?3',
-            'bind' => [$this->getId(), $role->getId(), $role->apps_id, $this->currentCompanyId()]
+            'bind' => [
+                $this->getId(),
+                $role->getId(),
+                $role->apps_id,
+                $this->currentCompanyId()
+            ]
         ]);
 
         if (!is_object($userRole)) {
@@ -64,7 +69,12 @@ trait PermissionsTrait
 
         $userRole = UserRoles::findFirst([
             'conditions' => 'users_id = ?0 and roles_id = ?1 and apps_id = ?2 and companies_id = ?3',
-            'bind' => [$this->getId(), $role->getId(), $role->apps_id, $this->currentCompanyId()]
+            'bind' => [
+                $this->getId(),
+                $role->getId(),
+                $role->apps_id,
+                $this->currentCompanyId()
+            ]
         ]);
 
         if (is_object($userRole)) {
@@ -90,7 +100,13 @@ trait PermissionsTrait
 
         $userRole = UserRoles::findFirst([
             'conditions' => 'users_id = ?0 and roles_id = ?1 and (apps_id = ?2 or apps_id = ?4) and companies_id = ?3',
-            'bind' => [$this->getId(), $role->getId(), $role->apps_id, $this->currentCompanyId(), $this->di->getApp()->getId()]
+            'bind' => [
+                $this->getId(),
+                $role->getId(),
+                $role->apps_id,
+                $this->currentCompanyId(),
+                $this->di->getApp()->getId()
+            ]
         ]);
 
         if (is_object($userRole)) {
@@ -119,12 +135,12 @@ trait PermissionsTrait
         $action = explode('.', $action);
         $resource = $action[0];
         $action = $action[1];
-        //get your user account role for this app or the canvas ecosystem
-        //$role = $this->getPermission('apps_id in (' . $this->di->getApp()->getId() . ',' . Roles::DEFAULT_ACL_APP_ID . ')');
-        $role = $this->getPermission();
 
-        if (!is_object($role)) {
-            throw new InternalServerErrorException('ACL - User doesnt have any set roles in this current app #' . $this->di->getApp()->getId());
+        //get your user account role for this app or the canvas ecosystem
+        if (!$role = $this->getPermission()) {
+            throw new InternalServerErrorException(
+                'ACL - User doesnt have any set roles in this current app ' . $this->di->getApp()->name
+            );
         }
 
         return $this->di->getAcl()->isAllowed($role->roles->name, $resource, $action);

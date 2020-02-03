@@ -153,8 +153,8 @@ class Users extends \Baka\Auth\Models\Users
                 'alias' => 'userRole',
                 'params' => [
                     'limit' => 1,
-                    'conditions' => 'Canvas\Models\UserRoles.apps_id = ?0',
-                    'bind' => [$this->di->getApp()->getId()],
+                    'conditions' => 'Canvas\Models\UserRoles.apps_id in (?0, ?1)',
+                    'bind' => [$this->di->getApp()->getId(), Roles::DEFAULT_ACL_APP_ID],
                 ]
             ]
         );
@@ -528,8 +528,8 @@ class Users extends \Baka\Auth\Models\Users
     }
 
     /**
-     * Overwrite the permission relationship to force the user of company id
-     * 
+     * Overwrite the permission relationship to force the user of company id.
+     *
      * @return UserRoles
      */
     public function getPermission()
@@ -539,8 +539,7 @@ class Users extends \Baka\Auth\Models\Users
 
     /**
      * Get the list of all the associated apps this users has.
-     *:w
-
+     *:w.
      * @return array
      */
     public function getAssociatedApps(): array

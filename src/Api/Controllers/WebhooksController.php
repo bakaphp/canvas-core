@@ -7,7 +7,7 @@ namespace Canvas\Api\Controllers;
 use Canvas\Models\Webhooks;
 
 /**
- * Class LanguagesController
+ * Class LanguagesController.
  *
  * @package Canvas\Api\Controllers
  *
@@ -25,11 +25,11 @@ class WebhooksController extends BaseController
      * @var array
      */
     protected $createFields = [
-        'system_modules_id'
-        ,'name'
-        ,'description'
-        ,'action'
-        ,'format'
+        'system_modules_id',
+        'name',
+        'description',
+        'action',
+        'format'
     ];
 
     /*
@@ -38,15 +38,15 @@ class WebhooksController extends BaseController
      * @var array
      */
     protected $updateFields = [
-        'system_modules_id'
-        ,'name'
-        ,'description'
-        ,'action'
-        ,'format'
+        'system_modules_id',
+        'name',
+        'description',
+        'action',
+        'format'
     ];
 
     /**
-     * set objects
+     * set objects.
      *
      * @return void
      */

@@ -3,6 +3,10 @@ declare(strict_types=1);
 
 namespace Canvas\Models;
 
+use Phalcon\Di;
+use Phalcon\Validation\Validator\Url;
+use Phalcon\Validation;
+
 class UserWebhooks extends AbstractModel
 {
     /**
@@ -115,5 +119,43 @@ class UserWebhooks extends AbstractModel
     public function getSource(): string
     {
         return 'user_webhooks';
+    }
+
+    /**
+     * Validate input data.
+     *
+     * @return void
+     */
+    public function validation()
+    {
+        $validator = new Validation();
+
+        $validator->add(
+            'url',
+            new Url(
+                [
+                    'message' => 'This Url is not valid',
+                ]
+            )
+        );
+
+        return $this->validate($validator);
+    }
+
+    /**
+    * Get element by Id.
+    *
+    * @return Webhooks
+    */
+    public static function getById($id): self
+    {
+        return self::findFirstOrFail([
+            'conditions' => 'id = ?0 AND apps_id = ?1 AND companies_id = ?2 and is_deleted = 0',
+            'bind' => [
+                $id,
+                Di::getDefault()->getApp()->getId(),
+                Di::getDefault()->getUserData()->getDefaultCompany()->getId()
+            ]
+        ]);
     }
 }
