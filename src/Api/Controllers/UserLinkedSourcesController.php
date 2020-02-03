@@ -6,7 +6,6 @@ namespace Canvas\Api\Controllers;
 
 use Canvas\Models\UserLinkedSources;
 use Baka\Auth\Models\Sources;
-use Canvas\Http\Exception\UnprocessableEntityException;
 use Phalcon\Http\Response;
 use Phalcon\Validation\Validator\PresenceOf;
 use Canvas\Validation as CanvasValidation;
@@ -85,8 +84,12 @@ class UserLinkedSourcesController extends BaseController
         //get the app source
         if ($source = Sources::getByTitle($app)) {
             $userSource = UserLinkedSources::findFirst([
-                'conditions' => 'users_id = ?0 and source_users_id_text = ?1 and source_id = ?2',
-                'bind' => [$this->userData->getId(), $deviceId, $source->getId()]
+                'conditions' => 'users_id = ?0 AND source_users_id_text = ?1 AND source_id = ?2 AND is_deleted = 0',
+                'bind' => [
+                    $this->userData->getId(),
+                    $deviceId,
+                    $source->getId()
+                ]
             ]);
 
             if (!is_object($userSource)) {
@@ -98,9 +101,7 @@ class UserLinkedSourcesController extends BaseController
                 $userSource->source_username = $this->userData->displayname . ' ' . $app;
                 $userSource->is_deleted = 0;
 
-                if (!$userSource->save()) {
-                    throw new UnprocessableEntityException((string) current($userSource->getMessages()));
-                }
+                $userSource->saveOrFail();
 
                 $msg = 'User Device Associated';
             } else {
