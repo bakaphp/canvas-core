@@ -44,6 +44,7 @@ $privateRoutes = [
     Route::delete('/users/{id}/devices/{deviceId}')->controller('UserLinkedSourcesController')->action('detachDevice'),
     Route::delete('/filesystem/{id}/attributes/{name}')->controller('FilesystemController')->action('deleteAttributes'),
     Route::put('/filesystem-entity/{id}')->controller('FilesystemController')->action('editEntity'),
+    Route::crud('/filesystem-entity')->controller('FilesystemEntitiesController'),
     Route::put('/auth/logout')->controller('AuthController')->action('logout'),
     Route::post('/users/invite')->controller('UsersInviteController')->action('insertInvite'),
     Route::post('/roles-acceslist/{id}/copy')->controller('RolesAccesListController')->action('copy'),
