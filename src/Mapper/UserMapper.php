@@ -27,6 +27,28 @@ class UserMapper extends CustomMapper
      */
     public function mapToObject($user, $userDto, array $context = [])
     {
+        $user = $this->defaultKanvasProperties($user, $userDto);
+
+        $this->getRelationships($user, $userDto, $context);
+
+        if (!empty($userDto->roles)) {
+            if (isset($userDto->roles[0])) {
+                $this->accesList($userDto);
+            }
+        }
+
+        return $userDto;
+    }
+
+    /**
+     * Set the default Kanvas UserData properties.
+     *
+     * @param mixed $user
+     * @param object $userDto
+     * @return object
+     */
+    protected function defaultKanvasProperties($user, object $userDto): object
+    {
         if (is_array($user)) {
             $user = Users::getById($user['id']);
         }
@@ -87,14 +109,6 @@ class UserMapper extends CustomMapper
         $userDto->default_company_branch = $user->getDefaultCompany()->defaultBranch->getId();
         $userDto->roles_id = $user->getPermission()->roles_id;
 
-        $this->getRelationships($user, $userDto, $context);
-
-        if (!empty($userDto->roles)) {
-            if (isset($userDto->roles[0])) {
-                $this->accesList($userDto);
-            }
-        }
-
         return $userDto;
     }
 
@@ -104,7 +118,7 @@ class UserMapper extends CustomMapper
      * @param object $userDto
      * @return void
      */
-    private function accesList(object $userDto): void
+    protected function accesList(object $userDto): void
     {
         $app = Di::getDefault()->getApp();
         $accesList = AccessList::find([
