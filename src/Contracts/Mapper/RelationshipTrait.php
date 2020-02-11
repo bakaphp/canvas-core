@@ -9,7 +9,7 @@ trait RelationshipTrait
     /**
     *  Attach relationship to DTO.
     */
-    private function getRelationships(object $object, object $objectDto, array $relationships): void
+    protected function getRelationships(object $object, object $objectDto, array $relationships): void
     {
         if (isset($relationships['relationships'])) {
             foreach ($relationships['relationships'] as $relationship) {
