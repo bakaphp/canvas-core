@@ -29,7 +29,7 @@ class UserMapper extends CustomMapper
     {
         $user = $this->defaultKanvasProperties($user, $userDto, $context);
 
-        return $userDto;
+        return $user;
     }
 
     /**
