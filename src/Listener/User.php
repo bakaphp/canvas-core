@@ -63,8 +63,8 @@ class User
         //Create new company associated company
         $user->getDefaultCompany()->associate($user, $user->getDefaultCompany());
 
-        //Insert record into user_roles
-        $user->assignRole(Roles::getById($user->roles_id));
+        $role = $user->getDI()->getApp()->name . '.' . Roles::getById($user->roles_id)->name;
+        $user->assignRole($role);
     }
 
     /**
