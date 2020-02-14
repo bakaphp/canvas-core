@@ -735,21 +735,4 @@ class Users extends \Baka\Auth\Models\Users
 
         return $this->user_activation_forgot;
     }
-
-    /**
-     * Given a Role assign it to the user for the current app.
-     *
-     * @param Roles $role
-     * @return boolean
-     */
-    public function assignRole(Roles $role): bool
-    {
-        $userRole = new UserRoles();
-        $userRole->users_id = $this->getId();
-        $userRole->roles_id = $role->getId();
-        $userRole->apps_id = $this->di->getApp()->getId();
-        $userRole->companies_id = $this->getDefaultCompany()->getId();
-
-        return $userRole->saveOrFail();
-    }
 }
