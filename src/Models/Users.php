@@ -154,6 +154,7 @@ class Users extends \Baka\Auth\Models\Users
                     'limit' => 1,
                     'conditions' => 'Canvas\Models\UserRoles.apps_id in (?0, ?1)',
                     'bind' => [$this->di->getApp()->getId(), Roles::DEFAULT_ACL_APP_ID],
+                    'order' => 'apps_id desc',
                 ]
             ]
         );
@@ -182,6 +183,7 @@ class Users extends \Baka\Auth\Models\Users
                 'params' => [
                     'limit' => 1,
                     'conditions' => 'Canvas\Models\UserRoles.apps_id = ' . $this->di->getApp()->getId(),
+                    'order' => 'Canvas\Models\UserRoles.apps_id desc',
                 ]
             ]
         );
@@ -508,7 +510,7 @@ class Users extends \Baka\Auth\Models\Users
     public function afterSave()
     {
         $this->associateFileSystem();
-        $this->updatePermissionRoles();
+        //$this->updatePermissionRoles();
     }
 
     /**
@@ -533,7 +535,14 @@ class Users extends \Baka\Auth\Models\Users
      */
     public function getPermission()
     {
-        return $this->getUserRole('companies_id =' . $this->currentCompanyId());
+        return UserRoles::findFirst([
+            'conditions' => 'companies_id = ?0 AND apps_id = ?1 AND users_id = ?2',
+            'bind' => [
+                $this->currentCompanyId(),
+                $this->di->getApp()->getId(),
+                $this->getId()
+            ]
+        ]);
     }
 
     /**

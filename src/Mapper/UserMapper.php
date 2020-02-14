@@ -122,7 +122,7 @@ class UserMapper extends CustomMapper
     {
         $app = Di::getDefault()->getApp();
         $accesList = AccessList::find([
-            'conditions' => 'roles_name = ?0 and apps_id in (?1 OR ?2) and allowed = 0',
+            'conditions' => 'roles_name = ?0 and apps_id in (?1, ?2) and allowed = 0',
             'bind' => [$userDto->roles[0]->name, $app->getId(), $app::CANVAS_DEFAULT_APP_ID]
         ]);
 
