@@ -6,7 +6,6 @@ namespace Canvas\Models;
 use Canvas\Traits\PermissionsTrait;
 use Canvas\Traits\SubscriptionPlanLimitTrait;
 use Phalcon\Cashier\Billable;
-use Canvas\Exception\ServerErrorHttpException;
 use Carbon\Carbon;
 use Phalcon\Validation;
 use Phalcon\Validation\Validator\Email;
@@ -735,5 +734,22 @@ class Users extends \Baka\Auth\Models\Users
         $this->updateOrFail();
 
         return $this->user_activation_forgot;
+    }
+
+    /**
+     * Given a Role assign it to the user for the current app.
+     *
+     * @param Roles $role
+     * @return boolean
+     */
+    public function assignRole(Roles $role): bool
+    {
+        $userRole = new UserRoles();
+        $userRole->users_id = $this->getId();
+        $userRole->roles_id = $role->getId();
+        $userRole->apps_id = $this->di->getApp()->getId();
+        $userRole->companies_id = $this->getDefaultCompany()->getId();
+
+        return $userRole->saveOrFail();
     }
 }

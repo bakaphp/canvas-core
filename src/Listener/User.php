@@ -11,6 +11,7 @@ use Canvas\Models\CompaniesGroups;
 use Canvas\Models\CompaniesAssociations;
 use Canvas\Models\UserRoles;
 use Canvas\Auth\App;
+use Canvas\Http\Exception\InternalServerErrorException;
 use Canvas\Models\Roles;
 use Canvas\Models\UsersInvite;
 
@@ -32,11 +33,11 @@ class User
         */
         if ($isFirstSignup) {
             /**
-             * Let's create a new Companies
+             * Let's create a new Companies.
              */
             $company = new Companies();
             //for signups that dont send a company name
-            $company->name = !empty($user->defaultCompanyName) ? $user->defaultCompanyName : $user->displayname.'CP';
+            $company->name = !empty($user->defaultCompanyName) ? $user->defaultCompanyName : $user->displayname . 'CP';
             $company->users_id = $user->getId();
 
             $company->saveOrFail();
@@ -50,7 +51,6 @@ class User
                 $user->default_company_branch = $user->getDefaultCompany()->branch->getId();
                 $user->updateOrFail();
             }
-
         } else {
             //we have the company id
             if (empty($user->default_company_branch)) {
@@ -62,21 +62,13 @@ class User
 
         //Create new company associated company
         $user->getDefaultCompany()->associate($user, $user->getDefaultCompany());
-        
-        //Insert record into user_roles
-        $userRole = new UserRoles();
-        $userRole->users_id = $user->id;
-        $userRole->roles_id = $user->roles_id;
-        $userRole->apps_id = $user->getDI()->getApp()->getId();
-        $userRole->companies_id = $user->getDefaultCompany()->getId();
 
-        if (!$userRole->save()) {
-            throw new ServerErrorHttpException((string)current($userRole->getMessages()));
-        }
+        //Insert record into user_roles
+        $user->assignRole(Roles::getById($user->roles_id));
     }
 
     /**
-     * Events after a user is invited to the system
+     * Events after a user is invited to the system.
      *
      * @param Event $event
      * @param Users $user
