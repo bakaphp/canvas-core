@@ -7,11 +7,8 @@ namespace Canvas\Listener;
 use Phalcon\Events\Event;
 use Canvas\Models\Users;
 use Canvas\Models\Companies;
-use Canvas\Models\CompaniesGroups;
-use Canvas\Models\CompaniesAssociations;
-use Canvas\Models\UserRoles;
 use Canvas\Auth\App;
-use Canvas\Http\Exception\InternalServerErrorException;
+use Canvas\Models\Apps;
 use Canvas\Models\Roles;
 use Canvas\Models\UsersInvite;
 
@@ -64,7 +61,11 @@ class User
         $user->getDefaultCompany()->associate($user, $user->getDefaultCompany());
 
         //Insert record into user_roles
-        $role = $user->getDI()->getApp()->name . '.' . Roles::getById($user->roles_id)->name;
+        if (!$appConfigDefaultRole = $user->getDI()->getApp()->get(Apps::APP_DEFAULT_ROLE_SETTING)) {
+            $appConfigDefaultRole = $user->getDI()->getApp()->name . '.' . Roles::getById($user->roles_id)->name;
+        }
+
+        $role = $appConfigDefaultRole;
         $user->assignRole($role);
     }
 

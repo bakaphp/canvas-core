@@ -24,11 +24,16 @@ trait PermissionsTrait
      */
     public function assignRole(string $role): bool
     {
-        $role = Roles::getByAppName($role, $this->getDefaultCompany());
-
-        if (!is_object($role)) {
-            throw new InternalServerErrorException('Role not found in DB');
+           /**
+         * check if we have a dot, that mes it legacy and sending the app name 
+         * not needed any more so we remove it
+         */
+        if (strpos($role, '.') !== false) {
+            $appRole = explode('.', $role);
+            $role = $appRole[1];
         }
+
+        $role = Roles::getByName($role);
 
         $userRole = UserRoles::findFirst([
             'conditions' => 'users_id = ?0 and roles_id = ?1 and apps_id = ?2 and companies_id = ?3',
