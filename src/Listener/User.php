@@ -61,11 +61,10 @@ class User
         $user->getDefaultCompany()->associate($user, $user->getDefaultCompany());
 
         //Insert record into user_roles
-        if (!$appConfigDefaultRole = $user->getDI()->getApp()->get(Apps::APP_DEFAULT_ROLE_SETTING)) {
-            $appConfigDefaultRole = $user->getDI()->getApp()->name . '.' . Roles::getById($user->roles_id)->name;
+        if (!$role = $user->getDI()->getApp()->get(Apps::APP_DEFAULT_ROLE_SETTING)) {
+            $role = $user->getDI()->getApp()->name . '.' . Roles::getById($user->roles_id)->name;
         }
 
-        $role = $appConfigDefaultRole;
         $user->assignRole($role);
     }
 
@@ -88,6 +87,10 @@ class User
             App::updatePassword($user, $user->password);
         }
 
-        Roles::assignDefault($user);
+        /**
+         * @todo this is hackable , need to add use Roles::getById($usersInvite->role_id) , without 
+         * but we need the company info without been logged in
+         */
+        $user->assignRole(Roles::findFirstOrFail($usersInvite->role_id)->name);
     }
 }
