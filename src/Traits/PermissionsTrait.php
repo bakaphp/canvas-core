@@ -24,9 +24,9 @@ trait PermissionsTrait
      */
     public function assignRole(string $role): bool
     {
-           /**
-         * check if we have a dot, that mes it legacy and sending the app name 
-         * not needed any more so we remove it
+        /**
+         * check if we have a dot, that mes it legacy and sending the app name
+         * not needed any more so we remove it.
          */
         if (strpos($role, '.') !== false) {
             $appRole = explode('.', $role);
