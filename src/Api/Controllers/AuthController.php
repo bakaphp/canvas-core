@@ -7,7 +7,6 @@ namespace Canvas\Api\Controllers;
 use Canvas\Models\Users;
 use Canvas\Models\Sources;
 use Canvas\Models\UserLinkedSources;
-use Canvas\Exception\ServerErrorHttpException;
 use Canvas\Exception\ModelException;
 use Baka\Auth\Models\Users as BakaUsers;
 use Canvas\Traits\AuthTrait;
@@ -21,6 +20,7 @@ use Phalcon\Validation\Validator\PresenceOf;
 use Phalcon\Validation\Validator\StringLength;
 use Baka\Auth\Models\Sessions;
 use Canvas\Auth\Factory;
+use Canvas\Http\Exception\InternalServerErrorException;
 use Canvas\Validation as CanvasValidation;
 use Canvas\Notifications\ResetPassword;
 use Canvas\Notifications\PasswordUpdate;
@@ -60,7 +60,7 @@ class AuthController extends \Baka\Auth\AuthController
         $this->userModel = new Users();
 
         if (!isset($this->config->jwt)) {
-            throw new ServerErrorHttpException('You need to configure your app JWT');
+            throw new InternalServerErrorException('You need to configure your app JWT');
         }
     }
 
@@ -212,7 +212,7 @@ class AuthController extends \Baka\Auth\AuthController
         $user = null;
 
         if (time() != $accessToken->getClaim('exp')) {
-            throw new ServerErrorHttpException('Issued Access Token has not expired');
+            throw new InternalServerErrorException('Issued Access Token has not expired');
         }
 
         //Check if both tokens relate to the same user's email
@@ -391,6 +391,7 @@ class AuthController extends \Baka\Auth\AuthController
     * @todo deprecated move to notifications
     * @param String $emailAction
     * @param Users  $user
+    * @deprecated version 1
     * @return void
     */
     protected function sendEmail(BakaUsers $user, string $type): void
