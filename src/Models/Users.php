@@ -144,48 +144,6 @@ class Users extends \Baka\Auth\Models\Users
             ['alias' => 'currentCompany']
         );
 
-        $this->hasOne(
-            'id',
-            'Canvas\Models\UserRoles',
-            'users_id',
-            [
-                'alias' => 'userRole',
-                'params' => [
-                    'limit' => 1,
-                    'conditions' => 'Canvas\Models\UserRoles.apps_id in (?0, ?1)',
-                    'bind' => [$this->di->getApp()->getId(), Roles::DEFAULT_ACL_APP_ID],
-                ]
-            ]
-        );
-
-        $this->hasMany(
-            'id',
-            'Canvas\Models\UserRoles',
-            'users_id',
-            [
-                'alias' => 'permissions',
-                'params' => [
-                    'conditions' => 'Canvas\Models\UserRoles.apps_id = ' . $this->di->getApp()->getId(),
-                ]
-            ]
-        );
-
-        $this->hasManyToMany(
-            'id',
-            'Canvas\Models\UserRoles',
-            'users_id',
-            'roles_id',
-            'Canvas\Models\Roles',
-            'id',
-            [
-                'alias' => 'roles',
-                'params' => [
-                    'limit' => 1,
-                    'conditions' => 'Canvas\Models\UserRoles.apps_id = ' . $this->di->getApp()->getId(),
-                ]
-            ]
-        );
-
         $this->hasMany(
             'id',
             'Canvas\Models\Subscription',
@@ -269,6 +227,60 @@ class Users extends \Baka\Auth\Models\Users
             ]
         );
     }
+
+    /**
+     * Initialize relationshit after fetch
+     * since we need company id info.
+     *
+     * @return void
+     */
+    public function afterFetch()
+    {
+        $this->hasManyToMany(
+            'id',
+            'Canvas\Models\UserRoles',
+            'users_id',
+            'roles_id',
+            'Canvas\Models\Roles',
+            'id',
+            [
+                'alias' => 'roles',
+                'params' => [
+                    'limit' => 1,
+                    'conditions' => 'Canvas\Models\UserRoles.apps_id = ' . $this->di->getApp()->getId() . ' AND Canvas\Models\UserRoles.companies_id = ' . $this->currentCompanyId(),
+                    'order' => 'Canvas\Models\UserRoles.apps_id desc',
+                ]
+            ]
+        );
+
+        $this->hasOne(
+            'id',
+            'Canvas\Models\UserRoles',
+            'users_id',
+            [
+                'alias' => 'userRole',
+                'params' => [
+                    'limit' => 1,
+                    'conditions' => 'Canvas\Models\UserRoles.apps_id in (?0, ?1) AND Canvas\Models\UserRoles.companies_id = ' . $this->currentCompanyId(),
+                    'bind' => [$this->di->getApp()->getId(), Roles::DEFAULT_ACL_APP_ID],
+                    'order' => 'apps_id desc',
+                ]
+            ]
+        );
+
+        $this->hasMany(
+            'id',
+            'Canvas\Models\UserRoles',
+            'users_id',
+            [
+                'alias' => 'permissions',
+                'params' => [
+                    'conditions' => 'Canvas\Models\UserRoles.apps_id = ' . $this->di->getApp()->getId() . ' AND Canvas\Models\UserRoles.companies_id = ' . $this->currentCompanyId(),
+                ]
+            ]
+        );
+    }
+
 
     /**
      * Validations and business logic.
@@ -508,7 +520,7 @@ class Users extends \Baka\Auth\Models\Users
     public function afterSave()
     {
         $this->associateFileSystem();
-        $this->updatePermissionRoles();
+        //$this->updatePermissionRoles();
     }
 
     /**
@@ -533,7 +545,7 @@ class Users extends \Baka\Auth\Models\Users
      */
     public function getPermission()
     {
-        return $this->getUserRole('companies_id =' . $this->currentCompanyId());
+        return $this->getUserRole();
     }
 
     /**

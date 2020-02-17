@@ -7,11 +7,8 @@ namespace Canvas\Listener;
 use Phalcon\Events\Event;
 use Canvas\Models\Users;
 use Canvas\Models\Companies;
-use Canvas\Models\CompaniesGroups;
-use Canvas\Models\CompaniesAssociations;
-use Canvas\Models\UserRoles;
 use Canvas\Auth\App;
-use Canvas\Http\Exception\InternalServerErrorException;
+use Canvas\Models\Apps;
 use Canvas\Models\Roles;
 use Canvas\Models\UsersInvite;
 
@@ -63,7 +60,11 @@ class User
         //Create new company associated company
         $user->getDefaultCompany()->associate($user, $user->getDefaultCompany());
 
-        $role = $user->getDI()->getApp()->name . '.' . Roles::getById($user->roles_id)->name;
+        //Insert record into user_roles
+        if (!$role = $user->getDI()->getApp()->get(Apps::APP_DEFAULT_ROLE_SETTING)) {
+            $role = $user->getDI()->getApp()->name . '.' . Roles::getById($user->roles_id)->name;
+        }
+
         $user->assignRole($role);
     }
 
@@ -86,6 +87,10 @@ class User
             App::updatePassword($user, $user->password);
         }
 
-        Roles::assignDefault($user);
+        /**
+         * @todo this is hackable , need to add use Roles::getById($usersInvite->role_id) , without 
+         * but we need the company info without been logged in
+         */
+        $user->assignRole(Roles::findFirstOrFail($usersInvite->role_id)->name);
     }
 }

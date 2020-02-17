@@ -228,7 +228,7 @@ class Roles extends AbstractModel
             'bind' => [
                 $id,
                 $companyId,
-                Apps::CANVAS_DEFAULT_APP_ID,
+                self::DEFAULT_ACL_COMPANY_ID,
                 Di::getDefault()->getApp()->getId(),
                 Apps::CANVAS_DEFAULT_APP_ID
             ],
@@ -379,7 +379,11 @@ class Roles extends AbstractModel
         $apps = Di::getDefault()->getApp();
         $userRoles = UserRoles::findFirst([
             'conditions' => 'users_id = ?0 AND apps_id = ?1 AND companies_id = ?2 AND is_deleted = 0',
-            'bind' => [$user->getId(), $apps->getId(), $user->getDefaultCompany()->getId()]
+            'bind' => [
+                $user->getId(), 
+                $apps->getId(), 
+                $user->getDefaultCompany()->getId()
+            ]
         ]);
 
         if (!is_object($userRoles)) {

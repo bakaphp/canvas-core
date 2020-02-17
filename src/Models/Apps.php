@@ -84,6 +84,7 @@ class Apps extends \Baka\Database\Apps
      */
     const CANVAS_DEFAULT_APP_ID = 1;
     const CANVAS_DEFAULT_APP_NAME = 'Default';
+    const APP_DEFAULT_ROLE_SETTING = 'default_admin_role';
 
     /**
      * Users Associated Trait.
