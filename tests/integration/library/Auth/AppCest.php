@@ -3,10 +3,7 @@
 namespace Gewaer\Tests\integration\library\Jobs;
 
 use Canvas\Auth\App;
-use Canvas\Cli\Jobs\PushNotifications;
-use Canvas\Jobs\PendingDispatch;
 use Canvas\Models\Users;
-use Canvas\Notifications\PushNotification;
 use Exception;
 use IntegrationTester;
 
@@ -34,5 +31,18 @@ class AppCest
         } catch (Exception $e) {
             $I->assertTrue(true);
         }
+    }
+
+    public function updateUserPassword(IntegrationTester $I)
+    {
+        $previousPassword = 'bakatest123567';
+        $newPassword = 'bakatest123568';
+
+        $user = Users::findFirstOrFail();
+        $userPreviousPassword = $user->passsword;
+
+        $I->assertTrue(App::updatePassword($user, $newPassword));
+
+        //we need to compare previous password with new update passwor for the entity
     }
 }
