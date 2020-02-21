@@ -37,6 +37,8 @@ $privateRoutes = [
     Route::crud('/languages'),
     Route::crud('/webhooks'),
     Route::crud('/filesystem'),
+    Route::crud('/custom-fields-types')->controller('CustomFieldsTypesController'),
+    Route::crud('/custom-fields-values')->controller('CustomFieldsValuesController'),
 
     Route::get('/timezones')->controller('TimeZonesController'),
     Route::post('/notifications-read-all')->controller('NotificationsController')->action('cleanAll'),
