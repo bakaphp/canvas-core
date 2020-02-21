@@ -8,6 +8,7 @@ use Canvas\Models\CustomFieldsValues;
 use Phalcon\Http\Response;
 use Canvas\Http\Exception\NotFoundException;
 use Canvas\Http\Exception\UnauthorizedException;
+use Baka\Http\Contracts\Api\CrudCustomFieldsBehaviorTrait;
 
 /**
  * Class LanguagesController.
@@ -19,6 +20,32 @@ use Canvas\Http\Exception\UnauthorizedException;
  */
 class CustomFieldsValuesController extends BaseController
 {
+    use CrudCustomFieldsBehaviorTrait;
+
+    /*
+     * fields we accept to create
+     *
+     * @var array
+     */
+    protected $createFields = [
+        'custom_fields_id',
+        'label',
+        'value',
+        'is_default'
+    ];
+
+    /*
+     * fields we accept to create
+     *
+     * @var array
+     */
+    protected $updateFields = [
+        'custom_fields_id',
+        'label',
+        'value',
+        'is_default'
+    ];
+
     /**
      * set objects.
      *
