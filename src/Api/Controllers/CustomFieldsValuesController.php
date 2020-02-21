@@ -20,8 +20,6 @@ use Baka\Http\Contracts\Api\CrudCustomFieldsBehaviorTrait;
  */
 class CustomFieldsValuesController extends BaseController
 {
-    use CrudCustomFieldsBehaviorTrait;
-
     /*
      * fields we accept to create
      *
