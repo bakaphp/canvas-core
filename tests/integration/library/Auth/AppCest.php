@@ -36,15 +36,15 @@ class AppCest
         try {
             $user = App::login(
                 'nobody@baka.io',
-                'bakatest123567',
+                'bakatest123567s',
                 true,
                 true,
                 '127.0.0.1'
             );
 
-            $I->assertTrue(true);
-        } catch (Exception $e) {
             $I->assertTrue(false);
+        } catch (Exception $e) {
+            $I->assertTrue(true);
         }
     }
 
