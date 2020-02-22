@@ -4,6 +4,7 @@ namespace Gewaer\Tests\integration\library\Jobs;
 
 use Canvas\Auth\App;
 use Canvas\Hashing\Password;
+use Canvas\Models\Apps;
 use Canvas\Models\Users;
 use Exception;
 use IntegrationTester;
@@ -11,10 +12,16 @@ use PhpParser\Node\Expr\Instanceof_;
 
 class AppCest
 {
-    
-    public function registerForSpecificApp(IntegrationTester $I)
-    {
+    private $app;
 
+    /**
+     * Constructor.
+     *
+     * @return void
+     */
+    public function onContruct()
+    {
+        $this->app = Apps::getACLApp(Apps::CANVAS_DEFAULT_APP_NAME);
     }
 
     /**
@@ -35,14 +42,20 @@ class AppCest
                 '127.0.0.1'
             );
 
-            $I->assertTrue(false);
-        } catch (Exception $e) {
             $I->assertTrue(true);
+        } catch (Exception $e) {
+            $I->assertTrue(false);
         }
     }
 
     public function updateUserAppPassword(IntegrationTester $I)
     {
+        //if you are using a ecosystem aut we cant run this test
+        if ($this->app->ecosystem_auth) {
+            $I->assertTrue(true);
+            return;
+        }
+
         $previousPassword = 'bakatest123567';
         $newPassword = 'bakatest123568';
 
@@ -74,7 +87,7 @@ class AppCest
 
     /**
      * Can login to especific app
-     * we run it after updateuserpass to make sure we have the correct pass for this speciifc app
+     * we run it after updateuserpass to make sure we have the correct pass for this speciifc app.
      *
      * @param IntegrationTester $I
      * @return boolean
