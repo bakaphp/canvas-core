@@ -4,7 +4,6 @@ namespace Gewaer\Tests\integration\library\Jobs;
 
 use Canvas\CustomFields\CustomFields;
 use IntegrationTester;
-use UnitTester;
 
 class CustomFieldsCest
 {
