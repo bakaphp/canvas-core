@@ -3,10 +3,7 @@
 namespace Gewaer\Tests\integration\library\Jobs;
 
 use Canvas\Auth\App;
-use Canvas\Auth\Auth;
 use Canvas\Auth\Factory;
-use Canvas\Hashing\Password;
-use Canvas\Models\Apps;
 use Canvas\Models\Users;
 use Exception;
 use IntegrationTester;
