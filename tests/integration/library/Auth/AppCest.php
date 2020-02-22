@@ -11,6 +11,12 @@ use PhpParser\Node\Expr\Instanceof_;
 
 class AppCest
 {
+    
+    public function registerForSpecificApp(IntegrationTester $I)
+    {
+
+    }
+
     /**
      * the default Kanvas user can login via ecosystem login
      * not specific login.

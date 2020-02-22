@@ -222,7 +222,8 @@ class Users extends \Baka\Auth\Models\Users
                 'alias' => 'photo',
                 'params' => [
                     'conditions' => 'system_modules_id = ?0',
-                    'bind' => [$systemModule->getId()]
+                    'bind' => [$systemModule->getId()],
+                    'order' => 'id DESC'
                 ]
             ]
         );

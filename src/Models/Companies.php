@@ -331,7 +331,8 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
                 'alias' => 'logo',
                 'params' => [
                     'conditions' => 'system_modules_id = ?0',
-                    'bind' => [$systemModule->getId()]
+                    'bind' => [$systemModule->getId()],
+                    'order' => 'id DESC'
                 ]
             ]
         );

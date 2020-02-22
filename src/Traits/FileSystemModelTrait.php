@@ -304,7 +304,8 @@ trait FileSystemModelTrait
                             AND filesystem_id IN (SELECT f.id from \Canvas\Models\FileSystem f WHERE
                                 f.is_deleted = ?2 AND f.companies_id = ?4
                             )',
-            'bind' => [$systemModule->getId(), $this->getId(), 0, $fieldName, $companyId]
+            'bind' => [$systemModule->getId(), $this->getId(), 0, $fieldName, $companyId],
+            'order' => 'id DESC'
         ]);
     }
 
