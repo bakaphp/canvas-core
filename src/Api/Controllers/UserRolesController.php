@@ -37,6 +37,7 @@ class UserRolesController extends BaseController
     {
         $this->model = new UserRoles();
         $this->additionalSearchFields = [
+            ['apps_id', ':', $this->app->getId()],
             ['is_deleted', ':', '0'],
         ];
     }
