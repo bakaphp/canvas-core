@@ -58,7 +58,8 @@ $privateRoutes = [
     Route::post('/users/{id}/request-email-change')->controller('AuthController')->action('sendEmailChange'),
     Route::put('/users/{id}/apps/{appsId}/status')->controller('UsersController')->action('changeAppUserActiveStatus'),
     Route::get('/companies-groups')->controller('CompaniesGroupsController')->action('index'),
-    Route::get('/companies-groups/{id}')->controller('CompaniesGroupsController')->action('getById')
+    Route::get('/companies-groups/{id}')->controller('CompaniesGroupsController')->action('getById'),
+    Route::crud('/user-roles')->controller('UserRolesController')
 ];
 
 $privateSubscriptionRoutes = [
