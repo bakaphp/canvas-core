@@ -213,20 +213,6 @@ class Users extends \Baka\Auth\Models\Users
                 ]
             ]
         );
-
-        $this->hasOne(
-            'id',
-            'Canvas\Models\FileSystemEntities',
-            'entity_id',
-            [
-                'alias' => 'photo',
-                'params' => [
-                    'conditions' => 'system_modules_id = ?0',
-                    'bind' => [$systemModule->getId()],
-                    'order' => 'id DESC'
-                ]
-            ]
-        );
     }
 
     /**
@@ -281,7 +267,6 @@ class Users extends \Baka\Auth\Models\Users
             ]
         );
     }
-
 
     /**
      * Validations and business logic.

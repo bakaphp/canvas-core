@@ -322,20 +322,6 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
                 ]
             ]
         );
-
-        $this->hasOne(
-            'id',
-            'Canvas\Models\FileSystemEntities',
-            'entity_id',
-            [
-                'alias' => 'logo',
-                'params' => [
-                    'conditions' => 'system_modules_id = ?0',
-                    'bind' => [$systemModule->getId()],
-                    'order' => 'id DESC'
-                ]
-            ]
-        );
     }
 
     /**
