@@ -19,14 +19,14 @@ class UserRolesController extends BaseController
          *
          * @var array
          */
-    protected $createFields = [];
+    protected $createFields = ['users_id', 'roles_id', 'apps_id', 'companies_id'];
 
     /*
      * fields we accept to create
      *
      * @var array
      */
-    protected $updateFields = [];
+    protected $updateFields = ['users_id', 'roles_id', 'apps_id', 'companies_id'];
 
     /**
      * set objects.
