@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Canvas\Models;
 
 use Phalcon\Di;
-use Canvas\Exception\ModelException;
+use Canvas\Http\Exception\NotFoundException;
 
 class AccessList extends AbstractModel
 {
@@ -78,8 +78,6 @@ class AccessList extends AbstractModel
         );
     }
 
-
-
     /**
      * Returns table name mapped in the model.
      *
@@ -91,7 +89,7 @@ class AccessList extends AbstractModel
     }
 
     /**
-     * Given the resource and access check if exist
+     * Given the resource and access check if exist.
      *
      * @param Roles $role
      * @param string $resourceName
@@ -107,7 +105,7 @@ class AccessList extends AbstractModel
     }
 
     /**
-     * Given the resource and access check if exist
+     * Given the resource and access check if exist.
      *
      * @param Roles $role
      * @param string $resourceName
@@ -122,7 +120,7 @@ class AccessList extends AbstractModel
         ]);
 
         if (!is_object($access)) {
-            throw new ModelException(_('Access for role ' . $role->name . ' with resource ' . $resourceName . '-' . $accessName . ' not found on this app ' . Di::getDefault()->getAcl()->getApp()->getId() . ' AND Company' . Di::getDefault()->getAcl()->getCompany()->getId()));
+            throw new NotFoundException(_('Access for role ' . $role->name . ' with resource ' . $resourceName . '-' . $accessName . ' not found on this app ' . Di::getDefault()->getAcl()->getApp()->getId() . ' AND Company' . Di::getDefault()->getAcl()->getCompany()->getId()));
         }
 
         return $access;

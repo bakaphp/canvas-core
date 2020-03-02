@@ -1,6 +1,6 @@
 <?php
 
-namespace Gewaer\Tests\integration\library\Filesystem;
+namespace Gewaer\Tests\integration\library\Http;
 
 use Canvas\Http\Request;
 use IntegrationTester;
