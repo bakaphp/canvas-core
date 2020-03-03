@@ -15672,7 +15672,7 @@ return array (
           'CHARACTER_SET_NAME' => NULL,
           'COLLATION_NAME' => NULL,
           'COLUMN_TYPE' => 'int(10)',
-          'COLUMN_KEY' => '',
+          'COLUMN_KEY' => 'MUL',
           'EXTRA' => '',
           'PRIVILEGES' => 'select,insert,update,references',
           'COLUMN_COMMENT' => '',
@@ -15835,6 +15835,24 @@ return array (
             'Key_name' => 'PRIMARY',
             'Seq_in_index' => '1',
             'Column_name' => 'id',
+            'Collation' => 'A',
+            'Sub_part' => NULL,
+            'Packed' => NULL,
+            'Null' => '',
+            'Index_type' => 'BTREE',
+            'Comment' => '',
+            'Index_comment' => '',
+          ),
+        ),
+        'roles_id' => 
+        array (
+          1 => 
+          array (
+            'Table' => 'user_roles',
+            'Non_unique' => '1',
+            'Key_name' => 'roles_id',
+            'Seq_in_index' => '1',
+            'Column_name' => 'roles_id',
             'Collation' => 'A',
             'Sub_part' => NULL,
             'Packed' => NULL,
