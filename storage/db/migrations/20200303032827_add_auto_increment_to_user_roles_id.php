@@ -2,7 +2,7 @@
 
 use Phinx\Db\Adapter\MysqlAdapter;
 
-class AddIdToUsersRole extends Phinx\Migration\AbstractMigration
+class AddAutoIncrementToUserRolesId extends Phinx\Migration\AbstractMigration
 {
     public function change()
     {
@@ -15,9 +15,10 @@ class AddIdToUsersRole extends Phinx\Migration\AbstractMigration
                 'comment' => '',
                 'row_format' => 'DYNAMIC',
             ])
-        ->addIndex(['roles_id'], [
-                'name' => 'roles_id',
-                'unique' => false,
+        ->changeColumn('id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'identity' => 'enable',
             ])
             ->save();
     }
