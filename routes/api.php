@@ -14,7 +14,9 @@ $publicRoutes = [
     Route::post('/users-invite/{hash}')->controller('UsersInviteController')->action('processUserInvite'),
     Route::post('/webhook/payments')->controller('PaymentsController')->action('handleWebhook'),
     Route::get('/apps/{key}/settings')->controller('AppsSettingsController')->action('getByKey'),
-    Route::post('/users/social')->controller('AuthController')->action('loginBySocial')
+    Route::post('/users/social')->controller('AuthController')->action('loginBySocial'),
+    Route::get('/countries')->controller('CountriesController')->action('index'),
+    Route::get('/countries/{id}')->controller('CountriesController')->action('getById'),
 ];
 
 $privateRoutes = [
