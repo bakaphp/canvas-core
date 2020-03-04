@@ -61,7 +61,9 @@ $privateRoutes = [
     Route::get('/companies-groups/{id}')->controller('CompaniesGroupsController')->action('getById'),
     Route::crud('/user-roles')->controller('UserRolesController'),
     Route::crud('/subscriptions')->controller('SubscriptionsController'),
-    Route::crud('/users-associated-apps')->controller('UsersAssociatedAppsController')
+    Route::crud('/users-associated-apps')->controller('UsersAssociatedAppsController'),
+    Route::crud('/user-linked-sources')->controller('UserLinkedSourcesController'),
+    Route::crud('/users-config')->controller('UserConfigController')
 ];
 
 $privateSubscriptionRoutes = [
