@@ -28,6 +28,12 @@ class AddCountries extends AbstractMigration
                 'encoding' => 'utf8mb4',
                 'after' => 'id',
             ])
+            ->addColumn('code', 'string', [
+                'limit' => 128,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'name',
+            ])
             ->addColumn('flag', 'string', [
                 'null' => true,
                 'limit' => 128,

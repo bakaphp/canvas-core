@@ -10,1003 +10,1253 @@ class CountriesSeeder extends AbstractSeed
         $this->table('countries')->insert([
             [
                 'name' => "Afghanistan",
-                'flag' => "AF",
+                'code' => "AF",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Åland Islands",
-                'flag' => "AX",
+                'code' => "AX",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Albania",
-                'flag' => "AL",
+                'code' => "AL",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Algeria",
-                'flag' => "DZ",
+                'code' => "DZ",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "American Samoa",
-                'flag' => "AS",
+                'code' => "AS",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Andorra",
-                'flag' => "AD",
+                'code' => "AD",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Angola",
-                'flag' => "AO",
+                'code' => "AO",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Anguilla",
-                'flag' => "AI",
+                'code' => "AI",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Antarctica",
-                'flag' => "AQ",
+                'code' => "AQ",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Antigua and Barbuda",
-                'flag' => "AG",
+                'code' => "AG",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Argentina",
-                'flag' => "AR",
+                'code' => "AR",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Armenia",
-                'flag' => "AM",
+                'code' => "AM",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Aruba",
-                'flag' => "AW",
+                'code' => "AW",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Australia",
-                'flag' => "AU",
+                'code' => "AU",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Austria",
-                'flag' => "AT",
+                'code' => "AT",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Azerbaijan",
-                'flag' => "AZ",
+                'code' => "AZ",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Bahamas",
-                'flag' => "BS",
+                'code' => "BS",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Bahrain",
-                'flag' => "BH",
+                'code' => "BH",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Bangladesh",
-                'flag' => "BD",
+                'code' => "BD",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Barbados",
-                'flag' => "BB",
+                'code' => "BB",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Belarus",
-                'flag' => "BY",
+                'code' => "BY",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Belgium",
-                'flag' => "BE",
+                'code' => "BE",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Belize",
-                'flag' => "BZ",
+                'code' => "BZ",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Benin",
-                'flag' => "BJ",
+                'code' => "BJ",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Bermuda",
-                'flag' => "BM",
+                'code' => "BM",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Bhutan",
-                'flag' => "BT",
+                'code' => "BT",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Bolivia (Plurinational State of)",
-                'flag' => "BO",
+                'code' => "BO",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Bonaire, Sint Eustatius and Saba",
-                'flag' => "BQ",
+                'code' => "BQ",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Bosnia and Herzegovina",
-                'flag' => "BA",
+                'code' => "BA",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Botswana",
-                'flag' => "BW",
+                'code' => "BW",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Bouvet Island",
-                'flag' => "BV",
+                'code' => "BV",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Brazil",
-                'flag' => "BR",
+                'code' => "BR",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "British Indian Ocean Territory",
-                'flag' => "IO",
+                'code' => "IO",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "United States Minor Outlying Islands",
-                'flag' => "UM",
+                'code' => "UM",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Virgin Islands (British)",
-                'flag' => "VG",
+                'code' => "VG",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Virgin Islands (U.S.)",
-                'flag' => "VI",
+                'code' => "VI",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Brunei Darussalam",
-                'flag' => "BN",
+                'code' => "BN",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Bulgaria",
-                'flag' => "BG",
+                'code' => "BG",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Burkina Faso",
-                'flag' => "BF",
+                'code' => "BF",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Burundi",
-                'flag' => "BI",
+                'code' => "BI",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Cambodia",
-                'flag' => "KH",
+                'code' => "KH",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Cameroon",
-                'flag' => "CM",
+                'code' => "CM",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Canada",
-                'flag' => "CA",
+                'code' => "CA",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Cabo Verde",
-                'flag' => "CV",
+                'code' => "CV",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Cayman Islands",
-                'flag' => "KY",
+                'code' => "KY",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Central African Republic",
-                'flag' => "CF",
+                'code' => "CF",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Chad",
-                'flag' => "TD",
+                'code' => "TD",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Chile",
-                'flag' => "CL",
+                'code' => "CL",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "China",
-                'flag' => "CN",
+                'code' => "CN",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Christmas Island",
-                'flag' => "CX",
+                'code' => "CX",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Cocos (Keeling) Islands",
-                'flag' => "CC",
+                'code' => "CC",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Colombia",
-                'flag' => "CO",
+                'code' => "CO",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Comoros",
-                'flag' => "KM",
+                'code' => "KM",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Congo",
-                'flag' => "CG",
+                'code' => "CG",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Congo (Democratic Republic of the)",
-                'flag' => "CD",
+                'code' => "CD",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Cook Islands",
-                'flag' => "CK",
+                'code' => "CK",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Costa Rica",
-                'flag' => "CR",
+                'code' => "CR",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Croatia",
-                'flag' => "HR",
+                'code' => "HR",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Cuba",
-                'flag' => "CU",
+                'code' => "CU",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Curaçao",
-                'flag' => "CW",
+                'code' => "CW",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Cyprus",
-                'flag' => "CY",
+                'code' => "CY",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Czech Republic",
-                'flag' => "CZ",
+                'code' => "CZ",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Denmark",
-                'flag' => "DK",
+                'code' => "DK",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Djibouti",
-                'flag' => "DJ",
+                'code' => "DJ",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Dominica",
-                'flag' => "DM",
+                'code' => "DM",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Dominican Republic",
-                'flag' => "DO",
+                'code' => "DO",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Ecuador",
-                'flag' => "EC",
+                'code' => "EC",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Egypt",
-                'flag' => "EG",
+                'code' => "EG",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "El Salvador",
-                'flag' => "SV",
+                'code' => "SV",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Equatorial Guinea",
-                'flag' => "GQ",
+                'code' => "GQ",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Eritrea",
-                'flag' => "ER",
+                'code' => "ER",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Estonia",
-                'flag' => "EE",
+                'code' => "EE",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Ethiopia",
-                'flag' => "ET",
+                'code' => "ET",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Falkland Islands (Malvinas)",
-                'flag' => "FK",
+                'code' => "FK",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Faroe Islands",
-                'flag' => "FO",
+                'code' => "FO",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Fiji",
-                'flag' => "FJ",
+                'code' => "FJ",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Finland",
-                'flag' => "FI",
+                'code' => "FI",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "France",
-                'flag' => "FR",
+                'code' => "FR",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "French Guiana",
-                'flag' => "GF",
+                'code' => "GF",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "French Polynesia",
-                'flag' => "PF",
+                'code' => "PF",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "French Southern Territories",
-                'flag' => "TF",
+                'code' => "TF",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Gabon",
-                'flag' => "GA",
+                'code' => "GA",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Gambia",
-                'flag' => "GM",
+                'code' => "GM",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Georgia",
-                'flag' => "GE",
+                'code' => "GE",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Germany",
-                'flag' => "DE",
+                'code' => "DE",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Ghana",
-                'flag' => "GH",
+                'code' => "GH",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Gibraltar",
-                'flag' => "GI",
+                'code' => "GI",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Greece",
-                'flag' => "GR",
+                'code' => "GR",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Greenland",
-                'flag' => "GL",
+                'code' => "GL",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Grenada",
-                'flag' => "GD",
+                'code' => "GD",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Guadeloupe",
-                'flag' => "GP",
+                'code' => "GP",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Guam",
-                'flag' => "GU",
+                'code' => "GU",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Guatemala",
-                'flag' => "GT",
+                'code' => "GT",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Guernsey",
-                'flag' => "GG",
+                'code' => "GG",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Guinea",
-                'flag' => "GN",
+                'code' => "GN",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Guinea-Bissau",
-                'flag' => "GW",
+                'code' => "GW",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Guyana",
-                'flag' => "GY",
+                'code' => "GY",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Haiti",
-                'flag' => "HT",
+                'code' => "HT",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Heard Island and McDonald Islands",
-                'flag' => "HM",
+                'code' => "HM",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Holy See",
-                'flag' => "VA",
+                'code' => "VA",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Honduras",
-                'flag' => "HN",
+                'code' => "HN",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Hong Kong",
-                'flag' => "HK",
+                'code' => "HK",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Hungary",
-                'flag' => "HU",
+                'code' => "HU",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Iceland",
-                'flag' => "IS",
+                'code' => "IS",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "India",
-                'flag' => "IN",
+                'code' => "IN",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Indonesia",
-                'flag' => "ID",
+                'code' => "ID",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Côte d'Ivoire",
-                'flag' => "CI",
+                'code' => "CI",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Iran (Islamic Republic of)",
-                'flag' => "IR",
+                'code' => "IR",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Iraq",
-                'flag' => "IQ",
+                'code' => "IQ",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Ireland",
-                'flag' => "IE",
+                'code' => "IE",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Isle of Man",
-                'flag' => "IM",
+                'code' => "IM",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Israel",
-                'flag' => "IL",
+                'code' => "IL",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Italy",
-                'flag' => "IT",
+                'code' => "IT",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Jamaica",
-                'flag' => "JM",
+                'code' => "JM",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Japan",
-                'flag' => "JP",
+                'code' => "JP",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Jersey",
-                'flag' => "JE",
+                'code' => "JE",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Jordan",
-                'flag' => "JO",
+                'code' => "JO",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Kazakhstan",
-                'flag' => "KZ",
+                'code' => "KZ",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Kenya",
-                'flag' => "KE",
+                'code' => "KE",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Kiribati",
-                'flag' => "KI",
+                'code' => "KI",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Kuwait",
-                'flag' => "KW",
+                'code' => "KW",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Kyrgyzstan",
-                'flag' => "KG",
+                'code' => "KG",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Lao People's Democratic Republic",
-                'flag' => "LA",
+                'code' => "LA",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Latvia",
-                'flag' => "LV",
+                'code' => "LV",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Lebanon",
-                'flag' => "LB",
+                'code' => "LB",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Lesotho",
-                'flag' => "LS",
+                'code' => "LS",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Liberia",
-                'flag' => "LR",
+                'code' => "LR",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Libya",
-                'flag' => "LY",
+                'code' => "LY",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Liechtenstein",
-                'flag' => "LI",
+                'code' => "LI",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Lithuania",
-                'flag' => "LT",
+                'code' => "LT",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Luxembourg",
-                'flag' => "LU",
+                'code' => "LU",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Macao",
-                'flag' => "MO",
+                'code' => "MO",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Macedonia (the former Yugoslav Republic of)",
-                'flag' => "MK",
+                'code' => "MK",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Madagascar",
-                'flag' => "MG",
+                'code' => "MG",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Malawi",
-                'flag' => "MW",
+                'code' => "MW",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Malaysia",
-                'flag' => "MY",
+                'code' => "MY",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Maldives",
-                'flag' => "MV",
+                'code' => "MV",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Mali",
-                'flag' => "ML",
+                'code' => "ML",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Malta",
-                'flag' => "MT",
+                'code' => "MT",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Marshall Islands",
-                'flag' => "MH",
+                'code' => "MH",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Martinique",
-                'flag' => "MQ",
+                'code' => "MQ",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Mauritania",
-                'flag' => "MR",
+                'code' => "MR",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Mauritius",
-                'flag' => "MU",
+                'code' => "MU",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Mayotte",
-                'flag' => "YT",
+                'code' => "YT",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Mexico",
-                'flag' => "MX",
+                'code' => "MX",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Micronesia (Federated States of)",
-                'flag' => "FM",
+                'code' => "FM",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Moldova (Republic of)",
-                'flag' => "MD",
+                'code' => "MD",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Monaco",
-                'flag' => "MC",
+                'code' => "MC",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Mongolia",
-                'flag' => "MN",
+                'code' => "MN",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Montenegro",
-                'flag' => "ME",
+                'code' => "ME",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Montserrat",
-                'flag' => "MS",
+                'code' => "MS",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Morocco",
-                'flag' => "MA",
+                'code' => "MA",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Mozambique",
-                'flag' => "MZ",
+                'code' => "MZ",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Myanmar",
-                'flag' => "MM",
+                'code' => "MM",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Namibia",
-                'flag' => "NA",
+                'code' => "NA",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Nauru",
-                'flag' => "NR",
+                'code' => "NR",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Nepal",
-                'flag' => "NP",
+                'code' => "NP",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Netherlands",
-                'flag' => "NL",
+                'code' => "NL",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "New Caledonia",
-                'flag' => "NC",
+                'code' => "NC",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "New Zealand",
-                'flag' => "NZ",
+                'code' => "NZ",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Nicaragua",
-                'flag' => "NI",
+                'code' => "NI",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Niger",
-                'flag' => "NE",
+                'code' => "NE",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Nigeria",
-                'flag' => "NG",
+                'code' => "NG",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Niue",
-                'flag' => "NU",
+                'code' => "NU",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Norfolk Island",
-                'flag' => "NF",
+                'code' => "NF",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Korea (Democratic People's Republic of)",
-                'flag' => "KP",
+                'code' => "KP",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Northern Mariana Islands",
-                'flag' => "MP",
+                'code' => "MP",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Norway",
-                'flag' => "NO",
+                'code' => "NO",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Oman",
-                'flag' => "OM",
+                'code' => "OM",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Pakistan",
-                'flag' => "PK",
+                'code' => "PK",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Palau",
-                'flag' => "PW",
+                'code' => "PW",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Palestine, State of",
-                'flag' => "PS",
+                'code' => "PS",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Panama",
-                'flag' => "PA",
+                'code' => "PA",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Papua New Guinea",
-                'flag' => "PG",
+                'code' => "PG",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Paraguay",
-                'flag' => "PY",
+                'code' => "PY",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Peru",
-                'flag' => "PE",
+                'code' => "PE",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Philippines",
-                'flag' => "PH",
+                'code' => "PH",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Pitcairn",
-                'flag' => "PN",
+                'code' => "PN",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Poland",
-                'flag' => "PL",
+                'code' => "PL",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Portugal",
-                'flag' => "PT",
+                'code' => "PT",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Puerto Rico",
-                'flag' => "PR",
+                'code' => "PR",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Qatar",
-                'flag' => "QA",
+                'code' => "QA",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Republic of Kosovo",
-                'flag' => "XK",
+                'code' => "XK",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Réunion",
-                'flag' => "RE",
+                'code' => "RE",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Romania",
-                'flag' => "RO",
+                'code' => "RO",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Russian Federation",
-                'flag' => "RU",
+                'code' => "RU",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Rwanda",
-                'flag' => "RW",
+                'code' => "RW",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Saint Barthélemy",
-                'flag' => "BL",
+                'code' => "BL",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Saint Helena, Ascension and Tristan da Cunha",
-                'flag' => "SH",
+                'code' => "SH",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Saint Kitts and Nevis",
-                'flag' => "KN",
+                'code' => "KN",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Saint Lucia",
-                'flag' => "LC",
+                'code' => "LC",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Saint Martin (French part)",
-                'flag' => "MF",
+                'code' => "MF",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Saint Pierre and Miquelon",
-                'flag' => "PM",
+                'code' => "PM",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Saint Vincent and the Grenadines",
-                'flag' => "VC",
+                'code' => "VC",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Samoa",
-                'flag' => "WS",
+                'code' => "WS",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "San Marino",
-                'flag' => "SM",
+                'code' => "SM",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Sao Tome and Principe",
-                'flag' => "ST",
+                'code' => "ST",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Saudi Arabia",
-                'flag' => "SA",
+                'code' => "SA",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Senegal",
-                'flag' => "SN",
+                'code' => "SN",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Serbia",
-                'flag' => "RS",
+                'code' => "RS",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Seychelles",
-                'flag' => "SC",
+                'code' => "SC",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Sierra Leone",
-                'flag' => "SL",
+                'code' => "SL",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Singapore",
-                'flag' => "SG",
+                'code' => "SG",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Sint Maarten (Dutch part)",
-                'flag' => "SX",
+                'code' => "SX",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Slovakia",
-                'flag' => "SK",
+                'code' => "SK",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Slovenia",
-                'flag' => "SI",
+                'code' => "SI",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Solomon Islands",
-                'flag' => "SB",
+                'code' => "SB",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Somalia",
-                'flag' => "SO",
+                'code' => "SO",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "South Africa",
-                'flag' => "ZA",
+                'code' => "ZA",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "South Georgia and the South Sandwich Islands",
-                'flag' => "GS",
+                'code' => "GS",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Korea (Republic of)",
-                'flag' => "KR",
+                'code' => "KR",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "South Sudan",
-                'flag' => "SS",
+                'code' => "SS",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Spain",
-                'flag' => "ES",
+                'code' => "ES",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Sri Lanka",
-                'flag' => "LK",
+                'code' => "LK",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Sudan",
-                'flag' => "SD",
+                'code' => "SD",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Suriname",
-                'flag' => "SR",
+                'code' => "SR",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Svalbard and Jan Mayen",
-                'flag' => "SJ",
+                'code' => "SJ",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Swaziland",
-                'flag' => "SZ",
+                'code' => "SZ",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Sweden",
-                'flag' => "SE",
+                'code' => "SE",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Switzerland",
-                'flag' => "CH",
+                'code' => "CH",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Syrian Arab Republic",
-                'flag' => "SY",
+                'code' => "SY",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Taiwan",
-                'flag' => "TW",
+                'code' => "TW",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Tajikistan",
-                'flag' => "TJ",
+                'code' => "TJ",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Tanzania, United Republic of",
-                'flag' => "TZ",
+                'code' => "TZ",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Thailand",
-                'flag' => "TH",
+                'code' => "TH",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Timor-Leste",
-                'flag' => "TL",
+                'code' => "TL",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Togo",
-                'flag' => "TG",
+                'code' => "TG",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Tokelau",
-                'flag' => "TK",
+                'code' => "TK",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Tonga",
-                'flag' => "TO",
+                'code' => "TO",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Trinidad and Tobago",
-                'flag' => "TT",
+                'code' => "TT",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Tunisia",
-                'flag' => "TN",
+                'code' => "TN",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Turkey",
-                'flag' => "TR",
+                'code' => "TR",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Turkmenistan",
-                'flag' => "TM",
+                'code' => "TM",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Turks and Caicos Islands",
-                'flag' => "TC",
+                'code' => "TC",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Tuvalu",
-                'flag' => "TV",
+                'code' => "TV",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Uganda",
-                'flag' => "UG",
+                'code' => "UG",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Ukraine",
-                'flag' => "UA",
+                'code' => "UA",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "United Arab Emirates",
-                'flag' => "AE",
+                'code' => "AE",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "United Kingdom of Great Britain and Northern Ireland",
-                'flag' => "GB",
+                'code' => "GB",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "United States of America",
-                'flag' => "US",
+                'code' => "US",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Uruguay",
-                'flag' => "UY",
+                'code' => "UY",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Uzbekistan",
-                'flag' => "UZ",
+                'code' => "UZ",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Vanuatu",
-                'flag' => "VU",
+                'code' => "VU",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Venezuela (Bolivarian Republic of)",
-                'flag' => "VE",
+                'code' => "VE",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Viet Nam",
-                'flag' => "VN",
+                'code' => "VN",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Wallis and Futuna",
-                'flag' => "WF",
+                'code' => "WF",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Western Sahara",
-                'flag' => "EH",
+                'code' => "EH",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Yemen",
-                'flag' => "YE",
+                'code' => "YE",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Zambia",
-                'flag' => "ZM",
+                'code' => "ZM",
                 'created_at' => date('Y-m-d H:i:s')
-            ],            [
+            ],
+            [
                 'name' => "Zimbabwe",
-                'flag' => "ZW"
+                'code' => "ZW",
+                'created_at' => date('Y-m-d H:i:s')
             ]
             ])
             ->save();
