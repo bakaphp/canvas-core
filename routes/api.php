@@ -59,10 +59,10 @@ $privateRoutes = [
     Route::put('/users/{id}/apps/{appsId}/status')->controller('UsersController')->action('changeAppUserActiveStatus'),
     Route::get('/companies-groups')->controller('CompaniesGroupsController')->action('index'),
     Route::get('/companies-groups/{id}')->controller('CompaniesGroupsController')->action('getById'),
-    Route::crud('/user-roles')->controller('UserRolesController'),
+    Route::crud('/users-roles')->controller('UserRolesController'),
     Route::crud('/subscriptions')->controller('SubscriptionsController'),
     Route::crud('/users-associated-apps')->controller('UsersAssociatedAppsController'),
-    Route::crud('/user-linked-sources')->controller('UserLinkedSourcesController'),
+    Route::crud('/users-linked-sources')->controller('UserLinkedSourcesController'),
     Route::crud('/users-config')->controller('UserConfigController')
 ];
 
