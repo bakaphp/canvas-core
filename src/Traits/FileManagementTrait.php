@@ -153,6 +153,8 @@ trait FileManagementTrait
                 'audio/x-mpeg-3',
                 'application/x-zip-compressed',
                 'application/octet-stream',
+                'application/msword',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
             ],
             'messageType' => 'Allowed file types are :types',
         ];
