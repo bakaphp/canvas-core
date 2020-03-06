@@ -283,7 +283,7 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
             [
                 'alias' => 'subscription',
                 'params' => [
-                    'conditions' => 'apps_id = ' . $this->di->getApp()->getId() . '  AND is_deleted = 0 ',
+                    'conditions' => 'apps_id = ' . $this->di->getApp()->getId() . ' AND is_deleted = 0',
                     'order' => 'id DESC'
                 ]
             ]
