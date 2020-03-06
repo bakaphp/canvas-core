@@ -123,7 +123,7 @@ class UpdateKanvasIndexTwo extends AbstractMigration
             ->save();
         $this->table('user_roles', [
                 'id' => false,
-                'primary_key' => ['users_id', 'apps_id', 'companies_id'],
+                'primary_key' => ['id'],
                 'engine' => 'InnoDB',
                 'encoding' => 'utf8mb4',
                 'collation' => 'utf8mb4_unicode_ci',
