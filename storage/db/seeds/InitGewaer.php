@@ -217,6 +217,31 @@ class InitGewaer extends AbstractSeed
                 'free_trial_dates' => 14,
                 'is_default' => 0
             ],
+            [
+                'apps_id' => '1',
+                'name' => 'monthly-1',
+                'description' => 'monthly-1',
+                'stripe_id' => 'monthly-1',
+                'stripe_plan' => 'monthly-1',
+                'pricing' => 5,
+                'pricing_anual' => 60,
+                'currency_id' => 1,
+                'free_trial_dates' => 14,
+                'is_default' => 1,
+                'payment_frequency' => 1
+            ], [
+                'apps_id' => '1',
+                'name' => 'yearly-1',
+                'description' => 'yearly-1',
+                'stripe_id' => 'yearly-1',
+                'stripe_plan' => 'yearly-1',
+                'pricing' => 5,
+                'pricing_anual' => 60,
+                'currency_id' => 1,
+                'free_trial_dates' => 14,
+                'is_default' => 0,
+                'payment_frequency' => 12
+            ]
         ];
 
         $table = $this->table('apps_plans');
