@@ -46,20 +46,20 @@ class UserMapper extends CustomMapper
         }
 
         $userDto->id = $user->id;
+        $userDto->displayname = $user->displayname;
+        $userDto->email = $user->email;
+        $userDto->firstname = $user->firstname;
+        $userDto->lastname = $user->lastname;
         $userDto->active_subscription_id = $user->active_subscription_id;
         $userDto->card_brand = $user->card_brand;
         $userDto->cell_phone_number = $user->cell_phone_number;
         $userDto->city_id = $user->city_id;
         $userDto->country_id = $user->country_id;
         $userDto->created_at = $user->created_at;
-        $userDto->displayname = $user->displayname;
         $userDto->dob = $user->dob;
-        $userDto->email = $user->email;
-        $userDto->firstname = $user->firstname;
         $userDto->interest = $user->interest;
         $userDto->karma = $user->karma;
         $userDto->language = $user->language;
-        $userDto->lastname = $user->lastname;
         $userDto->lastvisit = $user->lastvisit;
         $userDto->location = $user->location;
         $userDto->phone_number = $user->phone_number;
@@ -100,6 +100,7 @@ class UserMapper extends CustomMapper
         $userDto->default_company = $user->getDefaultCompany()->getId();
         $userDto->default_company_branch = $user->getDefaultCompany()->defaultBranch->getId();
         $userDto->roles_id = $user->getPermission()->roles_id;
+        $userDto->access_list = [];
 
         $this->getRelationships($user, $userDto, $context);
 
