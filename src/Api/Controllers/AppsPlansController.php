@@ -76,8 +76,6 @@ class AppsPlansController extends BaseController
      */
     public function edit($stripeId) : Response
     {
-        print_r('hello');
-        die();
         $appPlan = $this->model->findFirstByStripeId($stripeId);
 
         if (!is_object($appPlan)) {
