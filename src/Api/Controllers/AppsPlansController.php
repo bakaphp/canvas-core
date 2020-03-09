@@ -49,9 +49,19 @@ class AppsPlansController extends BaseController
      * set objects.
      *
      * @return void
+     * @todo User role should be checked before any action regarding app plans
      */
     public function onConstruct()
     {
+        if (!$this->userData->hasRole('Default.Admins') || (int) $id === 0) {
+
+            $id = $this->userData->getId();
+
+            if ($this->userData->hasRole('Default.Users')) {
+                $this->userData->can('Users.Apps-plans');
+            }
+        }
+
         $this->model = new AppsPlans();
         $this->additionalSearchFields = [
             ['is_deleted', ':', '0'],
@@ -64,9 +74,12 @@ class AppsPlansController extends BaseController
      *
      * @param string $stripeId
      * @return Response
+     * @todo Fetch subscription information of owner of the company if another user with Admin permission can change the subscription plan
      */
     public function edit($stripeId) : Response
     {
+        print_r('hello');
+        die();
         $appPlan = $this->model->findFirstByStripeId($stripeId);
 
         if (!is_object($appPlan)) {
@@ -215,7 +228,7 @@ class AppsPlansController extends BaseController
         $this->userData->getDefaultCompany()->zipcode = $zipcode;
         $this->userData->getDefaultCompany()->update();
 
-        $customerId = $this->userData->stripe_id;
+        $customerId = !empty($this->userData->stripe_id) ? $this->userData->stripe_id : $this->userData->getDefaultCompany()->get('payment_gateway_customer_id');
 
         //Update default payment method with new card.
         $stripeCustomer = $this->userData->updatePaymentMethod($customerId, $token);
