@@ -53,12 +53,11 @@ class AppsPlansController extends BaseController
     public function onConstruct()
     {
         if (!$this->userData->hasRole('Default.Admins') || (int) $id === 0) {
-
             $id = $this->userData->getId();
+        }
 
-            if ($this->userData->hasRole('Default.Users')) {
-                $this->userData->can('Users.Apps-plans');
-            }
+        if ($this->userData->hasRole('Default.Users')) {
+            $this->userData->can('Users.Apps-plans');
         }
 
         $this->model = new AppsPlans();
@@ -76,6 +75,8 @@ class AppsPlansController extends BaseController
      */
     public function edit($stripeId) : Response
     {
+        print_r('hello');
+        die();
         $appPlan = $this->model->findFirstByStripeId($stripeId);
 
         if (!is_object($appPlan)) {
