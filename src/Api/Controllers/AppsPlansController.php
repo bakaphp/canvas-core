@@ -49,7 +49,6 @@ class AppsPlansController extends BaseController
      * set objects.
      *
      * @return void
-     * @todo User role should be checked before any action regarding app plans
      */
     public function onConstruct()
     {
@@ -74,7 +73,6 @@ class AppsPlansController extends BaseController
      *
      * @param string $stripeId
      * @return Response
-     * @todo Fetch subscription information of owner of the company if another user with Admin permission can change the subscription plan
      */
     public function edit($stripeId) : Response
     {
