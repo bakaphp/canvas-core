@@ -281,7 +281,6 @@ class Users extends \Baka\Auth\Models\Users
         );
     }
 
-
     /**
      * Validations and business logic.
      */
@@ -346,27 +345,17 @@ class Users extends \Baka\Auth\Models\Users
         return $this->id;
     }
 
-    /**
-     * A company owner is the first person that register this company
-     * This only ocurres when signing up the first time, after that all users invites
-     * come with a default_company id attached.
-     *
-     * @return boolean
-     */
-    public function isFirstSignup(): bool
-    {
-        return empty($this->default_company);
-    }
-
-    /**
-     * Does the user have a role assign to him?
-     *
-     * @return boolean
-     */
-    public function hasRole(): bool
-    {
-        return !empty($this->roles_id);
-    }
+    // /**
+    //  * A company owner is the first person that register this company
+    //  * This only ocurres when signing up the first time, after that all users invites
+    //  * come with a default_company id attached.
+    //  *
+    //  * @return boolean
+    //  */
+    // public function isFirstSignup(): bool
+    // {
+    //     return empty($this->default_company);
+    // }
 
     /**
      * Get all of the subscriptions for the user.
