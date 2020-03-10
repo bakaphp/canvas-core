@@ -358,6 +358,16 @@ class Users extends \Baka\Auth\Models\Users
     // }
 
     /**
+     * Does the user have a role assign to him?
+     *
+     * @return boolean
+     */
+    public function hasRole(): bool
+    {
+        return !empty($this->roles_id);
+    }
+
+    /**
      * Get all of the subscriptions for the user.
      */
     public function subscriptions()
