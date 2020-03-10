@@ -110,6 +110,12 @@ class InitGewaer extends AbstractSeed
                 'url' => 'github.com',
                 'created_at' => date('Y-m-d H:i:s'),
                 'is_deleted' => 0
+            ],
+            [
+                'title' => 'apple',
+                'url' => 'apple.com',
+                'created_at' => date('Y-m-d H:i:s'),
+                'is_deleted' => 0
             ]
         ];
 
@@ -119,7 +125,7 @@ class InitGewaer extends AbstractSeed
         //add default languages
         $data = [
             [
-                'id'=> -1,
+                'id' => -1,
                 'user_activation_email' => $random->uuid(),
                 'email' => 'anonymous@baka.io',
                 'password' => password_hash('bakatest123567', PASSWORD_DEFAULT),
@@ -392,7 +398,7 @@ class InitGewaer extends AbstractSeed
                 'menu_order' => null,
                 'show' => '0',
                 'use_elastic' => '0',
-                'browse_fields' => '[{"name":"label","title":"Label","sortField":"label","filterable":true,"searchable":true}]',
+                'browse_fields' => '[{"name":"name","title":"Module","sortField":"name","filterable":true,"searchable":true}]',
                 'created_at' => date('Y-m-d H:i:s'),
                 'updated_at' => null,
                 'is_deleted' => '0',
@@ -409,12 +415,22 @@ class InitGewaer extends AbstractSeed
             [
                 'id' => 1,
                 'name' => 'text',
-                'description' => 'Any Text type of area, input , etc',
+                'description' => 'Regular input field. Any text.',
+                'icon'=> 'fas fa-sort',
                 'created_at' => date('Y-m-d H:i:s')
-            ], [
+            ],
+            [
                 'id' => 2,
-                'name' => 'list',
+                'name' => 'select',
                 'description' => 'Dropdown lists',
+                'icon'=> 'fas fa-sort',
+                'created_at' => date('Y-m-d H:i:s')
+            ],
+            [
+                'id' => 3,
+                'name' => 'number',
+                'description' => 'Whole numbers',
+                'icon'=> 'fas fa-sort-numeric-down',
                 'created_at' => date('Y-m-d H:i:s')
             ]
         ];
