@@ -221,7 +221,7 @@ class AppsPlansController extends BaseController
         $this->userData->getDefaultCompany()->zipcode = $zipcode;
         $this->userData->getDefaultCompany()->update();
 
-        $customerId = !empty($this->userData->stripe_id) ? $this->userData->stripe_id : $this->userData->getDefaultCompany()->get('payment_gateway_customer_id');
+        $customerId = $this->userData->getDefaultCompany()->get('payment_gateway_customer_id');
 
         //Update default payment method with new card.
         $stripeCustomer = $this->userData->updatePaymentMethod($customerId, $token);
