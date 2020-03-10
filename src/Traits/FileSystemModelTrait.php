@@ -7,11 +7,9 @@ namespace Canvas\Traits;
 use Canvas\Models\SystemModules;
 use Canvas\Models\FileSystem;
 use RuntimeException;
-use Phalcon\Mvc\Model\Resultset\Simple;
 use Canvas\Models\FileSystemEntities;
 use Canvas\Dto\Files;
 use Canvas\Mapper\FileMapper;
-use Phalcon\Di;
 use Phalcon\Mvc\Model\ResultsetInterface;
 
 /**
@@ -224,28 +222,41 @@ trait FileSystemModelTrait
     public function getAttachments(string $fileType = null) : ResultsetInterface
     {
         $systemModule = SystemModules::getSystemModuleByModelName(self::class);
-        $companyId = $this->di->getUserData()->currentCompanyId();
+        $appPublicImages = (bool) $this->di->getApp()->get('public_images');
 
         $bindParams = [
             $systemModule->getId(),
             $this->getId(),
             0,
-            $companyId
         ];
 
+        //do we allow images by entity to be public to anybody accessing it directly by the entity?
+        if ($appPublicImages) {
+            $fileTypeSql = !is_null($fileType) ? 'AND f.file_type = ?3' : null;
+
+            $condition = 'system_modules_id = ?0 AND entity_id = ?1 AND is_deleted = ?2
+            AND filesystem_id IN (SELECT f.id from \Canvas\Models\FileSystem f WHERE
+                f.is_deleted = ?2 ' . $fileTypeSql . '
+            )';
+        } else {
+            $fileTypeSql = !is_null($fileType) ? 'AND f.file_type = ?4' : null;
+            $bindParams[] = $this->di->getUserData()->currentCompanyId();
+
+            $condition = 'system_modules_id = ?0 AND entity_id = ?1 AND is_deleted = ?2 and companies_id = ?3
+            AND filesystem_id IN (SELECT f.id from \Canvas\Models\FileSystem f WHERE
+                f.is_deleted = ?2 AND f.companies_id = ?3 ' . $fileTypeSql . '
+            )';
+        }
+
         /**
-         * We can also filter the attachements by its file type.
-         */
-        $fileTypeSql = !is_null($fileType) ? 'AND f.file_type = ?4' : null;
+          * We can also filter the attachements by its file type.
+          */
         if ($fileTypeSql) {
             $bindParams[] = $fileType;
         }
 
         return FileSystemEntities::find([
-            'conditions' => 'system_modules_id = ?0 AND entity_id = ?1 AND is_deleted = ?2 and companies_id = ?3
-                            AND filesystem_id IN (SELECT f.id from \Canvas\Models\FileSystem f WHERE
-                                f.is_deleted = ?2 AND f.companies_id = ?3 ' . $fileTypeSql . '
-                            )',
+            'conditions' => $condition,
             'bind' => $bindParams
         ]);
     }
@@ -297,14 +308,32 @@ trait FileSystemModelTrait
     public function getAttachmentByName(string $fieldName)
     {
         $systemModule = SystemModules::getSystemModuleByModelName(self::class);
-        $companyId = $this->di->getUserData()->currentCompanyId();
+        $appPublicImages = (bool) $this->di->getApp()->get('public_images');
+
+        $bind = [
+            $systemModule->getId(),
+            $this->getId(),
+            0,
+            $fieldName,
+        ];
+
+        //do we allow images by entity to be public to anybody accessing it directly by the entity?
+        if ($appPublicImages) {
+            $condition = 'system_modules_id = ?0 AND entity_id = ?1 AND is_deleted = ?2 and field_name = ?3 
+            AND filesystem_id IN (SELECT f.id from \Canvas\Models\FileSystem f WHERE
+                f.is_deleted = ?2
+            )';
+        } else {
+            $bind[] = $this->di->getUserData()->currentCompanyId();
+            $condition = 'system_modules_id = ?0 AND entity_id = ?1 AND is_deleted = ?2 and field_name = ?3 and companies_id = ?4
+            AND filesystem_id IN (SELECT f.id from \Canvas\Models\FileSystem f WHERE
+                f.is_deleted = ?2 AND f.companies_id = ?4
+            )';
+        }
 
         return FileSystemEntities::findFirst([
-            'conditions' => 'system_modules_id = ?0 AND entity_id = ?1 AND is_deleted = ?2 and field_name = ?3 and companies_id = ?4
-                            AND filesystem_id IN (SELECT f.id from \Canvas\Models\FileSystem f WHERE
-                                f.is_deleted = ?2 AND f.companies_id = ?4
-                            )',
-            'bind' => [$systemModule->getId(), $this->getId(), 0, $fieldName, $companyId]
+            'conditions' => $condition,
+            'bind' => $bind
         ]);
     }
 
