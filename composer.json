@@ -41,7 +41,8 @@
         "robmorgan/phinx": "0.*",
         "sentry/sentry": "^1.9",
         "sly/notification-pusher": "2.x",
-        "vlucas/phpdotenv": "^2.4"
+        "vlucas/phpdotenv": "^2.4",
+        "griffinledingham/php-apple-signin": "^1.0"
     },
     "require-dev": {
         "codeception/verify": "*",
