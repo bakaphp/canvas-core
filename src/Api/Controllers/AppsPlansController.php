@@ -56,9 +56,7 @@ class AppsPlansController extends BaseController
             $id = $this->userData->getId();
         }
 
-        if ($this->userData->hasRole('Default.Users')) {
-            $this->userData->can('Users.Apps-plans');
-        }
+        $this->userData->can('Users.Apps-plans');
 
         $this->model = new AppsPlans();
         $this->additionalSearchFields = [
