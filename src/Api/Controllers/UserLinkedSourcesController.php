@@ -9,6 +9,10 @@ use Baka\Auth\Models\Sources;
 use Phalcon\Http\Response;
 use Phalcon\Validation\Validator\PresenceOf;
 use Canvas\Validation as CanvasValidation;
+use Lcobucci\JWT\Builder;
+use Lcobucci\JWT\Signer\Hmac\Sha256;
+use GuzzleHttp\Client;
+use \AppleSignIn\ASDecoder;
 
 /**
  * Class LanguagesController.
@@ -138,5 +142,31 @@ class UserLinkedSourcesController extends BaseController
             'msg' => 'User Device detached',
             'user' => $this->userData
         ]);
+    }
+
+    /**
+     * Test Get Apple Access Tokens
+     */
+    public function validateAppleToken(): Response
+    {
+
+        $clientUser = getenv('APPLE_ISS');
+        $identityToken = "eyJraWQiOiI4NkQ4OEtmIiwiYWxnIjoiUlMyNTYifQ.eyJpc3MiOiJodHRwczovL2FwcGxlaWQuYXBwbGUuY29tIiwiYXVkIjoiY29tLm1lbW9kYXBwLmFwcC5kZXZlbG9wbWVudC5pb3MiLCJleHAiOjE1ODM4Njk0MzksImlhdCI6MTU4Mzg2ODgzOSwic3ViIjoiMDAwNDkxLjllMzUwYzExMzg4YTQxOTc5MzU2MjYyNTJhYmNiZDg5LjE5MTciLCJub25jZSI6ImQzY2UzNWRjMzE2NzUyYjgxZDlhMjIwMzVjZWI2NWMyMzlhZTQ1NjYxOTA1YzMxMTRhZmVjYTJhZDE2Njg5NTkiLCJjX2hhc2giOiJIeC1SVGZkS0VmczFQMmRqV29hX2pnIiwiZW1haWwiOiJhbGV4dXBAbWN0ZWtrLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjoidHJ1ZSIsImF1dGhfdGltZSI6MTU4Mzg2ODgzOSwibm9uY2Vfc3VwcG9ydGVkIjp0cnVlfQ.d4Tl0aGakJVsPhxqnUnQFRF1_hra9LETJDSPWXfyn-sRgJ8Tm-EnBzGU-v-weDSnJcUQktrskmIEyfe3zcMBDnlB2ao0lf4BA5Yo_9JRsnIaOk89VyFBuf52VXgWjWNYcJ-KN8G8eOcLd9cALInbgF8FBTDL0PeGzXW_1oc6944YJZVg6yui9TarAqvZxwLVRRMmzBXarvgkGNL3CctfrFisVv1nvfti0I4HMQpIlt8zcbpNXWsrx9vs3SflX5G9IwKtjTzP4wH_bfuUTTDroEu7aKM3ToZh5bsQnfMKNoCLAw5X34zKBHZ8o4lZmApSNXHudk84Uz7LNIBfoGphHg";
+
+        $appleSignInPayload = ASDecoder::getAppleSignInPayload($identityToken);
+
+        /**
+         * Obtain the Sign In with Apple email and user creds.
+         */
+        $email = $appleSignInPayload->getEmail();
+        $user = $appleSignInPayload->getUser();
+
+        /**
+         * Determine whether the client-provided user is valid.
+         */
+        $isValid = $appleSignInPayload->verifyUser($clientUser);
+
+        return $this->response($isValid);
+
     }
 }
