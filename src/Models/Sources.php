@@ -76,14 +76,4 @@ class Sources extends AbstractModel
     {
         return 'sources';
     }
-
-    /**
-     * Validate is source is from apple
-     *
-     * @return bool
-     */
-    public function isApple(): bool
-    {
-        return $this->title == 'apple';
-    }
 }
