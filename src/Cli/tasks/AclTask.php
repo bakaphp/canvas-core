@@ -73,8 +73,7 @@ class AclTask extends PhTask
             'Default.CompanyRoles',
             'Default.CompanySubscriptions',
             'Default.CustomFields',
-            'Default.CompaniesManager',
-            'Default.Apps-plans'
+            'Default.CompaniesManager'
         ];
 
         foreach ($defaultResources as $resource) {
