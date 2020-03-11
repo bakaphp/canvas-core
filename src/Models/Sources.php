@@ -84,6 +84,6 @@ class Sources extends AbstractModel
      */
     public function isApple(): bool
     {
-        return $this->title == 'apple' ?: false;
+        return $this->title == 'apple';
     }
 }
