@@ -9,10 +9,8 @@ use Baka\Auth\Models\Sources;
 use Phalcon\Http\Response;
 use Phalcon\Validation\Validator\PresenceOf;
 use Canvas\Validation as CanvasValidation;
-use Lcobucci\JWT\Builder;
-use Lcobucci\JWT\Signer\Hmac\Sha256;
-use GuzzleHttp\Client;
 use \Baka\ASDecoder;
+
 use Canvas\Http\Exception\InternalServerErrorException;
 
 /**
@@ -93,7 +91,7 @@ class UserLinkedSourcesController extends BaseController
             //If source is apple verify if the token is valid
             $appleUserInfo = $this->validateAppleUser($deviceId);
 
-            if (!$appleUserInfo && $source->title == 'apple') {
+            if (!$appleUserInfo && $source->isApple()) {
                 throw new InternalServerErrorException('Apple user not valid');
             } else {
                 $deviceId = $appleUserInfo->sub;
