@@ -83,20 +83,15 @@ class UserLinkedSourcesController extends BaseController
 
         $app = $this->request->getPost('app', 'string');
         $deviceId = $this->request->getPost('deviceId', 'string');
-        $de = $this->request->getPost('deviceId', 'string');
 
         //get the app source
         if ($source = Sources::getByTitle($app)) {
 
             //If source is apple verify if the token is valid
-            $appleUserInfo = $this->validateAppleUser($deviceId);
-
-            if (!is_object($appleUserInfo) && $source->isApple()) {
-                throw new InternalServerErrorException('Apple user not valid');
-            } else {
-                $deviceId = $appleUserInfo->sub;
+            if ($source->isApple()) {
+                $deviceId = $this->validateAppleUser($deviceId);
             }
-
+            
             $userSource = UserLinkedSources::findFirst([
                 'conditions' => 'users_id = ?0 AND source_users_id_text = ?1 AND source_id = ?2 AND is_deleted = 0',
                 'bind' => [
@@ -161,6 +156,12 @@ class UserLinkedSourcesController extends BaseController
      */
     public function validateAppleUser(string $identityToken): object
     {
-        return ASDecoder::getAppleSignInPayload($identityToken);
+        $appleUserInfo = ASDecoder::getAppleSignInPayload($identityToken);
+
+        if (!is_object($appleUserInfo)) {
+            throw new InternalServerErrorException('Apple user not valid');
+        }
+
+        return $appleUserInfo;
     }
 }
