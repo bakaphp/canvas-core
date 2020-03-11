@@ -123,14 +123,14 @@ class Helper
     public static function setImageDimensions(File $file, FileSystem $fileSystem): void
     {
         if (Helper::isImage($file)) {
-
+            
             $image = new Gd($file->getTempName());
             $fileSystem->set('width', $image->getWidth());
             $fileSystem->set('height', $image->getHeight());
-
-            $orientation =  $image->getHeight() > $image->getWidth() ? 'portrait' : 'landscape';
-
-            $fileSystem->set('orientation', $orientation);
+            $fileSystem->set(
+                'orientation',
+                $image->getHeight() > $image->getWidth() ? 'portrait' : 'landscape'
+            );
         }
     }
 }
