@@ -88,7 +88,7 @@ class UserLinkedSourcesController extends BaseController
         if ($source = Sources::getByTitle($app)) {
 
             //If source is apple verify if the token is valid
-            if ($source->isApple()) {
+            if ($source->title == 'apple') {
                 $deviceId = $this->validateAppleUser($deviceId);
             }
             
