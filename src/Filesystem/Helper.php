@@ -8,6 +8,7 @@ use Phalcon\Http\Request\File;
 use Exception;
 use Canvas\Models\FileSystem;
 use Phalcon\Di;
+use Phalcon\Image\Adapter\Gd;
 
 class Helper
 {
@@ -99,5 +100,37 @@ class Helper
         $fileSystem->saveOrFail();
 
         return $fileSystem;
+    }
+
+    /**
+     * Is this file a image?
+     *
+     * @param File $file
+     * @return boolean
+     */
+    public static function isImage(File $file): bool
+    {
+        return strpos(mime_content_type($file->getTempName()), 'image/') === 0;
+    }
+
+    /**
+     * Given a image set its dimension.
+     *
+     * @param File $file
+     * @param FileSystem $fileSystem
+     * @return void
+     */
+    public static function setImageDimensions(File $file, FileSystem $fileSystem): void
+    {
+        if (Helper::isImage($file)) {
+
+            $image = new Gd($file->getTempName());
+            $fileSystem->set('width', $image->getWidth());
+            $fileSystem->set('height', $image->getHeight());
+
+            $orientation =  $image->getHeight() > $image->getWidth() ? 'portrait' : 'landscape';
+
+            $fileSystem->set('orientation', $orientation);
+        }
     }
 }
