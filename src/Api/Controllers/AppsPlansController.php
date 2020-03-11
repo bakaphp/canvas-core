@@ -56,7 +56,7 @@ class AppsPlansController extends BaseController
             $id = $this->userData->getId();
         }
 
-        $this->userData->can('Apps-plans.update', true);
+        // $this->userData->can('Apps-plans.update', true);
 
         $this->model = new AppsPlans();
         $this->additionalSearchFields = [
