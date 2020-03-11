@@ -7,6 +7,7 @@ namespace Canvas\Models;
 use Phalcon\Di;
 use Canvas\Exception\ModelException;
 
+
 /**
  * Class Resources
  *
@@ -74,5 +75,15 @@ class Sources extends AbstractModel
     public function getSource(): string
     {
         return 'sources';
+    }
+
+    /**
+     * Validate is source is from apple
+     *
+     * @return bool
+     */
+    public function isApple(): bool
+    {
+        return $this->title == 'apple';
     }
 }
