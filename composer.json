@@ -42,7 +42,7 @@
         "sentry/sentry": "^1.9",
         "sly/notification-pusher": "2.x",
         "vlucas/phpdotenv": "^2.4",
-        "griffinledingham/php-apple-signin": "^1.0"
+        "bakaphp/php-apple-signin": "^2.0"
     },
     "require-dev": {
         "codeception/verify": "*",

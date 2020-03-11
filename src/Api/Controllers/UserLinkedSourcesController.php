@@ -12,7 +12,8 @@ use Canvas\Validation as CanvasValidation;
 use Lcobucci\JWT\Builder;
 use Lcobucci\JWT\Signer\Hmac\Sha256;
 use GuzzleHttp\Client;
-use \AppleSignIn\ASDecoder;
+use \Baka\ASDecoder;
+use Canvas\Http\Exception\InternalServerErrorException;
 
 /**
  * Class LanguagesController.
@@ -84,9 +85,20 @@ class UserLinkedSourcesController extends BaseController
 
         $app = $this->request->getPost('app', 'string');
         $deviceId = $this->request->getPost('deviceId', 'string');
+        $de = $this->request->getPost('deviceId', 'string');
 
         //get the app source
         if ($source = Sources::getByTitle($app)) {
+
+            //If source is apple verify if the token is valid
+            $appleUserInfo = $this->validateAppleUser($deviceId);
+
+            if (!$appleUserInfo && $source->title == 'apple') {
+                throw new InternalServerErrorException('Apple user not valid');
+            } else {
+                $deviceId = $appleUserInfo->sub;
+            }
+
             $userSource = UserLinkedSources::findFirst([
                 'conditions' => 'users_id = ?0 AND source_users_id_text = ?1 AND source_id = ?2 AND is_deleted = 0',
                 'bind' => [
@@ -145,28 +157,10 @@ class UserLinkedSourcesController extends BaseController
     }
 
     /**
-     * Test Get Apple Access Tokens
+     * Test Get Apple Access Tokens.
      */
-    public function validateAppleToken(): Response
+    public function validateAppleUser(string $identityToken)
     {
-
-        $clientUser = getenv('APPLE_ISS');
-        $identityToken = "eyJraWQiOiI4NkQ4OEtmIiwiYWxnIjoiUlMyNTYifQ.eyJpc3MiOiJodHRwczovL2FwcGxlaWQuYXBwbGUuY29tIiwiYXVkIjoiY29tLm1lbW9kYXBwLmFwcC5kZXZlbG9wbWVudC5pb3MiLCJleHAiOjE1ODM4Njk0MzksImlhdCI6MTU4Mzg2ODgzOSwic3ViIjoiMDAwNDkxLjllMzUwYzExMzg4YTQxOTc5MzU2MjYyNTJhYmNiZDg5LjE5MTciLCJub25jZSI6ImQzY2UzNWRjMzE2NzUyYjgxZDlhMjIwMzVjZWI2NWMyMzlhZTQ1NjYxOTA1YzMxMTRhZmVjYTJhZDE2Njg5NTkiLCJjX2hhc2giOiJIeC1SVGZkS0VmczFQMmRqV29hX2pnIiwiZW1haWwiOiJhbGV4dXBAbWN0ZWtrLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjoidHJ1ZSIsImF1dGhfdGltZSI6MTU4Mzg2ODgzOSwibm9uY2Vfc3VwcG9ydGVkIjp0cnVlfQ.d4Tl0aGakJVsPhxqnUnQFRF1_hra9LETJDSPWXfyn-sRgJ8Tm-EnBzGU-v-weDSnJcUQktrskmIEyfe3zcMBDnlB2ao0lf4BA5Yo_9JRsnIaOk89VyFBuf52VXgWjWNYcJ-KN8G8eOcLd9cALInbgF8FBTDL0PeGzXW_1oc6944YJZVg6yui9TarAqvZxwLVRRMmzBXarvgkGNL3CctfrFisVv1nvfti0I4HMQpIlt8zcbpNXWsrx9vs3SflX5G9IwKtjTzP4wH_bfuUTTDroEu7aKM3ToZh5bsQnfMKNoCLAw5X34zKBHZ8o4lZmApSNXHudk84Uz7LNIBfoGphHg";
-
-        $appleSignInPayload = ASDecoder::getAppleSignInPayload($identityToken);
-
-        /**
-         * Obtain the Sign In with Apple email and user creds.
-         */
-        $email = $appleSignInPayload->getEmail();
-        $user = $appleSignInPayload->getUser();
-
-        /**
-         * Determine whether the client-provided user is valid.
-         */
-        $isValid = $appleSignInPayload->verifyUser($clientUser);
-
-        return $this->response($isValid);
-
+        return is_object(ASDecoder::getAppleSignInPayload($identityToken)) ? ASDecoder::getAppleSignInPayload($identityToken) : false;
     }
 }
