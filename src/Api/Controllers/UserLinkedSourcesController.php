@@ -91,7 +91,7 @@ class UserLinkedSourcesController extends BaseController
             //If source is apple verify if the token is valid
             $appleUserInfo = $this->validateAppleUser($deviceId);
 
-            if (!$appleUserInfo && $source->isApple()) {
+            if (!is_object($appleUserInfo) && $source->isApple()) {
                 throw new InternalServerErrorException('Apple user not valid');
             } else {
                 $deviceId = $appleUserInfo->sub;
@@ -155,10 +155,12 @@ class UserLinkedSourcesController extends BaseController
     }
 
     /**
-     * Test Get Apple Access Tokens.
+     * Validate Apple User
+     * @param string $identityToken
+     * @return object
      */
-    public function validateAppleUser(string $identityToken)
+    public function validateAppleUser(string $identityToken): object
     {
-        return is_object(ASDecoder::getAppleSignInPayload($identityToken)) ? ASDecoder::getAppleSignInPayload($identityToken) : false;
+        return ASDecoder::getAppleSignInPayload($identityToken);
     }
 }
