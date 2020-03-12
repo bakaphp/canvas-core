@@ -28,7 +28,6 @@ use Canvas\Notifications\Signup;
 use Canvas\Notifications\UpdateEmail;
 use Canvas\Validations\PasswordValidation;
 use Canvas\Traits\TokenTrait;
-use Baka\ASDecoder;
 
 /**
  * Class AuthController.
