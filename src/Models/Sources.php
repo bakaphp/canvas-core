@@ -6,6 +6,8 @@ namespace Canvas\Models;
 
 use Phalcon\Di;
 use Canvas\Exception\ModelException;
+use Baka\ASDecoder;
+use Canvas\Http\Exception\InternalServerErrorException;
 
 
 /**
@@ -75,5 +77,29 @@ class Sources extends AbstractModel
     public function getSource(): string
     {
         return 'sources';
+    }
+
+    /**
+     * Verify if source is Apple
+     */
+    public function isApple(): bool
+    {
+        return $this->title == 'apple';
+    }
+
+    /**
+     * Validate Apple User.
+     * @param string $identityToken
+     * @return object
+     */
+    public function validateAppleUser(string $identityToken): object
+    {
+        $appleUserInfo = ASDecoder::getAppleSignInPayload($identityToken);
+
+        if (!is_object($appleUserInfo)) {
+            throw new InternalServerErrorException('Apple user not valid');
+        }
+
+        return $appleUserInfo;
     }
 }
