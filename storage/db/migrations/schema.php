@@ -2862,7 +2862,7 @@ return array (
           'COLUMN_DEFAULT' => 'NULL',
           'IS_NULLABLE' => 'YES',
           'DATA_TYPE' => 'varchar',
-          'CHARACTER_MAXIMUM_LENGTH' => '45',
+          'CHARACTER_MAXIMUM_LENGTH' => '255',
           'CHARACTER_OCTET_LENGTH' => '180',
           'NUMERIC_PRECISION' => NULL,
           'NUMERIC_SCALE' => NULL,
