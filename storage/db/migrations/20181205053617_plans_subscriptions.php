@@ -47,7 +47,7 @@ class PlansSubscriptions extends AbstractMigration
         $this->table('sources')->changeColumn('language_id', 'string', ['null' => true, 'limit' => 5, 'collation' => 'utf8mb4_unicode_ci', 'encoding' => 'utf8mb4', 'after' => 'url'])->update();
         $this->table('user_config')->changeColumn('name', 'string', ['null' => false, 'limit' => 45, 'collation' => 'utf8mb4_unicode_ci', 'encoding' => 'utf8mb4', 'after' => 'users_id'])->update();
         $this->table('user_config')->changeColumn('value', 'string', ['null' => true, 'limit' => 45, 'collation' => 'utf8mb4_unicode_ci', 'encoding' => 'utf8mb4', 'after' => 'name'])->update();
-        $this->table('user_linked_sources')->changeColumn('source_users_id', 'string', ['null' => false, 'limit' => 30, 'collation' => 'utf8mb4_unicode_ci', 'encoding' => 'utf8mb4', 'after' => 'source_id'])->update();
+        $this->table('user_linked_sources')->changeColumn('source_users_id', 'string', ['null' => false, 'limit' => 64, 'collation' => 'utf8mb4_unicode_ci', 'encoding' => 'utf8mb4', 'after' => 'source_id'])->update();
         $this->table('user_linked_sources')->changeColumn('source_users_id_text', 'string', ['null' => true, 'limit' => 255, 'collation' => 'utf8mb4_unicode_ci', 'encoding' => 'utf8mb4', 'after' => 'source_users_id'])->update();
         $this->table('user_linked_sources')->changeColumn('source_username', 'string', ['null' => false, 'limit' => 45, 'collation' => 'utf8mb4_unicode_ci', 'encoding' => 'utf8mb4', 'after' => 'source_users_id_text'])->update();
         $this->table('users')->changeColumn('email', 'string', ['null' => false, 'limit' => 45, 'collation' => 'utf8mb4_unicode_ci', 'encoding' => 'utf8mb4', 'after' => 'id'])->update();

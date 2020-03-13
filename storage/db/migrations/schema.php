@@ -2540,7 +2540,7 @@ return array (
           'COLUMN_DEFAULT' => NULL,
           'IS_NULLABLE' => 'NO',
           'DATA_TYPE' => 'varchar',
-          'CHARACTER_MAXIMUM_LENGTH' => '255',
+          'CHARACTER_MAXIMUM_LENGTH' => '64',
           'CHARACTER_OCTET_LENGTH' => '120',
           'NUMERIC_PRECISION' => NULL,
           'NUMERIC_SCALE' => NULL,

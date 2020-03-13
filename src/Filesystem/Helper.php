@@ -77,9 +77,9 @@ class Helper
         $di->get('filesystem', ['local'])->createDir($config->filesystem->local->path);
 
         //get the tem file
-        $filePath = self::generateUniqueName($file, $config->filesystem->local->path);
-        $compleFilePath = $fileSystemConfig->path . $filePath;
-        $uploadFileNameWithPath = $appSettingFileConfig == 'local' ? $filePath : $compleFilePath;
+        $fileName = self::generateUniqueName($file, $config->filesystem->local->path . '/');
+        $compleFilePath = $fileSystemConfig->path . DIRECTORY_SEPARATOR . $fileName;
+        $uploadFileNameWithPath = $appSettingFileConfig === 'local' ? $fileName : $compleFilePath;
 
         /**
          * upload file base on temp.
@@ -88,7 +88,7 @@ class Helper
         $di->get('filesystem')->writeStream($uploadFileNameWithPath, fopen($file->getTempName(), 'r'));
 
         $fileSystem = new FileSystem();
-        $fileSystem->name = $file->getName();
+        $fileSystem->name = $fileName;
         $fileSystem->companies_id = $di->get('userData')->currentCompanyId();
         $fileSystem->apps_id = $di->get('app')->getId();
         $fileSystem->users_id = $di->get('userData')->getId();
@@ -123,7 +123,6 @@ class Helper
     public static function setImageDimensions(File $file, FileSystem $fileSystem): void
     {
         if (Helper::isImage($file)) {
-            
             $image = new Gd($file->getTempName());
             $fileSystem->set('width', $image->getWidth());
             $fileSystem->set('height', $image->getHeight());
