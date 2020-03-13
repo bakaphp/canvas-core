@@ -281,7 +281,6 @@ class Users extends \Baka\Auth\Models\Users
         );
     }
 
-
     /**
      * Validations and business logic.
      */

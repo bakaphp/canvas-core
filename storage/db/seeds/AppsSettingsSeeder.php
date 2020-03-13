@@ -87,7 +87,7 @@ class AppsSettingsSeeder extends AbstractSeed
             [
                 'apps_id' => 1,
                 'name' => 'allowed_social_auths',
-                'value' => '{"google": 1,"facebook": 1,"github": 1}',
+                'value' => '{"google": 1,"facebook": 1,"github": 1,"apple": 1}',
                 'created_at' => date('Y-m-d H:m:s'),
             ]
         ];
