@@ -2857,7 +2857,7 @@ return array (
         array (
           'TABLE_CATALOG' => 'def',
           'TABLE_NAME' => 'companies',
-          'COLUMN_NAME' => 'website',
+          'COLUMN_NAME' => 'git',
           'ORDINAL_POSITION' => '4',
           'COLUMN_DEFAULT' => 'NULL',
           'IS_NULLABLE' => 'YES',
@@ -2869,7 +2869,7 @@ return array (
           'DATETIME_PRECISION' => NULL,
           'CHARACTER_SET_NAME' => 'utf8mb4',
           'COLLATION_NAME' => 'utf8mb4_unicode_ci',
-          'COLUMN_TYPE' => 'varchar(45)',
+          'COLUMN_TYPE' => 'text',
           'COLUMN_KEY' => '',
           'EXTRA' => '',
           'PRIVILEGES' => 'select,insert,update,references',

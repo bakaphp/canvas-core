@@ -28,7 +28,7 @@ class PlansSubscriptions extends AbstractMigration
         $this->table('apps_roles')->changeColumn('roles_name', 'string', ['null' => false, 'limit' => 32, 'collation' => 'utf8mb4_unicode_ci', 'encoding' => 'utf8mb4', 'after' => 'apps_id'])->update();
         $this->table('companies')->changeColumn('name', 'string', ['null' => true, 'limit' => 45, 'collation' => 'utf8mb4_unicode_ci', 'encoding' => 'utf8mb4', 'after' => 'id'])->update();
         $this->table('companies')->changeColumn('profile_image', 'string', ['null' => true, 'limit' => 45, 'collation' => 'utf8mb4_unicode_ci', 'encoding' => 'utf8mb4', 'after' => 'name'])->update();
-        $this->table('companies')->changeColumn('website', 'string', ['null' => true, 'limit' => 255, 'collation' => 'utf8mb4_unicode_ci', 'encoding' => 'utf8mb4', 'after' => 'profile_image'])->update();
+        $this->table('companies')->changeColumn('website', 'text', ['null' => true, 'limit' => MysqlAdapter::TEXT_TINY, 'collation' => 'utf8mb4_unicode_ci', 'encoding' => 'utf8mb4', 'after' => 'profile_image'])->update();
         $this->table('companies_settings')->changeColumn('name', 'string', ['null' => false, 'limit' => 45, 'collation' => 'utf8mb4_unicode_ci', 'encoding' => 'utf8mb4', 'after' => 'companies_id'])->update();
         $this->table('companies_settings')->changeColumn('value', 'text', ['null' => false, 'limit' => MysqlAdapter::TEXT_LONG, 'collation' => 'utf8mb4_unicode_ci', 'encoding' => 'utf8mb4', 'after' => 'name'])->update();
         $this->table('languages')->changeColumn('id', 'string', ['null' => false, 'limit' => 2, 'collation' => 'utf8mb4_unicode_ci', 'encoding' => 'utf8mb4'])->update();
