@@ -62,7 +62,7 @@ class User
 
         //Insert record into user_roles
         if (!$role = $user->getDI()->getApp()->get(Apps::APP_DEFAULT_ROLE_SETTING)) {
-            $role = $user->getDI()->getApp()->name . '.' . Roles::getById($user->roles_id)->name;
+            $role = $user->getDI()->getApp()->name . '.' . Roles::getById((int)$user->roles_id)->name;
         }
 
         $user->assignRole($role);
@@ -88,7 +88,7 @@ class User
         }
 
         /**
-         * @todo this is hackable , need to add use Roles::getById($usersInvite->role_id) , without 
+         * @todo this is hackable , need to add use Roles::getById($usersInvite->role_id) , without
          * but we need the company info without been logged in
          */
         $user->assignRole(Roles::findFirstOrFail($usersInvite->role_id)->name);

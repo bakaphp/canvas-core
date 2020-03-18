@@ -69,6 +69,8 @@ $privateRoutes = [
     Route::crud('/sessions'),
     Route::crud('/companies-settings')->controller('CompaniesSettingsController'),
     Route::crud('/users-associated-companies')->controller('UsersAssociatedCompaniesController'),
+    Route::crud('/users-companies-apps')->controller('UserCompanyAppsController'),
+    Route::crud('/companies-associations')->controller('CompaniesAssociationsController')
 ];
 
 $privateSubscriptionRoutes = [

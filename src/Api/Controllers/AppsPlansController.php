@@ -52,6 +52,12 @@ class AppsPlansController extends BaseController
      */
     public function onConstruct()
     {
+        if (!$this->userData->hasRole('Default.Admins') || (int) $id === 0) {
+            $id = $this->userData->getId();
+        }
+
+        $this->userData->can('Apps-plans.update', true);
+
         $this->model = new AppsPlans();
         $this->additionalSearchFields = [
             ['is_deleted', ':', '0'],
@@ -215,7 +221,7 @@ class AppsPlansController extends BaseController
         $this->userData->getDefaultCompany()->zipcode = $zipcode;
         $this->userData->getDefaultCompany()->update();
 
-        $customerId = $this->userData->stripe_id;
+        $customerId = $this->userData->getDefaultCompany()->get('payment_gateway_customer_id');
 
         //Update default payment method with new card.
         $stripeCustomer = $this->userData->updatePaymentMethod($customerId, $token);

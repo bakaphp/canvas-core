@@ -320,6 +320,12 @@ class AuthController extends \Baka\Auth\AuthController
             'bind' => [$request['provider']]
         ]);
 
+        if ($source->isApple()) {
+            $appleUserInfo = $source->validateAppleUser($request['social_id']);
+            $request['social_id'] = $appleUserInfo->sub;
+            $request['email'] = $appleUserInfo->email;
+        }
+
         return $this->response($this->providerLogin($source, $request['social_id'], $request));
     }
 

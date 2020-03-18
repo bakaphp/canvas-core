@@ -9,6 +9,9 @@ use Baka\Auth\Models\Sources;
 use Phalcon\Http\Response;
 use Phalcon\Validation\Validator\PresenceOf;
 use Canvas\Validation as CanvasValidation;
+use Baka\ASDecoder;
+
+use Canvas\Http\Exception\InternalServerErrorException;
 
 /**
  * Class LanguagesController.
@@ -83,6 +86,12 @@ class UserLinkedSourcesController extends BaseController
 
         //get the app source
         if ($source = Sources::getByTitle($app)) {
+
+            //If source is apple verify if the token is valid
+            if ($source->title == 'apple') {
+                $deviceId = $this->validateAppleUser($deviceId)->sub;
+            }
+            
             $userSource = UserLinkedSources::findFirst([
                 'conditions' => 'users_id = ?0 AND source_users_id_text = ?1 AND source_id = ?2 AND is_deleted = 0',
                 'bind' => [
@@ -138,5 +147,21 @@ class UserLinkedSourcesController extends BaseController
             'msg' => 'User Device detached',
             'user' => $this->userData
         ]);
+    }
+
+    /**
+     * Validate Apple User
+     * @param string $identityToken
+     * @return object
+     */
+    public function validateAppleUser(string $identityToken): object
+    {
+        $appleUserInfo = ASDecoder::getAppleSignInPayload($identityToken);
+
+        if (!is_object($appleUserInfo)) {
+            throw new InternalServerErrorException('Apple user not valid');
+        }
+
+        return $appleUserInfo;
     }
 }

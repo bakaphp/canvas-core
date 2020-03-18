@@ -7,6 +7,7 @@ namespace Canvas\Traits;
 use Canvas\Models\Roles;
 use Canvas\Models\UserRoles;
 use Canvas\Http\Exception\InternalServerErrorException;
+use Canvas\Http\Exception\UnauthorizedException;
 
 /**
  * Trait FractalTrait.
@@ -128,9 +129,10 @@ trait PermissionsTrait
      *  Leads.add || leads.updates || lead.delete
      *
      * @param string $action
+     * @param bool $throwException
      * @return boolean
      */
-    public function can(string $action): bool
+    public function can(string $action, bool $throwException = false): bool
     {
         //if we find the . then les
         if (strpos($action, '.') === false) {
@@ -148,6 +150,12 @@ trait PermissionsTrait
             );
         }
 
-        return $this->di->getAcl()->isAllowed($role->roles->name, $resource, $action);
+        $canExecute = $this->di->getAcl()->isAllowed($role->roles->name, $resource, $action);
+
+        if ($throwException && !$canExecute) {
+            throw new UnauthorizedException("ACL - Users doesn't have permission to run this action `{$action}`");
+        }
+
+        return (bool) $canExecute;
     }
 }
