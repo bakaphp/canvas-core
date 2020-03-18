@@ -88,7 +88,7 @@ class Helper
         $di->get('filesystem')->writeStream($uploadFileNameWithPath, fopen($file->getTempName(), 'r'));
 
         $fileSystem = new FileSystem();
-        $fileSystem->name = $fileName;
+        $fileSystem->name = $file->getName();
         $fileSystem->companies_id = $di->get('userData')->currentCompanyId();
         $fileSystem->apps_id = $di->get('app')->getId();
         $fileSystem->users_id = $di->get('userData')->getId();
