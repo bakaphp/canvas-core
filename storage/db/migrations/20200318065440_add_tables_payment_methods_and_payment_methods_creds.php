@@ -89,7 +89,7 @@ class AddTablesPaymentMethodsAndPaymentMethodsCreds extends Phinx\Migration\Abst
                 'encoding' => 'utf8mb4',
                 'after' => 'payment_methods_id',
             ])
-            ->addColumn('expiraton_date', 'date', [
+            ->addColumn('expiration_date', 'date', [
                 'null' => false,
                 'after' => 'payment_ending_numbers',
             ])
