@@ -102,7 +102,12 @@ class PaymentMethodsCreds extends AbstractModel
     {
         return self::findFirstOrFail([
             "conditions"=> "users_id = ?0 and companies_id = ?1 and apps_id = ?2 and is_deleted = 0",
-            "bind" => [Di::getDefault()->getUserData()->getId(),Di::getDefault()->getUserData()->getDefaultCompany()->getId(),Di::getDefault()->getApp()->getId()],
+            "bind" => 
+            [
+                Di::getDefault()->getUserData()->getId(),
+                Di::getDefault()->getUserData()->getDefaultCompany()->getId(),
+                Di::getDefault()->getApp()->getId()
+            ],
             "order"=> "id DESC"
         ]);
     }
