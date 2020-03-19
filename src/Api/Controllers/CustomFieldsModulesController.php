@@ -9,6 +9,9 @@ use Canvas\CustomFields\CustomFields;
 use Phalcon\Http\Response;
 use Canvas\Http\Exception\NotFoundException;
 use Canvas\Http\Exception\UnauthorizedException;
+use Canvas\Dto\CustomFieldsModules as CustomFieldsModulesDto;
+use Canvas\Mapper\CustomFieldsModulesMapper;
+use Canvas\Contracts\Controllers\ProcessOutputMapperTrait;
 
 /**
  * Class LanguagesController.
@@ -20,6 +23,8 @@ use Canvas\Http\Exception\UnauthorizedException;
  */
 class CustomFieldsModulesController extends BaseController
 {
+    use ProcessOutputMapperTrait;
+
     /*
      * fields we accept to create
      *
@@ -48,6 +53,8 @@ class CustomFieldsModulesController extends BaseController
     public function onConstruct()
     {
         $this->model = new CustomFieldsModules();
+        $this->dto = CustomFieldsModulesDto::class;
+        $this->dtoMapper = new CustomFieldsModulesMapper();
         $this->model->apps_id = $this->app->getId();
 
         if (!$this->userData->hasRole('Defaults.Admins')) {

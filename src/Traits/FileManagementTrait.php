@@ -7,13 +7,10 @@ namespace Canvas\Traits;
 use Phalcon\Http\Response;
 use Phalcon\Validation;
 use Phalcon\Validation\Validator\File as FileValidator;
-use Canvas\Exception\UnprocessableEntityHttpException;
 use Canvas\Models\FileSystem;
 use Canvas\Filesystem\Helper;
-use Baka\Http\QueryParser;
 use Canvas\Http\Exception\UnprocessableEntityException;
 use Canvas\Models\FileSystemSettings;
-use Canvas\Models\SystemModules;
 use Canvas\Models\FileSystemEntities;
 
 /**
@@ -153,6 +150,8 @@ trait FileManagementTrait
                 'audio/x-mpeg-3',
                 'application/x-zip-compressed',
                 'application/octet-stream',
+                'application/msword',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
             ],
             'messageType' => 'Allowed file types are :types',
         ];
@@ -207,6 +206,8 @@ trait FileManagementTrait
             foreach ($allFields as $key => $settings) {
                 $fileSystem->set($key, $settings);
             }
+
+            Helper::setImageDimensions($file, $fileSystem);
 
             $files[] = $fileSystem;
         }

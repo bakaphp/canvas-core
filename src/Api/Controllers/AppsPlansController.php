@@ -17,6 +17,7 @@ use Phalcon\Cashier\Subscription;
 use Canvas\Models\UserCompanyApps;
 use function Canvas\Core\paymentGatewayIsActive;
 use Canvas\Validation as CanvasValidation;
+use Canvas\Models\PaymentMethodsCreds;
 
 /**
  * Class LanguagesController.
@@ -52,6 +53,12 @@ class AppsPlansController extends BaseController
      */
     public function onConstruct()
     {
+        if (!$this->userData->hasRole('Default.Admins') || (int) $id === 0) {
+            $id = $this->userData->getId();
+        }
+
+        $this->userData->can('Apps-plans.update', true);
+
         $this->model = new AppsPlans();
         $this->additionalSearchFields = [
             ['is_deleted', ':', '0'],
@@ -215,7 +222,7 @@ class AppsPlansController extends BaseController
         $this->userData->getDefaultCompany()->zipcode = $zipcode;
         $this->userData->getDefaultCompany()->update();
 
-        $customerId = $this->userData->stripe_id;
+        $customerId = $this->userData->getDefaultCompany()->get('payment_gateway_customer_id');
 
         //Update default payment method with new card.
         $stripeCustomer = $this->userData->updatePaymentMethod($customerId, $token);
@@ -228,6 +235,9 @@ class AppsPlansController extends BaseController
         }
 
         if (is_object($stripeCustomer) && $stripeCustomer instanceof StripeCustomer) {
+
+            //We now create a partially persist the payment method data
+            PaymentMethodsCreds::createByStripeToken($token);
             return $this->response($subscription);
         }
         return $this->response('Card could not be updated');

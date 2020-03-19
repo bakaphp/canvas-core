@@ -49,6 +49,10 @@ class AclTask extends PhTask
         //Companies Settings
         $this->acl->addResource('CRM.CompaniesSettings', ['read', 'list', 'create', 'update', 'delete']);
         $this->acl->allow('Users', 'CRM.CompaniesSettings', ['read', 'list', 'create', 'update', 'delete']);
+
+        //Apps plans
+        $this->acl->addResource('CRM.Apps-plans', ['read', 'list', 'create', 'update', 'delete']);
+        $this->acl->allow('Users', 'CRM.Apps-plans', ['read', 'list', 'create', 'update', 'delete']);
     }
 
     /**
@@ -74,6 +78,7 @@ class AclTask extends PhTask
             'Default.CompanySubscriptions',
             'Default.CustomFields',
             'Default.CompaniesManager',
+            'Default.Apps-plans'
         ];
 
         foreach ($defaultResources as $resource) {

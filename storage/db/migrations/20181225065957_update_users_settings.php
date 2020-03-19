@@ -7,7 +7,7 @@ class UpdateUsersSettings extends AbstractMigration
     public function change()
     {
         $this->table('companies')
-            ->addColumn('address', 'string', [
+            ->addColumn('address', 'text', [
                 'null' => true,
                 'limit' => 255,
                 'collation' => 'utf8mb4_unicode_ci',

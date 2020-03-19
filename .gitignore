@@ -10,3 +10,4 @@ phinx.php
 tests/_output/
 vendor/
 api/public/filesystem/
+.vscode

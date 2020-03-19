@@ -14,7 +14,9 @@ $publicRoutes = [
     Route::post('/users-invite/{hash}')->controller('UsersInviteController')->action('processUserInvite'),
     Route::post('/webhook/payments')->controller('PaymentsController')->action('handleWebhook'),
     Route::get('/apps/{key}/settings')->controller('AppsSettingsController')->action('getByKey'),
-    Route::post('/users/social')->controller('AuthController')->action('loginBySocial')
+    Route::post('/users/social')->controller('AuthController')->action('loginBySocial'),
+    Route::get('/countries')->controller('CountriesController')->action('index'),
+    Route::get('/countries/{id}')->controller('CountriesController')->action('getById'),
 ];
 
 $privateRoutes = [
@@ -37,6 +39,8 @@ $privateRoutes = [
     Route::crud('/languages'),
     Route::crud('/webhooks'),
     Route::crud('/filesystem'),
+    Route::crud('/custom-fields-types')->controller('CustomFieldsTypesController'),
+    Route::crud('/custom-fields-values')->controller('CustomFieldsValuesController'),
 
     Route::get('/timezones')->controller('TimeZonesController'),
     Route::post('/notifications-read-all')->controller('NotificationsController')->action('cleanAll'),
@@ -50,13 +54,24 @@ $privateRoutes = [
     Route::post('/roles-acceslist/{id}/copy')->controller('RolesAccesListController')->action('copy'),
     Route::get('/custom-fields-modules/{id}/fields')->controller('CustomFieldsModulesController')->action('customFieldsByModulesId'),
     Route::put('/apps-plans/{id}/method')->controller('AppsPlansController')->action('updatePaymentMethod'),
+    Route::get('/apps-plans/{id}/method')->controller('PaymentMethodsCredsController')->action('getCurrentPaymentMethodsCreds'),
     Route::get('/schema/{slug}')->controller('SchemaController')->action('getBySlug'),
     Route::get('/schema/{slug}/description')->controller('SchemaController')->action('getModelDescription'),
     Route::post('/users/{hash}/change-email')->controller('AuthController')->action('changeUserEmail'),
     Route::post('/users/{id}/request-email-change')->controller('AuthController')->action('sendEmailChange'),
     Route::put('/users/{id}/apps/{appsId}/status')->controller('UsersController')->action('changeAppUserActiveStatus'),
     Route::get('/companies-groups')->controller('CompaniesGroupsController')->action('index'),
-    Route::get('/companies-groups/{id}')->controller('CompaniesGroupsController')->action('getById')
+    Route::get('/companies-groups/{id}')->controller('CompaniesGroupsController')->action('getById'),
+    Route::crud('/users-roles')->controller('UserRolesController'),
+    Route::crud('/subscriptions')->controller('SubscriptionsController'),
+    Route::crud('/users-associated-apps')->controller('UsersAssociatedAppsController'),
+    Route::crud('/users-linked-sources')->controller('UserLinkedSourcesController'),
+    Route::crud('/users-config')->controller('UserConfigController'),
+    Route::crud('/sessions'),
+    Route::crud('/companies-settings')->controller('CompaniesSettingsController'),
+    Route::crud('/users-associated-companies')->controller('UsersAssociatedCompaniesController'),
+    Route::crud('/users-companies-apps')->controller('UserCompanyAppsController'),
+    Route::crud('/companies-associations')->controller('CompaniesAssociationsController')
 ];
 
 $privateSubscriptionRoutes = [
