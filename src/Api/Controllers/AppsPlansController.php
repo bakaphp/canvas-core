@@ -17,6 +17,7 @@ use Phalcon\Cashier\Subscription;
 use Canvas\Models\UserCompanyApps;
 use function Canvas\Core\paymentGatewayIsActive;
 use Canvas\Validation as CanvasValidation;
+use Canvas\Models\PaymentMethodsCreds;
 
 /**
  * Class LanguagesController.
@@ -234,6 +235,9 @@ class AppsPlansController extends BaseController
         }
 
         if (is_object($stripeCustomer) && $stripeCustomer instanceof StripeCustomer) {
+
+            //We now create a partially persist the payment method data
+            PaymentMethodsCreds::createByStripeToken($token);
             return $this->response($subscription);
         }
         return $this->response('Card could not be updated');
