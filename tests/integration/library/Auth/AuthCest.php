@@ -4,18 +4,29 @@ namespace Gewaer\Tests\integration\library\Jobs;
 
 use Canvas\Auth\App;
 use Canvas\Auth\Factory;
+use Canvas\Hashing\Password;
 use Canvas\Models\Users;
 use Exception;
 use IntegrationTester;
+use Page\Data;
 
 class AuthCest
 {
+    
+    public function setAppPassword(IntegrationTester $I)
+    {
+        $oldUser = Users::findFirstByEmail(Data::loginJsonDefaultUser()['email']);
+        $I->assertTrue(
+            App::updatePassword($oldUser, Password::make(Data::loginJsonDefaultUser()['password']))
+        );
+    }
+
     public function verifyLoginAttempts(IntegrationTester $I)
     {
         //we want to fail once
         try {
-            $user = App::login(
-                'nobody@baka.io',
+            App::login(
+                Data::loginJsonDefaultUser()['email'],
                 'bakatest1235s67',
                 true,
                 true,
@@ -25,7 +36,7 @@ class AuthCest
         }
 
         try {
-            $oldUser = Users::findFirstByEmail('nobody@baka.io');
+            $oldUser = Users::findFirstByEmail(Data::loginJsonDefaultUser()['email']);
             $I->assertTrue($oldUser->user_login_tries > 0);
         } catch (Exception $e) {
             $I->assertTrue(false);
@@ -35,8 +46,8 @@ class AuthCest
     public function verifyRestAttemptsCount(IntegrationTester $I)
     {
         $user = App::login(
-            'nobody@baka.io',
-            'bakatest123567',
+            Data::loginJsonDefaultUser()['email'],
+            Data::loginJsonDefaultUser()['password'],
             true,
             true,
             '127.0.0.1'
@@ -46,8 +57,8 @@ class AuthCest
     }
 
     /**
-     * By giving it true we are telling the factory to get use a 
-     * User object since the password is the same for all apps
+     * By giving it true we are telling the factory to get use a
+     * User object since the password is the same for all apps.
      *
      * @param IntegrationTester $I
      * @return void
@@ -61,7 +72,7 @@ class AuthCest
 
     /**
      * Giving it false we are telling it to give use a app
-     * object where the password is uniq for that app
+     * object where the password is uniq for that app.
      *
      * @param IntegrationTester $I
      * @return void

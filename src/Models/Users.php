@@ -10,7 +10,6 @@ use Carbon\Carbon;
 use Phalcon\Validation;
 use Phalcon\Validation\Validator\Email;
 use Phalcon\Validation\Validator\PresenceOf;
-use Phalcon\Validation\Validator\Regex;
 use Phalcon\Validation\Validator\Uniqueness;
 use Canvas\Traits\FileSystemModelTrait;
 use Phalcon\Security\Random;

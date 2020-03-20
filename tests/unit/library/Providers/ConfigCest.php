@@ -96,16 +96,16 @@ class ConfigCest
 
         //Pusher
         $I->assertTrue(isset($configArray['pusher']));
-        $I->assertTrue(isset($configArray['pusher']['id']));
-        $I->assertTrue(isset($configArray['pusher']['key']));
-        $I->assertTrue(isset($configArray['pusher']['secret']));
-        $I->assertTrue(isset($configArray['pusher']['cluster']));
-        $I->assertTrue(isset($configArray['pusher']['queue']));
+        $I->assertTrue(array_key_exists('id', $configArray['pusher']));
+        $I->assertTrue(array_key_exists('key', $configArray['pusher']));
+        $I->assertTrue(array_key_exists('secret', $configArray['pusher']));
+        $I->assertTrue(array_key_exists('cluster', $configArray['pusher']));
+        $I->assertTrue(array_key_exists('queue', $configArray['pusher']));
 
         //Stripe
         $I->assertTrue(isset($configArray['stripe']));
-        // $I->assertTrue(isset($configArray['stripe']['secret']));
-        // $I->assertTrue(isset($configArray['stripe']['public']));
+        $I->assertTrue(array_key_exists('secret', $configArray['stripe']));
+        $I->assertTrue(array_key_exists('public', $configArray['stripe']));
 
         //Throttle
         $I->assertTrue(isset($configArray['throttle']));

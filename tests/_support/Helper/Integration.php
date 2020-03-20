@@ -20,7 +20,6 @@ use Phalcon\Config as PhConfig;
 use Canvas\Bootstrap\IntegrationTests;
 use Canvas\Models\FileSystem;
 use Canvas\Models\FileSystemEntities;
-
 use function Canvas\Core\appPath;
 
 // here you can define custom actions
@@ -302,7 +301,7 @@ class Integration extends Module
     }
 
     /**
-     * Get a filesystem entity record from the current user
+     * Get a filesystem entity record from the current user.
      *
      * @return FileSystemEntities
      */
@@ -312,9 +311,9 @@ class Integration extends Module
         $newFilesystem->companies_id = $this->grabFromDi('userData')->currentCompanyId();
         $newFilesystem->apps_id = $this->grabFromDi('app')->getId();
         $newFilesystem->users_id = $this->grabFromDi('userData')->getId();
-        $newFilesystem->name = 'test.png';
-        $newFilesystem->path = '/test/test.png';
-        $newFilesystem->url = 'http://kanvas.dev/test.png';
+        $newFilesystem->name = 'logo.png';
+        $newFilesystem->path = '/logo/logo.png';
+        $newFilesystem->url = 'http://kanvas.dev/logo.png';
         $newFilesystem->size = '10';
         $newFilesystem->file_type = 'jpg';
         $newFilesystem->saveOrFail();
@@ -326,6 +325,7 @@ class Integration extends Module
         $fileSystemEntities->entity_id = $this->grabFromDi('userData')->getDefaultCompany()->getId();
         $fileSystemEntities->companies_id = $this->grabFromDi('userData')->getDefaultCompany()->getId();
         $fileSystemEntities->system_modules_id = $systemModule->getId();
+        $fileSystemEntities->field_name = 'logo';
         $fileSystemEntities->saveOrFail();
 
         return $fileSystemEntities;

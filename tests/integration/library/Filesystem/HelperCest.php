@@ -27,7 +27,7 @@ class HelperCest
     public function upload(IntegrationTester $I)
     {
         try {
-            $file = Helper::upload(Helper::pathToFile('.'));
+            $file = Helper::upload(Helper::pathToFile('./README.md'));
 
             $I->assertTrue($file instanceof FileSystem);
         } catch (S3Exception $s) {

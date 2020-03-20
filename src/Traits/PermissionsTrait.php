@@ -37,10 +37,9 @@ trait PermissionsTrait
         $role = Roles::getByName($role);
 
         $userRole = UserRoles::findFirst([
-            'conditions' => 'users_id = ?0 and roles_id = ?1 and apps_id = ?2 and companies_id = ?3',
+            'conditions' => 'users_id = ?0 and apps_id = ?1 and companies_id = ?2',
             'bind' => [
                 $this->getId(),
-                $role->getId(),
                 $role->apps_id,
                 $this->currentCompanyId()
             ]
@@ -52,8 +51,11 @@ trait PermissionsTrait
             $userRole->roles_id = $role->getId();
             $userRole->apps_id = $role->apps_id;
             $userRole->companies_id = $this->currentCompanyId();
-            $userRole->saveOrFail();
+        } else {
+            $userRole->roles_id = $role->getId();
         }
+
+        $userRole->saveOrFail();
 
         return true;
     }
@@ -68,10 +70,6 @@ trait PermissionsTrait
     public function removeRole(string $role): bool
     {
         $role = Roles::getByAppName($role, $this->getDefaultCompany());
-
-        if (!is_object($role)) {
-            throw new InternalServerErrorException('Role not found in DB');
-        }
 
         $userRole = UserRoles::findFirst([
             'conditions' => 'users_id = ?0 and roles_id = ?1 and apps_id = ?2 and companies_id = ?3',
@@ -100,11 +98,7 @@ trait PermissionsTrait
     {
         $role = Roles::getByAppName($role, $this->getDefaultCompany());
 
-        if (!is_object($role)) {
-            throw new InternalServerErrorException('Role not found in DB');
-        }
-
-        $userRole = UserRoles::findFirst([
+        return (bool) UserRoles::count([
             'conditions' => 'users_id = ?0 and roles_id = ?1 and (apps_id = ?2 or apps_id = ?4) and companies_id = ?3',
             'bind' => [
                 $this->getId(),
@@ -114,12 +108,6 @@ trait PermissionsTrait
                 $this->di->getApp()->getId()
             ]
         ]);
-
-        if (is_object($userRole)) {
-            return true;
-        }
-
-        return false;
     }
 
     /**

@@ -114,6 +114,8 @@ class AclCest
     {
         $acl = $this->aclService($I);
         $userData = Users::findFirstByEmail(Data::loginJsonDefaultUser()['email']);
+        
+        $I->assertTrue($userData->assignRole('Default.Admins'));
 
         $I->assertTrue($userData->removeRole('Default.Admins'));
 
