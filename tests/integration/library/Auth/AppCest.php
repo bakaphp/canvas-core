@@ -8,6 +8,7 @@ use Canvas\Models\Apps;
 use Canvas\Models\Users;
 use Exception;
 use IntegrationTester;
+use Page\Data;
 use PhpParser\Node\Expr\Instanceof_;
 
 class AppCest
@@ -24,6 +25,14 @@ class AppCest
         $this->app = Apps::getACLApp(Apps::CANVAS_DEFAULT_APP_NAME);
     }
 
+    public function canSetAppPassword(IntegrationTester $I)
+    {
+        $oldUser = Users::findFirstByEmail(Data::loginJsonDefaultUser()['email']);
+        $I->assertTrue(
+            App::updatePassword($oldUser, Password::make(Data::loginJsonDefaultUser()['password']))
+        );
+    }
+
     /**
      * the default Kanvas user can login via ecosystem login
      * not specific login.
@@ -35,7 +44,7 @@ class AppCest
     {
         try {
             $user = App::login(
-                'nobody@baka.io',
+                Data::loginJsonDefaultUser()['email'],
                 'bakatest123567s',
                 true,
                 true,
@@ -56,7 +65,7 @@ class AppCest
             return;
         }
 
-        $previousPassword = 'bakatest123567';
+        $previousPassword = Data::loginJsonDefaultUser()['password'];
         $newPassword = 'bakatest123568';
 
         $user = Users::findFirstOrFail();
@@ -96,8 +105,8 @@ class AppCest
     {
         try {
             $user = App::login(
-                'nobody@baka.io',
-                'bakatest123567',
+                Data::loginJsonDefaultUser()['email'],
+                Data::loginJsonDefaultUser()['password'],
                 true,
                 true,
                 '127.0.0.1'
