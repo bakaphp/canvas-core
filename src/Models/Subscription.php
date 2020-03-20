@@ -6,6 +6,7 @@ use Phalcon\Cashier\Subscription as PhalconSubscription;
 use Canvas\Http\Exception\InternalServerErrorException;
 use Phalcon\Di;
 use Carbon\Carbon;
+use Phalcon\Db\RawValue;
 
 /**
  * Trait Subscription.
@@ -272,7 +273,7 @@ class Subscription extends PhalconSubscription
     {
         $this->is_active = 1;
         $this->paid = 1;
-        $this->grace_period_ends = '';
+        $this->grace_period_ends = new RawValue('NULL');
         $this->ends_at = Carbon::now()->addDays(30)->toDateTimeString();
         $this->next_due_payment = $this->ends_at;
         $this->is_cancelled = 0;
@@ -309,7 +310,7 @@ class Subscription extends PhalconSubscription
      */
     public function validateByGracePeriod(): void
     {
-        if (isset($this->grace_period_ends)) {
+        if (!is_null($this->grace_period_ends)) {
             if (($this->charge_date == $this->grace_period_ends) && !$this->paid) {
                 $this->is_active = 0;
                 $this->grace_period_ends = Carbon::now()->addDays(Subscription::DEFAULT_GRACE_PERIOD_DAYS)->toDateTimeString();

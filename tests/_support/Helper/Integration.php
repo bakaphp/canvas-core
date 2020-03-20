@@ -2,6 +2,7 @@
 
 namespace Helper;
 
+use Baka\Database\SystemModules;
 use Codeception\Module;
 use Codeception\Exception\TestRuntimeException;
 use Codeception\TestInterface;
@@ -17,6 +18,9 @@ use Niden\Mvc\Model\AbstractModel;
 use Phalcon\DI\FactoryDefault as PhDI;
 use Phalcon\Config as PhConfig;
 use Canvas\Bootstrap\IntegrationTests;
+use Canvas\Models\FileSystem;
+use Canvas\Models\FileSystemEntities;
+
 use function Canvas\Core\appPath;
 
 // here you can define custom actions
@@ -41,9 +45,6 @@ class Integration extends Module
         $app->setup();
         $this->diContainer = $app->getContainer();
 
-        // var_dump($this->diContainer);
-        // die();
-
         if ($this->config['rollback']) {
             $this->diContainer->get('db')->begin();
         }
@@ -65,123 +66,6 @@ class Integration extends Module
             $this->diContainer->get('db')->rollback();
         }
         $this->diContainer->get('db')->close();
-    }
-
-    /**
-     * @param string $namePrefix
-     * @param string $addressPrefix
-     * @param string $cityPrefix
-     * @param string $phonePrefix
-     *
-     * @return Companies
-     */
-    public function addCompanyRecord(
-        string $namePrefix = '',
-        string $addressPrefix = '',
-        string $cityPrefix = '',
-        string $phonePrefix = ''
-    ) {
-        return $this->haveRecordWithFields(
-            Companies::class,
-            [
-                'name' => uniqid($namePrefix),
-                'address' => uniqid($addressPrefix),
-                'city' => uniqid($cityPrefix),
-                'phone' => uniqid($phonePrefix),
-            ]
-        );
-    }
-
-    /**
-     * @param int $companyId
-     * @param int $productId
-     *
-     * @return CompaniesXProducts
-     */
-    public function addCompanyXProduct(int $companyId, int $productId)
-    {
-        return $this->haveRecordWithFields(
-            CompaniesXProducts::class,
-            [
-                'companyId' => $companyId,
-                'productId' => $productId,
-            ]
-        );
-    }
-
-    /**
-     * @param string $namePrefix
-     *
-     * @return IndividualTypes
-     */
-    public function addIndividualTypeRecord(string $namePrefix = '')
-    {
-        return $this->haveRecordWithFields(
-            IndividualTypes::class,
-            [
-                'name' => uniqid($namePrefix),
-                'description' => uniqid(),
-            ]
-        );
-    }
-
-    /**
-     * @param string $namePrefix
-     * @param int    $comId
-     * @param int    $typeId
-     *
-     * @return Individuals
-     */
-    public function addIndividualRecord(string $namePrefix = '', int $comId = 0, int $typeId = 0)
-    {
-        return $this->haveRecordWithFields(
-            Individuals::class,
-            [
-                'companyId' => $comId,
-                'typeId' => $typeId,
-                'prefix' => uniqid(),
-                'first' => uniqid($namePrefix),
-                'middle' => uniqid(),
-                'last' => uniqid(),
-                'suffix' => uniqid(),
-            ]
-        );
-    }
-
-    /**
-     * @param string $namePrefix
-     * @param int    $typeId
-     *
-     * @return Products
-     */
-    public function addProductRecord(string $namePrefix = '', int $typeId = 0)
-    {
-        return $this->haveRecordWithFields(
-            Products::class,
-            [
-                'name' => uniqid($namePrefix),
-                'typeId' => $typeId,
-                'description' => uniqid(),
-                'quantity' => 25,
-                'price' => 19.99,
-            ]
-        );
-    }
-
-    /**
-     * @param string $namePrefix
-     *
-     * @return ProductTypes
-     */
-    public function addProductTypeRecord(string $namePrefix = '')
-    {
-        return $this->haveRecordWithFields(
-            ProductTypes::class,
-            [
-                'name' => uniqid($namePrefix),
-                'description' => uniqid(),
-            ]
-        );
     }
 
     /**
@@ -415,5 +299,35 @@ class Integration extends Module
             array_keys($by)
         );
         $this->savedRecords[] = $record;
+    }
+
+    /**
+     * Get a filesystem entity record from the current user
+     *
+     * @return FileSystemEntities
+     */
+    public function getFileSystemEntity(): FileSystemEntities
+    {
+        $newFilesystem = new FileSystem();
+        $newFilesystem->companies_id = $this->grabFromDi('userData')->currentCompanyId();
+        $newFilesystem->apps_id = $this->grabFromDi('app')->getId();
+        $newFilesystem->users_id = $this->grabFromDi('userData')->getId();
+        $newFilesystem->name = 'test.png';
+        $newFilesystem->path = '/test/test.png';
+        $newFilesystem->url = 'http://kanvas.dev/test.png';
+        $newFilesystem->size = '10';
+        $newFilesystem->file_type = 'jpg';
+        $newFilesystem->saveOrFail();
+
+        $systemModule = SystemModules::findFirst(1);
+
+        $fileSystemEntities = new FileSystemEntities();
+        $fileSystemEntities->filesystem_id = $newFilesystem->getId();
+        $fileSystemEntities->entity_id = $this->grabFromDi('userData')->getDefaultCompany()->getId();
+        $fileSystemEntities->companies_id = $this->grabFromDi('userData')->getDefaultCompany()->getId();
+        $fileSystemEntities->system_modules_id = $systemModule->getId();
+        $fileSystemEntities->saveOrFail();
+
+        return $fileSystemEntities;
     }
 }

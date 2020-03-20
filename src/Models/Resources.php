@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace Canvas\Models;
 
+use Baka\Database\Exception\ModelNotFoundException;
 use Phalcon\Di;
 use Canvas\Exception\ModelException;
 
 /**
- * Class Resources
+ * Class Resources.
  *
  * @package Canvas\Models
  *
@@ -88,12 +89,16 @@ class Resources extends AbstractModel
     {
         return (bool) self::count([
             'conditions' => 'name = ?0 AND apps_id in (?1, ?2)',
-            'bind' => [$resourceName, Di::getDefault()->getApp()->getId(), Apps::CANVAS_DEFAULT_APP_ID]
+            'bind' => [
+                $resourceName,
+                Di::getDefault()->getApp()->getId(),
+                Apps::CANVAS_DEFAULT_APP_ID
+            ]
         ]);
     }
 
     /**
-     * Get a resource by it name
+     * Get a resource by it name.
      *
      * @param  string  $resourceName
      * @return Resources
@@ -102,11 +107,17 @@ class Resources extends AbstractModel
     {
         $resource = self::findFirst([
             'conditions' => 'name = ?0 AND apps_id in (?1, ?2)',
-            'bind' => [$resourceName, Di::getDefault()->getApp()->getId(), Apps::CANVAS_DEFAULT_APP_ID]
+            'bind' => [
+                $resourceName,
+                Di::getDefault()->getApp()->getId(),
+                Apps::CANVAS_DEFAULT_APP_ID
+            ]
         ]);
 
         if (!is_object($resource)) {
-            throw new ModelException(_('Resource ' . $resourceName . ' not found on this app ' . Di::getDefault()->getApp()->getId()));
+            throw new ModelNotFoundException(
+                _('Resource ' . $resourceName . ' not found on this app ' . Di::getDefault()->getApp()->getId())
+            );
         }
 
         return $resource;

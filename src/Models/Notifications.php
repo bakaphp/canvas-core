@@ -132,7 +132,10 @@ class Notifications extends AbstractModel
      */
     public static function markAsRead(Users $user): bool
     {
-        $result = Di::getDefault()->getDb()->prepare('UPDATE notifications set `read` = 1 WHERE users_id = ? AND companies_id = ? AND apps_id = ?');
+        $result = Di::getDefault()->getDb()->prepare(
+            'UPDATE notifications set `read` = 1 WHERE users_id = ? AND companies_id = ? AND apps_id = ?'
+        );
+
         $result->execute([
             $user->getId(),
             $user->currentCompanyId(),
@@ -151,7 +154,11 @@ class Notifications extends AbstractModel
     {
         return self::count([
             'conditions' => 'is_deleted = 0 AND read = 0 AND users_id = ?0 AND companies_id = ?1 AND apps_id = ?2',
-            'bind' => [$user->getId(), $user->currentCompanyId(), Di::getDefault()->getApp()->getId()]
+            'bind' => [
+                $user->getId(),
+                $user->currentCompanyId(),
+                Di::getDefault()->getApp()->getId()
+            ]
         ]);
     }
 }
