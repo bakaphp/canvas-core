@@ -48,6 +48,7 @@ class NotificationsController extends BaseController
 
         $this->additionalSearchFields = [
             ['is_deleted', ':', '0'],
+            ['apps_id', ':', $this->app->getId()],
             ['users_id', ':', $this->userData->getId()],
             ['companies_id', ':', $this->userData->currentCompanyId()],
         ];
