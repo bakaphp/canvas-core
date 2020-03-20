@@ -51,18 +51,7 @@ class CompaniesCest
         $I->assertEquals($expected, $actual);
     }
 
-    /**
-     * Register a new Company.
-     *
-     * @param IntegrationTester $I
-     * @return void
-     */
-    public function registerTest(IntegrationTester $I)
-    {
-        $random = new Random();
-        $newCompany = Companies::register($I->grabFromDi('userData'), 'TestCompany-' . $random->base58());
-        $I->assertTrue($newCompany instanceof Companies);
-    }
+
 
     /**
      * Get the Companies Group to which a newly created company belongs to.

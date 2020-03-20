@@ -5,10 +5,12 @@ namespace Gewaer\Tests\integration\library\Jobs;
 use Canvas\Auth\App;
 use Canvas\Hashing\Password;
 use Canvas\Models\Apps;
+use Canvas\Models\Companies;
 use Canvas\Models\Users;
 use Exception;
 use IntegrationTester;
 use Page\Data;
+use Phalcon\Security\Random;
 use PhpParser\Node\Expr\Instanceof_;
 
 class AppCest
@@ -23,6 +25,19 @@ class AppCest
     public function onContruct()
     {
         $this->app = Apps::getACLApp(Apps::CANVAS_DEFAULT_APP_NAME);
+    }
+
+    /**
+     * Register a new Company.
+     *
+     * @param IntegrationTester $I
+     * @return void
+     */
+    public function setCompanyTest(IntegrationTester $I)
+    {
+        $random = new Random();
+        $newCompany = Companies::register($I->grabFromDi('userData'), 'TestCompany-' . $random->base58());
+        $I->assertTrue($newCompany instanceof Companies);
     }
 
     public function canSetAppPassword(IntegrationTester $I)
