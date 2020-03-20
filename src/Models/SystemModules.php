@@ -149,7 +149,10 @@ class SystemModules extends AbstractModel
     {
         $module = SystemModules::findFirst([
             'conditions' => 'model_name = ?0 and apps_id = ?1',
-            'bind' => [$modelName, Di::getDefault()->getApp()->getId()]
+            'bind' => [
+                $modelName,
+                Di::getDefault()->getApp()->getId()
+            ]
         ]);
 
         if (!is_object($module)) {
@@ -197,7 +200,10 @@ class SystemModules extends AbstractModel
     {
         $module = SystemModules::findFirstOrFail([
             'conditions' => 'id = ?0 and apps_id = ?1',
-            'bind' => [$id, Di::getDefault()->getApp()->getId()]
+            'bind' => [
+                $id,
+                Di::getDefault()->getApp()->getId()
+            ]
         ]);
 
         return $module;
@@ -213,7 +219,10 @@ class SystemModules extends AbstractModel
     {
         $module = SystemModules::findFirstOrFail([
             'conditions' => 'slug = ?0 and apps_id = ?1',
-            'bind' => [$slug, Di::getDefault()->getApp()->getId()]
+            'bind' => [
+                $slug,
+                Di::getDefault()->getApp()->getId()
+            ]
         ]);
 
         return $module;

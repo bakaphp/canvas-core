@@ -29,7 +29,18 @@ class FileSystemCest
      */
     public function getById(IntegrationTester $I)
     {
-        $fileSystem = FileSystem::getById(1);
+        $newFilesystem = new FileSystem();
+        $newFilesystem->companies_id = $I->grabFromDi('userData')->currentCompanyId();
+        $newFilesystem->apps_id = $I->grabFromDi('app')->getId();
+        $newFilesystem->users_id = $I->grabFromDi('userData')->getId();
+        $newFilesystem->name = 'test.png';
+        $newFilesystem->path = '/test/test.png';
+        $newFilesystem->url = 'http://kanvas.dev/test.png';
+        $newFilesystem->size = '10';
+        $newFilesystem->file_type = 'jpg';
+        $newFilesystem->saveOrFail();
+
+        $fileSystem = FileSystem::getById($newFilesystem->getId());
         $I->assertTrue($fileSystem instanceof FileSystem);
     }
 

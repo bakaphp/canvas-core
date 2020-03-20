@@ -94,42 +94,41 @@ class PaymentMethodsCreds extends AbstractModel
     }
 
     /**
-     * Returns the current payment method credentials
+     * Returns the current payment method credentials.
      *
      * @return string
      */
     public function getCurrentPaymentMethodCreds(): self
     {
         return self::findFirstOrFail([
-            "conditions"=> "users_id = ?0 and companies_id = ?1 and apps_id = ?2 and is_deleted = 0",
-            "bind" => 
-            [
+            'conditions' => 'users_id = ?0 and companies_id = ?1 and apps_id = ?2 and is_deleted = 0',
+            'bind' => [
                 Di::getDefault()->getUserData()->getId(),
                 Di::getDefault()->getUserData()->getDefaultCompany()->getId(),
                 Di::getDefault()->getApp()->getId()
             ],
-            "order"=> "id DESC"
+            'order' => 'id DESC'
         ]);
     }
 
     /**
-     * Create a new record from Stripe Token
+     * Create a new record from Stripe Token.
      *
      * @param string $token
      * @return return self
      */
     public static function createByStripeToken(string $token): self
     {
-        $ccinfo = self::getCardInfoFromStripe($token);
+        $ccInfo = self::getCardInfoFromStripe($token);
 
         $paymentMethodCred = new self();
         $paymentMethodCred->users_id = Di::getDefault()->getUserData()->getId();
         $paymentMethodCred->companies_id = Di::getDefault()->getUserData()->getDefaultCompany()->getId();
         $paymentMethodCred->apps_id = Di::getDefault()->getApp()->getId();
         $paymentMethodCred->payment_methods_id = PaymentMethods::getDefault()->getId();
-        $paymentMethodCred->payment_ending_numbers = $ccinfo->card->last4;
-        $paymentMethodCred->expiration_date = $ccinfo->card->exp_year . '-' . $ccinfo->card->exp_month . '-' .  '01';
-        $paymentMethodCred->zip_code = $ccinfo->card->address_zip;
+        $paymentMethodCred->payment_ending_numbers = $ccInfo->card->last4;
+        $paymentMethodCred->expiration_date = $ccInfo->card->exp_year . '-' . $ccInfo->card->exp_month . '-' . '01';
+        $paymentMethodCred->zip_code = $ccInfo->card->address_zip;
         $paymentMethodCred->created_at = date('Y-m-d H:m:s');
         $paymentMethodCred->saveOrFail();
 
@@ -137,14 +136,14 @@ class PaymentMethodsCreds extends AbstractModel
     }
 
     /**
-     * Get Credit Card information from Stripe
+     * Get Credit Card information from Stripe.
      *
      * @param string $token
      * @return return StripeToken
      */
     private function getCardInfoFromStripe(string $token): StripeToken
     {
-        return StripeToken::retrieve($token,[
+        return StripeToken::retrieve($token, [
             'api_key' => Di::getDefault()->getConfig()->stripe->secret
         ]);
     }

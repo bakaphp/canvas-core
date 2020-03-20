@@ -8,7 +8,6 @@ use Phalcon\Events\Event;
 use Canvas\Models\Users;
 use Canvas\Models\Companies;
 use Canvas\Models\CompaniesBranches;
-use Canvas\Exception\ServerErrorHttpException;
 use Baka\Auth\Models\UserCompanyApps;
 use Canvas\Http\Exception\InternalServerErrorException;
 use Canvas\Models\AppsPlans;
@@ -53,7 +52,7 @@ class Company
         $branch->name = 'Default';
         $branch->is_default = 1;
         if (!$branch->save()) {
-            throw new ServerErrorHttpException((string)current($branch->getMessages()));
+            throw new InternalServerErrorException((string)current($branch->getMessages()));
         }
 
         //look for the default plan for this app

@@ -126,7 +126,7 @@ class FileSystemEntities extends AbstractModel
             'apps_id' => $app->getId(),
         ];
 
-        if ((bool) Di::getDefault()->getApp()->get('public_images')) {
+        if (!(bool) Di::getDefault()->getApp()->get('public_images')) {
             $companyId = Di::getDefault()->getUserData()->currentCompanyId();
             $addCompanySql = 'AND companies_id = :companies_id:';
             $bind['companies_id'] = $companyId;
@@ -158,7 +158,7 @@ class FileSystemEntities extends AbstractModel
             'apps_id' => $app->getId(),
         ];
 
-        if ((bool) Di::getDefault()->getApp()->get('public_images')) {
+        if (!(bool) Di::getDefault()->getApp()->get('public_images')) {
             $companyId = Di::getDefault()->getUserData()->currentCompanyId();
             $addCompanySql = 'AND companies_id = :companies_id:';
             $bind['companies_id'] = $companyId;
@@ -189,7 +189,7 @@ class FileSystemEntities extends AbstractModel
             'apps_id' => $app->getId(),
         ];
 
-        if ((bool) Di::getDefault()->getApp()->get('public_images')) {
+        if (!(bool) Di::getDefault()->getApp()->get('public_images')) {
             $companyId = Di::getDefault()->getUserData()->currentCompanyId();
             $addCompanySql = 'AND companies_id = :companies_id:';
             $bind['companies_id'] = $companyId;
@@ -219,7 +219,7 @@ class FileSystemEntities extends AbstractModel
             'apps_id' => $app->getId(),
         ];
 
-        if ((bool) Di::getDefault()->getApp()->get('public_images')) {
+        if (!(bool) Di::getDefault()->getApp()->get('public_images')) {
             $companyId = Di::getDefault()->getUserData()->currentCompanyId();
             $addCompanySql = 'AND companies_id = :companies_id:';
             $bind['companies_id'] = $companyId;

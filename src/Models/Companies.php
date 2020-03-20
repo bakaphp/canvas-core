@@ -283,7 +283,7 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
             [
                 'alias' => 'subscription',
                 'params' => [
-                    'conditions' => 'apps_id = ' . $this->di->getApp()->getId() . '  AND is_deleted = 0 ',
+                    'conditions' => 'apps_id = ' . $this->di->getApp()->getId() . ' AND is_deleted = 0',
                     'order' => 'id DESC'
                 ]
             ]
@@ -316,19 +316,6 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
             'entity_id',
             [
                 'alias' => 'files',
-                'params' => [
-                    'conditions' => 'system_modules_id = ?0',
-                    'bind' => [$systemModule->getId()]
-                ]
-            ]
-        );
-
-        $this->hasOne(
-            'id',
-            'Canvas\Models\FileSystemEntities',
-            'entity_id',
-            [
-                'alias' => 'logo',
                 'params' => [
                     'conditions' => 'system_modules_id = ?0',
                     'bind' => [$systemModule->getId()]

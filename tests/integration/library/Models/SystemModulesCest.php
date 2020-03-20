@@ -8,7 +8,7 @@ use IntegrationTester;
 class SystemModulesCest
 {
     /**
-     * Get System Module By Model Name Users
+     * Get System Module By Model Name Users.
      *
      * @param IntegrationTester $I
      * @return void
@@ -20,7 +20,7 @@ class SystemModulesCest
     }
 
     /**
-     * Get System Module By Model Name Companies
+     * Get System Module By Model Name Companies.
      *
      * @param IntegrationTester $I
      * @return void
@@ -31,8 +31,26 @@ class SystemModulesCest
         $I->assertTrue($systemModule instanceof SystemModules);
     }
 
+    public function getByModelName(IntegrationTester $I)
+    {
+        $systemModule = SystemModules::getByModelName('Canvas\Models\Companies');
+        $I->assertTrue($systemModule instanceof SystemModules);
+    }
+
+    public function getByName(IntegrationTester $I)
+    {
+        $systemModule = SystemModules::getByName('Companies');
+        $I->assertTrue($systemModule instanceof SystemModules);
+    }
+
+    public function getById(IntegrationTester $I)
+    {
+        $systemModule = SystemModules::getById(1);
+        $I->assertTrue($systemModule instanceof SystemModules);
+    }
+
     /**
-     * Get System Module by slug
+     * Get System Module by slug.
      *
      * @param IntegrationTester $I
      * @return void

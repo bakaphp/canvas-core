@@ -144,9 +144,13 @@ class Manager extends Adapter
     public function getCompany() : Companies
     {
         if (!is_object($this->company)) {
-            $this->company = new Companies();
-            $this->company->id = 1;
-            $this->company->name = 'Canvas';
+            if (!Di::getDefault()->has('userData')) {
+                $this->company = new Companies();
+                $this->company->id = 1;
+                $this->company->name = 'Canvas';
+            } else {
+                $this->company = Di::getDefault()->get('userData')->getDefaultCompany();
+            }
         }
 
         return $this->company;

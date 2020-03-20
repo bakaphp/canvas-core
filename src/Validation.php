@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Canvas;
 
 use Phalcon\Validation as PhalconValidation;
-use Canvas\Exception\UnprocessableRequestException;
+use Canvas\Http\Exception\UnprocessableEntityException;
 
 /**
  * Class Validation.
@@ -28,7 +28,7 @@ class Validation extends PhalconValidation
         $validate = parent::validate($data, $entity);
 
         if (count($validate)) {
-            throw new UnprocessableRequestException($validate[0]->getMessage());
+            throw new UnprocessableEntityException($validate[0]->getMessage());
         }
 
         return $validate;

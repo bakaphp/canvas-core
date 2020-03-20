@@ -6,10 +6,6 @@ use Namshi\Notificator\Notification\Handler\HandlerInterface;
 use Canvas\Contracts\Notifications\PushNotificationsInterface as PushNotificationsContract;
 use Namshi\Notificator\NotificationInterface;
 use Phalcon\Di;
-use Canvas\Notifications\Mobile\Apps;
-use Canvas\Notifications\Mobile\Mobile;
-use Canvas\Models\Notifications;
-use Canvas\Models\SystemModules;
 
 class PushNotifications implements HandlerInterface
 {

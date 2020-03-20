@@ -66,7 +66,7 @@ class PaymentMethods extends AbstractModel
      */
     public static function getDefault(): self
     {
-        return self::findFirst(['conditions' => "is_default = 1 and is_deleted = 0"]);
+        return self::findFirst(['conditions' => 'is_default = 1 and is_deleted = 0']);
     }
 
     /**
@@ -76,6 +76,6 @@ class PaymentMethods extends AbstractModel
      */
     public function getId(): int
     {
-        return (int)$this->id;
+        return (int) $this->id;
     }
 }

@@ -10,7 +10,6 @@ use Carbon\Carbon;
 use Phalcon\Validation;
 use Phalcon\Validation\Validator\Email;
 use Phalcon\Validation\Validator\PresenceOf;
-use Phalcon\Validation\Validator\Regex;
 use Phalcon\Validation\Validator\Uniqueness;
 use Canvas\Traits\FileSystemModelTrait;
 use Phalcon\Security\Random;
@@ -207,19 +206,6 @@ class Users extends \Baka\Auth\Models\Users
             'entity_id',
             [
                 'alias' => 'files',
-                'params' => [
-                    'conditions' => 'system_modules_id = ?0',
-                    'bind' => [$systemModule->getId()]
-                ]
-            ]
-        );
-
-        $this->hasOne(
-            'id',
-            'Canvas\Models\FileSystemEntities',
-            'entity_id',
-            [
-                'alias' => 'photo',
                 'params' => [
                     'conditions' => 'system_modules_id = ?0',
                     'bind' => [$systemModule->getId()]

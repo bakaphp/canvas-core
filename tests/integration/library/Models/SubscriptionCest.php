@@ -11,7 +11,7 @@ use Phalcon\Security\Random;
 class SubscriptionCest
 {
     /**
-     * Get the active subscription for this company app
+     * Get the active subscription for this company app.
      *
      * @param IntegrationTester $I
      * @return void
@@ -22,7 +22,7 @@ class SubscriptionCest
     }
 
     /**
-     * Get subscription by user's default company
+     * Get subscription by user's default company.
      *
      * @param IntegrationTester $I
      * @return void
@@ -33,7 +33,7 @@ class SubscriptionCest
     }
 
     /**
-     * Search current company's app setting with key paid to verify payment status for current company
+     * Search current company's app setting with key paid to verify payment status for current company.
      *
      * @param IntegrationTester $I
      * @return void
@@ -41,5 +41,33 @@ class SubscriptionCest
     public function getPaymentStatus(IntegrationTester $I)
     {
         $I->assertTrue(gettype(Subscription::getPaymentStatus($I->grabFromDi('userData'))) == 'boolean');
+    }
+
+    public function isActive(IntegrationTester $I)
+    {
+        $I->assertTrue(is_bool(Subscription::getActiveForThisApp()->active()));
+    }
+
+    public function paid(IntegrationTester $I)
+    {
+        $I->assertTrue(is_bool(Subscription::getActiveForThisApp()->paid()));
+    }
+
+    public function activate(IntegrationTester $I)
+    {
+        $I->assertTrue(is_bool(Subscription::getActiveForThisApp()->activate()));
+    }
+
+    public function onTrial(IntegrationTester $I)
+    {
+        $I->assertTrue(is_bool(Subscription::getActiveForThisApp()->onTrial()));
+    }
+
+    public function validateByGracePeriod(IntegrationTester $I)
+    {
+        $subscription = Subscription::getActiveForThisApp();
+        $subscription->validateByGracePeriod();
+
+        $I->assertTrue(strtotime($subscription->grace_period_ends) > 0);
     }
 }

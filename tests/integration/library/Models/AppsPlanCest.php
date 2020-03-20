@@ -6,11 +6,20 @@ use Canvas\Models\Apps;
 use Canvas\Models\AppsPlans;
 use Canvas\Models\AppsPlansSettings;
 use IntegrationTester;
-use Canvas\Providers\ConfigProvider;
-use Phalcon\Di\FactoryDefault;
 
 class AppsPlansCest
 {
+    public function validateRelationships(IntegrationTester $I)
+    {
+        $actual = $I->getModelRelationships(AppsPlans::class);
+        $expected = [
+            [0, 'apps_id', Apps::class, 'id', ['alias' => 'app']],
+            [2, 'apps_id', AppsPlansSettings::class, 'apps_id', ['alias' => 'settings']],
+        ];
+
+        $I->assertEquals($expected, $actual);
+    }
+
     /**
      * Confirm the default apps exist.
      *
