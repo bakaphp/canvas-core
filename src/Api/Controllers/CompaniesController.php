@@ -71,6 +71,7 @@ class CompaniesController extends BaseController
         //my list of avaiable companies
         $this->additionalSearchFields = [
             ['id', ':', implode('|', $this->userData->getAssociatedCompanies())],
+            ['is_deleted', ':', '0']
         ];
     }
 
