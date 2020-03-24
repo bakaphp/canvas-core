@@ -81,6 +81,12 @@ class AppsPlans extends AbstractModel
 
     /**
      *
+     * @var integer
+     */
+    public $payment_frequencies_id;
+
+    /**
+     *
      * @var string
      */
     public $created_at;
@@ -109,6 +115,13 @@ class AppsPlans extends AbstractModel
             'Canvas\Models\Apps',
             'id',
             ['alias' => 'app']
+        );
+
+        $this->belongsTo(
+            'payment_frequencies_id',
+            'Canvas\Models\PaymentFrequencies',
+            'id',
+            ['alias' => 'paymentFrequecies']
         );
 
         $this->hasMany(

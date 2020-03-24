@@ -15,7 +15,7 @@ class AddPaymentsFrequencyToAppPlansTable extends Phinx\Migration\AbstractMigrat
             'comment' => '',
             'row_format' => 'DYNAMIC',
         ])
-            ->addColumn('payment_frequency', 'integer', [
+            ->addColumn('payment_frequencies_id', 'integer', [
                 'null' => true,
                 'default' => '1',
                 'limit' => MysqlAdapter::INT_REGULAR,

@@ -227,7 +227,7 @@ class InitGewaer extends AbstractSeed
                 'currency_id' => 1,
                 'free_trial_dates' => 14,
                 'is_default' => 1,
-                'payment_frequency' => 1
+                'payment_frequencies_id' => 1
             ], [
                 'apps_id' => '1',
                 'name' => 'monthly-10-2',
@@ -239,7 +239,7 @@ class InitGewaer extends AbstractSeed
                 'currency_id' => 1,
                 'free_trial_dates' => 14,
                 'is_default' => 0,
-                'payment_frequency' => 1
+                'payment_frequencies_id' => 1
             ],
             [
                 'apps_id' => '1',
@@ -252,7 +252,7 @@ class InitGewaer extends AbstractSeed
                 'currency_id' => 1,
                 'free_trial_dates' => 14,
                 'is_default' => 1,
-                'payment_frequency' => 2
+                'payment_frequencies_id' => 2
             ], [
                 'apps_id' => '1',
                 'name' => 'yearly-10-2',
@@ -264,7 +264,7 @@ class InitGewaer extends AbstractSeed
                 'currency_id' => 1,
                 'free_trial_dates' => 14,
                 'is_default' => 0,
-                'payment_frequency' => 2
+                'payment_frequencies_id' => 2
             ]
         ];
 
