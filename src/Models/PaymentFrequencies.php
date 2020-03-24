@@ -42,12 +42,12 @@ class PaymentFrequencies extends AbstractModel
     {
         $this->setSource('payment_frequencies');
 
-        // $this->hasMany(
-        //     'id',
-        //     'Canvas\Models\AppsPlans',
-        //     'payment_frequencies_id',
-        //     ['alias' => 'plans']
-        // );
+        $this->hasMany(
+            'id',
+            'Canvas\Models\AppsPlans',
+            'payment_frequencies_id',
+            ['alias' => 'plans']
+        );
     }
 
     /**
