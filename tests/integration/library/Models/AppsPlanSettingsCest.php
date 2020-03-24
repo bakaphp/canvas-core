@@ -15,6 +15,6 @@ class AppsPlansSettingsCest
             [0, 'apps_id', Apps::class, 'id', ['alias' => 'app']],
         ];
 
-        $I->assertEquals($expected, $actual);
+        $I->assertEquals($expected, $actual[2]);
     }
 }
