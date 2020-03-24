@@ -226,7 +226,8 @@ class InitGewaer extends AbstractSeed
                 'pricing_anual' => 100,
                 'currency_id' => 1,
                 'free_trial_dates' => 14,
-                'is_default' => 1
+                'is_default' => 1,
+                'payment_frequencies_id' => 1
             ], [
                 'apps_id' => '1',
                 'name' => 'monthly-10-2',
@@ -234,35 +235,36 @@ class InitGewaer extends AbstractSeed
                 'stripe_id' => 'monthly-10-2',
                 'stripe_plan' => 'monthly-10-2',
                 'pricing' => 100,
-                'pricing_anual' => 1000,
+                'pricing_anual' => 100,
                 'currency_id' => 1,
                 'free_trial_dates' => 14,
-                'is_default' => 0
+                'is_default' => 0,
+                'payment_frequencies_id' => 1
             ],
             [
                 'apps_id' => '1',
-                'name' => 'monthly-1',
-                'description' => 'monthly-1',
-                'stripe_id' => 'monthly-1',
-                'stripe_plan' => 'monthly-1',
-                'pricing' => 5,
+                'name' => 'yearly-10-1',
+                'description' => 'yearly-10-1',
+                'stripe_id' => 'yearly-10-1',
+                'stripe_plan' => 'yearly-10-1',
+                'pricing' => 100,
                 'pricing_anual' => 60,
                 'currency_id' => 1,
                 'free_trial_dates' => 14,
                 'is_default' => 1,
-                'payment_frequency' => 1
+                'payment_frequencies_id' => 2
             ], [
                 'apps_id' => '1',
-                'name' => 'yearly-1',
-                'description' => 'yearly-1',
-                'stripe_id' => 'yearly-1',
-                'stripe_plan' => 'yearly-1',
-                'pricing' => 5,
+                'name' => 'yearly-10-2',
+                'description' => 'yearly-10-2',
+                'stripe_id' => 'yearly-10-2',
+                'stripe_plan' => 'yearly-10-2',
+                'pricing' => 1000,
                 'pricing_anual' => 60,
                 'currency_id' => 1,
                 'free_trial_dates' => 14,
                 'is_default' => 0,
-                'payment_frequency' => 12
+                'payment_frequencies_id' => 2
             ]
         ];
 
@@ -416,21 +418,21 @@ class InitGewaer extends AbstractSeed
                 'id' => 1,
                 'name' => 'text',
                 'description' => 'Regular input field. Any text.',
-                'icon'=> 'fas fa-sort',
+                'icon' => 'fas fa-sort',
                 'created_at' => date('Y-m-d H:i:s')
             ],
             [
                 'id' => 2,
                 'name' => 'select',
                 'description' => 'Dropdown lists',
-                'icon'=> 'fas fa-sort',
+                'icon' => 'fas fa-sort',
                 'created_at' => date('Y-m-d H:i:s')
             ],
             [
                 'id' => 3,
                 'name' => 'number',
                 'description' => 'Whole numbers',
-                'icon'=> 'fas fa-sort-numeric-down',
+                'icon' => 'fas fa-sort-numeric-down',
                 'created_at' => date('Y-m-d H:i:s')
             ]
         ];
