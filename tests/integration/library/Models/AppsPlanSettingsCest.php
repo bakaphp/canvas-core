@@ -12,9 +12,9 @@ class AppsPlansSettingsCest
     {
         $actual = $I->getModelRelationships(AppsPlansSettings::class);
         $expected = [
-            [2, 'apps_id', Apps::class, 'id', ['alias' => 'app']],
+            [0, 'apps_id', Apps::class, 'id', ['alias' => 'app']],
         ];
 
-        $I->assertEquals($expected, $actual);
+        $I->assertEquals($expected, $actual[0]);
     }
 }
