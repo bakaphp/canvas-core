@@ -3,6 +3,7 @@
 namespace Gewaer\Tests\integration\library\Models;
 
 use Canvas\Models\Apps;
+use Canvas\Models\PaymentFrequencies;
 use Canvas\Models\AppsPlansSettings;
 use IntegrationTester;
 
@@ -13,8 +14,9 @@ class AppsPlansSettingsCest
         $actual = $I->getModelRelationships(AppsPlansSettings::class);
         $expected = [
             [0, 'apps_id', Apps::class, 'id', ['alias' => 'app']],
+            [1, 'payment_frequencies_id', 'Canvas\Models\PaymentFrequencies', 'id', ['alias' => 'paymentFrequecies']]
         ];
 
-        $I->assertEquals($expected, $actual[2]);
+        $I->assertEquals($expected, $actual);
     }
 }
