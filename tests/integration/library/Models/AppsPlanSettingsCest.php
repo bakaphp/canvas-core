@@ -14,7 +14,8 @@ class AppsPlansSettingsCest
         $actual = $I->getModelRelationships(AppsPlansSettings::class);
         $expected = [
             [0, 'apps_id', Apps::class, 'id', ['alias' => 'app']],
-            [1, 'payment_frequencies_id', 'Canvas\Models\PaymentFrequencies', 'id', ['alias' => 'paymentFrequecies']]
+            [1, 'payment_frequencies_id', PaymentFrequencies::class, 'id', ['alias' => 'paymentFrequecies']],
+            [2, 'apps_id', AppsPlansSettings::class, 'apps_id', ['alias' => 'settings']]
         ];
 
         $I->assertEquals($expected, $actual);

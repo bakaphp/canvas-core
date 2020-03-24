@@ -117,18 +117,18 @@ class AppsPlans extends AbstractModel
             ['alias' => 'app']
         );
 
-        $this->hasMany(
-            'apps_id',
-            'Canvas\Models\AppsPlansSettings',
-            'apps_id',
-            ['alias' => 'settings']
-        );
-
         $this->belongsTo(
             'payment_frequencies_id',
             'Canvas\Models\PaymentFrequencies',
             'id',
             ['alias' => 'paymentFrequecies']
+        );
+
+        $this->hasMany(
+            'apps_id',
+            'Canvas\Models\AppsPlansSettings',
+            'apps_id',
+            ['alias' => 'settings']
         );
     }
 
