@@ -15,7 +15,7 @@ class AppsPlansCest
         $actual = $I->getModelRelationships(AppsPlans::class);
         $expected = [
             [0, 'apps_id', Apps::class, 'id', ['alias' => 'app']],
-            [1, 'payment_frequencies_id', PaymentFrequencies::class, 'id', ['alias' => 'paymentFrequecies']],
+            [0, 'payment_frequencies_id', PaymentFrequencies::class, 'id', ['alias' => 'paymentFrequecies']],
             [2, 'apps_id', AppsPlansSettings::class, 'apps_id', ['alias' => 'settings']]
         ];
 
