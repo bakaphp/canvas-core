@@ -2,6 +2,7 @@
 
 use Baka\Router\RouteGroup;
 use Baka\Router\Route;
+use function Canvas\Core\envValue;
 
 $publicRoutes = [
     Route::get('/')->controller('IndexController'),
@@ -92,17 +93,17 @@ $privateSubscriptionRoutes = [
 
 $publicRoutesGroup = RouteGroup::from($publicRoutes)
                 ->defaultNamespace('Canvas\Api\Controllers')
-                ->defaultPrefix('/v1');
+                ->defaultPrefix(envValue('API_VERSION', '/v1'));
 
 $privateRoutesGroup = RouteGroup::from($privateRoutes)
                 ->defaultNamespace('Canvas\Api\Controllers')
                 ->addMiddlewares('auth.jwt@before', 'auth.acl@before')
-                ->defaultPrefix('/v1');
+                ->defaultPrefix(envValue('API_VERSION', '/v1'));
 
 $subscriptionPrivateRoutes = RouteGroup::from($privateSubscriptionRoutes)
                 ->defaultNamespace('Canvas\Api\Controllers')
                 ->addMiddlewares('auth.jwt@before', 'auth.acl@before', 'auth.subscription@before')
-                ->defaultPrefix('/v1');
+                ->defaultPrefix(envValue('API_VERSION', '/v1'));
 
 /**
  * @todo look for a better way to handle this
