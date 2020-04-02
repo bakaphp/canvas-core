@@ -1,5 +1,10 @@
 build:
     root_path: './'
+    
+    analysis:
+      tests:
+        override:
+          - php-scrutinizer-run
 
     services:
       # For available tags, see https://hub.docker.com/_/mariadb/
@@ -18,10 +23,7 @@ build:
             api:
               web_root: 'public'
               host: 'api.baka.ld'
-    analysis:
-      tests:
-        override:
-          - php-scrutinizer-run
+
     dependencies:
         override:
           - true
