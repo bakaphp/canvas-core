@@ -9,11 +9,13 @@ use Baka\Auth\Models\Sessions;
 use Canvas\Models\Users;
 use Canvas\Constants\Flags;
 use Canvas\Http\Exception\UnauthorizedException;
+use Phalcon\Config;
+use Phalcon\Http\RequestInterface;
 
 /**
  * Class AuthenticationMiddleware.
  *
- * @package Niden\Middleware
+ * @package Canvas\Middleware
  */
 class AuthenticationMiddleware extends TokenBase
 {
@@ -96,7 +98,7 @@ class AuthenticationMiddleware extends TokenBase
      *
      * @param Micro $api
      * @param Config $config
-     * @param string $token
+     * @param mixed $token
      * @param RequestInterface $request
      * @return void
      */
@@ -104,7 +106,7 @@ class AuthenticationMiddleware extends TokenBase
     {
         $api->getDI()->setShared(
             'userData',
-            function () use ($config, $token, $request) {
+            function () use ($config) {
                 /**
                  * @todo we need to track session for anonymous user
                  */
@@ -115,7 +117,7 @@ class AuthenticationMiddleware extends TokenBase
                 throw new UnauthorizedException(
                     strtolower($config->app->env) == Flags::DEVELOPMENT ?
                     'No anonymous user configured in the app' :
-                    'No user found guest'
+                    'Missing Token'
                 );
             }
         );

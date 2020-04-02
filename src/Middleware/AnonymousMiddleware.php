@@ -9,7 +9,7 @@ use Phalcon\Mvc\Micro;
 /**
  * Class AuthenticationMiddleware.
  *
- * @package Niden\Middleware
+ * @package Canvas\Middleware
  */
 class AnonymousMiddleware extends AuthenticationMiddleware
 {
@@ -26,6 +26,7 @@ class AnonymousMiddleware extends AuthenticationMiddleware
         $request = $api->getService('request');
 
         $anonymousUser = false;
+        $token = null;
 
         /**
          * This is where we will find if the user exists based on
