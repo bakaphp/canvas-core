@@ -18,7 +18,10 @@ build:
             api:
               web_root: 'public'
               host: 'api.baka.ld'
-
+    analysis:
+      tests:
+        override:
+          - php-scrutinizer-run
     dependencies:
         override:
           - true
