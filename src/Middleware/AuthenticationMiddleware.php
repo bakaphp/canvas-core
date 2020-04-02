@@ -29,17 +29,33 @@ class AuthenticationMiddleware extends TokenBase
         $config = $api->getService('config');
         $request = $api->getService('request');
 
-        //cant be empty jwt
-        if (empty($request->getBearerTokenFromHeader())) {
-            throw new UnauthorizedException('Missing Token');
-        }
-
         /**
          * This is where we will find if the user exists based on
          * the token passed using Bearer Authentication.
          */
-        $token = $this->getToken($request->getBearerTokenFromHeader());
+        if (!empty($request->getBearerTokenFromHeader())) {
+            $token = $this->getToken($request->getBearerTokenFromHeader());
+        } else {
+            throw new UnauthorizedException('Missing Token');
+        }
 
+        $this->sessionUser($api, $config, $token, $request);
+
+        return true;
+    }
+
+    /**
+     * Get the real from the JWT Token.
+     *
+     * @param Micro $api
+     * @param Config $config
+     * @param string $token
+     * @param RequestInterface $request
+     * @throws UnauthorizedException
+     * @return void
+     */
+    protected function sessionUser(Micro $api, Config $config, object $token, RequestInterface $request): void
+    {
         $api->getDI()->setShared(
             'userData',
             function () use ($config, $token, $request) {
@@ -72,9 +88,36 @@ class AuthenticationMiddleware extends TokenBase
          */
         if (!$token->validate(Users::getValidationData($token->getHeader('jti')))) {
             throw new UnauthorizedException('Invalid Token');
-            //return false;
         }
+    }
 
-        return true;
+    /**
+     * Anonymous user from token.
+     *
+     * @param Micro $api
+     * @param Config $config
+     * @param string $token
+     * @param RequestInterface $request
+     * @return void
+     */
+    protected function anonymousUser(Micro $api, Config $config, $token, RequestInterface $request): void
+    {
+        $api->getDI()->setShared(
+            'userData',
+            function () use ($config, $token, $request) {
+                /**
+                 * @todo we need to track session for anonymous user
+                 */
+                if ($anonymous = Users::findFirst('-1')) {
+                    return $anonymous;
+                }
+
+                throw new UnauthorizedException(
+                    strtolower($config->app->env) == Flags::DEVELOPMENT ?
+                    'No anonymous user configured in the app' :
+                    'No user found guest'
+                );
+            }
+        );
     }
 }
