@@ -9,6 +9,11 @@ use Canvas\Models\Users;
 use Canvas\Http\Exception\NotFoundException;
 use Phalcon\Security\Random;
 use Phalcon\Http\Response;
+use Canvas\Contracts\Controllers\ProcessOutputMapperTrait;
+use Canvas\Dto\EmailTemplates as EmailTemplatesDto;
+use Canvas\Mapper\EmailTemplatesMapper;
+
+
 
 /**
  * Class LanguagesController.
@@ -24,6 +29,8 @@ use Phalcon\Http\Response;
  */
 class EmailTemplatesController extends BaseController
 {
+    use ProcessOutputMapperTrait;
+
     /*
      * fields we accept to create
      *
@@ -58,6 +65,8 @@ class EmailTemplatesController extends BaseController
     public function onConstruct()
     {
         $this->model = new EmailTemplates();
+        $this->dto = EmailTemplatesDto::class;
+        $this->dtoMapper = new EmailTemplatesMapper();
         $this->additionalSearchFields = [
             ['is_deleted', ':', '0'],
             ['companies_id', ':', '0|' . $this->userData->currentCompanyId()],
