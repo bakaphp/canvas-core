@@ -1,10 +1,5 @@
 build:
     root_path: './'
-    
-    analysis:
-      tests:
-        override:
-          - php-scrutinizer-run
 
     services:
       # For available tags, see https://hub.docker.com/_/mariadb/
@@ -30,7 +25,7 @@ build:
 
     tests:
         override:
-          - true
+          - php-scrutinizer-run --enable-security-analysis
           
 
 filter:
