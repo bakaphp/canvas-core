@@ -9,7 +9,7 @@ use Phalcon\Mvc\Micro;
 /**
  * Class AuthenticationMiddleware.
  *
- * @package Niden\Middleware
+ * @package Canvas\Middleware
  */
 class AnonymousMiddleware extends AuthenticationMiddleware
 {
