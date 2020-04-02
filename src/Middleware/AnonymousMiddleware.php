@@ -26,6 +26,7 @@ class AnonymousMiddleware extends AuthenticationMiddleware
         $request = $api->getService('request');
 
         $anonymousUser = false;
+        $token = null;
 
         /**
          * This is where we will find if the user exists based on
