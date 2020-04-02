@@ -6,7 +6,7 @@ class UserInvitesSeeder extends AbstractSeed
 {
     /**
      *
-     * Notice: templates values must be encoded in base64
+     * Notice: templates values have compressed HTML and it must be encoded in base64
      */
     public function run()
     {
