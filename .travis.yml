@@ -52,7 +52,6 @@ before_script:
 - composer update --no-interaction
 - "./vendor/bin/phinx migrate -e development"
 - "./vendor/bin/phinx seed:run"
-- php cli/cli.php emailtemplates
 - sudo rabbitmqctl status
 script:
 - "./vendor/bin/codecept run"
