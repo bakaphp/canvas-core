@@ -20,14 +20,23 @@ class AclTask extends PhTask
      */
     public function mainAction()
     {
+        $this->setupDefaultRoles();
+        $this->kanvas();
+    }
+
+    /**
+     * Create the default roles of the system.
+     *
+     * @return void
+     */
+    public function setupDefaultRoles()
+    {
         $this->acl->addRole('Default.Admins');
         $this->acl->addRole('Default.Agents');
         $this->acl->addRole('Default.Users');
 
-        $this->acl->addResource('Default.Users', ['read', 'list', 'create', 'update', 'delete','test-create','test-update']);
+        $this->acl->addResource('Default.Users', ['read', 'list', 'create', 'update', 'delete', 'test-create', 'test-update']);
         $this->acl->allow('Admins', 'Default.Users', ['read', 'list', 'create', 'update', 'delete']);
-
-        $this->kanvas();
     }
 
     /**
