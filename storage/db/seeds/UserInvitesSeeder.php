@@ -4,10 +4,6 @@ use Phinx\Seed\AbstractSeed;
 
 class UserInvitesSeeder extends AbstractSeed
 {
-    /**
-     *
-     * Notice: templates values must be url encoded
-     */
     public function run()
     {
         $data = [
