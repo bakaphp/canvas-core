@@ -35,7 +35,7 @@ class AclTask extends PhTask
         $this->acl->addRole('Default.Agents');
         $this->acl->addRole('Default.Users');
 
-        $this->acl->addResource('Default.Users', ['read', 'list', 'create', 'update', 'delete', 'test-create', 'test-update']);
+        $this->acl->addResource('Default.Users', ['test-create', 'test-update', 'read', 'list', 'create', 'update', 'delete']);
         $this->acl->allow('Admins', 'Default.Users', ['read', 'list', 'create', 'update', 'delete']);
     }
 
