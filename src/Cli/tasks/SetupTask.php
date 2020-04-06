@@ -25,13 +25,7 @@ class SetupTask extends PhTask
         $acl = new AclTask();
         $emailTemplates = new EmailtemplatesTask();
 
-        $this->acl->addRole('Default.Admins');
-        $this->acl->addRole('Default.Agents');
-        $this->acl->addRole('Default.Users');
-
-        $this->acl->addResource('Default.Users', ['test-create', 'test-update', 'read', 'list', 'create', 'update', 'delete']);
-        $this->acl->allow('Admins', 'Default.Users', ['read', 'list', 'create', 'update', 'delete']);
-
+        $acl->setupDefaultRoles();
         $acl->kanvas();
         $emailTemplates->insertUserNotificationTemplate();
     }
