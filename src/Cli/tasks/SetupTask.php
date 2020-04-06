@@ -27,6 +27,6 @@ class SetupTask extends PhTask
 
         $acl->setupDefaultRoles();
         $acl->kanvas();
-        $emailTemplates->insertDefaultEmailTemplate();
+        $emailTemplates->insertUserNotificationTemplate();
     }
 }
