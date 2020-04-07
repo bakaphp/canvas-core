@@ -115,6 +115,8 @@ class PaymentsController extends BaseController
     protected function handleChargeSucceeded(array $payload, string $method): Response
     {
         $user = Users::findFirstByStripeId($payload['data']['object']['customer']);
+
+        return $this->response($user);
         if ($user) {
             //Update current subscription's paid column to true and store date of payment
             $this->updateSubscriptionPaymentStatus($user, $payload);
@@ -231,7 +233,7 @@ class PaymentsController extends BaseController
             $subscription->paid = $payload['data']['object']['paid'] ? 1 : 0;
             $subscription->charge_date = $chargeDate;
 
-            $subscription = $subscription->validateByGracePeriod();
+            $subscription->validateByGracePeriod();
 
             if ($subscription->paid) {
                 $subscription->is_freetrial = 0;
