@@ -231,7 +231,7 @@ class PaymentsController extends BaseController
             $subscription->paid = $payload['data']['object']['paid'] ? 1 : 0;
             $subscription->charge_date = $chargeDate;
 
-            $subscription = $subscription->validateByGracePeriod();
+            $subscription->validateByGracePeriod();
 
             if ($subscription->paid) {
                 $subscription->is_freetrial = 0;
