@@ -193,10 +193,8 @@ class Response extends PhResponse
             ],
         ]);
 
-        //only log when server error production is seerver error or dev
-        if ($e instanceof ServerErrorHttpException || $e instanceof InternalServerErrorException || strtolower($config->app->env) != Flags::PRODUCTION) {
-            Di::getDefault()->getLog()->error($e->getMessage(), [$e->getTraceAsString()]);
-        }
+        //log all errors
+        Di::getDefault()->getLog()->error($e->getMessage(), [$e->getTraceAsString()]);
 
         return $this;
     }
