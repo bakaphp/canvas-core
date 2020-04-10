@@ -5,7 +5,8 @@ namespace Canvas\Providers;
 use Phalcon\Di\ServiceProviderInterface;
 use Phalcon\DiInterface;
 use Canvas\Models\Apps;
-use Canvas\Exception\ServerErrorHttpException;
+use Canvas\Http\Exception\InternalServerErrorException;
+use Phalcon\Http\Request;
 
 class AppProvider implements ServiceProviderInterface
 {
@@ -15,13 +16,16 @@ class AppProvider implements ServiceProviderInterface
     public function register(DiInterface $container)
     {
         $config = $container->getShared('config');
+        
 
         $container->setShared(
             'app',
             function () use ($config) {
-                $app = Apps::findFirstByKey($config->app->id);
+                $request = new Request();
+                $appKey = $request->hasHeader('KanvasKey') ? $request->getHeader('KanvasKey') : $config->app->id;
+                $app = Apps::findFirstByKey($appKey);
                 if (!$app) {
-                    throw new ServerErrorHttpException('No App configure with this key ' . $config->app->id);
+                    throw new InternalServerErrorException('No App configure with this key ' . $config->app->id);
                 }
                 return $app;
             }
