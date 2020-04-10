@@ -67,7 +67,7 @@ class AddCustomFieldsValuesEntityId extends Phinx\Migration\AbstractMigration
             ])
             ->save();
 
-        $this->table('custom_fields_values', [
+            $this->table('custom_fields_values', [
                 'id' => false,
                 'primary_key' => ['id'],
                 'engine' => 'InnoDB',
@@ -76,22 +76,12 @@ class AddCustomFieldsValuesEntityId extends Phinx\Migration\AbstractMigration
                 'comment' => '',
                 'row_format' => 'DYNAMIC',
             ])
-            ->addColumn('entity_id', 'integer', [
-                'null' => false,
-                'limit' => MysqlAdapter::INT_REGULAR,
-                'after' => 'custom_fields_id',
-            ])
-            ->addColumn('custom_fields_modules_id', 'integer', [
-                'null' => false,
-                'limit' => MysqlAdapter::INT_REGULAR,
-                'after' => 'entity_id',
-            ])
             ->changeColumn('label', 'string', [
                 'null' => false,
                 'limit' => 64,
                 'collation' => 'utf8mb4_unicode_ci',
                 'encoding' => 'utf8mb4',
-                'after' => 'custom_fields_modules_id',
+                'after' => 'custom_fields_id',
             ])
             ->changeColumn('value', 'text', [
                 'null' => false,
@@ -122,43 +112,11 @@ class AddCustomFieldsValuesEntityId extends Phinx\Migration\AbstractMigration
                 'after' => 'updated_at',
             ])
             ->addIndex(['custom_fields_id'], [
-                'name' => 'custom_fields_id',
-                'unique' => false,
-            ])
-            ->addIndex(['label'], [
-                'name' => 'label',
-                'unique' => false,
-            ])
-            ->addIndex(['is_deleted'], [
-                'name' => 'is_deleted',
-                'unique' => false,
-            ])
-            ->addIndex(['custom_fields_id', 'label', 'is_deleted'], [
-                'name' => 'custom_fields_id_label_is_deleted',
-                'unique' => false,
-            ])
-            ->addIndex(['entity_id', 'custom_fields_modules_id'], [
-                'name' => 'entity_id_custom_fields_modules_id',
-                'unique' => false,
-            ])
-            ->addIndex(['entity_id'], [
-                'name' => 'entity_id',
-                'unique' => false,
-            ])
-            ->addIndex(['custom_fields_modules_id'], [
-                'name' => 'custom_fields_modules_id',
-                'unique' => false,
-            ])
-            ->addIndex(['custom_fields_id', 'entity_id', 'custom_fields_modules_id'], [
                 'name' => 'custom_fields_id_entity_id_custom_fields_modules_id',
                 'unique' => false,
             ])
-            ->addIndex(['custom_fields_id', 'entity_id', 'custom_fields_modules_id', 'is_default'], [
+            ->addIndex(['custom_fields_id', 'is_default'], [
                 'name' => 'custom_fields_id_entity_id_custom_fields_modules_id_is_default',
-                'unique' => false,
-            ])
-            ->addIndex(['is_default'], [
-                'name' => 'is_default',
                 'unique' => false,
             ])
             ->save();

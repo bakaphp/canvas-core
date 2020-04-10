@@ -5,11 +5,6 @@ declare(strict_types=1);
 namespace Canvas\Api\Controllers;
 
 use Canvas\Models\CustomFieldsValues;
-use Phalcon\Http\Response;
-use Canvas\Http\Exception\NotFoundException;
-use Canvas\Http\Exception\UnauthorizedException;
-use Baka\Http\Contracts\Api\CrudCustomFieldsBehaviorTrait;
-
 /**
  * Class LanguagesController.
  *

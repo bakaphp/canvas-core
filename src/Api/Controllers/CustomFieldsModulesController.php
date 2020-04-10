@@ -70,24 +70,16 @@ class CustomFieldsModulesController extends BaseController
     public function customFieldsByModulesId(int $id): Response
     {
         //Verify that module exists
-        $module = $this->model::findFirst([
+        $module = $this->model::findFirstOrFail([
             'conditions' => 'id = ?0 and apps_id = ?1 and is_deleted = 0',
             'bind' => [$id, $this->app->getId()]
         ]);
 
-        if (!is_object($module)) {
-            throw new NotFoundException('Module not found');
-        }
-
         //List all Custom Fields by module_id, apps and companies
-        $customFields = CustomFields::find([
+        $customFields = CustomFields::findOrFail([
             'conditions' => 'companies_id = ?0 and custom_fields_modules_id = ?1 and apps_id = ?2 and is_deleted = 0',
             'bind' => [$this->userData->currentCompanyId(), $module->id, $this->app->getId()]
         ]);
-
-        if (!is_object($customFields)) {
-            throw new NotFoundException('Custom Fields not found');
-        }
 
         return $this->response($customFields);
     }

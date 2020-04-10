@@ -19,6 +19,18 @@ class CustomFieldsValues extends AbstractModel
 
     /**
      *
+     * @var integer
+     */
+    public $entity_id;
+
+    /**
+     *
+     * @var integer
+     */
+    public $custom_fields_modules_id;
+
+    /**
+     *
      * @var string
      */
     public $label;
