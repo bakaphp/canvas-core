@@ -17,7 +17,6 @@ class AppProvider implements ServiceProviderInterface
     {
         $config = $container->getShared('config');
         
-
         $container->setShared(
             'app',
             function () use ($config) {
@@ -25,7 +24,7 @@ class AppProvider implements ServiceProviderInterface
                 $appKey = $request->hasHeader('KanvasKey') ? $request->getHeader('KanvasKey') : $config->app->id;
                 $app = Apps::findFirstByKey($appKey);
                 if (!$app) {
-                    throw new InternalServerErrorException('No App configure with this key ' . $config->app->id);
+                    throw new InternalServerErrorException('No App configure with this key ' . $appKey);
                 }
                 return $app;
             }
