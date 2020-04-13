@@ -231,8 +231,9 @@ trait FileSystemModelTrait
         ];
 
         /**
-          * We can also filter the attachements by its file type.
+          * We can also filter the attachments by its file type.
           */
+        $fileTypeSql = null;
         if ($fileType) {
             $fileTypeSql = !is_null($fileType) ? 'AND f.file_type = :file_type:' : null;
             $bindParams['file_type'] = $fileType;
