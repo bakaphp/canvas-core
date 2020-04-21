@@ -343,15 +343,6 @@ class Users extends \Baka\Auth\Models\Users
         return empty($this->default_company);
     }
 
-    /**
-     * Does the user have a role assign to him?
-     *
-     * @return boolean
-     */
-    public function hasRole(): bool
-    {
-        return !empty($this->roles_id);
-    }
 
     /**
      * Get all of the subscriptions for the user.
@@ -423,12 +414,9 @@ class Users extends \Baka\Auth\Models\Users
             //confirm if the app reach its limit
             $this->isAtLimit();
         }
-
-        //Assign admin role to the system if we dont get a specify role
-        if (!$this->hasRole()) {
-            $role = Roles::getByName('Admins');
-            $this->roles_id = $role->getId();
-        }
+        
+        $role = Roles::getByName('Admins');
+        $this->roles_id = $role->getId();
     }
 
     /**
