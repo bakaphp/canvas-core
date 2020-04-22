@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Canvas\Providers;
 
+use function Canvas\Core\appPath;
+use Phalcon\Cache\Backend\File as BackendFileCache;
+use Phalcon\Cache\Frontend\None as NoneCache;
+use Phalcon\Cache\Frontend\Output as FrontenCacheOutput;
 use Phalcon\Di\ServiceProviderInterface;
 use Phalcon\DiInterface;
 use Phalcon\Mvc\View\Engine\Volt as VoltEngine;
-use function Canvas\Core\appPath;
 use Phalcon\Mvc\View\Simple as SimpleView;
-use Phalcon\Cache\Frontend\None as NoneCache;
-use Phalcon\Cache\Frontend\Output as FrontenCacheOutput;
-use Phalcon\Cache\Backend\File as BackendFileCache;
 
 class ViewProvider implements ServiceProviderInterface
 {
@@ -37,6 +37,18 @@ class ViewProvider implements ServiceProviderInterface
                         'compiledSeparator' => '_',
                         'compileAlways' => !$config->app->production,
                     ]);
+
+                    $volt->getCompiler()->addExtension(new class {
+                        /**
+                         * This method is called for any PHP function on the volt.
+                         */
+                        public function compileFunction($name, $arguments)
+                        {
+                            if (function_exists($name)) {
+                                return "{$name}({$arguments})";
+                            }
+                        }
+                    });
 
                     return $volt;
                 },
