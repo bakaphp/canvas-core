@@ -35,7 +35,7 @@ class Company
         $company->set('paid', '1');
         $app = $company->getDI()->getApp();
 
-        //now thta we setup de company and associated with the user we need to setup this as its default company
+        //now that we setup de company and associated with the user we need to setup this as its default company
         if (!$company->user->get(Companies::cacheKey())) {
             $company->user->set(Companies::cacheKey(), $company->getId());
         }
@@ -51,9 +51,7 @@ class Company
         $branch->users_id = $company->user->getId();
         $branch->name = 'Default';
         $branch->is_default = 1;
-        if (!$branch->save()) {
-            throw new InternalServerErrorException((string)current($branch->getMessages()));
-        }
+        $branch->saveOrFail();
 
         //look for the default plan for this app
         $companyApps = new UserCompanyApps();
