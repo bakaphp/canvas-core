@@ -15,7 +15,7 @@ class Helper
     /**
      * Generate a unique name in a specific dir.
      *
-     * @param string $dir the especific dir where the file will be saved
+     * @param string $dir the specific dir where the file will be saved
      * @param bool $withPath
      *
      * @return string
@@ -78,8 +78,8 @@ class Helper
 
         //get the tem file
         $fileName = self::generateUniqueName($file, $config->filesystem->local->path . '/');
-        $compleFilePath = $fileSystemConfig->path . DIRECTORY_SEPARATOR . $fileName;
-        $uploadFileNameWithPath = $appSettingFileConfig === 'local' ? $fileName : $compleFilePath;
+        $completeFilePath = $fileSystemConfig->path . DIRECTORY_SEPARATOR . $fileName;
+        $uploadFileNameWithPath = $appSettingFileConfig === 'local' ? $fileName : $completeFilePath;
 
         /**
          * upload file base on temp.
@@ -92,7 +92,7 @@ class Helper
         $fileSystem->companies_id = $di->get('userData')->currentCompanyId();
         $fileSystem->apps_id = $di->get('app')->getId();
         $fileSystem->users_id = $di->get('userData')->getId();
-        $fileSystem->path = $compleFilePath;
+        $fileSystem->path = $completeFilePath;
         $fileSystem->url = $fileSystemConfig->cdn . DIRECTORY_SEPARATOR . $uploadFileNameWithPath;
         $fileSystem->file_type = $file->getExtension();
         $fileSystem->size = $file->getSize();
