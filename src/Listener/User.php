@@ -26,21 +26,19 @@ class User
     {
         /**
         * User signing up for a new app / plan
-        * How do we know? well he doesnt have a default_company.
+        * How do we know? well he doesn't have a default_company.
         */
         if ($isFirstSignup) {
             /**
              * Let's create a new Companies.
              */
             $company = new Companies();
-            //for signups that dont send a company name
+            //for signup that don't send a company name
             $company->name = !empty($user->defaultCompanyName) ? $user->defaultCompanyName : $user->displayname . 'CP';
             $company->users_id = $user->getId();
-
             $company->saveOrFail();
 
             $user->default_company = $company->getId();
-
             $user->updateOrFail();
 
             if (empty($user->stripe_id)) {

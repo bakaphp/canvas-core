@@ -9,7 +9,6 @@ use Canvas\Models\Users;
 use Canvas\Models\Companies;
 use Canvas\Models\CompaniesBranches;
 use Baka\Auth\Models\UserCompanyApps;
-use Canvas\Http\Exception\InternalServerErrorException;
 use Canvas\Models\AppsPlans;
 use Canvas\Models\CompaniesGroups;
 use Canvas\Models\CompaniesAssociations;
@@ -27,10 +26,10 @@ class Company
      */
     public function afterSignup(Event $event, Companies $company): void
     {
-        //setup the user notificatoin setting
+        //setup the user notification setting
         $company->set('notifications', $company->user->email);
         /**
-         * @todo removed , we have it on suscription
+         * @todo removed , we have it on subscription
          */
         $company->set('paid', '1');
         $app = $company->getDI()->getApp();
@@ -49,7 +48,7 @@ class Company
         $branch = new CompaniesBranches();
         $branch->companies_id = $company->getId();
         $branch->users_id = $company->user->getId();
-        $branch->name = 'Default';
+        $branch->name = $company->name;
         $branch->is_default = 1;
         $branch->saveOrFail();
 
@@ -65,7 +64,7 @@ class Company
             $companyApps->stripe_id = $plan->stripe_id;
         }
 
-        //if the app is subscriptoin based, create a free trial for this company
+        //if the app is subscription based, create a free trial for this company
         if ($app->subscriptioBased()) {
             $company->set(
                 Companies::PAYMENT_GATEWAY_CUSTOMER_KEY,
@@ -77,14 +76,14 @@ class Company
 
         $companyApps->created_at = date('Y-m-d H:i:s');
         $companyApps->is_deleted = 0;
-
-        if (!$companyApps->save()) {
-            throw new InternalServerErrorException((string)current($companyApps->getMessages()));
-        }
+        $companyApps->saveOrFail();
 
         $companiesGroup = CompaniesGroups::findFirst([
             'conditions' => 'apps_id = ?0 and users_id = ?1 and is_deleted = 0',
-            'bind' => [Di::getDefault()->getApp()->getId(), Di::getDefault()->getUserData()->getId()]
+            'bind' => [
+                Di::getDefault()->getApp()->getId(),
+                Di::getDefault()->getUserData()->getId()
+            ]
         ]);
 
         if (!$companiesGroup) {
