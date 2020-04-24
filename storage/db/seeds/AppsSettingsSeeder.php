@@ -95,6 +95,12 @@ class AppsSettingsSeeder extends AbstractSeed
                 'name' => 'default_sidebar_state ',
                 'value' => 'closed',
                 'created_at' => date('Y-m-d H:m:s'),
+            ],
+            [
+                'apps_id' => 1,
+                'name' => 'show_notifications',
+                'value' => '1',
+                'created_at' => date('Y-m-d H:m:s'),
             ]
         ];
 

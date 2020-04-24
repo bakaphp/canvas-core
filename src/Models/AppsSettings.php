@@ -10,7 +10,7 @@ class AppsSettings extends AbstractModel
     /**
      * Default number of settings for an app.
      */
-    const APP_DEFAULT_SETTINGS_NUMBER = 15;
+    const APP_DEFAULT_SETTINGS_NUMBER = 16;
     /**
      *
      * @var integer
