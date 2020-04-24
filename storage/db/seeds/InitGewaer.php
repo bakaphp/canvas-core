@@ -295,6 +295,102 @@ class InitGewaer extends AbstractSeed
                     }
                 ]',
                 'created_at' => date('Y-m-d H:i:s')
+            ],
+            [
+                'id' => 3,
+                'name' => 'Companies Branches',
+                'slug' => 'companies-branches',
+                'model_name' => 'Canvas\Models\CompaniesBranches',
+                'apps_id' => 1,
+                'parents_id' => 0,
+                'menu_order' => 2,
+                'show' => 0,
+                'use_elastic' => 0,
+                'browse_fields' => '[
+                    {
+                        "name": "name",
+                        "title": "Name",
+                        "sortField": "name",
+                        "filterable": true,
+                        "searchable": true
+                    }
+                ]',
+                'created_at' => date('Y-m-d H:i:s')
+            ],
+            [
+                'id' => 5,
+                'name' => 'Active Users',
+                'slug' => 'users-active',
+                'model_name' => 'Canvas\Models\Users',
+                'apps_id' => 1,
+                'parents_id' => 0,
+                'menu_order' => 2,
+                'show' => 0,
+                'use_elastic' => 0,
+                'browse_fields' => '[
+                    {
+                        "name": "firstname",
+                        "title": "First Name",
+                        "sortField": "firstname",
+                        "filterable": true,
+                        "searchable": true
+                    },
+                    {
+                        "name": "lastname",
+                        "title": "Last Name",
+                        "sortField": "lastname",
+                        "filterable": true,
+                        "searchable": true
+                    },
+                    {
+                        "name": "email",
+                        "title": "Email",
+                        "sortField": "email",
+                        "filterable": true,
+                        "searchable": true
+                    },
+                    {
+                        "name": "roles.0.name",
+                        "title": "Roles",
+                        "sortField": "roles_id",
+                        "filterable": true
+                    },
+                    {
+                        "name": "lastvisit",
+                        "title": "Last Visit",
+                        "sortField": "lastvisit",
+                        "filterable": true,
+                        "searchable": true
+                    }
+                ]',
+                'created_at' => date('Y-m-d H:i:s')
+            ],
+            [
+                'id' => 6,
+                'name' => 'Invited Users',
+                'slug' => 'users-invite',
+                'model_name' => 'Canvas\Models\Users',
+                'apps_id' => 1,
+                'parents_id' => 0,
+                'menu_order' => 2,
+                'show' => 0,
+                'use_elastic' => 0,
+                'browse_fields' => '[
+                    {
+                        "name": "email",
+                        "title": "Email",
+                        "sortField": "email",
+                        "filterable": true,
+                        "searchable": true
+                    },
+                    {
+                        "name": "roles.0.name",
+                        "title": "Roles",
+                        "sortField": "roles_id",
+                        "filterable": true
+                    }
+                ]',
+                'created_at' => date('Y-m-d H:i:s')
             ]
         ];
 
