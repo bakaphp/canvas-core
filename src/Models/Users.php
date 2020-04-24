@@ -6,12 +6,10 @@ namespace Canvas\Models;
 use Canvas\Traits\PermissionsTrait;
 use Canvas\Traits\SubscriptionPlanLimitTrait;
 use Phalcon\Cashier\Billable;
-use Canvas\Exception\ServerErrorHttpException;
 use Carbon\Carbon;
 use Phalcon\Validation;
 use Phalcon\Validation\Validator\Email;
 use Phalcon\Validation\Validator\PresenceOf;
-use Phalcon\Validation\Validator\Regex;
 use Phalcon\Validation\Validator\Uniqueness;
 use Canvas\Traits\FileSystemModelTrait;
 use Phalcon\Security\Random;
@@ -145,36 +143,6 @@ class Users extends \Baka\Auth\Models\Users
             ['alias' => 'currentCompany']
         );
 
-        $this->hasOne(
-            'id',
-            'Canvas\Models\UserRoles',
-            'users_id',
-            ['alias' => 'permission']
-        );
-
-        $this->hasMany(
-            'id',
-            'Canvas\Models\UserRoles',
-            'users_id',
-            ['alias' => 'permissions']
-        );
-
-        $this->hasManyToMany(
-            'id',
-            'Canvas\Models\UserRoles',
-            'users_id',
-            'roles_id',
-            'Canvas\Models\Roles',
-            'id',
-            [
-                'alias' => 'roles',
-                'params' => [
-                    'limit' => 1,
-                    'conditions' => 'Canvas\Models\UserRoles.apps_id = ' . $this->di->getApp()->getId(),
-                ]
-            ]
-        );
-
         $this->hasMany(
             'id',
             'Canvas\Models\Subscription',
@@ -244,16 +212,56 @@ class Users extends \Baka\Auth\Models\Users
                 ]
             ]
         );
+    }
+
+    /**
+     * Initialize relationshit after fetch
+     * since we need company id info.
+     *
+     * @return void
+     */
+    public function afterFetch()
+    {
+        $this->hasManyToMany(
+            'id',
+            'Canvas\Models\UserRoles',
+            'users_id',
+            'roles_id',
+            'Canvas\Models\Roles',
+            'id',
+            [
+                'alias' => 'roles',
+                'params' => [
+                    'limit' => 1,
+                    'conditions' => 'Canvas\Models\UserRoles.apps_id = ' . $this->di->getApp()->getId() . ' AND Canvas\Models\UserRoles.companies_id = ' . $this->currentCompanyId(),
+                    'order' => 'Canvas\Models\UserRoles.apps_id desc',
+                ]
+            ]
+        );
 
         $this->hasOne(
             'id',
-            'Canvas\Models\FileSystemEntities',
-            'entity_id',
+            'Canvas\Models\UserRoles',
+            'users_id',
             [
-                'alias' => 'photo',
+                'alias' => 'userRole',
                 'params' => [
-                    'conditions' => 'system_modules_id = ?0',
-                    'bind' => [$systemModule->getId()]
+                    'limit' => 1,
+                    'conditions' => 'Canvas\Models\UserRoles.apps_id in (?0, ?1) AND Canvas\Models\UserRoles.companies_id = ' . $this->currentCompanyId(),
+                    'bind' => [$this->di->getApp()->getId(), Roles::DEFAULT_ACL_APP_ID],
+                    'order' => 'apps_id desc',
+                ]
+            ]
+        );
+
+        $this->hasMany(
+            'id',
+            'Canvas\Models\UserRoles',
+            'users_id',
+            [
+                'alias' => 'permissions',
+                'params' => [
+                    'conditions' => 'Canvas\Models\UserRoles.apps_id = ' . $this->di->getApp()->getId() . ' AND Canvas\Models\UserRoles.companies_id = ' . $this->currentCompanyId(),
                 ]
             ]
         );
@@ -335,15 +343,6 @@ class Users extends \Baka\Auth\Models\Users
         return empty($this->default_company);
     }
 
-    /**
-     * Does the user have a role assign to him?
-     *
-     * @return boolean
-     */
-    public function hasRole(): bool
-    {
-        return !empty($this->roles_id);
-    }
 
     /**
      * Get all of the subscriptions for the user.
@@ -391,13 +390,10 @@ class Users extends \Baka\Auth\Models\Users
         $subscription->trial_ends_days = $trialEndsAt->diffInDays(Carbon::now());
         $subscription->is_freetrial = 1;
         $subscription->is_active = 1;
-
-        if (!$subscription->save()) {
-            throw new ServerErrorHttpException((string)current($this->getMessages()));
-        }
+        $subscription->saveOrFail();
 
         $this->trial_ends_at = $subscription->trial_ends_at;
-        $this->update();
+        $this->updateOrFail();
 
         return $subscription;
     }
@@ -418,12 +414,9 @@ class Users extends \Baka\Auth\Models\Users
             //confirm if the app reach its limit
             $this->isAtLimit();
         }
-
-        //Assign admin role to the system if we dont get a specify role
-        if (!$this->hasRole()) {
-            $role = Roles::getByName('Admins');
-            $this->roles_id = $role->getId();
-        }
+        
+        $role = Roles::getByName('Admins');
+        $this->roles_id = $role->getId();
     }
 
     /**
@@ -500,18 +493,50 @@ class Users extends \Baka\Auth\Models\Users
     public function afterSave()
     {
         $this->associateFileSystem();
+        //$this->updatePermissionRoles();
+    }
+
+    /**
+     * update user role for the specific app.
+     *
+     * @return void
+     */
+    protected function updatePermissionRoles(): bool
+    {
+        if ($permission = $this->getPermission()) {
+            $permission->roles_id = $this->roles_id;
+            return $permission->updateOrFail();
+        }
+
+        return false;
+    }
+
+    /**
+     * Overwrite the permission relationship to force the user of company id.
+     *
+     * @return UserRoles
+     */
+    public function getPermission()
+    {
+        return $this->getUserRole();
     }
 
     /**
      * Get the list of all the associated apps this users has.
-     *
+     *:w.
      * @return array
      */
     public function getAssociatedApps(): array
     {
-        return array_map(function ($apps) {
-            return $apps['apps_id'];
-        }, $this->getApps(['columns' => 'apps_id', 'group' => 'apps_id'])->toArray());
+        $apps = $this->getApps(['columns' => 'apps_id', 'group' => 'apps_id']);
+
+        if ($apps->count()) {
+            return array_map(function ($apps) {
+                return $apps['apps_id'];
+            }, $apps->toArray());
+        }
+
+        return [0];
     }
 
     /**
@@ -521,9 +546,15 @@ class Users extends \Baka\Auth\Models\Users
      */
     public function getAssociatedCompanies(): array
     {
-        return array_map(function ($company) {
-            return $company['companies_id'];
-        }, $this->getCompanies(['columns' => 'companies_id'])->toArray());
+        $companies = $this->getCompanies(['columns' => 'companies_id']);
+
+        if ($companies->count()) {
+            return array_map(function ($company) {
+                return $company['companies_id'];
+            }, $companies->toArray());
+        }
+
+        return [0];
     }
 
     /**
@@ -583,7 +614,7 @@ class Users extends \Baka\Auth\Models\Users
 
         $app = Di::getDefault()->getApp();
 
-        if ($app->ecosystemAuth()) {
+        if (!$app->ecosystemAuth()) {
             $userAppData = $this->getApp([
                 'conditions' => 'companies_id = :id:',
                 'bind' => [
@@ -616,7 +647,7 @@ class Users extends \Baka\Auth\Models\Users
     {
         $app = Di::getDefault()->getApp();
 
-        if ($app->ecosystemAuth()) {
+        if (!$app->ecosystemAuth()) {
             //update all companies password for the current user app
             AppAuth::updatePassword($this, Password::make($newPassword));
         } else {
@@ -629,20 +660,21 @@ class Users extends \Baka\Auth\Models\Users
     /**
      * user signup to the service.
      *
+     * did we find the email?
+     * does it have access to this app?
+     * no?
+     * ok lets register / associate to this app
+     * yes?
+     * it meas he was invites so get the fuck out?
+     *
      * @return Users
      */
     public function signUp() : BakUser
     {
         $app = Di::getDefault()->getApp();
 
-        if ($app->ecosystemAuth()) {
+        if (!$app->ecosystemAuth()) {
             try {
-                //did we find the email?
-                //does it have access to this app?
-                // no?
-                //ok les register / associate to this app
-                // yes?
-                //it meas he was invites so get the fuck out?
                 $user = self::getByEmail($this->email);
 
                 $userAppData = $user->countApps('apps_id = ' . $this->getDI()->getDefault()->getApp()->getId());

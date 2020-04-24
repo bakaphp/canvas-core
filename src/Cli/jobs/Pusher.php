@@ -4,47 +4,48 @@ namespace Canvas\Cli\Jobs;
 
 use Canvas\Contracts\Queue\QueueableJobInterfase;
 use Canvas\Jobs\Job;
+use Canvas\Notifications\PusherNotification;
 use Phalcon\Di;
 
 class Pusher extends Job implements QueueableJobInterfase
 {
     /**
-     * Realtime channel
+     * Realtime channel.
      *
      * @var string
      */
     protected $channel;
 
     /**
-     * Realtime event
+     * Realtime event.
      *
      * @var string
      */
     protected $event;
 
     /**
-     * Realtime params
+     * Realtime params.
      *
      * @var array
      */
     protected $params;
 
     /**
-     * Constructor setup info for Pusher
+     * Constructor setup info for Pusher.
      *
      * @param string $channel
      * @param string $event
      * @param array $params
      */
-    public function __construct(string $channel, string $event, array $params)
+    public function __construct(PusherNotification $pusherNotification)
     {
-        $this->channel = $channel;
-        $this->event = $event;
-        $this->params = $params;
+        $this->channel = $pusherNotification->channel;
+        $this->event = $pusherNotification->event;
+        $this->params = $pusherNotification->params;
     }
 
     /**
-     * Handle the pusher request
+     * Handle the pusher request.
      *
      * @return void
      */

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Canvas\Api\Controllers;
 
 use Canvas\Models\Apps;
-use Canvas\Dto\AppsSettings;
 use Phalcon\Http\Response;
 
 /**
@@ -45,25 +44,6 @@ class AppsController extends BaseController
     }
 
     /**
-     * Format output.
-     *
-     * @param [type] $results
-     * @return void
-     */
-    protected function processOutput($results)
-    {
-        //DTOAppsSettings
-        $this->dtoConfig->registerMapping(Apps::class, AppsSettings::class)
-          ->forMember('settings', function (Apps $app) {
-              return $app->settingsApp->toArray();
-          });
-
-        return is_iterable($results) ?
-                $this->mapper->mapMultiple(iterator_to_array($results), AppsSettings::class)
-                : $this->mapper->map($results, AppsSettings::class);
-    }
-
-    /**
      * get item.
      *
      * @param mixed $id
@@ -76,8 +56,8 @@ class AppsController extends BaseController
     public function getById($id = null): Response
     {
         //find the info
-        $record = $this->model->findFirst([
-            'id = ?0 AND is_deleted = 0',
+        $record = $this->model->findFirstOrFail([
+            'id = ?0 AND is_deleted = 0 AND id in (' . implode(',', $this->userData->getAssociatedApps()) . ')',
             'bind' => [$id],
         ]);
 

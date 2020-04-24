@@ -7,8 +7,8 @@ namespace Canvas\Providers;
 use function Canvas\Core\envValue;
 use Phalcon\Di\ServiceProviderInterface;
 use Phalcon\DiInterface;
-use Phalcon\Mvc\Model\MetaData\Libmemcached;
 use Phalcon\Mvc\Model\Metadata\Memory as MemoryMetaDataAdapter;
+use Phalcon\Mvc\Model\MetaData\Redis;
 use Canvas\Constants\Flags;
 
 class ModelsMetadataProvider implements ServiceProviderInterface
@@ -19,32 +19,25 @@ class ModelsMetadataProvider implements ServiceProviderInterface
     public function register(DiInterface $container)
     {
         $config = $container->getShared('config');
+        $app = envValue('GEWAER_APP_ID', 1);
 
         $container->setShared(
             'modelsMetadata',
-            function () use ($config) {
+            function () use ($config, $app) {
                 if (strtolower($config->app->env) != Flags::PRODUCTION) {
                     return new MemoryMetaDataAdapter();
                 }
 
-                $prefix = 'metadata';
-                $backOptions = [
-                    'servers' => [
-                        0 => [
-                            'host' => envValue('DATA_API_MEMCACHED_HOST', '127.0.0.1'),
-                            'port' => envValue('DATA_API_MEMCACHED_PORT', 11211),
-                            'weight' => envValue('DATA_API_MEMCACHED_WEIGHT', 100),
-                        ],
-                    ],
-                    'client' => [
-                        \Memcached::OPT_HASH => \Memcached::HASH_MD5,
-                        \Memcached::OPT_PREFIX_KEY => 'bakaapi-',
-                    ],
-                    'lifetime' => 3600,
-                    'prefix' => $prefix . '-',
-                ];
-
-                return new Libmemcached($backOptions);
+                return new Redis(
+                    [
+                        'host' => envValue('REDIS_HOST', '127.0.0.1'),
+                        'port' => (int) envValue('REDIS_PORT', 6379),
+                        'prefix' => $app,
+                        'persistent' => 0,
+                        "statsKey"   => "_PHCM_MM",
+                        'lifetime' => 172800,
+                    ]
+                );
             }
         );
     }

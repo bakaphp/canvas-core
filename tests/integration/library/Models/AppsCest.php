@@ -3,12 +3,28 @@
 namespace Gewaer\Tests\integration\library\Models;
 
 use Canvas\Models\Apps;
+use Canvas\Models\AppsPlans;
+use Canvas\Models\AppsSettings;
+use Canvas\Models\UserWebhooks;
 use IntegrationTester;
 use Canvas\Providers\ConfigProvider;
 use Phalcon\Di\FactoryDefault;
 
 class AppsCest
 {
+    public function validateRelationships(IntegrationTester $I)
+    {
+        $actual = $I->getModelRelationships(Apps::class);
+        $expected = [
+            [2, 'id', AppsPlans::class, 'apps_id', ['alias' => 'plans']],
+            [2, 'id', UserWebhooks::class, 'apps_id', ['alias' => 'user-webhooks']],
+            [2, 'id', AppsSettings::class, 'apps_id', ['alias' => 'settingsApp']],
+            [1, 'default_apps_plan_id', AppsPlans::class, 'id', ['alias' => 'plan']],
+        ];
+
+        $I->assertEquals($expected, $actual);
+    }
+
     /**
      * Confirm the default apps exist.
      *
@@ -34,7 +50,7 @@ class AppsCest
     }
 
     /**
-     * Validate is an app has an active status or not
+     * Validate is an app has an active status or not.
      *
      * @param UnitTester $I
      * @return void
@@ -43,5 +59,17 @@ class AppsCest
     {
         $app = Apps::getACLApp('Default');
         $I->assertTrue(gettype($app->isActive()) == 'boolean');
+    }
+
+    public function validateEcosystemAuth(IntegrationTester $I)
+    {
+        $app = Apps::getACLApp('Default');
+        $I->assertTrue(is_bool($app->ecosystemAuth()));
+    }
+
+    public function validateSubscriptionBased(IntegrationTester $I)
+    {
+        $app = Apps::getACLApp('Default');
+        $I->assertTrue(is_bool($app->subscriptioBased()));
     }
 }

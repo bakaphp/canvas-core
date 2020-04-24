@@ -2,14 +2,15 @@
 declare(strict_types=1);
 
 namespace Canvas\Models;
+
 use Canvas\Models\Apps;
 
 class AppsSettings extends AbstractModel
 {
     /**
-     * Default number of settings for an app
+     * Default number of settings for an app.
      */
-    const APP_DEFAULT_SETTINGS_NUMBER = 12;
+    const APP_DEFAULT_SETTINGS_NUMBER = 15;
     /**
      *
      * @var integer
@@ -47,7 +48,7 @@ class AppsSettings extends AbstractModel
     public $is_deleted;
 
     /**
-     * Sub based app key word
+     * Sub based app key word.
      */
     const SUBSCRIPTION_BASED = 'subscription_based';
 
@@ -56,7 +57,6 @@ class AppsSettings extends AbstractModel
      */
     public function initialize()
     {
-
         $this->setSource('apps_settings');
 
         $this->belongsTo(

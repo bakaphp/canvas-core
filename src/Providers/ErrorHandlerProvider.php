@@ -37,7 +37,7 @@ class ErrorHandlerProvider implements ServiceProviderInterface
         $handler = new ErrorHandler($logger, $config);
         set_error_handler([$handler, 'handle']);
 
-        if (strtolower($config->app->env) != 'production') {
+        if (strtolower($config->app->env) != Flags::PRODUCTION) {
             register_shutdown_function([$handler, 'shutdown']);
         }
     }

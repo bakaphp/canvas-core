@@ -9,7 +9,7 @@ class NotificationTypeCest
 {
     /**
      * Get the notification by its key
-     * by defautl in any kanvas app the key will be its classname
+     * by defautl in any kanvas app the key will be its classname.
      *
      * @param IntegrationTester $I
      * @return void

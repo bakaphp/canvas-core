@@ -99,6 +99,7 @@ class Notification implements NotificationInterfase
      */
     protected function toMail(): ?Message
     {
+        return null;
     }
 
     /**
@@ -106,8 +107,9 @@ class Notification implements NotificationInterfase
      *
      * @return void
      */
-    protected function toPushNotification()
+    protected function toPushNotification(): ?PushNotification
     {
+        return null;
     }
 
     /**
@@ -115,10 +117,9 @@ class Notification implements NotificationInterfase
      *
      * @return void
      */
-    protected function toRealtime()
+    protected function toRealtime(): ?PusherNotification
     {
-        //set the channel
-        //key_user_id
+        return null;
     }
 
     /**
@@ -226,8 +227,19 @@ class Notification implements NotificationInterfase
         $notification->read = 0;
         $notification->saveOrFail();
 
-        if ($this->toMail() instanceof Message) {
-            $this->fire('notification:sendMail', $this->toMail());
+        $toMail = $this->toMail();
+        if ($toMail instanceof Message) {
+            $this->fire('notification:sendMail', $toMail);
+        }
+
+        $toPushNotification = $this->toPushNotification();
+        if ($toPushNotification instanceof PushNotification) {
+            $this->fire('notification:sendPushNotification', $toPushNotification);
+        }
+
+        $toRealtime = $this->toRealtime();
+        if ($toRealtime instanceof PusherNotification) {
+            $this->fire('notification:sendRealtimeNotification', $toRealtime);
         }
 
         /**

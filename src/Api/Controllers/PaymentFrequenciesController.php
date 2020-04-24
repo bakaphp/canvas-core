@@ -7,7 +7,7 @@ namespace Canvas\Api\Controllers;
 use Canvas\Models\PaymentFrequencies;
 
 /**
- * Class LanguagesController
+ * Class LanguagesController.
  *
  * @package Canvas\Api\Controllers
  *
@@ -19,17 +19,21 @@ class PaymentFrequenciesController extends BaseController
      *
      * @var array
      */
-    protected $createFields = ['name'];
+    protected $createFields = [
+        'name'
+    ];
 
     /*
      * fields we accept to create
      *
      * @var array
      */
-    protected $updateFields = ['name'];
+    protected $updateFields = [
+        'name'
+    ];
 
     /**
-     * set objects
+     * set objects.
      *
      * @return void
      */

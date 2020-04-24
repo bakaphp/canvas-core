@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace Canvas\Api\Controllers;
 
 use Phalcon\Http\Response;
-use Canvas\Exception\UnprocessableEntityHttpException;
-use Baka\Http\QueryParser;
+use Canvas\Http\Exception\UnprocessableEntityException;
 use Canvas\Models\CompaniesBranches;
 
 /**
- * Class CompaniesController
+ * Class CompaniesController.
  *
  * @package Canvas\Api\Controllers
  *
@@ -24,17 +23,31 @@ class CompaniesBranchesController extends BaseController
      *
      * @var array
      */
-    protected $createFields = ['name', 'address','email','zipcode','phone', 'is_default'];
+    protected $createFields = [
+        'name',
+        'address',
+        'email',
+        'zipcode',
+        'phone',
+        'is_default'
+    ];
 
     /*
      * fields we accept to create
      *
      * @var array
      */
-    protected $updateFields = ['name', 'address','email','zipcode','phone', 'is_default'];
+    protected $updateFields = [
+        'name',
+        'address',
+        'email',
+        'zipcode',
+        'phone',
+        'is_default'
+    ];
 
     /**
-     * set objects
+     * set objects.
      *
      * @return void
      */
@@ -50,7 +63,7 @@ class CompaniesBranchesController extends BaseController
     }
 
     /**
-     * Get Uer
+     * Get Uer.
      *
      * @param mixed $id
      *
@@ -59,59 +72,22 @@ class CompaniesBranchesController extends BaseController
      *
      * @return Response
      */
-    public function getById($id) : Response
+    public function getById($id): Response
     {
         //find the info
-        $company = $this->model->findFirst([
+        $record = $this->model->findFirstOrFail([
             'id = ?0 AND is_deleted = 0 and companies_id = ?1',
             'bind' => [$id, $this->userData->currentCompanyId()],
         ]);
 
-        //get relationship
-        if ($this->request->hasQuery('relationships')) {
-            $relationships = $this->request->getQuery('relationships', 'string');
+        //get the results and append its relationships
+        $result = $this->appendRelationshipsToResult($this->request, $record);
 
-            $company = QueryParser::parseRelationShips($relationships, $company);
-        }
-
-        if ($company) {
-            return $this->response($company);
-        } else {
-            throw new UnprocessableEntityHttpException('Record not found');
-        }
+        return $this->response($this->processOutput($result));
     }
 
     /**
-     * Add a new item
-     *
-     * @method POST
-     * @url /v1/company
-     *
-     * @return Response
-     */
-    public function create() : Response
-    {
-        $request = $this->request->getPost();
-
-        if (empty($request)) {
-            $request = $this->request->getJsonRawBody(true);
-        }
-
-        //transaction
-        $this->db->begin();
-
-        //try to save all the fields we allow
-        if ($this->model->save($request, $this->createFields)) {
-            $this->db->commit();
-            return $this->response($this->model->toArray());
-        } else {
-            $this->db->rollback();
-            throw new UnprocessableEntityHttpException((string) $this->model->getMessages()[0]);
-        }
-    }
-
-    /**
-     * Update a User Info
+     * Update a User Info.
      *
      * @method PUT
      * @url /v1/company/{id}
@@ -120,27 +96,19 @@ class CompaniesBranchesController extends BaseController
      */
     public function edit($id) : Response
     {
-        $company = $this->model->findFirst([
+        $company = $this->model->findFirstOrFail([
             'id = ?0 AND is_deleted = 0 and companies_id = ?1',
             'bind' => [$id, $this->userData->currentCompanyId()],
         ]);
 
-        if ($company) {
-            $request = $this->request->getPut();
+        $request = $this->request->getPutData();
 
-            if (empty($request)) {
-                $request = $this->request->getJsonRawBody(true);
-            }
-
-            //update
-            if ($company->update($request, $this->updateFields)) {
-                return $this->response($company);
-            } else {
-                //didnt work
-                throw new UnprocessableEntityHttpException((string) current($company->getMessages()));
-            }
+        //update
+        if ($company->update($request, $this->updateFields)) {
+            return $this->response($this->processOutput($company));
         } else {
-            throw new UnprocessableEntityHttpException('Record not found');
+            //didnt work
+            throw new UnprocessableEntityException((string) current($company->getMessages()));
         }
     }
 }

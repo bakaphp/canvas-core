@@ -7,7 +7,7 @@ namespace Canvas\Exception;
 use Canvas\Http\Response;
 
 /**
- * Using this exception when you cant save a entity
+ * @deprecated version 0.1.5
  */
 class UnprocessableRequestException extends HttpException
 {

@@ -18,7 +18,7 @@ class Factory
     {
         $user = null;
         switch ($ecosystemAuth) {
-            case true:
+            case false:
                 $user = new App();
                 break;
             

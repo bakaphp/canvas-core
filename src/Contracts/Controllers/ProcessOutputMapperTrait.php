@@ -35,7 +35,11 @@ trait ProcessOutputMapperTrait
             ->useCustomMapper($this->dtoMapper);
 
         if (is_array($results) && isset($results['data'])) {
-            $results['data'] = $this->mapper->mapMultiple($results['data'], $this->dto);
+            $results['data'] = $this->mapper->mapMultiple(
+                $results['data'],
+                $this->dto,
+                $this->getMapperOptions()
+            );
             return  $results;
         }
 
@@ -43,9 +47,19 @@ trait ProcessOutputMapperTrait
          * If position 0 is array or object it means is a result set from normal query
          * or with relationships therefore we use multimap.
          */
-        return is_iterable($results) && (is_array(current($results)) || is_object(current($results))) ?
-            $this->mapper->mapMultiple($results, $this->dto, $this->getMapperOptions())
-            : $this->mapper->map($results, $this->dto, $this->getMapperOptions());
+        if (is_iterable($results) && (is_array(current($results)) || is_object(current($results)))) {
+            return $this->mapper->mapMultiple(
+                $results,
+                $this->dto,
+                $this->getMapperOptions()
+            );
+        } else {
+            return $this->mapper->map(
+                $results,
+                $this->dto,
+                $this->getMapperOptions()
+            );
+        }
     }
 
     /**

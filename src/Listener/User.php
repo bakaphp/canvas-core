@@ -7,8 +7,8 @@ namespace Canvas\Listener;
 use Phalcon\Events\Event;
 use Canvas\Models\Users;
 use Canvas\Models\Companies;
-use Canvas\Models\UserRoles;
 use Canvas\Auth\App;
+use Canvas\Models\Apps;
 use Canvas\Models\Roles;
 use Canvas\Models\UsersInvite;
 
@@ -26,18 +26,19 @@ class User
     {
         /**
         * User signing up for a new app / plan
-        * How do we know? well he doesnt have a default_company.
+        * How do we know? well he doesn't have a default_company.
         */
         if ($isFirstSignup) {
+            /**
+             * Let's create a new Companies.
+             */
             $company = new Companies();
-            //for signups that dont send a company name
-            $company->name = !empty($user->defaultCompanyName) ? $user->defaultCompanyName : $user->displayname.'CP';
+            //for signup that don't send a company name
+            $company->name = !empty($user->defaultCompanyName) ? $user->defaultCompanyName : $user->displayname . 'CP';
             $company->users_id = $user->getId();
-
             $company->saveOrFail();
 
             $user->default_company = $company->getId();
-
             $user->updateOrFail();
 
             if (empty($user->stripe_id)) {
@@ -45,7 +46,6 @@ class User
                 $user->default_company_branch = $user->getDefaultCompany()->branch->getId();
                 $user->updateOrFail();
             }
-
         } else {
             //we have the company id
             if (empty($user->default_company_branch)) {
@@ -57,21 +57,17 @@ class User
 
         //Create new company associated company
         $user->getDefaultCompany()->associate($user, $user->getDefaultCompany());
-        
-        //Insert record into user_roles
-        $userRole = new UserRoles();
-        $userRole->users_id = $user->id;
-        $userRole->roles_id = $user->roles_id;
-        $userRole->apps_id = $user->getDI()->getApp()->getId();
-        $userRole->companies_id = $user->getDefaultCompany()->getId();
 
-        if (!$userRole->save()) {
-            throw new ServerErrorHttpException((string)current($userRole->getMessages()));
+        //Insert record into user_roles
+        if (!$role = $user->getDI()->getApp()->get(Apps::APP_DEFAULT_ROLE_SETTING)) {
+            $role = $user->getDI()->getApp()->name . '.' . Roles::getById((int)$user->roles_id)->name;
         }
+
+        $user->assignRole($role);
     }
 
     /**
-     * Events after a user is invited to the system
+     * Events after a user is invited to the system.
      *
      * @param Event $event
      * @param Users $user
@@ -85,10 +81,14 @@ class User
         }
 
         //if its a ecosystem app and we are inviting a user to it, we need to move the user password to it
-        if ($user->getDI()->getApp()->ecosystemAuth()) {
+        if (!$user->getDI()->getApp()->ecosystemAuth()) {
             App::updatePassword($user, $user->password);
         }
 
-        Roles::assignDefault($user);
+        /**
+         * @todo this is hackable , need to add use Roles::getById($usersInvite->role_id) , without
+         * but we need the company info without been logged in
+         */
+        $user->assignRole(Roles::findFirstOrFail($usersInvite->role_id)->name);
     }
 }

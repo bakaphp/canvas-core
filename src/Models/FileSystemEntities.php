@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Canvas\Models;
 
 use Phalcon\Di;
-use Canvas\Exception\ModelException;
 use Phalcon\Validation;
 use Phalcon\Validation\Validator\Uniqueness;
 
@@ -113,18 +112,31 @@ class FileSystemEntities extends AbstractModel
      *
      * @param integer $id
      * @param SystemModules $systemModules
-     * @param bool $isDeleted
+     * @param bool $isDeleted deprecated 
      * @return FileSystemEntities
      */
     public static function getByIdWithSystemModule(int $id, SystemModules $systemModules, bool $isDeleted = false)
     {
         $app = Di::getDefault()->getApp();
-        $companyId = Di::getDefault()->getUserData()->currentCompanyId();
+        $addCompanySql = null;
+
+        $bind = [
+            'id' => $id,
+            'system_modules_id' => $systemModules->getId(),
+            'apps_id' => $app->getId(),
+        ];
+
+        if (!(bool) Di::getDefault()->getApp()->get('public_images')) {
+            $companyId = Di::getDefault()->getUserData()->currentCompanyId();
+            $addCompanySql = 'AND companies_id = :companies_id:';
+            $bind['companies_id'] = $companyId;
+        }
+        
 
         return self::findFirst([
-            'conditions' => 'id = ?0 AND  system_modules_id = ?1 AND companies_id = ?2 AND  is_deleted = ?4 AND 
-                                filesystem_id in (SELECT s.id from \Canvas\Models\FileSystem s WHERE s.apps_id = ?3 AND s.is_deleted = 0)',
-            'bind' => [$id, $systemModules->getId(), $companyId, $app->getId(), (int) $isDeleted]
+            'conditions' => 'id = :id: AND system_modules_id = :system_modules_id: ' . $addCompanySql . '  AND 
+                                filesystem_id in (SELECT s.id from \Canvas\Models\FileSystem s WHERE s.apps_id = :apps_id: )',
+            'bind' => $bind
         ]);
     }
 
@@ -138,19 +150,25 @@ class FileSystemEntities extends AbstractModel
     public static function getById(int $id): FileSystemEntities
     {
         $app = Di::getDefault()->getApp();
-        $companyId = Di::getDefault()->getUserData()->currentCompanyId();
 
-        $fileEntity = self::findFirst([
-            'conditions' => 'id = ?0 AND companies_id = ?1 AND  is_deleted = 0 AND 
-                                filesystem_id in (SELECT s.id from \Canvas\Models\FileSystem s WHERE s.apps_id = ?2 AND s.is_deleted = 0)',
-            'bind' => [$id, $companyId, $app->getId()]
-        ]);
+        $addCompanySql = null;
 
-        if (!is_object($fileEntity)) {
-            throw new ModelException('File not found');
+        $bind = [
+            'id' => $id,
+            'apps_id' => $app->getId(),
+        ];
+
+        if (!(bool) Di::getDefault()->getApp()->get('public_images')) {
+            $companyId = Di::getDefault()->getUserData()->currentCompanyId();
+            $addCompanySql = 'AND companies_id = :companies_id:';
+            $bind['companies_id'] = $companyId;
         }
 
-        return $fileEntity;
+        return self::findFirstOrFail([
+            'conditions' => 'id = :id: ' . $addCompanySql . ' AND  is_deleted = 0 AND 
+                                filesystem_id in (SELECT s.id from \Canvas\Models\FileSystem s WHERE s.apps_id = :apps_id: AND s.is_deleted = 0)',
+            'bind' => $bind
+        ]);
     }
 
     /**
@@ -163,19 +181,25 @@ class FileSystemEntities extends AbstractModel
     public static function getByEntityId(int $id): FileSystemEntities
     {
         $app = Di::getDefault()->getApp();
-        $companyId = Di::getDefault()->getUserData()->currentCompanyId();
 
-        $fileEntity = self::findFirst([
-            'conditions' => 'entity_id = ?0 AND companies_id = ?1 AND  is_deleted = 0 AND 
-                                filesystem_id in (SELECT s.id from \Canvas\Models\FileSystem s WHERE s.apps_id = ?2 AND s.is_deleted = 0)',
-            'bind' => [$id, $companyId, $app->getId()]
-        ]);
+        $addCompanySql = null;
 
-        if (!is_object($fileEntity)) {
-            throw new ModelException('File not found');
+        $bind = [
+            'id' => $id,
+            'apps_id' => $app->getId(),
+        ];
+
+        if (!(bool) Di::getDefault()->getApp()->get('public_images')) {
+            $companyId = Di::getDefault()->getUserData()->currentCompanyId();
+            $addCompanySql = 'AND companies_id = :companies_id:';
+            $bind['companies_id'] = $companyId;
         }
 
-        return $fileEntity;
+        return self::findFirstOrFail([
+            'conditions' => 'entity_id = :id: ' . $addCompanySql . ' AND is_deleted = 0 AND 
+                                filesystem_id in (SELECT s.id from \Canvas\Models\FileSystem s WHERE s.apps_id = :apps_id: AND s.is_deleted = 0)',
+            'bind' => $bind
+        ]);
     }
 
     /**
@@ -187,12 +211,24 @@ class FileSystemEntities extends AbstractModel
     public static function getAllByEntityId(int $id)
     {
         $app = Di::getDefault()->getApp();
-        $companyId = Di::getDefault()->getUserData()->currentCompanyId();
+
+        $addCompanySql = null;
+
+        $bind = [
+            'id' => $id,
+            'apps_id' => $app->getId(),
+        ];
+
+        if (!(bool) Di::getDefault()->getApp()->get('public_images')) {
+            $companyId = Di::getDefault()->getUserData()->currentCompanyId();
+            $addCompanySql = 'AND companies_id = :companies_id:';
+            $bind['companies_id'] = $companyId;
+        }
 
         $files = self::find([
-            'conditions' => 'entity_id = ?0 AND companies_id = ?1 AND  is_deleted = 0 AND 
-                                filesystem_id in (SELECT s.id from \Canvas\Models\FileSystem s WHERE s.apps_id = ?2 AND s.is_deleted = 0)',
-            'bind' => [$id, $companyId, $app->getId()]
+            'conditions' => 'entity_id = :id: ' . $addCompanySql . ' AND  is_deleted = 0 AND 
+                                filesystem_id in (SELECT s.id from \Canvas\Models\FileSystem s WHERE s.apps_id = :apps_id: AND s.is_deleted = 0)',
+            'bind' => $bind
         ]);
 
         if (!is_object($files)) {

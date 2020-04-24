@@ -3,12 +3,11 @@ declare(strict_types=1);
 
 namespace Canvas\Models;
 
-use Canvas\Exception\ServerErrorHttpException;
-use Canvas\Exception\ModelException;
+use Canvas\Http\Exception\InternalServerErrorException;
 use Phalcon\Di;
 
 /**
- * Classs for UserCompanyAppsActivities
+ * Classs for UserCompanyAppsActivities.
  * @property Users $userData
  * @property Request $request
  * @property Config $config
@@ -106,7 +105,7 @@ class UserCompanyAppsActivities extends AbstractModel
     }
 
     /**
-     * Get the value of the settins by it key
+     * Get the value of the settins by it key.
      *
      * @param string $key
      * @param string $value
@@ -115,18 +114,22 @@ class UserCompanyAppsActivities extends AbstractModel
     {
         $setting = self::findFirst([
             'conditions' => 'companies_id = ?0 and apps_id = ?1 and key = ?2',
-            'bind' => [Di::getDefault()->getUserData()->currentCompanyId(), Di::getDefault()->getApp()->getId(), $key]
+            'bind' => [
+                Di::getDefault()->getUserData()->currentCompanyId(),
+                Di::getDefault()->getApp()->getId(),
+                $key
+            ]
         ]);
 
         if (is_object($setting)) {
             return $setting->value;
         }
 
-        throw new ServerErrorHttpException(_('No settings found with this ' . $key));
+        throw new InternalServerErrorException(_('No settings found with this ' . $key));
     }
 
     /**
-     * Set a setting for the given app
+     * Set a setting for the given app.
      *
      * @param string $key
      * @param string $value
@@ -135,7 +138,11 @@ class UserCompanyAppsActivities extends AbstractModel
     {
         $activity = self::findFirst([
             'conditions' => 'companies_id = ?0 and apps_id = ?1 and key = ?2',
-            'bind' => [Di::getDefault()->getUserData()->currentCompanyId(), Di::getDefault()->getApp()->getId(), $key]
+            'bind' => [
+                Di::getDefault()->getUserData()->currentCompanyId(),
+                Di::getDefault()->getApp()->getId(),
+                $key
+            ]
         ]);
 
         if (!is_object($activity)) {
@@ -147,10 +154,7 @@ class UserCompanyAppsActivities extends AbstractModel
         }
 
         $activity->value = $value;
-
-        if (!$activity->save()) {
-            throw new ModelException((string)current($activity->getMessages()));
-        }
+        $activity->saveOrFail();
 
         return true;
     }

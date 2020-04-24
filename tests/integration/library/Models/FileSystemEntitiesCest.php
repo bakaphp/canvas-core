@@ -2,6 +2,7 @@
 
 namespace Gewaer\Tests\integration\library\Models;
 
+use Canvas\Models\FileSystem;
 use Canvas\Models\FileSystemEntities;
 use Canvas\Models\SystemModules;
 use IntegrationTester;
@@ -17,7 +18,8 @@ class FileSystemEntitiesCest
     public function getByIdWithSystemModule(IntegrationTester $I)
     {
         $systemModule = SystemModules::findFirst(1);
-        $fileSystemEntities = FileSystemEntities::getByIdWithSystemModule(1, $systemModule);
+
+        $fileSystemEntities = FileSystemEntities::getByIdWithSystemModule($I->getFileSystemEntity()->getId(), $systemModule);
         $I->assertTrue($fileSystemEntities instanceof FileSystemEntities);
     }
 
@@ -29,7 +31,7 @@ class FileSystemEntitiesCest
      */
     public function getById(IntegrationTester $I)
     {
-        $fileSystemEntities = FileSystemEntities::getById(1);
+        $fileSystemEntities = FileSystemEntities::getById($I->getFileSystemEntity()->getId());
         $I->assertTrue($fileSystemEntities instanceof FileSystemEntities);
     }
 
@@ -41,7 +43,7 @@ class FileSystemEntitiesCest
      */
     public function getByEntityId(IntegrationTester $I)
     {
-        $fileSystemEntities = FileSystemEntities::getByEntityId(1);
+        $fileSystemEntities = FileSystemEntities::getByEntityId($I->grabFromDi('userData')->getDefaultCompany()->getId());
         $I->assertTrue($fileSystemEntities instanceof FileSystemEntities);
     }
 
@@ -53,7 +55,7 @@ class FileSystemEntitiesCest
      */
     public function getAllByEntityId(IntegrationTester $I)
     {
-        $fileSystemEntities = FileSystemEntities::getByEntityId(1);
+        $fileSystemEntities = FileSystemEntities::getByEntityId($I->grabFromDi('userData')->getDefaultCompany()->getId());
         $I->assertTrue($fileSystemEntities instanceof FileSystemEntities);
     }
 }

@@ -20,7 +20,7 @@ use Canvas\Constants\Flags;
  */
 class Cli extends AbstractBootstrap
 {
-    private $argv;
+    protected $argv;
 
     /**
      * Run the application

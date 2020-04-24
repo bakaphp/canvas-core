@@ -6,13 +6,13 @@ namespace Canvas\Api\Controllers;
 
 use Canvas\Models\Users;
 use Phalcon\Http\Response;
-use Phalcon\Validation;
 use Phalcon\Validation\Validator\PresenceOf;
 use Canvas\Exception\BadRequestHttpException;
 use Canvas\Exception\ServerErrorHttpException;
-use \Baka\Auth\UsersController as BakaUsersController;
+use Baka\Auth\UsersController as BakaUsersController;
 use Canvas\Contracts\Controllers\ProcessOutputMapperTrait;
 use Canvas\Dto\User as UserDto;
+use Canvas\Http\Exception\InternalServerErrorException;
 use Canvas\Mapper\UserMapper;
 use Canvas\Validation as CanvasValidation;
 use Canvas\Models\UsersAssociatedApps;
@@ -45,6 +45,7 @@ class UsersController extends BakaUsersController
         'timezone',
         'email',
         'password',
+        'roles_id',
         'created_at',
         'updated_at',
         'default_company',
@@ -69,6 +70,7 @@ class UsersController extends BakaUsersController
         'timezone',
         'email',
         'password',
+        'roles_id',
         'created_at',
         'updated_at',
         'default_company',
@@ -118,6 +120,8 @@ class UsersController extends BakaUsersController
             $id = $this->userData->getId();
         }
 
+        $this->userData->can('SettingsMenu.company-settings');
+
         /**
          * @todo filter only by user from this app / company
          */
@@ -125,7 +129,6 @@ class UsersController extends BakaUsersController
             'id = ?0 AND is_deleted = 0',
             'bind' => [$id],
         ]);
-        $userObject = $user;
 
         //get the results and append its relationships
         $user = $this->appendRelationshipsToResult($this->request, $user);
@@ -152,7 +155,7 @@ class UsersController extends BakaUsersController
         $request = $this->request->getPutData();
 
         if (empty($request)) {
-            throw new BadRequestHttpException(_('No data to update this account with '));
+            throw new InternalServerErrorException(_('No data to update this account with '));
         }
 
         //update password
@@ -210,14 +213,16 @@ class UsersController extends BakaUsersController
     public function delete($id): Response
     {
         if ((int) $this->userData->getId() === (int) $id) {
-            throw new ServerErrorHttpException('Cant delete your own user . If you want to close your account contact support or go to app settings');
+            throw new InternalServerErrorException(
+                'Cant delete your own user . If you want to close your account contact support or go to app settings'
+            );
         }
 
         return parent::delete($id);
     }
 
     /**
-     * Change User's active status for in current app
+     * Change User's active status for in current app.
      *
      * @param int $id
      * @param int $appsId
@@ -227,9 +232,10 @@ class UsersController extends BakaUsersController
     public function changeAppUserActiveStatus(int $id, int $appsId): Response
     {
         $userAssociatedToApp = UsersAssociatedApps::findFirstOrFail([
-            'conditions'=> 'users_id = ?0 and apps_id = ?1 and companies_id = ?2 and is_deleted = 0',
-            'bind'=> [$id,$this->app->getId(),$this->userData->getDefaultCompany()->getId()]
+            'conditions' => 'users_id = ?0 and apps_id = ?1 and companies_id = ?2 and is_deleted = 0',
+            'bind' => [$id, $this->app->getId(), $this->userData->getDefaultCompany()->getId()]
         ]);
+
         $userAssociatedToApp->user_active = $userAssociatedToApp->user_active ? 0 : 1;
         $userAssociatedToApp->updateOrFail();
         return $this->response($userAssociatedToApp);

@@ -3,6 +3,9 @@ declare(strict_types=1);
 
 namespace Canvas\Models;
 
+use Phalcon\Validation;
+use Phalcon\Validation\Validator\Uniqueness;
+
 class UserRoles extends AbstractModel
 {
     /**
@@ -91,5 +94,24 @@ class UserRoles extends AbstractModel
     public function getSource(): string
     {
         return 'user_roles';
+    }
+
+    /**
+    * Validations and business logic.
+    */
+    public function validation()
+    {
+        $validator = new Validation();
+
+        $validator->add(
+            ['users_id', 'apps_id', 'companies_id'],
+            new Uniqueness(
+                [
+                    'message' => 'Can\'t have 2 roles for the same company on the same app - ' . $this->company->name
+                ]
+            )
+        );
+
+        return $this->validate($validator);
     }
 }

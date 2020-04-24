@@ -7,9 +7,10 @@ use Phalcon\Cli\Task as PhTask;
 use Canvas\Models\Users;
 use Canvas\Queue\Queue;
 use Phalcon\Mvc\Model;
+use Throwable;
 
 /**
- * CLI To send push ontification and pusher msg.
+ * CLI To send push notification and pusher msg.
  *
  * @package Canvas\Cli\Tasks
  *
@@ -39,6 +40,17 @@ class QueueTask extends PhTask
     public function eventsAction()
     {
         $callback = function ($msg) {
+            //check the db before running anything
+            if (!$this->isDbConnected('db')) {
+                return ;
+            }
+
+            if ($this->di->has('dblocal')) {
+                if (!$this->isDbConnected('dblocal')) {
+                    return ;
+                }
+            }
+
             //we get the data from our event trigger and unserialize
             $event = unserialize($msg->body);
 
@@ -66,6 +78,17 @@ class QueueTask extends PhTask
     public function notificationsAction()
     {
         $callback = function ($msg) {
+            //check the db before running anything
+            if (!$this->isDbConnected('db')) {
+                return ;
+            }
+
+            if ($this->di->has('dblocal')) {
+                if (!$this->isDbConnected('dblocal')) {
+                    return ;
+                }
+            }
+
             //we get the data from our event trigger and unserialize
             $notification = unserialize($msg->body);
 
@@ -118,6 +141,17 @@ class QueueTask extends PhTask
         $queue = !isset($params[0]) ? QUEUE::JOBS : $params[0];
 
         $callback = function ($msg) {
+            //check the db before running anything
+            if (!$this->isDbConnected('db')) {
+                return ;
+            }
+
+            if ($this->di->has('dblocal')) {
+                if (!$this->isDbConnected('dblocal')) {
+                    return ;
+                }
+            }
+
             //we get the data from our event trigger and unserialize
             $job = unserialize($msg->body);
 
@@ -128,7 +162,7 @@ class QueueTask extends PhTask
 
             if (!class_exists($job['class'])) {
                 echo 'No Job class found' . PHP_EOL;
-                $this->log->error('No Job class found');
+                $this->log->error('No Job class found ' . $job['class']);
                 return;
             }
 
@@ -139,19 +173,38 @@ class QueueTask extends PhTask
             }
 
             /**
-             * swoole coroutine
+             * swoole coroutine.
              */
             go(function () use ($job, $msg) {
                 //instance notification and pass the entity
                 $result = $job['job']->handle();
 
                 $this->log->info(
-                    "Job ({$job['class']}) ran for {$this->userData->getEmail()} - Process ID " . $msg->delivery_info['consumer_tag'],
+                    "Job ({$job['class']}) ran for {$job['userData']->getEmail()} - Process ID " . $msg->delivery_info['consumer_tag'],
                     [$result]
                 );
             });
         };
 
         Queue::process($queue, $callback);
+    }
+
+    /**
+     * Confirm if the db is connected.
+     *
+     * @return boolean
+     */
+    protected function isDbConnected(string $dbProvider): bool
+    {
+        try {
+            $this->di->get($dbProvider)->fetchAll('SELECT 1');
+        } catch (Throwable $e) {
+            if (strpos($e->getMessage(), 'MySQL server has gone away') !== false) {
+                $this->di->get($dbProvider)->connect();
+                return true;
+            }
+            return false;
+        }
+        return true;
     }
 }

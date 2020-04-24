@@ -14,6 +14,7 @@ use Canvas\Exception\NotFoundHttpException;
 use Canvas\Exception\ServerErrorHttpException;
 use Canvas\Models\Roles;
 use Baka\Http\QueryParser;
+use Canvas\Http\Exception\NotFoundException;
 use Canvas\Validation as CanvasValidation;
 
 /**
@@ -110,25 +111,18 @@ class RolesAccesListController extends BaseController
      *
      * @return Response
      */
-    public function getById($id) : Response
+    public function getById($id): Response
     {
-        $objectInfo = $this->model->findFirst([
+        //find the info
+        $record = $this->model->findFirst([
             'roles_id = ?0 AND is_deleted = 0 AND apps_id in (?1, ?2)',
             'bind' => [$id, $this->app->getId(), Apps::CANVAS_DEFAULT_APP_ID],
         ]);
 
-        //get relationship
-        if ($this->request->hasQuery('relationships')) {
-            $relationships = $this->request->getQuery('relationships', 'string');
+        //get the results and append its relationships
+        $result = $this->appendRelationshipsToResult($this->request, $record);
 
-            $objectInfo = QueryParser::parseRelationShips($relationships, $objectInfo);
-        }
-
-        if ($objectInfo) {
-            return $this->response($objectInfo);
-        } else {
-            throw new NotFoundHttpException('Record not found');
-        }
+        return $this->response($this->processOutput($result));
     }
 
     /**
@@ -184,7 +178,7 @@ class RolesAccesListController extends BaseController
     public function copy($id) : Response
     {
         if (!$role = Roles::getById((int) $id)) {
-            throw new NotFoundHttpException('Record not found');
+            throw new NotFoundException('Record not found');
         }
 
         return $this->response($role->copy());
@@ -200,7 +194,7 @@ class RolesAccesListController extends BaseController
      */
     public function delete($id) : Response
     {
-        $role = Roles::getById($id);
+        $role = Roles::getById((int) $id);
 
         if ($this->softDelete == 1) {
             $role->softDelete();

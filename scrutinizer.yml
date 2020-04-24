@@ -6,12 +6,6 @@ build:
       mariadb: 10.4
 
     environment:
-        selenium: false
-        memcached: true
-        elasticsearch: false
-        postgresql: false
-        redis: true
-        node: false
         php:
           version: 7.2
           ini:
@@ -24,63 +18,15 @@ build:
             api:
               web_root: 'public'
               host: 'api.baka.ld'
-        variables:
-          DATA_API_MYSQL_HOST: "127.0.0.1"
-          DATA_API_MYSQL_PASS: ""
-          DATA_API_MYSQL_USER: "root"
-          DATA_API_MYSQL_NAME: "gonano"
-          DATA_API_MEMCACHED_HOST: "127.0.0.1"
-          DATA_API_MEMCACHED_PORT: 11211
-          DATA_API_MEMCACHED_WEIGHT: 100
-          REDIS_HOST: "127.0.0.1"
-          REDIS_PORT: 6379
-          APP_IP: "api.baka.ld"
-          APP_ENV: development
-          JWT_SECURITY: 0
-          GEWAER_APP_ID: 1
-          PHINX_CONFIG_DIR: "/home/scrutinizer/build/storage"
-
-
-    cache:
-        directories:
-          - ~/cphalcon
 
     dependencies:
-        before:
-          - cd /home/scrutinizer/build
-          - cp storage/ci/.env.example .env
-          - cp storage/ci/phinx.php.example phinx.php
-          -
-            command: 'cd ~/ && rm -rf cphalcon && git clone -b 3.4.x -q --depth=1 https://github.com/phalcon/cphalcon.git && cd cphalcon/build && ./install'
-          -
-            command: 'cp -v /home/scrutinizer/cphalcon/build/php7/64bits/modules/phalcon.so  /home/scrutinizer/.phpenv/versions/7.2.13/lib/php/extensions/no-debug-zts-2017071'
-            only_if: 'test -e /home/scrutinizer/cphalcon/build/php7/64bits/modules/phalcon.so'
-          - sed -i '$ a \\n[Phalcon]\nextension=phalcon.so\n' /home/scrutinizer/.phpenv/versions/7.2.13/etc/php.ini
-          - php -m | grep -i Phalcon
-          - sudo /etc/init.d/apache2 restart
-          - beanstalkd -p 11300 &
-          - mysql -e "CREATE DATABASE gonano"
-          - mysql -e "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('password');"
-          - mysql -e "FLUSH PRIVILEGES"
-          - cd /home/scrutinizer/build
-          - composer install --no-interaction
-          - composer update --no-interaction
-          - ./vendor/bin/phinx migrate -e development
-          - ./vendor/bin/phinx seed:run
-          - ./vendor/bin/codecept run integration
-
-#    project_setup:
-#        override: true
+        override:
+          - true
 
     tests:
         override:
-          - phpcs-run --standard=PSR2 --extensions=php --ignore=tests/*,storage/*,vendor/* ./
-          -
-            command: './vendor/bin/codecept run --coverage-xml'
-            coverage:
-              file: './tests/_output/coverage.xml'
-              format: 'clover'
           - php-scrutinizer-run --enable-security-analysis
+          
 
 filter:
   paths: ['./*']
@@ -109,11 +55,6 @@ build_failure_conditions:
 
     # Code Quality Rating drops below 8
     - 'project.metric("scrutinizer.quality", < 8)'
-    # Code Coverage drops below 50%
-    - 'project.metric("scrutinizer.test_coverage", < 0.45)'
-
-    # Code Coverage decreased from previous inspection by more than 10%
-    - 'project.metric_change("scrutinizer.test_coverage", < -0.10)'
 
 tools:
   php_analyzer: true
@@ -216,8 +157,8 @@ checks:
     argument_type_checks: true
     remove_extra_empty_lines: true
     naming_conventions:
-      local_variable: '^[a-z][a-zA-Z0-9]*$'
-      abstract_class_name: ^Abstract|Factory$
+      #local_variable: '^[a-z][a-zA-Z0-9]*$'
+      #abstract_class_name: ^Abstract|Factory$
       utility_class_name: '^[A-Z][a-zA-Z0-9]*$'
       constant_name: '^[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)*$'
       property_name: '^[a-z][a-zA-Z0-9]*$'
@@ -225,4 +166,4 @@ checks:
       parameter_name: '^[a-z][a-zA-Z0-9]*$'
       interface_name: '^[A-Z][a-zA-Z0-9]*Interface$'
       exception_name: '^[A-Z][a-zA-Z0-9]*Exception$'
-      isser_method_name: '^(?:is|has|should|may|supports|before|after)'
+      #isser_method_name: '^(?:is|has|should|may|supports|before|after)'

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Canvas\Models;
 
 use Baka\Database\Contracts\HashTableTrait;
-use Canvas\Exception\ModelException;
+use Canvas\Http\Exception\NotFoundException;
 use Phalcon\Di;
 use Exception;
 
@@ -189,7 +189,13 @@ class FileSystem extends AbstractModel
                         filesystem_id from \Canvas\Models\FileSystemEntities e
                         WHERE e.system_modules_id = ?3 AND e.entity_id = ?4
                     )',
-            'bind' => [0, Di::getDefault()->getApp()->getId(), Di::getDefault()->getUserData()->currentCompanyId(), $systeModule->getId(), $id]
+            'bind' => [
+                0,
+                Di::getDefault()->getApp()->getId(),
+                Di::getDefault()->getUserData()->currentCompanyId(),
+                $systeModule->getId(),
+                $id
+            ]
         ]);
     }
 
@@ -204,11 +210,15 @@ class FileSystem extends AbstractModel
     {
         $file = self::findFirst([
             'conditions' => 'id = ?0 AND companies_id = ?1 AND apps_id = ?2 AND is_deleted = 0',
-            'bind' => [$id, Di::getDefault()->getUserData()->currentCompanyId(), Di::getDefault()->getApp()->getId()]
+            'bind' => [
+                $id,
+                Di::getDefault()->getUserData()->currentCompanyId(),
+                Di::getDefault()->getApp()->getId()
+            ]
         ]);
 
         if (!is_object($file)) {
-            throw new ModelException('FileSystem '.(int) $id.'  not found');
+            throw new NotFoundException('FileSystem ' . (int) $id . '  not found');
         }
 
         return $file;

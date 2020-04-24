@@ -2,10 +2,11 @@
 
 use function Canvas\Core\appPath;
 use function Canvas\Core\envValue;
+use Canvas\Constants\Flags;
 
 return [
     'application' => [ //@todo migration to app
-        'production' => getenv('PRODUCTION'),
+        'production' => envValue('APP_ENV', 'development') == Flags::PRODUCTION ?: 0,
         'development' => getenv('DEVELOPMENT'),
         'jwtSecurity' => getenv('JWT_SECURITY'),
         'debug' => [
@@ -22,11 +23,12 @@ return [
         'timezone' => envValue('APP_TIMEZONE', 'UTC'),
         'debug' => envValue('APP_DEBUG', false),
         'env' => envValue('APP_ENV', 'development'),
-        'production ' => envValue('PRODUCTION', 0) == 1 ? 1 : 0,
+        'production ' => envValue('APP_ENV', 'development') == Flags::PRODUCTION ?: 0,
         'logsReport' => envValue('APP_LOGS_REPORT', false),
         'devMode' => boolval(
             'development' === envValue('APP_ENV', 'development')
         ),
+        'viewsDir' => appPath('storage/view/'),
         'baseUri' => envValue('APP_BASE_URI'),
         'supportEmail' => envValue('APP_SUPPORT_EMAIL'),
         'time' => microtime(true),
@@ -62,6 +64,7 @@ return [
         ],
     ],
     'cache' => [
+        //@todo remove this we are not using it any more
         'data' => [
             'front' => [
                 'adapter' => 'Data',
@@ -121,6 +124,7 @@ return [
         ],
     ],
     'beanstalk' => [
+        //@todo remove this we are not using it anymore
         'host' => getenv('BEANSTALK_HOST'),
         'port' => getenv('BEANSTALK_PORT'),
         'prefix' => getenv('BEANSTALK_PREFIX'),
@@ -140,27 +144,21 @@ return [
         'key' => envValue('PUSHER_KEY'),
         'secret' => envValue('PUSHER_SECRET'),
         'cluster' => envValue('PUSHER_CLUSTER'),
+        'queue' => envValue('PUSHER_QUEUE')
     ],
     'stripe' => [
         'secretKey' => getenv('STRIPE_SECRET'),
         'secret' => getenv('STRIPE_SECRET'),
         'public' => getenv('STRIPE_PUBLIC'),
     ],
-    'throttle'=>[
+    'throttle' => [
         'bucketSize' => getenv('THROTTLE_BUCKET_SIZE'),
         'refillTime' => getenv('THROTTLE_REFILL_TIME'),
         'refillAmount' => getenv('THROTTLE_REFILL_AMOUNT'),
     ],
-    'pushNotifications'=>[
-        'android'=>[
-            'appId'=>getenv('CANVAS_ANDROID_APP_ID'),
-            'authKey'=> getenv('CANVAS_ANDROID_AUTH_KEY'),
-            'userAuthKey'=> getenv('CANVAS_ANDROID_APP_USER_AUTH_KEY')
-        ],
-        'ios'=>[
-            'appId'=>getenv('CANVAS_IOS_APP_ID'),
-            'authKey'=> getenv('CANVAS_IOS_AUTH_KEY'),
-            'userAuthKey'=> getenv('CANVAS_IOS_APP_USER_AUTH_KEY')
-        ]
+    'pushNotifications' => [
+        'appId' => getenv('CANVAS_ONESIGNAL_APP_ID'),
+        'authKey' => getenv('CANVAS_ONESIGNAL_AUTH_KEY'),
+        'userAuthKey' => getenv('CANVAS_ONESIGNAL_APP_USER_AUTH_KEY')
     ]
 ];

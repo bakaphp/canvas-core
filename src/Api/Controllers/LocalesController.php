@@ -19,14 +19,18 @@ class LocalesController extends BaseController
      *
      * @var array
      */
-    protected $createFields = ['name'];
+    protected $createFields = [
+        'name'
+    ];
 
     /*
      * fields we accept to create
      *
      * @var array
      */
-    protected $updateFields = ['name'];
+    protected $updateFields = [
+        'name'
+    ];
 
     /**
      * set objects.

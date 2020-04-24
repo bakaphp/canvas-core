@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace Canvas\Models;
 
+use Baka\Database\Exception\ModelNotFoundException;
 use Canvas\Traits\SubscriptionPlanLimitTrait;
-use Canvas\Exception\ModelException;
 use Phalcon\Di;
 
 class UsersInvite extends AbstractModel
@@ -150,7 +150,7 @@ class UsersInvite extends AbstractModel
         ]);
 
         if (is_object($invitedUser)) {
-            throw new ModelException('User already invited to this company app');
+            throw new ModelNotFoundException('User already invited to this company app');
         }
 
         //check for user if they already are in this company app
@@ -161,7 +161,7 @@ class UsersInvite extends AbstractModel
 
         if (is_object($userExists)) {
             if ($userData->defaultCompany->userAssociatedToCompany($userExists)) {
-                throw new ModelException('User already is associated with this company app');
+                throw new ModelNotFoundException('User already is associated with this company app');
             }
         }
 

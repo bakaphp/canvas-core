@@ -3,9 +3,10 @@
 namespace Canvas\Models;
 
 use Phalcon\Cashier\Subscription as PhalconSubscription;
-use Canvas\Exception\ServerErrorHttpException;
+use Canvas\Http\Exception\InternalServerErrorException;
 use Phalcon\Di;
-use Phalcon\Mvc\Micro;
+use Carbon\Carbon;
+use Phalcon\Db\RawValue;
 
 /**
  * Trait Subscription.
@@ -22,6 +23,7 @@ use Phalcon\Mvc\Micro;
  */
 class Subscription extends PhalconSubscription
 {
+    const DEFAULT_GRACE_PERIOD_DAYS = 5;
     /**
      *
      * @var integer
@@ -114,9 +116,27 @@ class Subscription extends PhalconSubscription
 
     /**
      *
+     * @var string
+     */
+    public $ends_at;
+
+    /**
+     *
      * @var date
      */
     public $grace_period_ends;
+
+    /**
+     *
+     * @var datetime
+     */
+    public $next_due_payment;
+
+    /**
+     *
+     * @var integer
+     */
+    public $is_cancelled;
 
     /**
      *
@@ -170,20 +190,11 @@ class Subscription extends PhalconSubscription
     /**
      * Get the active subscription for this company app.
      *
-     * @return void
+     * @return Subscription
      */
-    public static function getActiveForThisApp() : Subscription
+    public static function getActiveForThisApp(): Subscription
     {
-        $subscription = self::findFirst([
-            'conditions' => 'companies_id = ?0 and apps_id = ?1 and is_deleted  = 0',
-            'bind' => [Di::getDefault()->getUserData()->currentCompanyId(), Di::getDefault()->getApp()->getId()]
-        ]);
-
-        if (!is_object($subscription)) {
-            throw new ServerErrorHttpException(_('No active subscription for this app ' . Di::getDefault()->getApp()->getId() . ' at the company ' . Di::getDefault()->getUserData()->currentCompanyId()));
-        }
-
-        return $subscription;
+        return self::getByDefaultCompany(Di::getDefault()->getUserData());
     }
 
     /**
@@ -194,12 +205,12 @@ class Subscription extends PhalconSubscription
     public static function getByDefaultCompany(Users $user): Subscription
     {
         $subscription = self::findFirst([
-            'conditions' => 'user_id = ?0 and companies_id = ?1 and apps_id = ?2 and is_deleted  = 0',
-            'bind' => [$user->getId(), $user->defaultCompany->getId(), Di::getDefault()->getApp()->getId()]
+            'conditions' => 'companies_id = ?0 and apps_id = ?1 and is_deleted  = 0',
+            'bind' => [$user->getDefaultCompany()->getId(), Di::getDefault()->getApp()->getId()]
         ]);
 
-        if (!is_object($subscription)) {
-            throw new ServerErrorHttpException('No active subscription for default company');
+        if (!$subscription) {
+            throw new InternalServerErrorException('No active subscription for the company: ' . $user->getDefaultCompany()->name);
         }
 
         return $subscription;
@@ -218,10 +229,94 @@ class Subscription extends PhalconSubscription
             return true;
         }
 
-        if (!$user->defaultCompany->get('paid')) {
+        if (!self::getByDefaultCompany($user)->paid()) {
             return false;
         }
 
         return true;
+    }
+
+    /**
+     * Determine if the subscription is active.
+     *
+     * @return bool
+     */
+    public function active(): bool
+    {
+        if (!Di::getDefault()->getApp()->subscriptioBased()) {
+            return true;
+        }
+
+        return (bool) $this->is_active;
+    }
+
+    /**
+     * Is the subscriptoin paid?
+     *
+     * @return boolean
+     */
+    public function paid(): bool
+    {
+        if (!Di::getDefault()->getApp()->subscriptioBased()) {
+            return true;
+        }
+
+        return (bool) $this->paid;
+    }
+
+    /**
+     * Given a not active subscription activate it.
+     *
+     * @return void
+     */
+    public function activate(): bool
+    {
+        $this->is_active = 1;
+        $this->paid = 1;
+        $this->grace_period_ends = new RawValue('NULL');
+        $this->ends_at = Carbon::now()->addDays(30)->toDateTimeString();
+        $this->next_due_payment = $this->ends_at;
+        $this->is_cancelled = 0;
+        return $this->update();
+    }
+
+    /**
+     * Determine if the subscription is within its trial period.
+     *
+     * @return bool
+     */
+    public function onTrial()
+    {
+        return (bool) $this->is_freetrial;
+    }
+
+    /**
+     * Get actual subscription.
+     */
+    public static function getActiveSubscription(): self
+    {
+        $userSubscription = PhalconSubscription::findFirstOrFail([
+            'conditions' => 'companies_id = ?0 and apps_id = ?1 and is_deleted  = 0',
+            'bind' => [Di::getDefault()->getUserData()->currentCompanyId(), Di::getDefault()->getApp()->getId()]
+        ]);
+
+        return Di::getDefault()->getUserData()->subscription($userSubscription->name);
+    }
+
+    /**
+     * Validate subscription status by grace period date and update grace period date.
+     *
+     * @return void
+     */
+    public function validateByGracePeriod(): void
+    {
+        if (!is_null($this->grace_period_ends)) {
+            if (($this->charge_date == $this->grace_period_ends) && !$this->paid) {
+                $this->is_active = 0;
+                $this->grace_period_ends = Carbon::now()->addDays(Subscription::DEFAULT_GRACE_PERIOD_DAYS)->toDateTimeString();
+            }
+        } else {
+            $this->grace_period_ends = Carbon::now()->addDays(Subscription::DEFAULT_GRACE_PERIOD_DAYS)->toDateTimeString();
+        }
     }
 }

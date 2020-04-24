@@ -24,7 +24,7 @@ class UsersCest
     }
 
     /**
-     * Get Current Company Id
+     * Get Current Company Id.
      *
      * @param IntegrationTester $I
      * @return void
@@ -35,7 +35,7 @@ class UsersCest
     }
 
     /**
-     * Get Current Company Branch Id
+     * Get Current Company Branch Id.
      *
      * @param IntegrationTester $I
      * @return void
@@ -46,7 +46,7 @@ class UsersCest
     }
 
     /**
-     * Get Associated Apps
+     * Get Associated Apps.
      *
      * @param IntegrationTester $I
      * @return void
@@ -57,7 +57,7 @@ class UsersCest
     }
 
     /**
-     * Get Associated Companies
+     * Get Associated Companies.
      *
      * @param IntegrationTester $I
      * @return void
@@ -68,7 +68,7 @@ class UsersCest
     }
 
     /**
-     * Get By User Activation Email
+     * Get By User Activation Email.
      *
      * @param IntegrationTester $I
      * @return void
@@ -79,7 +79,7 @@ class UsersCest
     }
 
     /**
-     * Start Free Trial
+     * Start Free Trial.
      *
      * @param IntegrationTester $I
      * @return void
@@ -87,5 +87,10 @@ class UsersCest
     public function startFreeTrial(IntegrationTester $I)
     {
         $I->assertTrue($I->grabFromDi('userData')->startFreeTrial() instanceof Subscription);
+    }
+
+    public function generateForgotHash(IntegrationTester $I)
+    {
+        $I->assertTrue(strlen($I->grabFromDi('userData')->generateForgotHash()) > 10);
     }
 }

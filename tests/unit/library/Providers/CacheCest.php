@@ -6,6 +6,7 @@ use Canvas\Providers\CacheDataProvider;
 use Phalcon\Cache\Backend\Libmemcached;
 use Phalcon\Di\FactoryDefault;
 use UnitTester;
+use Redis;
 
 class CacheCest
 {
@@ -21,6 +22,6 @@ class CacheCest
         $I->assertTrue($diContainer->has('cache'));
         /** @var Libmemcached $cache */
         $cache = $diContainer->getShared('cache');
-        $I->assertTrue($cache instanceof Libmemcached);
+        $I->assertTrue($cache instanceof Redis);
     }
 }

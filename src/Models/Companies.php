@@ -13,6 +13,7 @@ use Baka\Blameable\BlameableTrait;
 use Canvas\Traits\UsersAssociatedTrait;
 use Canvas\Traits\FileSystemModelTrait;
 use Baka\Blameable\Blameable;
+use Canvas\Http\Exception\InternalServerErrorException;
 use Canvas\Traits\EventManagerAwareTrait;
 use Phalcon\Di;
 
@@ -151,7 +152,6 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
         $this->keepSnapshots(true);
         $this->addBehavior(new Blameable());
 
-        $this->belongsTo('users_id', 'Baka\Auth\Models\Users', 'id', ['alias' => 'user']);
         $this->hasMany('id', 'Baka\Auth\Models\CompanySettings', 'id', ['alias' => 'settings']);
 
         $this->belongsTo(
@@ -253,6 +253,29 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
             ]
         );
 
+        $this->hasMany(
+            'id',
+            CompaniesAssociations::class,
+            'companies_id',
+            ['alias' => 'companiesAssoc']
+        );
+
+        //users associated with this company app
+        $this->hasManyToMany(
+            'id',
+            'Canvas\Models\UsersAssociatedApps',
+            'companies_id',
+            'users_id',
+            'Canvas\Models\Users',
+            'id',
+            [
+                'alias' => 'users',
+                'params' => [
+                    'conditions' => 'apps_id = ' . $this->di->getApp()->getId() . ' AND Canvas\Models\UsersAssociatedApps.is_deleted = 0',
+                ]
+            ]
+        );
+
         $this->hasOne(
             'id',
             'Canvas\Models\Subscription',
@@ -260,7 +283,7 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
             [
                 'alias' => 'subscription',
                 'params' => [
-                    'conditions' => 'apps_id = ' . $this->di->getApp()->getId() . '  AND is_deleted = 0 ',
+                    'conditions' => 'apps_id = ' . $this->di->getApp()->getId() . ' AND is_deleted = 0',
                     'order' => 'id DESC'
                 ]
             ]
@@ -293,19 +316,6 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
             'entity_id',
             [
                 'alias' => 'files',
-                'params' => [
-                    'conditions' => 'system_modules_id = ?0',
-                    'bind' => [$systemModule->getId()]
-                ]
-            ]
-        );
-
-        $this->hasOne(
-            'id',
-            'Canvas\Models\FileSystemEntities',
-            'entity_id',
-            [
-                'alias' => 'logo',
                 'params' => [
                     'conditions' => 'system_modules_id = ?0',
                     'bind' => [$systemModule->getId()]
@@ -346,10 +356,7 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
         $company = new self();
         $company->name = $name;
         $company->users_id = $user->getId();
-
-        if (!$company->save()) {
-            throw new Exception(current($company->getMessages()));
-        }
+        $company->saveOrFail();
 
         return $company;
     }
@@ -464,7 +471,7 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
         $subscription->payment_frequency_id = 1;
 
         if (!$subscription->save()) {
-            throw new ServerErrorHttpException((string)'Subscription for new company couldnt be created ' . current($this->getMessages()));
+            throw new InternalServerErrorException((string) 'Subscription for new company couldnt be created ' . current($this->getMessages()));
         }
 
         return $this->user->stripe_id;
@@ -483,12 +490,15 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
     }
 
     /**
-    * Get an array of the associates users for this company.
+    * Get an array of the associates users_id for this company.
     *
     * @return array
     */
     public function getAssociatedUsersByApp(): array
     {
+        /**
+         * @todo move to use the users relationship
+         */
         return array_map(function ($users) {
             return $users['users_id'];
         }, $this->getUsersAssociatedByApps([

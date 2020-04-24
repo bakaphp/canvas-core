@@ -7,7 +7,7 @@ namespace Canvas\Traits;
 use Canvas\Models\Subscription;
 use Canvas\Models\UserCompanyAppsActivities;
 use Canvas\Exception\SubscriptionPlanLimitException;
-use Canvas\Exception\ServerErrorHttpException;
+use Canvas\Http\Exception\InternalServerErrorException;
 use ReflectionClass;
 use Phalcon\Di;
 
@@ -27,17 +27,6 @@ use Phalcon\Di;
 trait SubscriptionPlanLimitTrait
 {
     /**
-     * Array of routes that can bypass the system when subscription is inactive.
-     * @todo look for a better way to handle this calls
-     */
-    public $bypassRoutes = [
-        '/v1/auth/logout' => ['PUT'],
-        '/v1/auth' => ['POST'],
-        '/v1/companies' => ['GET', 'POST'],
-        '/v1/apps-plans' => ['PUT', 'POST'],
-    ];
-
-    /**
      * Get the key for the subscriptoin plan limit.
      *
      * @return string
@@ -51,11 +40,17 @@ trait SubscriptionPlanLimitTrait
     /**
      * Validate if the current module for this app is at the limit of the paid plan.
      *
+     * @throws SubscriptionPlanLimitException
      * @return boolean
      */
     public function isAtLimit() : bool
     {
         if (!Di::getDefault()->has('userData')) {
+            return false;
+        }
+
+        //if its not a subscription based app top this
+        if (!Di::getDefault()->get('app')->subscriptioBased()) {
             return false;
         }
 
@@ -84,11 +79,17 @@ trait SubscriptionPlanLimitTrait
     /**
      * Call at the afterCreate of all modules which are part of a plan activity.
      *
+     * @throws InternalServerErrorException
      * @return boolean
      */
     public function updateAppActivityLimit() : bool
     {
         if (!Di::getDefault()->has('userData')) {
+            return false;
+        }
+
+        //if its not a subscription based app top this
+        if (!Di::getDefault()->get('app')->subscriptioBased()) {
             return false;
         }
 
@@ -101,7 +102,7 @@ trait SubscriptionPlanLimitTrait
             //its a varchar so lets make sure we convert it to int
             $companyAppActivityLimit->value = (int)$companyAppActivityLimit->value + 1;
             if (!$companyAppActivityLimit->save()) {
-                throw new ServerErrorHttpException((string)current($companyAppActivityLimit->getMessages()));
+                throw new InternalServerErrorException((string) current($companyAppActivityLimit->getMessages()));
             }
         } else {
             $userCopmanyAppsActivites = new UserCompanyAppsActivities();

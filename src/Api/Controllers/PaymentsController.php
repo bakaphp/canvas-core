@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace Canvas\Api\Controllers;
 
+use Canvas\Http\Exception\NotFoundException;
 use Phalcon\Cashier\Traits\StripeWebhookHandlersTrait;
 use Phalcon\Http\Response;
 use Canvas\Models\Users;
-use Canvas\Models\EmailTemplates;
 use Canvas\Models\Subscription;
 use Canvas\Models\CompaniesSettings;
+use Canvas\Template;
 use Phalcon\Di;
-use Exception;
 
 /**
- * Class PaymentsController
+ * Class PaymentsController.
  *
  * Class to handle payment webhook from our cashier library
  *
@@ -26,12 +26,12 @@ use Exception;
 class PaymentsController extends BaseController
 {
     /**
-     * Stripe Webhook Handlers
+     * Stripe Webhook Handlers.
      */
     use StripeWebhookHandlersTrait;
 
     /**
-     * Handle stripe webhoook calls
+     * Handle stripe webhoook calls.
      *
      * @return Response
      */
@@ -39,17 +39,16 @@ class PaymentsController extends BaseController
     {
         //we cant processs if we dont find the stripe header
         if (!$this->request->hasHeader('Stripe-Signature')) {
-            throw new Exception('Route not found for this call');
+            throw new NotFoundException('Route not found for this call');
         }
-        $request = $this->request->getPost();
-        if (empty($request)) {
-            $request = $this->request->getJsonRawBody(true);
-        }
+
+        $request = $this->request->getPostData();
         $type = str_replace('.', '', ucwords(str_replace('_', '', $request['type']), '.'));
         $method = 'handle' . $type;
         $payloadContent = json_encode($request);
         $this->log->info("Webhook Handler Method: {$method} \n");
         $this->log->info("Payload: {$payloadContent} \n");
+
         if (method_exists($this, $method)) {
             return $this->{$method}($request, $method);
         } else {
@@ -74,6 +73,23 @@ class PaymentsController extends BaseController
     }
 
     /**
+     * Handle customer subscription cancellation.
+     *
+     * @param  array $payload
+     * @return Response
+     */
+    protected function handleCustomerSubscriptionDeleted(array $payload, string $method): Response
+    {
+        $user = Users::findFirstByStripeId($payload['data']['object']['customer']);
+        if ($user) {
+            //Update current subscription's paid column to false and store date of payment
+            $this->updateSubscriptionPaymentStatus($user, $payload);
+            $this->sendWebhookResponseEmail($user, $payload, $method);
+        }
+        return $this->response(['Webhook Handled']);
+    }
+
+    /**
      * Handle customer subscription free trial ending.
      *
      * @param  array $payload
@@ -85,12 +101,13 @@ class PaymentsController extends BaseController
         if ($user) {
             //We need to send a mail to the user
             $this->sendWebhookResponseEmail($user, $payload, $method);
+            $this->log->info("Email was sent to: {$user->email}\n");
         }
         return $this->response(['Webhook Handled']);
     }
 
     /**
-     * Handle sucessfull payment
+     * Handle sucessfull payment.
      *
      * @param array $payload
      * @return Response
@@ -107,7 +124,7 @@ class PaymentsController extends BaseController
     }
 
     /**
-     * Handle bad payment
+     * Handle bad payment.
      *
      * @param array $payload
      * @return Response
@@ -124,7 +141,7 @@ class PaymentsController extends BaseController
     }
 
     /**
-     * Handle pending payments
+     * Handle pending payments.
      *
      * @param array $payload
      * @return Response
@@ -140,7 +157,7 @@ class PaymentsController extends BaseController
     }
 
     /**
-     * Send webhook related emails to user
+     * Send webhook related emails to user.
      * @param Users $user
      * @param array $payload
      * @param string $method
@@ -148,20 +165,33 @@ class PaymentsController extends BaseController
      */
     protected function sendWebhookResponseEmail(Users $user, array $payload, string $method): void
     {
+        $templateName = '';
+        $title = null;
+
         switch ($method) {
             case 'handleCustomerSubscriptionTrialwillend':
                 $templateName = 'users-trial-end';
+                $title = 'Free Trial Ending';
                 break;
             case 'handleCustomerSubscriptionUpdated':
                 $templateName = 'users-subscription-updated';
                 break;
 
+            case 'handleCustomerSubscriptionDeleted':
+                $templateName = 'users-subscription-canceled';
+                $title = 'Subscription Cancelled';
+                break;
+
             case 'handleChargeSucceeded':
                 $templateName = 'users-charge-success';
+                $title = 'Invoice';
+
                 break;
 
             case 'handleChargeFailed':
                 $templateName = 'users-charge-failed';
+                $title = 'Payment Failed';
+
                 break;
 
             case 'handleChargePending':
@@ -173,17 +203,19 @@ class PaymentsController extends BaseController
         }
 
         //Search for actual template by templateName
-        $emailTemplate = EmailTemplates::getByName($templateName);
+        if ($templateName) {
+            $emailTemplate = Template::generate($templateName, $user->toArray());
 
-        Di::getDefault()->getMail()
+            Di::getDefault()->getMail()
             ->to($user->email)
-            ->subject('Canvas Payments and Subscriptions')
-            ->content($emailTemplate->template)
+            ->subject($this->app->name . ' - ' . $title)
+            ->content($emailTemplate)
             ->sendNow();
+        }
     }
 
     /**
-     * Updates subscription payment status depending on charge event
+     * Updates subscription payment status depending on charge event.
      * @param $user
      * @param $payload
      * @return void
@@ -199,9 +231,17 @@ class PaymentsController extends BaseController
             $subscription->paid = $payload['data']['object']['paid'] ? 1 : 0;
             $subscription->charge_date = $chargeDate;
 
+            $subscription->validateByGracePeriod();
+
             if ($subscription->paid) {
                 $subscription->is_freetrial = 0;
                 $subscription->trial_ends_days = 0;
+            }
+
+            //Paid status is false if plan has been canceled
+            if ($payload['data']['object']['status'] == 'canceled') {
+                $subscription->paid = 0;
+                $subscription->charge_date = null;
             }
 
             if ($subscription->update()) {
@@ -211,12 +251,12 @@ class PaymentsController extends BaseController
                     'bind' => [$user->getDefaultCompany()->getId()]
                 ]);
 
-                $paidSetting->value = (string)$subscription->paid;
+                $paidSetting->value = (string) $subscription->paid;
                 $paidSetting->update();
             }
             $this->log->info("User with id: {$user->id} charged status was {$payload['data']['object']['paid']} \n");
+        } else {
+            $this->log->error("Subscription not found\n");
         }
-
-        $this->log->error("Subscription not found\n");
     }
 }

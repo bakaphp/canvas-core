@@ -6,8 +6,6 @@ use Namshi\Notificator\Notification\Handler\HandlerInterface;
 use Canvas\Contracts\Notifications\EmailNotificationsInterface as EmailNotificationsContract;
 use Namshi\Notificator\NotificationInterface;
 use Phalcon\Di;
-use Canvas\Models\Notifications;
-use Canvas\Models\SystemModules;
 
 class EmailNotifications implements HandlerInterface
 {

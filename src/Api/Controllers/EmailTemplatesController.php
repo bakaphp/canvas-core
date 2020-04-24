@@ -6,10 +6,11 @@ namespace Canvas\Api\Controllers;
 
 use Canvas\Models\EmailTemplates;
 use Canvas\Models\Users;
-use Canvas\Exception\NotFoundHttpException;
-use Canvas\Exception\UnprocessableEntityHttpException;
+use Canvas\Http\Exception\NotFoundException;
 use Phalcon\Security\Random;
 use Phalcon\Http\Response;
+
+
 
 /**
  * Class LanguagesController.
@@ -30,14 +31,26 @@ class EmailTemplatesController extends BaseController
      *
      * @var array
      */
-    protected $createFields = ['users_id', 'companies_id', 'apps_id', 'name', 'template'];
+    protected $createFields = [
+        'users_id',
+        'companies_id',
+        'apps_id',
+        'name',
+        'template'
+    ];
 
     /*
      * fields we accept to create
      *
      * @var array
      */
-    protected $updateFields = ['users_id', 'companies_id', 'apps_id', 'name', 'template'];
+    protected $updateFields = [
+        'users_id',
+        'companies_id',
+        'apps_id',
+        'name',
+        'template'
+    ];
 
     /**
      * set objects.
@@ -72,7 +85,7 @@ class EmailTemplatesController extends BaseController
         ]);
 
         if (!is_object($existingEmailTemplate)) {
-            throw new NotFoundHttpException('Email Template not found');
+            throw new NotFoundException('Email Template not found');
         }
 
         $random = new Random();
@@ -111,7 +124,7 @@ class EmailTemplatesController extends BaseController
             ]);
 
             if (!is_object($userExists)) {
-                throw new NotFoundHttpException('Email recipient not found');
+                throw new NotFoundException('Email recipient not found');
             }
 
             $subject = _('Test Email Template');

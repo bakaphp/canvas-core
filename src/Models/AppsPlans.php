@@ -7,7 +7,7 @@ use Canvas\Exception\ModelException;
 use Phalcon\Di;
 
 /**
- * Class AppsPlans
+ * Class AppsPlans.
  *
  * @package Canvas\Models
  *
@@ -81,6 +81,12 @@ class AppsPlans extends AbstractModel
 
     /**
      *
+     * @var integer
+     */
+    public $payment_frequencies_id;
+
+    /**
+     *
      * @var string
      */
     public $created_at;
@@ -111,6 +117,13 @@ class AppsPlans extends AbstractModel
             ['alias' => 'app']
         );
 
+        $this->belongsTo(
+            'payment_frequencies_id',
+            'Canvas\Models\PaymentFrequencies',
+            'id',
+            ['alias' => 'paymentFrequecies']
+        );
+
         $this->hasMany(
             'apps_id',
             'Canvas\Models\AppsPlansSettings',
@@ -130,7 +143,7 @@ class AppsPlans extends AbstractModel
     }
 
     /**
-     * Just a preatty function that returns the same object for
+     * Just a preatty function that returns the same object for.
      *
      * $app->settings()->set(key, value);
      * $app->settings()->get(key);
@@ -144,7 +157,7 @@ class AppsPlans extends AbstractModel
     }
 
     /**
-     * Get the default plan for this given app
+     * Get the default plan for this given app.
      *
      * @return AppsPlans
      */
@@ -157,7 +170,7 @@ class AppsPlans extends AbstractModel
     }
 
     /**
-     * Get the value of the settins by it key
+     * Get the value of the settins by it key.
      *
      * @param string $key
      * @param string $value
@@ -177,7 +190,7 @@ class AppsPlans extends AbstractModel
     }
 
     /**
-     * Set a setting for the given app
+     * Set a setting for the given app.
      *
      * @param string $key
      * @param string $value
@@ -198,15 +211,13 @@ class AppsPlans extends AbstractModel
 
         $setting->value = $value;
 
-        if (!$setting->save()) {
-            throw new ModelException((string)current($setting->getMessages()));
-        }
+        $setting->saveOrFail();
 
         return true;
     }
 
     /**
-     * After save
+     * After save.
      *
      * @return void
      */

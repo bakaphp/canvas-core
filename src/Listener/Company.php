@@ -8,9 +8,11 @@ use Phalcon\Events\Event;
 use Canvas\Models\Users;
 use Canvas\Models\Companies;
 use Canvas\Models\CompaniesBranches;
-use Canvas\Exception\ServerErrorHttpException;
 use Baka\Auth\Models\UserCompanyApps;
 use Canvas\Models\AppsPlans;
+use Canvas\Models\CompaniesGroups;
+use Canvas\Models\CompaniesAssociations;
+use Phalcon\Di;
 
 class Company
 {
@@ -24,15 +26,15 @@ class Company
      */
     public function afterSignup(Event $event, Companies $company): void
     {
-        //setup the user notificatoin setting
+        //setup the user notification setting
         $company->set('notifications', $company->user->email);
         /**
-         * @todo set variable of paid by app
+         * @todo removed , we have it on subscription
          */
         $company->set('paid', '1');
         $app = $company->getDI()->getApp();
 
-        //now thta we setup de company and associated with the user we need to setup this as its default company
+        //now that we setup de company and associated with the user we need to setup this as its default company
         if (!$company->user->get(Companies::cacheKey())) {
             $company->user->set(Companies::cacheKey(), $company->getId());
         }
@@ -46,11 +48,9 @@ class Company
         $branch = new CompaniesBranches();
         $branch->companies_id = $company->getId();
         $branch->users_id = $company->user->getId();
-        $branch->name = 'Default';
+        $branch->name = $company->name;
         $branch->is_default = 1;
-        if (!$branch->save()) {
-            throw new ServerErrorHttpException((string)current($branch->getMessages()));
-        }
+        $branch->saveOrFail();
 
         //look for the default plan for this app
         $companyApps = new UserCompanyApps();
@@ -64,17 +64,42 @@ class Company
             $companyApps->stripe_id = $plan->stripe_id;
         }
 
-        //If the newly created company is not the default then we create a new subscription with the same user
+        //if the app is subscription based, create a free trial for this company
         if ($app->subscriptioBased()) {
-            $company->set(Companies::PAYMENT_GATEWAY_CUSTOMER_KEY, $company->startFreeTrial());
+            $company->set(
+                Companies::PAYMENT_GATEWAY_CUSTOMER_KEY,
+                $company->startFreeTrial()
+            );
+
             $companyApps->subscriptions_id = $company->subscription->getId();
         }
 
         $companyApps->created_at = date('Y-m-d H:i:s');
         $companyApps->is_deleted = 0;
+        $companyApps->saveOrFail();
 
-        if (!$companyApps->save()) {
-            throw new ServerErrorHttpException((string)current($companyApps->getMessages()));
+        $companiesGroup = CompaniesGroups::findFirst([
+            'conditions' => 'apps_id = ?0 and users_id = ?1 and is_deleted = 0',
+            'bind' => [
+                Di::getDefault()->getApp()->getId(),
+                Di::getDefault()->getUserData()->getId()
+            ]
+        ]);
+
+        if (!$companiesGroup) {
+            $companiesGroup = new CompaniesGroups();
+            $companiesGroup->name = $company->name;
+            $companiesGroup->apps_id = Di::getDefault()->getApp()->getId();
+            $companiesGroup->users_id = Di::getDefault()->getUserData()->getId();
+            $companiesGroup->saveOrFail();
         }
+
+        /**
+         * Let's associate companies and companies_groups.
+         */
+        $companiesAssoc = new CompaniesAssociations();
+        $companiesAssoc->companies_id = $company->id;
+        $companiesAssoc->companies_groups_id = $companiesGroup->id;
+        $companiesAssoc->saveOrFail();
     }
 }

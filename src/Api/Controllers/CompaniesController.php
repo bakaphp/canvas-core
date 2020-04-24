@@ -6,10 +6,8 @@ namespace Canvas\Api\Controllers;
 
 use Canvas\Models\Companies;
 use Phalcon\Http\Response;
-use Canvas\Exception\UnauthorizedHttpException;
-use Canvas\Exception\UnprocessableEntityHttpException;
 use Baka\Http\Contracts\Api\CrudCustomFieldsBehaviorTrait;
-use Canvas\Dto\CompaniesBranches;
+use Canvas\Http\Exception\UnauthorizedException;
 
 /**
  * Class CompaniesController.
@@ -28,14 +26,36 @@ class CompaniesController extends BaseController
      *
      * @var array
      */
-    protected $createFields = ['name', 'profile_image', 'website', 'users_id', 'address', 'zipcode', 'email', 'language', 'timezone', 'currency_id', 'phone'];
+    protected $createFields = [
+        'name',
+        'profile_image',
+        'website',
+        'users_id',
+        'address',
+        'zipcode',
+        'email',
+        'language',
+        'timezone',
+        'currency_id',
+        'phone'
+    ];
 
     /*
      * fields we accept to create
      *
      * @var array
      */
-    protected $updateFields = ['name', 'profile_image', 'website', 'address', 'zipcode', 'email', 'language', 'timezone', 'currency_id', 'phone'];
+    protected $updateFields = [
+        'name',
+        'profile_image',
+        'website',
+        'address',
+        'zipcode',
+        'email',
+        'language',
+        'timezone',
+        'currency_id',
+        'phone'];
 
     /**
      * set objects.
@@ -51,6 +71,7 @@ class CompaniesController extends BaseController
         //my list of avaiable companies
         $this->additionalSearchFields = [
             ['id', ':', implode('|', $this->userData->getAssociatedCompanies())],
+            ['is_deleted', ':', '0']
         ];
     }
 
@@ -83,26 +104,15 @@ class CompaniesController extends BaseController
     public function edit($id): Response
     {
         $company = $this->model->findFirstOrFail($id);
+
         if (!$company->userAssociatedToCompany($this->userData) && !$this->userData->hasRole('Default.Admins')) {
-            throw new UnauthorizedHttpException(_('You dont have permission to update this company info'));
+            throw new UnauthorizedException(_('You dont have permission to update this company info'));
         }
 
-        $data = $this->request->getPutData();
+        //process the input
+        $result = $this->processEdit($this->request, $company);
 
-        if (empty($data)) {
-            throw new UnprocessableEntityHttpException('No valid data sent.');
-        }
-
-        //set the custom fields to update
-        $company->setCustomFields($data);
-
-        //update
-        if ($company->update($data, $this->updateFields)) {
-            return $this->response($this->processOutput($company));
-        } else {
-            //didnt work
-            throw new UnprocessableEntityHttpException($company->getMessages()[0]);
-        }
+        return $this->response($this->processOutput($result));
     }
 
     /**
@@ -120,7 +130,7 @@ class CompaniesController extends BaseController
     {
         $company = $this->model->findFirstOrFail($id);
         if (!$company->userAssociatedToCompany($this->userData) && !$this->userData->hasRole('Default.Admins')) {
-            throw new UnauthorizedHttpException(_('You dont have permission to delete this company'));
+            throw new UnauthorizedException(_('You dont have permission to delete this company'));
         }
 
         $company->is_deleted = 1;
@@ -132,8 +142,8 @@ class CompaniesController extends BaseController
     /**
      * Format output.
      *
-     * @param [type] $results
-     * @return void
+     * @param mixed $results
+     * @return mixed
      */
     protected function processOutput($results)
     {

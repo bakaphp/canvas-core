@@ -8,7 +8,7 @@ class FileSystemSeeder extends AbstractSeed
     {
         $data = [
             [
-                'companies_id' => 1,
+                'companies_id' => 3,
                 'apps_id' => 1,
                 'users_id' => 1,
                 'name' => 'logo.jpg',
@@ -17,7 +17,7 @@ class FileSystemSeeder extends AbstractSeed
                 'file_type' => 'jpg',
                 'size' => '10',
                 'created_at' => date('Y-m-d H:m:s'),
-                'is_deleted'=>0
+                'is_deleted' => 0
             ]
         ];
 

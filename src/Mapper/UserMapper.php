@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Canvas\Mapper;
 
 use AutoMapperPlus\CustomMapper\CustomMapper;
+use Baka\Auth\Models\Apps;
 use Canvas\Models\AccessList;
 use Phalcon\Di;
 use Canvas\Contracts\Mapper\RelationshipTrait;
@@ -26,27 +27,39 @@ class UserMapper extends CustomMapper
      */
     public function mapToObject($user, $userDto, array $context = [])
     {
+        $user = $this->defaultKanvasProperties($user, $userDto, $context);
+
+        return $user;
+    }
+
+    /**
+     * Set the default Kanvas UserData properties.
+     *
+     * @param mixed $user
+     * @param object $userDto
+     * @return object
+     */
+    protected function defaultKanvasProperties($user, object $userDto, array $context): object
+    {
         if (is_array($user)) {
-            $user = (object) $user;
+            $user = Users::getById($user['id']);
         }
 
         $userDto->id = $user->id;
+        $userDto->displayname = $user->displayname;
+        $userDto->email = $user->email;
+        $userDto->firstname = $user->firstname;
+        $userDto->lastname = $user->lastname;
         $userDto->active_subscription_id = $user->active_subscription_id;
         $userDto->card_brand = $user->card_brand;
         $userDto->cell_phone_number = $user->cell_phone_number;
         $userDto->city_id = $user->city_id;
         $userDto->country_id = $user->country_id;
         $userDto->created_at = $user->created_at;
-        $userDto->default_company = Users::getById($user->id)->getDefaultCompany()->getId();
-        $userDto->default_company_branch = $user->default_company_branch;
-        $userDto->displayname = $user->displayname;
         $userDto->dob = $user->dob;
-        $userDto->email = $user->email;
-        $userDto->firstname = $user->firstname;
         $userDto->interest = $user->interest;
         $userDto->karma = $user->karma;
         $userDto->language = $user->language;
-        $userDto->lastname = $user->lastname;
         $userDto->lastvisit = $user->lastvisit;
         $userDto->location = $user->location;
         $userDto->phone_number = $user->phone_number;
@@ -58,7 +71,6 @@ class UserMapper extends CustomMapper
         $userDto->profile_privacy = $user->profile_privacy;
         $userDto->profile_remote_image = $user->profile_remote_image;
         $userDto->registered = $user->registered;
-        $userDto->roles_id = $user->roles_id;
         $userDto->session_id = $user->session_id;
         $userDto->session_key = $user->session_key;
         $userDto->session_page = $user->session_page;
@@ -77,8 +89,18 @@ class UserMapper extends CustomMapper
         $userDto->user_login_tries = $user->user_login_tries;
         $userDto->votes = $user->votes;
         $userDto->votes_points = $user->votes_points;
+        $userDto->user_activation_email = $user->user_activation_email;
         $userDto->welcome = $user->welcome;
         $userDto->photo = $user->photo;
+
+        /**
+         * Properties we need to overwrite base on the
+         * current app and company the user is running.
+         */
+        $userDto->default_company = $user->getDefaultCompany()->getId();
+        $userDto->default_company_branch = $user->getDefaultCompany()->defaultBranch->getId();
+        $userDto->roles_id = $user->getPermission()->roles_id;
+        $userDto->access_list = [];
 
         $this->getRelationships($user, $userDto, $context);
 
@@ -92,16 +114,17 @@ class UserMapper extends CustomMapper
     }
 
     /**
-     * Attach acces list to the user
+     * Attach acces list to the user.
      *
      * @param object $userDto
      * @return void
      */
-    private function accesList(object $userDto): void
+    protected function accesList(object $userDto): void
     {
+        $app = Di::getDefault()->getApp();
         $accesList = AccessList::find([
-            'conditions' => 'roles_name = ?0 and apps_id = ?1 and allowed = 0',
-            'bind' => [$userDto->roles[0]->name, Di::getDefault()->getApp()->getId()]
+            'conditions' => 'roles_name = ?0 and apps_id in (?1, ?2) and allowed = 0',
+            'bind' => [$userDto->roles[0]->name, $app->getId(), $app::CANVAS_DEFAULT_APP_ID]
         ]);
 
         if (count($accesList) > 0) {

@@ -33,7 +33,7 @@ class AppsSettingsSeeder extends AbstractSeed
             ],
             [
                 'apps_id' => 1,
-                'name' => 'subscription_based',
+                'name' => 'allow_user_registration',
                 'value' => '1',
                 'created_at' => date('Y-m-d H:m:s'),
             ],
@@ -66,7 +66,7 @@ class AppsSettingsSeeder extends AbstractSeed
                 'name' => 'titles',
                 'value' => 'Example Title',
                 'created_at' => date('Y-m-d H:m:s'),
-            ],[
+            ], [
                 'apps_id' => 1,
                 'name' => 'base_color',
                 'value' => '#61c2cc',
@@ -76,6 +76,24 @@ class AppsSettingsSeeder extends AbstractSeed
                 'apps_id' => 1,
                 'name' => 'secondary_color',
                 'value' => '#9ee5b5',
+                'created_at' => date('Y-m-d H:m:s'),
+            ],
+            [
+                'apps_id' => 1,
+                'name' => 'allow_social_auth',
+                'value' => '1',
+                'created_at' => date('Y-m-d H:m:s'),
+            ],
+            [
+                'apps_id' => 1,
+                'name' => 'allowed_social_auths',
+                'value' => '{"google": 1,"facebook": 1,"github": 1,"apple": 1}',
+                'created_at' => date('Y-m-d H:m:s'),
+            ],
+            [
+                'apps_id' => 1,
+                'name' => 'default_sidebar_state ',
+                'value' => 'closed',
                 'created_at' => date('Y-m-d H:m:s'),
             ]
         ];

@@ -19,10 +19,11 @@ class QueueProvider implements ServiceProviderInterface
             function () {
                 //Connect to the queue
                 $queue = new AMQPStreamConnection(
-                    envValue('RABBITMQ_HOST'),
-                    envValue('RABBITMQ_PORT'),
-                    envValue('RABBITMQ_DEFAULT_USER'),
-                    envValue('RABBITMQ_DEFAULT_PASS')
+                    envValue('RABBITMQ_HOST', 'localhost'),
+                    envValue('RABBITMQ_PORT', 5672),
+                    envValue('RABBITMQ_DEFAULT_USER', 'guest'),
+                    envValue('RABBITMQ_DEFAULT_PASS', 'guest'),
+                    envValue('RABBITMQ_DEFAULT_VHOST', '/')
                 );
 
                 return $queue;

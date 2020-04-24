@@ -13,14 +13,14 @@ class Notify
     /**
      * Send the nofitication to all the users.
      *
-     * @param array $users
+     * @param array | ResultsetInterface $users
      * @param NotificationInterfase $notification
      * @return void
      */
-    public static function all(array $users, NotificationInterfase $notification)
+    public static function all($users, NotificationInterfase $notification)
     {
         foreach ($users as $user) {
-            $this->one($user, $notification);
+            self::one($user, $notification);
         }
     }
 

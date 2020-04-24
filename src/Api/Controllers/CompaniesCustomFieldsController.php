@@ -7,7 +7,7 @@ namespace Canvas\Api\Controllers;
 use Canvas\Models\CompaniesCustomFields;
 
 /**
- * Class LanguagesController
+ * Class LanguagesController.
  *
  * @package Canvas\Api\Controllers
  * @property Users $userData
@@ -20,17 +20,23 @@ class CompaniesCustomFieldsController extends BaseController
      *
      * @var array
      */
-    protected $createFields = ['custom_fields_id', 'value'];
+    protected $createFields = [
+        'custom_fields_id',
+        'value'
+    ];
 
     /*
      * fields we accept to create
      *
      * @var array
      */
-    protected $updateFields = ['custom_fields_id', 'value'];
+    protected $updateFields = [
+        'custom_fields_id',
+        'value'
+    ];
 
     /**
-     * set objects
+     * set objects.
      *
      * @return void
      */

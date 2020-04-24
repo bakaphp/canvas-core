@@ -8,15 +8,12 @@ use Canvas\Models\UsersInvite;
 use Canvas\Models\Users;
 use Canvas\Models\Roles;
 use Phalcon\Security\Random;
-use Phalcon\Validation;
 use Phalcon\Validation\Validator\PresenceOf;
 use Phalcon\Validation\Validator\StringLength;
-use Canvas\Exception\UnprocessableEntityHttpException;
 use Canvas\Exception\NotFoundHttpException;
-use Canvas\Exception\ServerErrorHttpException;
 use Phalcon\Http\Response;
 use Exception;
-use Canvas\Exception\ModelException;
+use Canvas\Http\Exception\UnprocessableEntityException;
 use Canvas\Traits\AuthTrait;
 use Canvas\Notifications\Invitation;
 use Canvas\Validation as CanvasValidation;
@@ -44,14 +41,26 @@ class UsersInviteController extends BaseController
      *
      * @var array
      */
-    protected $createFields = ['invite_hash', 'companies_id', 'role_id', 'app_id', 'email'];
+    protected $createFields = [
+        'invite_hash',
+        'companies_id',
+        'role_id',
+        'app_id',
+        'email'
+    ];
 
     /*
      * fields we accept to create
      *
      * @var array
      */
-    protected $updateFields = ['invite_hash', 'companies_id', 'role_id', 'app_id', 'email'];
+    protected $updateFields = [
+        'invite_hash',
+        'companies_id',
+        'role_id',
+        'app_id',
+        'email'
+    ];
 
     /**
      * set objects.
@@ -97,20 +106,15 @@ class UsersInviteController extends BaseController
      */
     public function insertInvite(): Response
     {
-        $request = $this->request->getPost();
+        $request = $this->request->getPostData();
         $random = new Random();
 
-        $validation = new Validation();
+        $validation = new CanvasValidation();
         $validation->add('email', new PresenceOf(['message' => _('The email is required.')]));
         $validation->add('role_id', new PresenceOf(['message' => _('The role is required.')]));
 
         //validate this form for password
-        $messages = $validation->validate($this->request->getPost());
-        if (count($messages)) {
-            foreach ($messages as $message) {
-                throw new ServerErrorHttpException((string)$message);
-            }
-        }
+        $validation->validate($request);
 
         //Check if user was already was invited to current company and return message
         UsersInvite::isValid($request['email'], (int) $request['role_id']);
@@ -126,7 +130,7 @@ class UsersInviteController extends BaseController
         $userInvite->created_at = date('Y-m-d H:m:s');
 
         if (!$userInvite->save()) {
-            throw new UnprocessableEntityHttpException((string) current($userInvite->getMessages()));
+            throw new UnprocessableEntityException((string) current($userInvite->getMessages()));
         }
 
         //create temp invite users
@@ -186,7 +190,7 @@ class UsersInviteController extends BaseController
             } catch (Exception $e) {
                 $this->db->rollback();
 
-                throw new UnprocessableEntityHttpException($e->getMessage());
+                throw new UnprocessableEntityException($e->getMessage());
             }
         }
 
@@ -198,10 +202,12 @@ class UsersInviteController extends BaseController
         $authInfo = $this->loginUsers($usersInvite->email, $request['password']);
 
         if (!defined('API_TESTS')) {
-            $usersInvite->is_deleted = 1;
-            $usersInvite->update();
+            $usersInvite->softDelete();
 
-            return $this->response($authInfo);
+            return $this->response([
+                'user' => $newUser,
+                'session' => $authInfo
+            ]);
         }
 
         return $this->response($newUser);

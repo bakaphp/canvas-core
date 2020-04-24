@@ -9,6 +9,7 @@ use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use Phalcon\Queue\Beanstalk\Extended as BeanstalkExtended;
 use Phalcon\Queue\Beanstalk\Job;
+use function Canvas\Core\envValue;
 
 /**
  * Class ClearcacheTask.
@@ -69,27 +70,12 @@ class ClearcacheTask extends PhTask
     protected function clearMemCached() : void
     {
         echo 'Clearing data cache' . PHP_EOL;
-        $options = $this->cache->getOptions();
-        $servers = $options['servers'] ?? [];
-        $memcached = new \Memcached();
-        foreach ($servers as $server) {
-            $memcached->addServer($server['host'], $server['port'], $server['weight']);
-        }
+        
+        $keys = $this->redis->keys('*'.$this->config->app->id.'*');
 
-        $keys = $memcached->getAllKeys();
-        //print_r($keys);
         echo sprintf('Found %s keys', count($keys)) . PHP_EOL;
         foreach ($keys as $key) {
-            if ('bakaapi-' === substr($key, 0, 8)) {
-                $server = $memcached->getServerByKey($key);
-                $result = $memcached->deleteByKey($server['host'], $key);
-                $resultCode = $memcached->getResultCode();
-                if (true === $result && $resultCode !== \Memcached::RES_NOTFOUND) {
-                    echo '.';
-                } else {
-                    echo 'F';
-                }
-            }
+            $this->redis->del($key);
         }
 
         echo  PHP_EOL . 'Cleared data cache' . PHP_EOL;
