@@ -9,7 +9,7 @@
     "require": {
         "php": ">=7.2",
         "ext-phalcon": ">=3.4",
-        "baka/baka": "0.5.3",
+        "baka/baka": "^0.5",
         "dariuszp/cli-progress-bar": "^1.0",
         "dmkit/phalcon-jwt-auth": "dev-master",
         "duncan3dc/fork-helper": "^2.2.0",
