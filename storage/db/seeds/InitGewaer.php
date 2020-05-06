@@ -342,7 +342,7 @@ class InitGewaer extends AbstractSeed
             ],
             [
                 'name' => 'Invited Users',
-                'slug' => 'users-invited',
+                'slug' => 'users-invite',
                 'model_name' => 'Canvas\\Models\\Users',
                 'apps_id' => '1',
                 'parents_id' => '0',
