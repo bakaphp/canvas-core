@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Canvas\Traits;
 
-use Canvas\Models\SystemModules;
-use Canvas\Models\FileSystem;
-use RuntimeException;
-use Canvas\Models\FileSystemEntities;
 use Canvas\Dto\Files;
 use Canvas\Mapper\FileMapper;
+use Canvas\Models\FileSystem;
+use Canvas\Models\FileSystemEntities;
+use Canvas\Models\SystemModules;
 use Phalcon\Mvc\Model\ResultsetInterface;
+use RuntimeException;
 
 /**
  * Trait ResponseTrait.
@@ -36,7 +36,7 @@ trait FileSystemModelTrait
      *
      * @return void
      */
-    protected function associateFileSystem(): bool
+    protected function associateFileSystem() : bool
     {
         if (!empty($this->uploadedFiles) && is_array($this->uploadedFiles)) {
             foreach ($this->uploadedFiles as $file) {
@@ -62,9 +62,10 @@ trait FileSystemModelTrait
      *
      * @param array data
      * @param array whiteList
+     *
      * @return boolean
      */
-    public function update($data = null, $whiteList = null): bool
+    public function update($data = null, $whiteList = null) : bool
     {
         //associate uploaded files
         if (isset($data['files'])) {
@@ -107,9 +108,10 @@ trait FileSystemModelTrait
      *
      * @param array data
      * @param array whiteList
+     *
      * @return boolean
      */
-    public function save($data = null, $whiteList = null): bool
+    public function save($data = null, $whiteList = null) : bool
     {
         //associate uploaded files
         if (isset($data['files'])) {
@@ -126,7 +128,7 @@ trait FileSystemModelTrait
      *
      * @return bool
      */
-    public function deleteFiles(): bool
+    public function deleteFiles() : bool
     {
         $systemModule = SystemModules::getSystemModuleByModelName(self::class);
 
@@ -142,7 +144,8 @@ trait FileSystemModelTrait
     /**
      * Given the ID delete the file from this entity.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return bool
      */
     public function deleteFile(int $id)
@@ -169,9 +172,10 @@ trait FileSystemModelTrait
      * ];.
      *
      * @param array $files
+     *
      * @return void
      */
-    public function attach(array $files): bool
+    public function attach(array $files) : bool
     {
         $systemModule = SystemModules::getSystemModuleByModelName(self::class);
 
@@ -217,6 +221,7 @@ trait FileSystemModelTrait
      * Get all the files attach for the given module.
      *
      * @param string $fileType filter the files by their type
+     *
      * @return array
      */
     public function getAttachments(string $fileType = null) : ResultsetInterface
@@ -231,8 +236,8 @@ trait FileSystemModelTrait
         ];
 
         /**
-          * We can also filter the attachments by its file type.
-          */
+         * We can also filter the attachments by its file type.
+         */
         $fileTypeSql = null;
         if ($fileType) {
             $fileTypeSql = !is_null($fileType) ? 'AND f.file_type = :file_type:' : null;
@@ -256,6 +261,7 @@ trait FileSystemModelTrait
 
         return FileSystemEntities::find([
             'conditions' => $condition,
+            'order' => 'id desc',
             'bind' => $bindParams
         ]);
     }
@@ -265,9 +271,10 @@ trait FileSystemModelTrait
      * to the given user.
      *
      * @deprecated version 0.2
+     *
      * @return array
      */
-    public function getFilesystem(): array
+    public function getFilesystem() : array
     {
         return $this->getFiles();
     }
@@ -278,7 +285,7 @@ trait FileSystemModelTrait
      *
      * @return array
      */
-    public function getFiles(string $fileType = null): array
+    public function getFiles(string $fileType = null) : array
     {
         $systemModule = SystemModules::getSystemModuleByModelName(self::class);
 
@@ -301,7 +308,9 @@ trait FileSystemModelTrait
      * when a company has over 1k images
      *
      * @deprecated version 0.2
+     *
      * @param string $name
+     *
      * @return void
      */
     public function getAttachmentByName(string $fieldName)
@@ -332,6 +341,7 @@ trait FileSystemModelTrait
 
         return FileSystemEntities::findFirst([
             'conditions' => $condition,
+            'order' => 'id desc',
             'bind' => $bindParams
         ]);
     }
@@ -340,9 +350,10 @@ trait FileSystemModelTrait
      * Undocumented function.
      *
      * @param string $fieldName
+     *
      * @return string|null
      */
-    public function getFileByName(string $fieldName): ?object
+    public function getFileByName(string $fieldName) : ?object
     {
         $systemModule = SystemModules::getSystemModuleByModelName(self::class);
 
@@ -369,9 +380,10 @@ trait FileSystemModelTrait
      * Given this entity define a new path.
      *
      * @param string $path
+     *
      * @return string
      */
-    protected function filesNewAttachedPath(): ?string
+    protected function filesNewAttachedPath() : ?string
     {
         return null;
     }
