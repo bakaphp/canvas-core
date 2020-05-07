@@ -17,7 +17,6 @@ class AddDescriptionFieldToUsers extends Phinx\Migration\AbstractMigration
         ])
             ->addColumn('description', 'text', [
                 'null' => true,
-                'default' => null,
                 'limit' => MysqlAdapter::TEXT_MEDIUM,
                 'collation' => 'utf8mb4_unicode_ci',
                 'encoding' => 'utf8mb4',
