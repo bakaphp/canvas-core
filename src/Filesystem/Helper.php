@@ -95,12 +95,15 @@ class Helper
         $fileSystem->companies_id = $di->get('userData')->currentCompanyId();
         $fileSystem->apps_id = $di->get('app')->getId();
         $fileSystem->users_id = $di->get('userData')->getId();
-        $fileSystem->path = $completeFilePath;
+        $fileSystem->path = Text::reduceSlashes($completeFilePath);
         $fileSystem->url = Text::reduceSlashes($fileSystemConfig->cdn . DIRECTORY_SEPARATOR . $uploadFileNameWithPath);
         $fileSystem->file_type = $file->getExtension();
         $fileSystem->size = $file->getSize();
 
         $fileSystem->saveOrFail();
+
+        //set the unique name we generate
+        $fileSystem->set('unique_name', $fileName);
 
         return $fileSystem;
     }

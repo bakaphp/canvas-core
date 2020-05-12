@@ -13,6 +13,7 @@ class CustomFilterMapper extends CustomMapper
     /**
      * @param Baka\Database\CustomFilters\CustomFilters $filter
      * @param \Canvas\Dto\CustomFilter $filterSchema
+     *
      * @return ListSchema
      */
     public function mapToObject($filter, $customFilter, array $context = [])
@@ -26,7 +27,7 @@ class CustomFilterMapper extends CustomMapper
         $customFilter->sequence_logic = $filter->sequence_logic;
         $customFilter->total_conditions = $filter->total_conditions;
         $customFilter->description = $filter->description;
-        $customFilter->contidions = $filter->conditions->toArray();
+        $customFilter->conditions = $filter->conditions->toArray();
 
         return $customFilter;
     }

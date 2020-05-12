@@ -14,6 +14,7 @@ class CompaniesGroupsMapper extends CustomMapper
     /**
      * @param Baka\Database\CustomFilters\CustomFilters $filter
      * @param \Canvas\Dto\CustomFilter $filterSchema
+     *
      * @return ListSchema
      */
     public function mapToObject($companiesGroup, $companiesGroupDto, array $context = [])

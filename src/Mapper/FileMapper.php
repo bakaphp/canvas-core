@@ -6,7 +6,6 @@ namespace Canvas\Mapper;
 
 use AutoMapperPlus\CustomMapper\CustomMapper;
 use Canvas\Dto\Files;
-use Canvas\Models\FileSystemEntities;
 
 // You can either extend the CustomMapper, or just implement the MapperInterface
 // directly.
@@ -18,8 +17,8 @@ class FileMapper extends CustomMapper
     /**
      * constructor.
      *
-     * @param integer $entityId
-     * @param integer $systemModuleId
+     * @param int $entityId
+     * @param int $systemModuleId
      */
     public function __construct(int $entityId, int $systemModuleId)
     {
@@ -30,6 +29,7 @@ class FileMapper extends CustomMapper
     /**
      * @param Canvas\Models\FileSystem $file
      * @param Canvas\Dto\Files $fileDto
+     *
      * @return Files
      */
     public function mapToObject($fileEntity, $fileDto, array $context = [])
