@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace Canvas;
 
+use function Canvas\Core\isJson;
+use Canvas\Models\SystemModules;
 use Canvas\Models\UserWebhooks;
-use Throwable;
-use Phalcon\Http\Response;
 use GuzzleHttp\Client;
 use Phalcon\Di;
-use Canvas\Models\SystemModules;
-use function Canvas\Core\isJson;
-use Canvas\Http\Exception\UnprocessableEntityException;
+use Phalcon\Http\Response;
+use Throwable;
 
 /**
  * Class Validation.
@@ -21,23 +20,24 @@ use Canvas\Http\Exception\UnprocessableEntityException;
 class Webhooks
 {
     /**
-    * Given the weebhook id, we run a test for it.
-    *
-    * @param integer $id
-    * @param mixed $data
-    * @return Response
-    */
+     * Given the webhook id, we run a test for it.
+     *
+     * @param int $id
+     * @param mixed $data
+     *
+     * @return Response
+     */
     public static function run(int $id, array $data, array $headers = [])
     {
         /**
-         * 1- verify it s acorrect url
+         * 1- verify it s correct url
          * 2- verify the method
          * 3- get the entity info from one entity of this app and company
          * 4- guzzle the request with the info
          * 5- verify you got a 200
          * 6- return the response from the webhook.
          *
-         * later - add job for all system module to execute a queue when CRUD acction are run, maybe the middleware would do this?
+         * later - add job for all system module to execute a queue when CRUD action are run, maybe the middleware would do this?
          *
          */
         $userWebhook = UserWebhooks::getById($id);
@@ -46,7 +46,7 @@ class Webhooks
 
         try {
             /**
-             * @todo move the guzzle reqeust to Async for faster performance
+             * @todo move the guzzle request to Async for faster performance
              */
             $clientRequest = $client->request(
                 $userWebhook->method,
@@ -75,10 +75,12 @@ class Webhooks
      * @param string $model
      * @param mixed $data
      * @param string $action
+     *
      * @throws Exception
+     *
      * @return bool
      */
-    public static function process(string $module, array $data, string $action, array $headers = []): array
+    public static function process(string $module, array $data, string $action, array $headers = []) : array
     {
         $appId = Di::getDefault()->getApp()->getId();
         $company = Di::getDefault()->getUserData()->getDefaultCompany();
@@ -128,7 +130,7 @@ class Webhooks
      *
      * @return array
      */
-    public static function formatData(string $method, array $data, array $headers = []): array
+    public static function formatData(string $method, array $data, array $headers = []) : array
     {
         switch (ucwords($method)) {
             case 'GET':

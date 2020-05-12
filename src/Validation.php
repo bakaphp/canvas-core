@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Canvas;
 
-use Phalcon\Validation as PhalconValidation;
 use Canvas\Http\Exception\UnprocessableEntityException;
+use Phalcon\Validation as PhalconValidation;
 
 /**
  * Class Validation.
@@ -21,6 +21,7 @@ class Validation extends PhalconValidation
      *
      * @param array|object data
      * @param object entity
+     *
      * @return \Phalcon\Validation\Message\Group
      */
     public function validate($data = null, $entity = null)

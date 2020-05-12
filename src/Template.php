@@ -6,7 +6,6 @@ namespace Canvas;
 
 use Canvas\Models\EmailTemplates;
 use Phalcon\Di;
-use Phalcon\Di\Injectable;
 
 /**
  * Class Validation.
@@ -23,9 +22,10 @@ class Template
      *
      * @param string $name
      * @param array $params
+     *
      * @return string
      */
-    public static function generate(string $name, array $params): string
+    public static function generate(string $name, array $params) : string
     {
         $di = Di::getDefault();
         $view = $di->getView();
@@ -34,9 +34,9 @@ class Template
         //get the teamplate
         $template = EmailTemplates::getByName($name);
         $file = $template->name . '.volt';
-        
+
         //write file
-        $filesystem->put('/view/'.$file, $template->template);
+        $filesystem->put('/view/' . $file, $template->template);
 
         //rendre and return content
         return $view->render($template->name, $params);

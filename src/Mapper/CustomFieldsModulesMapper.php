@@ -6,14 +6,15 @@ namespace Canvas\Mapper;
 
 use AutoMapperPlus\CustomMapper\CustomMapper;
 use function Canvas\Core\isJson;
-use Phalcon\Mvc\Model\Resultset;
 use Phalcon\Di;
+use Phalcon\Mvc\Model\Resultset;
 
 class CustomFieldsModulesMapper extends CustomMapper
 {
     /**
      * @param Canvas\Models\FileSystem $file
      * @param Canvas\Dto\Files $fileDto
+     *
      * @return Files
      */
     public function mapToObject($customFieldsModules, $customFieldsModulesDto, array $context = [])
@@ -58,9 +59,10 @@ class CustomFieldsModulesMapper extends CustomMapper
      * Format the value array of a custom field.
      *
      * @param array $values
+     *
      * @return array
      */
-    private function getValues(Resultset $values): array
+    private function getValues(Resultset $values) : array
     {
         $newValue = [];
         foreach ($values as $value) {

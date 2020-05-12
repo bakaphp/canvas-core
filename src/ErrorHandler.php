@@ -8,7 +8,7 @@ use Monolog\Logger;
 use Phalcon\Config;
 
 /**
- * Class ErrorHandler
+ * Class ErrorHandler.
  *
  * @package Canvas
  */
@@ -33,7 +33,7 @@ class ErrorHandler
     }
 
     /**
-     * Handles errors by logging them
+     * Handles errors by logging them.
      *
      * @param int    $number
      * @param string $message
@@ -56,7 +56,7 @@ class ErrorHandler
     }
 
     /**
-     * Application shutdown - logs metrics in devMode
+     * Application shutdown - logs metrics in devMode.
      */
     public function shutdown()
     {

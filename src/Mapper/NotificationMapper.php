@@ -6,8 +6,8 @@ namespace Canvas\Mapper;
 
 use AutoMapperPlus\CustomMapper\CustomMapper;
 use Canvas\Models\SystemModules;
-use ReflectionClass;
 use Exception;
+use ReflectionClass;
 
 // You can either extend the CustomMapper, or just implement the MapperInterface
 // directly.
@@ -16,6 +16,7 @@ class NotificationMapper extends CustomMapper
     /**
      * @param Canvas\Models\Notification $notification
      * @param Canvas\Dto\notificationDto $notificationDto
+     *
      * @return Files
      */
     public function mapToObject($notification, $notificationDto, array $context = [])

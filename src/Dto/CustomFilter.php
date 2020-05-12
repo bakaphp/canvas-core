@@ -56,10 +56,10 @@ class CustomFilter
      * @var integer
      */
     public $description;
-    
+
     /**
      *
      * @var array
      */
-    public $contidions;
+    public $conditions;
 }
