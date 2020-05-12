@@ -4,18 +4,19 @@ declare(strict_types=1);
 
 namespace Canvas\Filesystem;
 
-use Phalcon\Http\Request\File;
-use Exception;
 use Canvas\Models\FileSystem;
+use Exception;
 use Phalcon\Di;
+use Phalcon\Http\Request\File;
 use Phalcon\Image\Adapter\Gd;
+use Phalcon\Text;
 
 class Helper
 {
     /**
      * Generate a unique name in a specific dir.
      *
-     * @param string $dir the especific dir where the file will be saved
+     * @param string $dir the specific dir where the file will be saved
      * @param bool $withPath
      *
      * @return string
@@ -62,9 +63,10 @@ class Helper
      * Given a file create it in the filesystem.
      *
      * @param File $file
+     *
      * @return bool
      */
-    public static function upload(File $file): FileSystem
+    public static function upload(File $file) : FileSystem
     {
         $di = Di::getDefault();
         $config = $di->get('config');
@@ -78,11 +80,12 @@ class Helper
 
         //get the tem file
         $fileName = self::generateUniqueName($file, $config->filesystem->local->path . '/');
-        $compleFilePath = $fileSystemConfig->path . DIRECTORY_SEPARATOR . $fileName;
-        $uploadFileNameWithPath = $appSettingFileConfig === 'local' ? $fileName : $compleFilePath;
+        $completeFilePath = $fileSystemConfig->path . DIRECTORY_SEPARATOR . $fileName;
+        $uploadFileNameWithPath = $appSettingFileConfig === 'local' ? $fileName : $completeFilePath;
 
         /**
          * upload file base on temp.
+         *
          * @todo change this to determine type of file and recreate it if its a image
          */
         $di->get('filesystem')->writeStream($uploadFileNameWithPath, fopen($file->getTempName(), 'r'));
@@ -92,8 +95,8 @@ class Helper
         $fileSystem->companies_id = $di->get('userData')->currentCompanyId();
         $fileSystem->apps_id = $di->get('app')->getId();
         $fileSystem->users_id = $di->get('userData')->getId();
-        $fileSystem->path = $compleFilePath;
-        $fileSystem->url = $fileSystemConfig->cdn . DIRECTORY_SEPARATOR . $uploadFileNameWithPath;
+        $fileSystem->path = $completeFilePath;
+        $fileSystem->url = Text::reduceSlashes($fileSystemConfig->cdn . DIRECTORY_SEPARATOR . $uploadFileNameWithPath);
         $fileSystem->file_type = $file->getExtension();
         $fileSystem->size = $file->getSize();
 
@@ -106,9 +109,10 @@ class Helper
      * Is this file a image?
      *
      * @param File $file
+     *
      * @return boolean
      */
-    public static function isImage(File $file): bool
+    public static function isImage(File $file) : bool
     {
         return strpos(mime_content_type($file->getTempName()), 'image/') === 0;
     }
@@ -118,9 +122,10 @@ class Helper
      *
      * @param File $file
      * @param FileSystem $fileSystem
+     *
      * @return void
      */
-    public static function setImageDimensions(File $file, FileSystem $fileSystem): void
+    public static function setImageDimensions(File $file, FileSystem $fileSystem) : void
     {
         if (Helper::isImage($file)) {
             $image = new Gd($file->getTempName());
