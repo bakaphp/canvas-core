@@ -160,11 +160,8 @@ class AuthenticationMiddleware extends TokenBase
                         'No app found with given key'
                     );
                 }
-                
-                $appkeys = AppsKeys::findFirstOrFail([
-                    'conditions' => 'client_id = ?0 and client_secret_id = ?1 and apps_id = ?2 and is_deleted = 0',
-                    'bind' => [$request->getHeader('Client-Id'), $request->getHeader('Client-Secret-Id'), $app->getId()]
-                ]);
+
+                $appkeys = AppsKeys::validateAppsKeys($request->getHeader('Client-Id'), $request->getHeader('Client-Secret-Id'), $app->getId());
 
                 return Users::findFirst($appkeys->users_id);
             }
