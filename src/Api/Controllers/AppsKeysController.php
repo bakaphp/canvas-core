@@ -6,6 +6,8 @@ namespace Canvas\Api\Controllers;
 
 use Canvas\Http\Response;
 use Canvas\Models\AppsKeys;
+use Phalcon\Http\RequestInterface;
+use Phalcon\Mvc\ModelInterface;
 
 /**
  * Class CompaniesController.
@@ -46,14 +48,27 @@ class AppsKeysController extends BaseController
     public function onConstruct()
     {
         $this->model = new AppsKeys();
-        $this->model->client_id = bin2hex(random_bytes(64));
-        $this->model->client_secret_id = bin2hex(random_bytes(64));
         $this->model->users_id = $this->userData->getId();
         $this->model->apps_id = $this->app->getId();
 
         $this->additionalSearchFields = [
             ['apps_id', ':', $this->app->getId()],
         ];
+    }
+
+    /**
+     * Process the create request and trecurd the boject.
+     *
+     * @return ModelInterface
+     * @throws Exception
+     */
+    protected function processCreate(RequestInterface $request): ModelInterface
+    {
+        $this->model->client_id = bin2hex(random_bytes(64));
+        $this->model->client_secret_id = bin2hex(random_bytes(64));
+        $this->model->saveOrFail();
+
+        return $this->model;
     }
 
     /**
