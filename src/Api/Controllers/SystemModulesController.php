@@ -54,7 +54,6 @@ class SystemModulesController extends BaseController
         $this->model->apps_id = $this->app->getId();
         $this->additionalSearchFields = [
             ['is_deleted', ':', '0'],
-            ['show', ':', '1'],
             ['apps_id', ':', $this->app->getId()],
         ];
     }
