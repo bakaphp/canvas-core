@@ -6,7 +6,6 @@ namespace Canvas\Middleware;
 
 use Baka\Auth\Models\Sessions;
 use Canvas\Constants\Flags;
-use Canvas\Http\Exception\NotFoundException;
 use Canvas\Http\Exception\UnauthorizedException;
 use Canvas\Models\Apps;
 use Canvas\Models\AppsKeys;
@@ -44,7 +43,7 @@ class AuthenticationMiddleware extends TokenBase
             $token = $this->getToken($request->getBearerTokenFromHeader());
         } elseif ($request->hasHeader('Client-Id') && $request->hasHeader('Client-Secret-Id') && $request->hasHeader('KanvasKey')) {
             // Functions that authenticates user by client id, client secret id and app key
-            $this->AdminUserAuth($api, $request);
+            $this->adminUserAuth($api, $request);
 
             return true;
         } else {
@@ -137,7 +136,7 @@ class AuthenticationMiddleware extends TokenBase
     }
 
     /**
-     * Authenticate Admin user by client id, client sercret id and apps keys.
+     * Authenticate Admin user by client id, client secret id and apps keys.
      *
      * @param Micro $api
      * @param RequestInterface $request
@@ -146,20 +145,13 @@ class AuthenticationMiddleware extends TokenBase
      *
      * @todo Add users validation by client id, client secret id, apps_id
      */
-    protected function AdminUserAuth(Micro $api, RequestInterface $request) : void
+    protected function adminUserAuth(Micro $api, RequestInterface $request) : void
     {
+        $app = $api->getService('app');
+
         $api->getDI()->setShared(
             'userData',
-            function () use ($request) {
-                //Get App record by its key
-                $app = Apps::findFirstByKey($request->getHeader('KanvasKey'));
-
-                if (!$app) {
-                    throw new NotFoundException(
-                        'No app found with given key'
-                    );
-                }
-
+            function () use ($request, $app) {
                 $appkeys = AppsKeys::validateAppsKeys(
                     $request->getHeader('Client-Id'),
                     $request->getHeader('Client-Secret-Id'),
