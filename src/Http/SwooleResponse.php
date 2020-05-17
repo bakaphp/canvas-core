@@ -1,30 +1,28 @@
 <?php
-// +----------------------------------------------------------------------
-// | SwooleResponse.php [ WE CAN DO IT JUST THINK IT ]
-// +----------------------------------------------------------------------
-// | Copyright (c) 2016-2017 limingxinleo All rights reserved.
-// +----------------------------------------------------------------------
-// | Author: limx <715557344@qq.com> <https://github.com/limingxinleo>
-// +----------------------------------------------------------------------
+
+/**
+ * thanks to https://github.com/limingxinleo.
+ */
 
 namespace Canvas\Http;
 
+use Exception;
 use Phalcon\Http\Cookie;
 use Phalcon\Http\Response as PhResponse;
 use swoole_http_response;
-use Exception;
 
 class SwooleResponse extends Response
 {
     protected $response;
 
     /**
-     * Set the swoole response object
+     * Set the swoole response object.
      *
      * @param swoole_http_response $response
+     *
      * @return void
      */
-    public function init(swoole_http_response $response): void
+    public function init(swoole_http_response $response) : void
     {
         $this->response = $response;
         $this->_sent = false;
@@ -33,11 +31,11 @@ class SwooleResponse extends Response
     }
 
     /**
-     * Send the response
+     * Send the response.
      *
      * @return PhResponse
      */
-    public function send(): PhResponse
+    public function send() : PhResponse
     {
         if ($this->_sent) {
             throw new Exception('Response was already sent');
@@ -76,7 +74,7 @@ class SwooleResponse extends Response
         $this->response->status($this->getStatusCode());
         $this->response->end($this->_content);
 
-        //reest di
+        //reset di
         $this->_sent = false;
         $this->getDi()->get('db')->close();
         $this->getDi()->reset();
