@@ -6,10 +6,10 @@ namespace Canvas\Middleware;
 
 use Baka\Auth\Models\Sessions;
 use Canvas\Constants\Flags;
-use Canvas\Http\Exception\UnauthorizedException;
 use Canvas\Http\Exception\NotFoundException;
-use Canvas\Models\AppsKeys;
+use Canvas\Http\Exception\UnauthorizedException;
 use Canvas\Models\Apps;
+use Canvas\Models\AppsKeys;
 use Canvas\Models\Users;
 use Phalcon\Config;
 use Phalcon\Http\RequestInterface;
@@ -151,17 +151,20 @@ class AuthenticationMiddleware extends TokenBase
         $api->getDI()->setShared(
             'userData',
             function () use ($request) {
-
                 //Get App record by its key
                 $app = Apps::findFirstByKey($request->getHeader('KanvasKey'));
 
-                if (!$app){
+                if (!$app) {
                     throw new NotFoundException(
                         'No app found with given key'
                     );
                 }
 
-                $appkeys = AppsKeys::validateAppsKeys($request->getHeader('Client-Id'), $request->getHeader('Client-Secret-Id'), $app->getId());
+                $appkeys = AppsKeys::validateAppsKeys(
+                    $request->getHeader('Client-Id'),
+                    $request->getHeader('Client-Secret-Id'),
+                    $app->getId()
+                );
 
                 return Users::findFirst($appkeys->users_id);
             }

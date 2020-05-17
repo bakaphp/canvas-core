@@ -4,18 +4,16 @@ declare(strict_types=1);
 
 namespace Canvas\Api\Controllers;
 
-use Canvas\Models\Users;
-use Phalcon\Http\Response;
-use Phalcon\Validation\Validator\PresenceOf;
-use Canvas\Exception\BadRequestHttpException;
-use Canvas\Exception\ServerErrorHttpException;
 use Baka\Auth\UsersController as BakaUsersController;
 use Canvas\Contracts\Controllers\ProcessOutputMapperTrait;
 use Canvas\Dto\User as UserDto;
 use Canvas\Http\Exception\InternalServerErrorException;
 use Canvas\Mapper\UserMapper;
-use Canvas\Validation as CanvasValidation;
+use Canvas\Models\Users;
 use Canvas\Models\UsersAssociatedApps;
+use Canvas\Validation as CanvasValidation;
+use Phalcon\Http\Response;
+use Phalcon\Validation\Validator\PresenceOf;
 
 /**
  * Class UsersController.
@@ -153,6 +151,9 @@ class UsersController extends BakaUsersController
             $id = $this->userData->getId();
         }
 
+        /**
+         * @todo admin users should only be able to update user from their app level
+         */
         $user = $this->model->findFirstOrFail($id);
         $request = $this->request->getPutData();
 
@@ -171,16 +172,16 @@ class UsersController extends BakaUsersController
 
             $user->updatePassword($request['current_password'], $request['new_password'], $request['confirm_new_password']);
         } else {
-            //remove on any actino that doesnt involve password
+            //remove on any actinon that doesn't involve password
             unset($request['password']);
         }
 
-        //change my default company , the #teamfrontend is sending us the branchid instead of the company id
+        //change my default company , the #teamfrontend is sending us the branch's instead of the company id
         //on this value so we use is as the branch
         if (isset($request['default_company']) && !isset($request['default_company_branch'])) {
             $user->switchDefaultCompanyByBranch((int) $request['default_company']);
             unset($request['default_company'], $request['default_company_branch']);
-        } else {
+        } elseif (isset($request['default_company_branch'])) {
             $user->switchDefaultCompanyByBranch((int) $request['default_company_branch']);
             unset($request['default_company'], $request['default_company_branch']);
         }
@@ -194,7 +195,9 @@ class UsersController extends BakaUsersController
      * Add users notifications.
      *
      * @param int $id
+     *
      * @method PUT
+     *
      * @return Response
      */
     public function updateNotifications(int $id) : Response
@@ -210,9 +213,10 @@ class UsersController extends BakaUsersController
      * Delete a Record.
      *
      * @throws Exception
+     *
      * @return Response
      */
-    public function delete($id): Response
+    public function delete($id) : Response
     {
         if ((int) $this->userData->getId() === (int) $id) {
             throw new InternalServerErrorException(
@@ -228,10 +232,12 @@ class UsersController extends BakaUsersController
      *
      * @param int $id
      * @param int $appsId
+     *
      * @throws Exception
+     *
      * @return Response
      */
-    public function changeAppUserActiveStatus(int $id, int $appsId): Response
+    public function changeAppUserActiveStatus(int $id, int $appsId) : Response
     {
         $userAssociatedToApp = UsersAssociatedApps::findFirstOrFail([
             'conditions' => 'users_id = ?0 and apps_id = ?1 and companies_id = ?2 and is_deleted = 0',

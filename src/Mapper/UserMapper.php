@@ -5,11 +5,10 @@ declare(strict_types=1);
 namespace Canvas\Mapper;
 
 use AutoMapperPlus\CustomMapper\CustomMapper;
-use Baka\Auth\Models\Apps;
-use Canvas\Models\AccessList;
-use Phalcon\Di;
 use Canvas\Contracts\Mapper\RelationshipTrait;
+use Canvas\Models\AccessList;
 use Canvas\Models\Users;
+use Phalcon\Di;
 
 /**
  * Class UserMapper.
@@ -23,6 +22,7 @@ class UserMapper extends CustomMapper
     /**
      * @param Users $user
      * @param Canvas\Dto\User $userDto
+     *
      * @return Canvas\Dto\User
      */
     public function mapToObject($user, $userDto, array $context = [])
@@ -37,9 +37,10 @@ class UserMapper extends CustomMapper
      *
      * @param mixed $user
      * @param object $userDto
+     *
      * @return object
      */
-    protected function defaultKanvasProperties($user, object $userDto, array $context): object
+    protected function defaultKanvasProperties($user, object $userDto, array $context) : object
     {
         if (is_array($user)) {
             $user = Users::getById($user['id']);
@@ -118,9 +119,10 @@ class UserMapper extends CustomMapper
      * Attach acces list to the user.
      *
      * @param object $userDto
+     *
      * @return void
      */
-    protected function accesList(object $userDto): void
+    protected function accesList(object $userDto) : void
     {
         $app = Di::getDefault()->getApp();
         $accesList = AccessList::find([

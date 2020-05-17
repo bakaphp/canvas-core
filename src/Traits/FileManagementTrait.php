@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Canvas\Traits;
 
+use Canvas\Filesystem\Helper;
+use Canvas\Http\Exception\UnprocessableEntityException;
+use Canvas\Models\FileSystem;
+use Canvas\Models\FileSystemEntities;
+use Canvas\Models\FileSystemSettings;
 use Phalcon\Http\Response;
 use Phalcon\Validation;
 use Phalcon\Validation\Validator\File as FileValidator;
-use Canvas\Models\FileSystem;
-use Canvas\Filesystem\Helper;
-use Canvas\Http\Exception\UnprocessableEntityException;
-use Canvas\Models\FileSystemSettings;
-use Canvas\Models\FileSystemEntities;
 
 /**
  * Trait ResponseTrait.
@@ -35,6 +35,7 @@ trait FileManagementTrait
      * url /v1/filesystem
      *
      * @return \Phalcon\Http\Response
+     *
      * @throws Exception
      */
     public function create() : Response
@@ -57,6 +58,7 @@ trait FileManagementTrait
      * @param mixed $id
      *
      * @return \Phalcon\Http\Response
+     *
      * @throws Exception
      */
     public function edit($id) : Response
@@ -87,9 +89,10 @@ trait FileManagementTrait
      * Update a filesystem Entity,  field name.
      *
      * @param int $id
+     *
      * @return Response
      */
-    public function editEntity(int $id): Response
+    public function editEntity(int $id) : Response
     {
         $fileEntity = FileSystemEntities::getById($id);
         $request = $this->request->getPutData();
@@ -105,9 +108,10 @@ trait FileManagementTrait
      *
      * @param $id
      * @param string $name
+     *
      * @return void
      */
-    public function deleteAttributes($id, string $name): Response
+    public function deleteAttributes($id, string $name) : Response
     {
         $records = FileSystem::findFirstOrFail($id);
 
@@ -127,7 +131,7 @@ trait FileManagementTrait
      *
      * @return Validation
      */
-    protected function validation(): Validation
+    protected function validation() : Validation
     {
         $validator = new Validation();
 
@@ -166,11 +170,12 @@ trait FileManagementTrait
 
     /**
      * Upload the document and save them to the filesystem.
+     *
      * @todo add test
      *
      * @return array
      */
-    protected function processFiles(): array
+    protected function processFiles() : array
     {
         $allFields = $this->request->getPostData();
 
