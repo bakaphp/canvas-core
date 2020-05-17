@@ -43,7 +43,7 @@ class AuthenticationMiddleware extends TokenBase
             $token = $this->getToken($request->getBearerTokenFromHeader());
         } elseif ($request->hasHeader('Client-Id') && $request->hasHeader('Client-Secret-Id') && $request->hasHeader('KanvasKey')) {
             // Functions that authenticates user by client id, client secret id and app key
-            $this->adminUserAuth($api, $request);
+            $this->sessionSdk($api, $request);
 
             return true;
         } else {
@@ -145,7 +145,7 @@ class AuthenticationMiddleware extends TokenBase
      *
      * @todo Add users validation by client id, client secret id, apps_id
      */
-    protected function adminUserAuth(Micro $api, RequestInterface $request) : void
+    protected function sessionSdk(Micro $api, RequestInterface $request) : void
     {
         $app = $api->getService('app');
 
