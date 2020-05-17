@@ -10,6 +10,7 @@ use Exception;
 use Phalcon\Http\Cookie;
 use Phalcon\Http\Response as PhResponse;
 use swoole_http_response;
+use Throwable;
 
 class SwooleResponse extends Response
 {
@@ -75,10 +76,37 @@ class SwooleResponse extends Response
         $this->response->end($this->_content);
 
         //reset di
+        $this->resetDi();
+
+        return $this;
+    }
+
+    /**
+     * Handle the exception we throw from our api.
+     *
+     * @param Throwable $e
+     *
+     * @return Response
+     */
+    public function handleException(Throwable $e) : Response
+    {
+        //reset di
+        $response = parent::handleException($e);
+        $this->resetDi();
+
+        return $response;
+    }
+
+    /**
+     * Given Swoole behavior we need to reset the DI and Close the DB connection
+     * What happens if you don't do this? You will cache the DI request and always get the same info ;).
+     *
+     * @return void
+     */
+    protected function resetDi() : void
+    {
         $this->_sent = false;
         $this->getDi()->get('db')->close();
         $this->getDi()->reset();
-
-        return $this;
     }
 }

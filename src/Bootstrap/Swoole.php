@@ -9,7 +9,7 @@ use Phalcon\Di\FactoryDefault;
 use Phalcon\Mvc\Micro;
 
 /**
- * Class Api
+ * Class Api.
  *
  * @package Canvas\Bootstrap
  *
@@ -18,7 +18,7 @@ use Phalcon\Mvc\Micro;
 class Swoole extends AbstractBootstrap
 {
     /**
-     * Run the application
+     * Run the application.
      *
      * @return mixed
      */
