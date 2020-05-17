@@ -1,7 +1,7 @@
 <?php
 
-use Baka\Router\RouteGroup;
 use Baka\Router\Route;
+use Baka\Router\RouteGroup;
 use function Canvas\Core\envValue;
 
 $publicRoutes = [
@@ -21,6 +21,8 @@ $publicRoutes = [
 ];
 
 $privateRoutes = [
+    Route::crud('/apps-keys')->controller('AppsKeysController'),
+    Route::post('/apps-keys/regenerate')->controller('AppsKeysController')->action('regenerateKeys'),
     Route::crud('/users')->notVia('post'),
     Route::crud('/companies'),
     Route::crud('/roles'),

@@ -3,25 +3,25 @@ declare(strict_types=1);
 
 namespace Canvas\Models;
 
+use Baka\Auth\Models\Users as BakUser;
+use Baka\Database\Contracts\HashTableTrait;
+use Canvas\Auth\App as AppAuth;
+use Canvas\Contracts\Notifications\NotifiableTrait;
+use Canvas\Hashing\Password;
+use Canvas\Traits\EventManagerAwareTrait;
+use Canvas\Traits\FileSystemModelTrait;
 use Canvas\Traits\PermissionsTrait;
 use Canvas\Traits\SubscriptionPlanLimitTrait;
-use Phalcon\Cashier\Billable;
+use Canvas\Validations\PasswordValidation;
 use Carbon\Carbon;
+use Exception;
+use Phalcon\Cashier\Billable;
+use Phalcon\Di;
+use Phalcon\Security\Random;
 use Phalcon\Validation;
 use Phalcon\Validation\Validator\Email;
 use Phalcon\Validation\Validator\PresenceOf;
 use Phalcon\Validation\Validator\Uniqueness;
-use Canvas\Traits\FileSystemModelTrait;
-use Phalcon\Security\Random;
-use Baka\Database\Contracts\HashTableTrait;
-use Canvas\Contracts\Notifications\NotifiableTrait;
-use Canvas\Traits\EventManagerAwareTrait;
-use Phalcon\Di;
-use Canvas\Auth\App as AppAuth;
-use Exception;
-use Canvas\Validations\PasswordValidation;
-use Baka\Auth\Models\Users as BakUser;
-use Canvas\Hashing\Password;
 
 /**
  * Class Users.
@@ -43,6 +43,13 @@ class Users extends \Baka\Auth\Models\Users
     use HashTableTrait;
     use NotifiableTrait;
     use EventManagerAwareTrait;
+
+    /**
+     * Description.
+     *
+     * @var integer
+     */
+    public $description;
 
     /**
      * Default Company Branch.
@@ -96,12 +103,14 @@ class Users extends \Baka\Auth\Models\Users
 
     /**
      * Active subscription id.Not an actual table field, used temporarily.
+     *
      * @var string
      */
     public $active_subscription_id;
 
     /**
      * System Module Id.
+     *
      * @var integer
      */
     public $system_modules_id = 2;
@@ -312,11 +321,11 @@ class Users extends \Baka\Auth\Models\Users
     }
 
     /**
-    * Set hashtable settings table, userConfig ;).
-    *
-    * @return void
-    */
-    private function createSettingsModel(): void
+     * Set hashtable settings table, userConfig ;).
+     *
+     * @return void
+     */
+    private function createSettingsModel() : void
     {
         $this->settingsModel = new UserConfig();
     }
@@ -338,11 +347,10 @@ class Users extends \Baka\Auth\Models\Users
      *
      * @return boolean
      */
-    public function isFirstSignup(): bool
+    public function isFirstSignup() : bool
     {
         return empty($this->default_company);
     }
-
 
     /**
      * Get all of the subscriptions for the user.
@@ -370,6 +378,7 @@ class Users extends \Baka\Auth\Models\Users
      * Strat a free trial.
      *
      * @param Users $user
+     *
      * @return Subscription
      */
     public function startFreeTrial() : Subscription
@@ -414,7 +423,7 @@ class Users extends \Baka\Auth\Models\Users
             //confirm if the app reach its limit
             $this->isAtLimit();
         }
-        
+
         $role = Roles::getByName('Admins');
         $this->roles_id = $role->getId();
     }
@@ -425,7 +434,7 @@ class Users extends \Baka\Auth\Models\Users
      *
      * @return integer
      */
-    public function currentCompanyId(): int
+    public function currentCompanyId() : int
     {
         $defaultCompanyId = $this->get(Companies::cacheKey());
         return !is_null($defaultCompanyId) ? (int) $defaultCompanyId : (int) $this->default_company;
@@ -435,7 +444,7 @@ class Users extends \Baka\Auth\Models\Users
      * Overwrite the user relationship.
      * use Phalcon Registry to assure we mantian the same instance accross the request.
      */
-    public function getDefaultCompany(): Companies
+    public function getDefaultCompany() : Companies
     {
         $registry = Di::getDefault()->getRegistry();
         $key = 'company_' . Di::getDefault()->getApp()->getId() . '_' . $this->getId();
@@ -451,7 +460,7 @@ class Users extends \Baka\Auth\Models\Users
      *
      * @return integer
      */
-    public function currentCompanyBranchId(): int
+    public function currentCompanyBranchId() : int
     {
         return (int) $this->default_company_branch;
     }
@@ -469,6 +478,7 @@ class Users extends \Baka\Auth\Models\Users
 
         /**
          * if we dont find the userdata di lets create it.
+         *
          * @todo this is not ideal lets fix it later
          */
         if (!$this->di->has('userData')) {
@@ -501,7 +511,7 @@ class Users extends \Baka\Auth\Models\Users
      *
      * @return void
      */
-    protected function updatePermissionRoles(): bool
+    protected function updatePermissionRoles() : bool
     {
         if ($permission = $this->getPermission()) {
             $permission->roles_id = $this->roles_id;
@@ -524,9 +534,10 @@ class Users extends \Baka\Auth\Models\Users
     /**
      * Get the list of all the associated apps this users has.
      *:w.
+     *
      * @return array
      */
-    public function getAssociatedApps(): array
+    public function getAssociatedApps() : array
     {
         $apps = $this->getApps(['columns' => 'apps_id', 'group' => 'apps_id']);
 
@@ -544,7 +555,7 @@ class Users extends \Baka\Auth\Models\Users
      *
      * @return array
      */
-    public function getAssociatedCompanies(): array
+    public function getAssociatedCompanies() : array
     {
         $companies = $this->getCompanies(['columns' => 'companies_id']);
 
@@ -559,10 +570,12 @@ class Users extends \Baka\Auth\Models\Users
 
     /**
      * Get user by key.
+     *
      * @param string $userActivationEmail
+     *
      * @return Users
      */
-    public static function getByUserActivationEmail(string $userActivationEmail): Users
+    public static function getByUserActivationEmail(string $userActivationEmail) : Users
     {
         return self::findFirst([
             'conditions' => 'user_activation_email = ?0 and user_active =?1 and is_deleted = 0',
@@ -583,10 +596,11 @@ class Users extends \Baka\Auth\Models\Users
     /**
      * Update the user current default company.
      *
-     * @param integer $companyId
+     * @param int $companyId
+     *
      * @return void
      */
-    public function switchDefaultCompanyByBranch(int $branchId): void
+    public function switchDefaultCompanyByBranch(int $branchId) : void
     {
         if ($branch = CompaniesBranches::findFirst($branchId)) {
             if ($branch->company) {
@@ -604,6 +618,7 @@ class Users extends \Baka\Auth\Models\Users
      * Update the password for a current user.
      *
      * @param string $newPassword
+     *
      * @return boolean
      */
     public function updatePassword(string $currentPassword, string $newPassword, string $verifyPassword) : bool
@@ -641,9 +656,10 @@ class Users extends \Baka\Auth\Models\Users
      * Reset the user passwrod.
      *
      * @param string $newPassword
+     *
      * @return bool
      */
-    public function resetPassword(string $newPassword): bool
+    public function resetPassword(string $newPassword) : bool
     {
         $app = Di::getDefault()->getApp();
 
@@ -713,7 +729,7 @@ class Users extends \Baka\Auth\Models\Users
      *
      * @return string
      */
-    public function generateForgotHash(): string
+    public function generateForgotHash() : string
     {
         $this->user_activation_forgot = $this->generateActivationKey();
         $this->updateOrFail();

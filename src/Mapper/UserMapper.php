@@ -51,6 +51,7 @@ class UserMapper extends CustomMapper
         $userDto->email = $user->email;
         $userDto->firstname = $user->firstname;
         $userDto->lastname = $user->lastname;
+        $userDto->description = $user->description;
         $userDto->active_subscription_id = $user->active_subscription_id;
         $userDto->card_brand = $user->card_brand;
         $userDto->cell_phone_number = $user->cell_phone_number;

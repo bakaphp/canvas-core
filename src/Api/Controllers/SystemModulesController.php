@@ -20,7 +20,14 @@ class SystemModulesController extends BaseController
      *
      * @var array
      */
-    protected $createFields = [];
+    protected $createFields = [
+        'name',
+        'slug',
+        'model_name',
+        'browse_fields',
+        'show',
+        'protected'
+    ];
 
     /*
      * fields we accept to create
@@ -28,7 +35,12 @@ class SystemModulesController extends BaseController
      * @var array
      */
     protected $updateFields = [
-        'show'
+        'name',
+        'slug',
+        'model_name',
+        'browse_fields',
+        'show',
+        'protected'
     ];
 
     /**
@@ -39,20 +51,21 @@ class SystemModulesController extends BaseController
     public function onConstruct()
     {
         $this->model = new SystemModules();
+        $this->model->apps_id = $this->app->getId();
         $this->additionalSearchFields = [
             ['is_deleted', ':', '0'],
-            ['show', ':', '1'],
             ['apps_id', ':', $this->app->getId()],
         ];
     }
 
     /**
-    * Delete a Record.
-    *
-    * @throws Exception
-    * @return Response
-    */
-    public function delete($id): Response
+     * Delete a Record.
+     *
+     * @throws Exception
+     *
+     * @return Response
+     */
+    public function delete($id) : Response
     {
         return $this->response('Cant delete System Modules at the moment');
     }

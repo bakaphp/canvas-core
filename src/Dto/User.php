@@ -92,6 +92,13 @@ class User
      * @var string
      */
     public $firstname;
+    
+    /**
+     *
+     * @var string
+     */
+    public $description;
+
 
     /**
      *

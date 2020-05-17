@@ -4,13 +4,16 @@ declare(strict_types=1);
 
 namespace Canvas\Middleware;
 
-use Phalcon\Mvc\Micro;
 use Baka\Auth\Models\Sessions;
-use Canvas\Models\Users;
 use Canvas\Constants\Flags;
 use Canvas\Http\Exception\UnauthorizedException;
+use Canvas\Http\Exception\NotFoundException;
+use Canvas\Models\AppsKeys;
+use Canvas\Models\Apps;
+use Canvas\Models\Users;
 use Phalcon\Config;
 use Phalcon\Http\RequestInterface;
+use Phalcon\Mvc\Micro;
 
 /**
  * Class AuthenticationMiddleware.
@@ -23,7 +26,9 @@ class AuthenticationMiddleware extends TokenBase
      * Call me.
      *
      * @param Micro $api
+     *
      * @todo need to check section for auth here
+     *
      * @return bool
      */
     public function call(Micro $api)
@@ -37,6 +42,11 @@ class AuthenticationMiddleware extends TokenBase
          */
         if (!empty($request->getBearerTokenFromHeader())) {
             $token = $this->getToken($request->getBearerTokenFromHeader());
+        } elseif ($request->hasHeader('Client-Id') && $request->hasHeader('Client-Secret-Id') && $request->hasHeader('KanvasKey')) {
+            // Functions that authenticates user by client id, client secret id and app key
+            $this->AdminUserAuth($api, $request);
+
+            return true;
         } else {
             throw new UnauthorizedException('Missing Token');
         }
@@ -53,10 +63,12 @@ class AuthenticationMiddleware extends TokenBase
      * @param Config $config
      * @param string $token
      * @param RequestInterface $request
+     *
      * @throws UnauthorizedException
+     *
      * @return void
      */
-    protected function sessionUser(Micro $api, Config $config, object $token, RequestInterface $request): void
+    protected function sessionUser(Micro $api, Config $config, object $token, RequestInterface $request) : void
     {
         $api->getDI()->setShared(
             'userData',
@@ -100,9 +112,10 @@ class AuthenticationMiddleware extends TokenBase
      * @param Config $config
      * @param mixed $token
      * @param RequestInterface $request
+     *
      * @return void
      */
-    protected function anonymousUser(Micro $api, Config $config, $token, RequestInterface $request): void
+    protected function anonymousUser(Micro $api, Config $config, $token, RequestInterface $request) : void
     {
         $api->getDI()->setShared(
             'userData',
@@ -119,6 +132,38 @@ class AuthenticationMiddleware extends TokenBase
                     'No anonymous user configured in the app' :
                     'Missing Token'
                 );
+            }
+        );
+    }
+
+    /**
+     * Authenticate Admin user by client id, client sercret id and apps keys.
+     *
+     * @param Micro $api
+     * @param RequestInterface $request
+     *
+     * @return void
+     *
+     * @todo Add users validation by client id, client secret id, apps_id
+     */
+    protected function AdminUserAuth(Micro $api, RequestInterface $request) : void
+    {
+        $api->getDI()->setShared(
+            'userData',
+            function () use ($request) {
+
+                //Get App record by its key
+                $app = Apps::findFirstByKey($request->getHeader('KanvasKey'));
+
+                if (!$app){
+                    throw new NotFoundException(
+                        'No app found with given key'
+                    );
+                }
+
+                $appkeys = AppsKeys::validateAppsKeys($request->getHeader('Client-Id'), $request->getHeader('Client-Secret-Id'), $app->getId());
+
+                return Users::findFirst($appkeys->users_id);
             }
         );
     }
