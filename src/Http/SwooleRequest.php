@@ -1,26 +1,23 @@
 <?php
-// +----------------------------------------------------------------------
-// | SwooleRequest.php [ WE CAN DO IT JUST THINK IT ]
-// +----------------------------------------------------------------------
-// | Copyright (c) 2016-2017 limingxinleo All rights reserved.
-// +----------------------------------------------------------------------
-// | Author: limx <715557344@qq.com> <https://github.com/limingxinleo>
-// +----------------------------------------------------------------------
+
+/**
+ * thanks to https://github.com/limingxinleo.
+ */
 
 namespace Canvas\Http;
 
+use function Canvas\Core\isJson;
+use Canvas\Traits\RequestJwtTrait;
+use Exception;
+use Phalcon\Di\FactoryDefault;
+use Phalcon\Di\InjectionAwareInterface;
 use Phalcon\DiInterface;
 use Phalcon\Events\Manager;
 use Phalcon\FilterInterface;
-use Phalcon\Http\RequestInterface;
-use Phalcon\Di\InjectionAwareInterface;
 use Phalcon\Http\Request\File;
+use Phalcon\Http\RequestInterface;
 use Phalcon\Text;
 use swoole_http_request;
-use Exception;
-use Phalcon\Di\FactoryDefault;
-use function Canvas\Core\isJson;
-use Canvas\Traits\RequestJwtTrait;
 
 /**
  * Class SwooleRequest.
@@ -69,9 +66,10 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      * Init the object with Swoole reqeust.
      *
      * @param swoole_http_request $request
+     *
      * @return void
      */
-    public function init(swoole_http_request $request): void
+    public function init(swoole_http_request $request) : void
     {
         $this->swooleRequest = $request;
         $this->headers = [];
@@ -98,9 +96,10 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      * Set global headers.
      *
      * @param array $headers
+     *
      * @return void
      */
-    private function setGlobalHeaders(array $headers): void
+    private function setGlobalHeaders(array $headers) : void
     {
         foreach ($headers as $key => $val) {
             $key = strtoupper(str_replace(['-'], '_', $key));
@@ -113,9 +112,10 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      * Set global Servers.
      *
      * @param array $servers
+     *
      * @return void
      */
-    private function setGlobalServers(array $servers): void
+    private function setGlobalServers(array $servers) : void
     {
         foreach ($servers as $key => $val) {
             $key = strtoupper(str_replace(['-'], '_', $key));
@@ -127,6 +127,7 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      * Set Di.
      *
      * @param DiInterface $dependencyInjector
+     *
      * @return void
      */
     public function setDI(DiInterface $dependencyInjector)
@@ -150,8 +151,9 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      * @param string $name
      * @param string $filters
      * @param string $defaultValue
-     * @param boolean $notAllowEmpty
-     * @param boolean $noRecursive
+     * @param bool $notAllowEmpty
+     * @param bool $noRecursive
+     *
      * @return array|string
      */
     public function get($name = null, $filters = null, $defaultValue = null, $notAllowEmpty = false, $noRecursive = false)
@@ -166,8 +168,9 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      * @param string $name
      * @param string $filters
      * @param string $defaultValue
-     * @param boolean $notAllowEmpty
-     * @param boolean $noRecursive
+     * @param bool $notAllowEmpty
+     * @param bool $noRecursive
+     *
      * @return array|string
      */
     public function getPost($name = null, $filters = null, $defaultValue = null, $notAllowEmpty = false, $noRecursive = false)
@@ -182,8 +185,9 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      * @param string $name
      * @param string $filters
      * @param string $defaultValue
-     * @param boolean $notAllowEmpty
-     * @param boolean $noRecursive
+     * @param bool $notAllowEmpty
+     * @param bool $noRecursive
+     *
      * @return array|string
      */
     public function getQuery($name = null, $filters = null, $defaultValue = null, $notAllowEmpty = false, $noRecursive = false)
@@ -196,6 +200,7 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      * Get _SERVER.
      *
      * @param string $name
+     *
      * @return string|null
      */
     public function getServer($name)
@@ -214,8 +219,9 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      * @param string $name
      * @param string $filters
      * @param string $defaultValue
-     * @param boolean $notAllowEmpty
-     * @param boolean $noRecursive
+     * @param bool $notAllowEmpty
+     * @param bool $noRecursive
+     *
      * @return array|string
      */
     public function getPut($name = null, $filters = null, $defaultValue = null, $notAllowEmpty = false, $noRecursive = false)
@@ -238,6 +244,7 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      * Has.
      *
      * @param string $name
+     *
      * @return boolean
      */
     public function has($name)
@@ -250,6 +257,7 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      * Has Post.
      *
      * @param string $name
+     *
      * @return boolean
      */
     public function hasPost($name)
@@ -261,6 +269,7 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      * Has Put.
      *
      * @param string $name
+     *
      * @return boolean
      */
     public function hasPut($name)
@@ -274,6 +283,7 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      * Has GET.
      *
      * @param string $name
+     *
      * @return boolean
      */
     public function hasQuery($name)
@@ -285,6 +295,7 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      * Has SERVER.
      *
      * @param string $name
+     *
      * @return boolean
      */
     public function hasServer($name)
@@ -298,6 +309,7 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      * Has HEADER.
      *
      * @param string $name
+     *
      * @return boolean
      */
     public function hasHeader($header)
@@ -315,6 +327,7 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      * Get Header.
      *
      * @param string $name
+     *
      * @return string|void
      */
     public function getHeader($header)
@@ -419,7 +432,8 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
     /**
      * Get json.
      *
-     * @param boolean $associative
+     * @param bool $associative
+     *
      * @return void|string
      */
     public function getJsonRawBody($associative = false)
@@ -568,7 +582,8 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
     /**
      * Get client ip.
      *
-     * @param boolean $trustForwardedHeader
+     * @param bool $trustForwardedHeader
+     *
      * @return string|boolean
      */
     public function getClientAddress($trustForwardedHeader = true)
@@ -651,7 +666,8 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      * Is method.
      *
      * @param string $methods
-     * @param boolean $strict
+     * @param bool $strict
+     *
      * @return boolean
      */
     public function isMethod($methods, $strict = false)
@@ -785,7 +801,8 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
     /**
      * Has uploaded files?
      *
-     * @param boolean $onlySuccessful
+     * @param bool $onlySuccessful
+     *
      * @return string
      */
     public function hasFiles($onlySuccessful = false)
@@ -841,7 +858,8 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
     /**
      * Get the uploaded files.
      *
-     * @param boolean $onlySuccessful
+     * @param bool $onlySuccessful
+     *
      * @return array
      */
     public function getUploadedFiles($onlySuccessful = false)
@@ -890,6 +908,7 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      * Get the files.
      *
      * @param string $key
+     *
      * @return string|void
      */
     public function getFile($key)
@@ -1295,9 +1314,10 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      * Resolve the PHP_AUTH_USER.
      *
      * @param array $headers
+     *
      * @return void
      */
-    protected function resolveAuthHeaderPhp(array &$headers): void
+    protected function resolveAuthHeaderPhp(array &$headers) : void
     {
         $authHeader = false;
 
@@ -1331,9 +1351,10 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      * Reseolve PHP auth digest.
      *
      * @param array $headers
+     *
      * @return void
      */
-    protected function resolveAuthHeaderPhpDigest(array &$headers): void
+    protected function resolveAuthHeaderPhpDigest(array &$headers) : void
     {
         if (!isset($headers['Authorization'])) {
             if (isset($headers['Php-Auth-User'])) {
@@ -1345,11 +1366,11 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
     }
 
     /**
-    * Get the data from a POST request.
-    *
-    * @return array
-    */
-    public function getPostData(): array
+     * Get the data from a POST request.
+     *
+     * @return array
+     */
+    public function getPostData() : array
     {
         $data = $this->getPost() ?: $this->getJsonRawBody(true);
 
@@ -1371,7 +1392,7 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
     /**
      * @return string
      */
-    public function getBearerTokenFromHeader(): string
+    public function getBearerTokenFromHeader() : string
     {
         return str_replace('Bearer ', '', $this->getHeader('Authorization'));
     }
@@ -1379,7 +1400,7 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
     /**
      * @return bool
      */
-    public function isEmptyBearerToken(): bool
+    public function isEmptyBearerToken() : bool
     {
         return true === empty($this->getBearerTokenFromHeader());
     }

@@ -60,9 +60,10 @@ class AppsKeysController extends BaseController
      * Process the create request and trecurd the boject.
      *
      * @return ModelInterface
+     *
      * @throws Exception
      */
-    protected function processCreate(RequestInterface $request): ModelInterface
+    protected function processCreate(RequestInterface $request) : ModelInterface
     {
         $this->model->client_id = bin2hex(random_bytes(64));
         $this->model->client_secret_id = bin2hex(random_bytes(64));
