@@ -12,4 +12,14 @@ abstract class AbstractModel extends \Baka\Database\Model
      * @var string
      */
     protected $subscriptionPlanLimitKey = null;
+
+    /**
+     * Get the primary id of this model.
+     *
+     * @return int
+     */
+    public function getId() : int
+    {
+        return (int)$this->id;
+    }
 }
