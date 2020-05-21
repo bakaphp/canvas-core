@@ -109,7 +109,7 @@ class Webhooks
             foreach ($webhooks as $userWebhook) {
                 $results[$userWebhook->webhook->name][$action][] = [
                     $userWebhook->url => [
-                        'results' => self::run($userWebhook->getId(), $data, $headers),
+                        'results' => self::run((int)$userWebhook->getId(), $data, $headers),
                     ]
                 ];
             }
