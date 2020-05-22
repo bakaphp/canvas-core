@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Canvas\Notifications;
 
-use Canvas\Contracts\Auth\AuthenticatableInterface;
+use Canvas\Contracts\Auth\UserInterface;
 use Canvas\Contracts\Notifications\NotificationInterface;
 use Canvas\Models\Users;
 use Phalcon\Di;
@@ -34,7 +34,7 @@ class Notify
      *
      * @return void
      */
-    public static function one(AuthenticatableInterface $user, NotificationInterface $notification) : bool
+    public static function one(UserInterface $user, NotificationInterface $notification) : bool
     {
         if (Di::getDefault()->has('userData')) {
             $from = Di::getDefault()->getUserData();

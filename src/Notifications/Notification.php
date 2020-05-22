@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace Canvas\Notifications;
 
+use Baka\Mail\Message;
+use Canvas\Contracts\Auth\UserInterface;
 use Canvas\Contracts\Notifications\NotificationInterface;
 use Canvas\Models\AbstractModel;
-use Canvas\Models\NotificationType;
-use Baka\Mail\Message;
-use Canvas\Contracts\Auth\AuthenticatableInterface;
-use Canvas\Models\Users;
 use Canvas\Models\Notifications;
-use Phalcon\Traits\EventManagerAwareTrait;
-use Phalcon\Di;
+use Canvas\Models\NotificationType;
+use Canvas\Models\Users;
 use Canvas\Queue\Queue;
+use Phalcon\Di;
 use Phalcon\Mvc\Model;
+use Phalcon\Traits\EventManagerAwareTrait;
 
 class Notification implements NotificationInterface
 {
@@ -75,9 +75,10 @@ class Notification implements NotificationInterface
      * Set the notification type.
      *
      * @param NotificationType $type
+     *
      * @return void
      */
-    public function setType(NotificationType $type): void
+    public function setType(NotificationType $type) : void
     {
         $this->type = $type;
     }
@@ -87,7 +88,7 @@ class Notification implements NotificationInterface
      *
      * @return string
      */
-    public function message(): string
+    public function message() : string
     {
         return $this->type->template ?: '';
     }
@@ -96,9 +97,10 @@ class Notification implements NotificationInterface
      * Define a Baka Mail to send a email.
      *
      * @todo add Interfase to bakaMail
+     *
      * @return Message
      */
-    protected function toMail(): ?Message
+    protected function toMail() : ?Message
     {
         return null;
     }
@@ -108,7 +110,7 @@ class Notification implements NotificationInterface
      *
      * @return void
      */
-    protected function toPushNotification(): ?PushNotification
+    protected function toPushNotification() : ?PushNotification
     {
         return null;
     }
@@ -118,7 +120,7 @@ class Notification implements NotificationInterface
      *
      * @return void
      */
-    protected function toRealtime(): ?PusherNotification
+    protected function toRealtime() : ?PusherNotification
     {
         return null;
     }
@@ -127,9 +129,10 @@ class Notification implements NotificationInterface
      * Set the usre we are sending the notification to.
      *
      * @param Users $user
+     *
      * @return void
      */
-    public function setTo(AuthenticatableInterface $user): void
+    public function setTo(UserInterface $user) : void
     {
         $this->toUser = $user;
     }
@@ -138,9 +141,10 @@ class Notification implements NotificationInterface
      * Set the user from who the notification if comming from.
      *
      * @param User $user
+     *
      * @return void
      */
-    public function setFrom(AuthenticatableInterface $user): void
+    public function setFrom(UserInterface $user) : void
     {
         $this->fromUser = $user;
     }
@@ -150,7 +154,7 @@ class Notification implements NotificationInterface
      *
      * @return void
      */
-    public function disableQueue(): void
+    public function disableQueue() : void
     {
         $this->useQueue = false;
     }
@@ -163,7 +167,7 @@ class Notification implements NotificationInterface
      *
      * @return boolean
      */
-    public function process(): bool
+    public function process() : bool
     {
         //if the user didnt provide the type get it based on the class name
         if (is_null($this->type)) {
@@ -192,7 +196,7 @@ class Notification implements NotificationInterface
      *
      * @return boolean
      */
-    protected function sendToQueue(): bool
+    protected function sendToQueue() : bool
     {
         $notificationData = [
             'from' => $this->fromUser,
@@ -210,7 +214,7 @@ class Notification implements NotificationInterface
      *
      * @return boolean
      */
-    public function trigger(): bool
+    public function trigger() : bool
     {
         $content = $this->message();
         $app = Di::getDefault()->getApp();

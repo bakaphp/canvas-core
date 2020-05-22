@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Canvas\Contracts\Notifications;
 
-use Canvas\Contracts\Auth\AuthenticatableInterface;
+use Canvas\Contracts\Auth\UserInterface;
 
 interface NotificationInterface
 {
@@ -18,7 +18,7 @@ interface NotificationInterface
 
     public function trigger() : bool;
 
-    public function setTo(AuthenticatableInterface $user) : void;
+    public function setTo(UserInterface $user) : void;
 
-    public function setFrom(AuthenticatableInterface $user) : void;
+    public function setFrom(UserInterface $user) : void;
 }

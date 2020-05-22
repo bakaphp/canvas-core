@@ -6,7 +6,7 @@ namespace Canvas\Models;
 use Baka\Auth\Models\Users as BakUser;
 use Baka\Database\Contracts\HashTableTrait;
 use Canvas\Auth\App as AppAuth;
-use Canvas\Contracts\Auth\AuthenticatableInterface;
+use Canvas\Contracts\Auth\UserInterface;
 use Canvas\Contracts\Notifications\NotifiableTrait;
 use Canvas\Hashing\Password;
 use Canvas\Traits\EventManagerAwareTrait;
@@ -34,7 +34,7 @@ use Phalcon\Validation\Validator\Uniqueness;
  * @property Companies $defaultCompany
  * @property \Phalcon\Di $di
  */
-class Users extends BakUser implements AuthenticatableInterface
+class Users extends BakUser implements UserInterface
 {
     use PermissionsTrait;
     use Billable;
