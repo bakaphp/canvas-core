@@ -29,6 +29,6 @@ class ExceptionsCest
         $httpException = new HttpException();
         $I->assertTrue(is_integer($httpException->getHttpCode()));
         $I->assertTrue(is_string($httpException->getHttpMessage()));
-        $I->assertIsEmpty($httpException->getData());
+        $I->assertTrue(is_array($httpException->getData()));
     }
 }
