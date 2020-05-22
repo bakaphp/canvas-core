@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Canvas\Notifications;
 
-use Canvas\Contracts\Notifications\NotificationInterfase;
+use Canvas\Contracts\Notifications\NotificationInterface;
 use Baka\Mail\Message;
 use Phalcon\Di;
 
-class Subscription extends Notification implements NotificationInterfase
+class Subscription extends Notification implements NotificationInterface
 {
     //protected $useQueue = true;
 

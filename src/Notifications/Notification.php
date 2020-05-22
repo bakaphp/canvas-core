@@ -4,18 +4,19 @@ declare(strict_types=1);
 
 namespace Canvas\Notifications;
 
-use Canvas\Contracts\Notifications\NotificationInterfase;
-use Canvas\Models\AbstractModel;
-use Canvas\Models\NotificationType;
 use Baka\Mail\Message;
-use Canvas\Models\Users;
+use Canvas\Contracts\Auth\UserInterface;
+use Canvas\Contracts\Notifications\NotificationInterface;
+use Canvas\Models\AbstractModel;
 use Canvas\Models\Notifications;
-use Phalcon\Traits\EventManagerAwareTrait;
-use Phalcon\Di;
+use Canvas\Models\NotificationType;
+use Canvas\Models\Users;
 use Canvas\Queue\Queue;
+use Phalcon\Di;
 use Phalcon\Mvc\Model;
+use Phalcon\Traits\EventManagerAwareTrait;
 
-class Notification implements NotificationInterfase
+class Notification implements NotificationInterface
 {
     use EventManagerAwareTrait;
 
@@ -74,9 +75,10 @@ class Notification implements NotificationInterfase
      * Set the notification type.
      *
      * @param NotificationType $type
+     *
      * @return void
      */
-    public function setType(NotificationType $type): void
+    public function setType(NotificationType $type) : void
     {
         $this->type = $type;
     }
@@ -86,7 +88,7 @@ class Notification implements NotificationInterfase
      *
      * @return string
      */
-    public function message(): string
+    public function message() : string
     {
         return $this->type->template ?: '';
     }
@@ -95,9 +97,10 @@ class Notification implements NotificationInterfase
      * Define a Baka Mail to send a email.
      *
      * @todo add Interfase to bakaMail
+     *
      * @return Message
      */
-    protected function toMail(): ?Message
+    protected function toMail() : ?Message
     {
         return null;
     }
@@ -107,7 +110,7 @@ class Notification implements NotificationInterfase
      *
      * @return void
      */
-    protected function toPushNotification(): ?PushNotification
+    protected function toPushNotification() : ?PushNotification
     {
         return null;
     }
@@ -117,7 +120,7 @@ class Notification implements NotificationInterfase
      *
      * @return void
      */
-    protected function toRealtime(): ?PusherNotification
+    protected function toRealtime() : ?PusherNotification
     {
         return null;
     }
@@ -126,9 +129,10 @@ class Notification implements NotificationInterfase
      * Set the usre we are sending the notification to.
      *
      * @param Users $user
+     *
      * @return void
      */
-    public function setTo(Users $user): void
+    public function setTo(UserInterface $user) : void
     {
         $this->toUser = $user;
     }
@@ -137,9 +141,10 @@ class Notification implements NotificationInterfase
      * Set the user from who the notification if comming from.
      *
      * @param User $user
+     *
      * @return void
      */
-    public function setFrom(Users $user): void
+    public function setFrom(UserInterface $user) : void
     {
         $this->fromUser = $user;
     }
@@ -149,7 +154,7 @@ class Notification implements NotificationInterfase
      *
      * @return void
      */
-    public function disableQueue(): void
+    public function disableQueue() : void
     {
         $this->useQueue = false;
     }
@@ -162,7 +167,7 @@ class Notification implements NotificationInterfase
      *
      * @return boolean
      */
-    public function process(): bool
+    public function process() : bool
     {
         //if the user didnt provide the type get it based on the class name
         if (is_null($this->type)) {
@@ -191,7 +196,7 @@ class Notification implements NotificationInterfase
      *
      * @return boolean
      */
-    protected function sendToQueue(): bool
+    protected function sendToQueue() : bool
     {
         $notificationData = [
             'from' => $this->fromUser,
@@ -209,7 +214,7 @@ class Notification implements NotificationInterfase
      *
      * @return boolean
      */
-    public function trigger(): bool
+    public function trigger() : bool
     {
         $content = $this->message();
         $app = Di::getDefault()->getApp();

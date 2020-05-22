@@ -2,13 +2,13 @@
 
 namespace Canvas\Cli\Jobs;
 
-use Canvas\Contracts\Queue\QueueableJobInterfase;
+use Canvas\Contracts\Queue\QueueableJobInterface;
 use Canvas\Jobs\Job;
 use Phalcon\Di;
 use Canvas\Models\Apps as CanvasApps;
 use Phalcon\Security\Random;
 
-class Apps extends Job implements QueueableJobInterfase
+class Apps extends Job implements QueueableJobInterface
 {
     /**
      * Realtime channel
