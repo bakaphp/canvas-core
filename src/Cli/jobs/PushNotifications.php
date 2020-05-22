@@ -2,7 +2,7 @@
 
 namespace Canvas\Cli\Jobs;
 
-use Canvas\Contracts\Queue\QueueableJobInterfase;
+use Canvas\Contracts\Queue\QueueableJobInterface;
 use Canvas\Jobs\Job;
 use Phalcon\Di;
 use GuzzleHttp\Client as GuzzleClient;
@@ -15,7 +15,7 @@ use Canvas\Models\UserLinkedSources;
 use Canvas\Notifications\PushNotification;
 use Exception;
 
-class PushNotifications extends Job implements QueueableJobInterfase
+class PushNotifications extends Job implements QueueableJobInterface
 {
     /**
      * Realtime channel.

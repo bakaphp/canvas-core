@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Canvas\Contracts\Controllers;
 
-use Canvas\Exception\ServerErrorHttpException;
 use AutoMapperPlus\DataType;
+use Canvas\Exception\ServerErrorHttpException;
 use StdClass;
 
 trait ProcessOutputMapperTrait
@@ -14,11 +14,12 @@ trait ProcessOutputMapperTrait
     protected $dtoMapper = null;
 
     /**
-    * Format Controller Result base on a Mapper.
-    *
-    * @param mixed $results
-    * @return void
-    */
+     * Format Controller Result base on a Mapper.
+     *
+     * @param mixed $results
+     *
+     * @return void
+     */
     protected function processOutput($results)
     {
         $this->canUseMapper();
@@ -67,7 +68,7 @@ trait ProcessOutputMapperTrait
      *
      * @return boolean
      */
-    protected function canUseMapper(): bool
+    protected function canUseMapper() : bool
     {
         if (!is_object($this->model) || empty($this->dto)) {
             throw new ServerErrorHttpException('No Mapper configured on this controller ' . get_class($this));
@@ -81,7 +82,7 @@ trait ProcessOutputMapperTrait
      *
      * @return array
      */
-    protected function getMapperOptions(): array
+    protected function getMapperOptions() : array
     {
         if ($this->request->hasQuery('relationships')) {
             return [
