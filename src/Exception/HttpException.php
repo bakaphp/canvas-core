@@ -39,6 +39,6 @@ class HttpException extends Exception
      */
     public function getData() : ?array
     {
-        return $this->data;
+        return is_array($this->data) ? $this->data : [$this->data];
     }
 }
