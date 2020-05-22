@@ -17,7 +17,7 @@ class HttpException extends Exception
      *
      * @return string
      */
-    public function getHttpCode(): int
+    public function getHttpCode() : int
     {
         return $this->httpCode;
     }
@@ -27,7 +27,7 @@ class HttpException extends Exception
      *
      * @return string
      */
-    public function getHttpMessage(): string
+    public function getHttpMessage() : string
     {
         return $this->httpMessage;
     }
@@ -37,7 +37,7 @@ class HttpException extends Exception
      *
      * @return string|null
      */
-    public function getData(): ?string
+    public function getData() : ?array
     {
         return $this->data;
     }
