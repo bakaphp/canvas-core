@@ -20,6 +20,6 @@ abstract class AbstractModel extends \Baka\Database\Model
      */
     public function getId() : int
     {
-        return (int)$this->id;
+        return (int) $this->id;
     }
 }
