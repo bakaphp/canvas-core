@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Canvas\Notifications;
 
-use Canvas\Contracts\Notifications\NotificationInterfase;
+use Canvas\Contracts\Notifications\NotificationInterface;
 use Canvas\Models\AbstractModel;
 use Canvas\Models\NotificationType;
 use Baka\Mail\Message;
+use Canvas\Contracts\Auth\AuthenticatableInterface;
 use Canvas\Models\Users;
 use Canvas\Models\Notifications;
 use Phalcon\Traits\EventManagerAwareTrait;
@@ -15,7 +16,7 @@ use Phalcon\Di;
 use Canvas\Queue\Queue;
 use Phalcon\Mvc\Model;
 
-class Notification implements NotificationInterfase
+class Notification implements NotificationInterface
 {
     use EventManagerAwareTrait;
 
@@ -128,7 +129,7 @@ class Notification implements NotificationInterfase
      * @param Users $user
      * @return void
      */
-    public function setTo(Users $user): void
+    public function setTo(AuthenticatableInterface $user): void
     {
         $this->toUser = $user;
     }
@@ -139,7 +140,7 @@ class Notification implements NotificationInterfase
      * @param User $user
      * @return void
      */
-    public function setFrom(Users $user): void
+    public function setFrom(AuthenticatableInterface $user): void
     {
         $this->fromUser = $user;
     }

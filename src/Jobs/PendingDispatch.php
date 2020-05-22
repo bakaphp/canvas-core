@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Canvas\Jobs;
 
-use Canvas\Contracts\Queue\QueueableJobInterfase;
+use Canvas\Contracts\Queue\QueueableJobInterface;
 use Canvas\Queue\Queue;
 use Phalcon\Di;
 
@@ -20,10 +20,10 @@ class PendingDispatch
     /**
      * Create a new pending job dispatch.
      *
-     * @param  QueueableJobInterfase  $job
+     * @param  QueueableJobInterface  $job
      * @return void
      */
-    public function __construct(QueueableJobInterfase $job)
+    public function __construct(QueueableJobInterface $job)
     {
         $this->job = $job;
     }

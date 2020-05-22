@@ -7,9 +7,9 @@ namespace Canvas\Contracts\Mapper;
 trait RelationshipTrait
 {
     /**
-    *  Attach relationship to DTO.
-    */
-    protected function getRelationships(object $object, object $objectDto, array $relationships): void
+     *  Attach relationship to DTO.
+     */
+    protected function getRelationships(object $object, object $objectDto, array $relationships) : void
     {
         if (isset($relationships['relationships'])) {
             foreach ($relationships['relationships'] as $relationship) {

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Canvas\Jobs;
 
-use Canvas\Contracts\Queue\QueueableJobInterfase;
+use Canvas\Contracts\Queue\QueueableJobInterface;
 use Canvas\Contracts\Queue\QueueableTrait;
 
-abstract class Job implements QueueableJobInterfase
+abstract class Job implements QueueableJobInterface
 {
     use QueueableTrait;
 

@@ -2,7 +2,7 @@
 
 namespace Canvas\Cli\Tasks;
 
-use Canvas\Contracts\Queue\QueueableJobInterfase;
+use Canvas\Contracts\Queue\QueueableJobInterface;
 use Phalcon\Cli\Task as PhTask;
 use Canvas\Models\Users;
 use Canvas\Queue\Queue;
@@ -166,7 +166,7 @@ class QueueTask extends PhTask
                 return;
             }
 
-            if (!$job['job'] instanceof QueueableJobInterfase) {
+            if (!$job['job'] instanceof QueueableJobInterface) {
                 echo 'This Job is not queable ' . $msg->delivery_info['consumer_tag'] ;
                 $this->log->error('This Job is not queable ' . $msg->delivery_info['consumer_tag']);
                 return;
