@@ -4,15 +4,13 @@ declare(strict_types=1);
 
 namespace Canvas\Traits;
 
-use function Canvas\Core\envValue;
-use function time;
 use Canvas\Http\Exception\UnprocessableEntityException;
 use Canvas\Models\Sources;
-use Canvas\Models\Users;
 use Canvas\Models\UserLinkedSources;
-use Phalcon\Security\Random;
-use Canvas\Traits\AuthTrait;
+use Canvas\Models\Users;
 use Exception;
+use Phalcon\Di;
+use Phalcon\Security\Random;
 
 /**
  * Trait SocialLoginTrait.
@@ -23,27 +21,33 @@ trait SocialLoginTrait
 {
     /**
      * Login user via Social Login Feature.
+     *
      * @param Users $user
+     *
      * @return array
      */
-    abstract public function loginSocial(Users $user): array;
+    abstract public function loginSocial(Users $user) : array;
 
     /**
      * Login user using stablished user credentials.
+     *
      * @param string $email
      * @param string $password
+     *
      * @return array
      */
-    abstract public function loginUsers(string $email, string $password): array;
+    abstract public function loginUsers(string $email, string $password) : array;
 
     /**
      * Social Login for many providers.
+     *
      * @param Sources $source
      * @param string $accessToken
      * @param array $userInfo
+     *
      * @return Array
      */
-    protected function providerLogin(Sources $source, string $identifier, array $userInfo): array
+    protected function providerLogin(Sources $source, string $identifier, array $userInfo) : array
     {
         $existingUser = Users::findFirst([
             'conditions' => 'email = ?0 and is_deleted = 0 and status = 1',
@@ -51,8 +55,8 @@ trait SocialLoginTrait
         ]);
 
         /**
-        * Lets find if user has a linked source by social network id.
-        */
+         * Lets find if user has a linked source by social network id.
+         */
         $userLinkedSource = UserLinkedSources::findFirst([
             'conditions' => 'users_id = ?0 and source_id = ?1 and source_users_id_text = ?2 and is_deleted = 0',
             'bind' => [
@@ -101,17 +105,19 @@ trait SocialLoginTrait
      * @param string $identifier
      * @param array $userInfo
      * @param string $password
+     *
      * @return Users
      */
-    protected function createUser(Sources $source, string $identifier, array $userInfo, string $password): Users
+    protected function createUser(Sources $source, string $identifier, array $userInfo, string $password) : Users
     {
         $random = new Random();
+        $appName = Di::getDefault()->getApp()->name;
 
         //Create a new User
         $newUser = new Users();
-        $newUser->firstname = $userInfo['firstname'];
-        $newUser->lastname = $userInfo['lastname'];
-        $newUser->displayname = lcfirst($userInfo['firstname']) . $userInfo['lastname'];
+        $newUser->firstname = !empty($userInfo['firstname']) ? $userInfo['firstname'] : $appName;
+        $newUser->lastname = !empty($userInfo['lastname']) ? $userInfo['lastname'] : 'User';
+        $newUser->displayname = $appName . $random->number(99999999);
         $newUser->password = $password;
         $newUser->email = $userInfo['email'];
         $newUser->user_active = 1;

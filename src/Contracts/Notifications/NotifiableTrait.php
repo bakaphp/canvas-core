@@ -9,12 +9,13 @@ use Canvas\Notifications\Notify;
 trait NotifiableTrait
 {
     /**
-     * Notify a given User entity
+     * Notify a given User entity.
      *
-     * @param NotificationInterfase $notification
+     * @param NotificationInterface $notification
+     *
      * @return bool
      */
-    public function notify(NotificationInterfase $notification): bool
+    public function notify(NotificationInterface $notification) : bool
     {
         return Notify::one($this, $notification);
     }
