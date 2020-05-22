@@ -9,6 +9,7 @@ use Canvas\Models\Sources;
 use Canvas\Models\UserLinkedSources;
 use Canvas\Models\Users;
 use Exception;
+use Phalcon\Di;
 use Phalcon\Security\Random;
 
 /**
@@ -110,12 +111,13 @@ trait SocialLoginTrait
     protected function createUser(Sources $source, string $identifier, array $userInfo, string $password) : Users
     {
         $random = new Random();
+        $appName = Di::getDefault()->getApp()->name;
 
         //Create a new User
         $newUser = new Users();
-        $newUser->firstname = !empty($userInfo['firstname']) ? $userInfo['firstname'] : $random->base64Safe(8);
-        $newUser->lastname = !empty($userInfo['lastname']) ? $userInfo['lastname'] : $random->base64Safe(8);
-        $newUser->displayname = lcfirst($newUser->firstname) . '.' . $newUser->lastname;
+        $newUser->firstname = !empty($userInfo['firstname']) ? $userInfo['firstname'] : $appName;
+        $newUser->lastname = !empty($userInfo['lastname']) ? $userInfo['lastname'] : 'User';
+        $newUser->displayname = $appName . '-' . $random->base64(8);
         $newUser->password = $password;
         $newUser->email = $userInfo['email'];
         $newUser->user_active = 1;
