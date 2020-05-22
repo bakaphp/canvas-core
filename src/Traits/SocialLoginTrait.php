@@ -117,7 +117,7 @@ trait SocialLoginTrait
         $newUser = new Users();
         $newUser->firstname = !empty($userInfo['firstname']) ? $userInfo['firstname'] : $appName;
         $newUser->lastname = !empty($userInfo['lastname']) ? $userInfo['lastname'] : 'User';
-        $newUser->displayname = $appName . $random->number(99999999);
+        $newUser->displayname = !empty($userInfo['firstname']) ? $userInfo['firstname'] . '.' . $userInfo['lastname'] : $appName . $random->number(99999999);
         $newUser->password = $password;
         $newUser->email = $userInfo['email'];
         $newUser->user_active = 1;
