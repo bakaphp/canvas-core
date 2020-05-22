@@ -2,12 +2,12 @@
 
 namespace Canvas\Cli\Jobs;
 
-use Canvas\Contracts\Queue\QueueableJobInterfase;
+use Canvas\Contracts\Queue\QueueableJobInterface;
 use Canvas\Jobs\Job;
 use Canvas\Notifications\PusherNotification;
 use Phalcon\Di;
 
-class Pusher extends Job implements QueueableJobInterfase
+class Pusher extends Job implements QueueableJobInterface
 {
     /**
      * Realtime channel.
