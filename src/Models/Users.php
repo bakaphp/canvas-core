@@ -23,6 +23,7 @@ use Phalcon\Validation;
 use Phalcon\Validation\Validator\Email;
 use Phalcon\Validation\Validator\PresenceOf;
 use Phalcon\Validation\Validator\Uniqueness;
+
 /**
  * Class Users.
  *
@@ -735,5 +736,25 @@ class Users extends BakUser implements UserInterface
         $this->updateOrFail();
 
         return $this->user_activation_forgot;
+    }
+
+    /**
+     * Generate a default displayname by firstname and lastname.
+     * If firstname is set to the name of app then generate a random displayname.
+     *
+     * @return string
+     */
+    public function generateDefaultDisplayname() : string
+    {
+        if (empty($this->firstname) && empty($this->lastname)) {
+            $appName = Di::getDefault()->getApp()->name;
+            $random = new Random();
+            $this->lastname = 'User';
+            $this->firstname = $appName;
+
+            return  $appName . $random->number(99999999);
+        }
+
+        return $this->firstname . '.' . $this->lastname;
     }
 }
