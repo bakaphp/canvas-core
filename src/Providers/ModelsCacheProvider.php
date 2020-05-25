@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Canvas\Providers;
 
 use function Canvas\Core\envValue;
+
+use Canvas\Constants\Flags;
 use Phalcon\Cache\Backend\Memory;
 use Phalcon\Cache\Backend\Redis;
 use Phalcon\Cache\Frontend\Data;
@@ -19,10 +21,12 @@ class ModelsCacheProvider implements ServiceProviderInterface
      */
     public function register(DiInterface $container)
     {
+        $config = $container->get('config');
+
         $container->setShared(
             'modelsCache',
-            function () use ($container) {
-                if (!$container->getConfig()->app->production) {
+            function () use ($config) {
+                if (strtolower($config->app->env) != Flags::PRODUCTION) {
                     $frontCache = new None();
                     $cache = new Memory($frontCache);
                 } else {
