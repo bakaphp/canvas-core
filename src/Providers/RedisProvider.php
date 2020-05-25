@@ -18,11 +18,13 @@ class RedisProvider implements ServiceProviderInterface
 
         $container->setShared(
             'redis',
-            function () use ($app) {
+            function (bool $prefix = true) use ($app) {
                 //Connect to redis
                 $redis = new Redis();
                 $redis->connect(envValue('REDIS_HOST', '127.0.0.1'), (int) envValue('REDIS_PORT', 6379));
-                $redis->setOption(Redis::OPT_PREFIX, $app . ':');	// use custom prefix on all keys
+                if ($prefix) {
+                    $redis->setOption(Redis::OPT_PREFIX, $app . ':'); // use custom prefix on all keys
+                }
                 $redis->setOption(Redis::OPT_SERIALIZER, Redis::SERIALIZER_PHP);
                 return $redis;
             }
