@@ -5,11 +5,10 @@ namespace Canvas\Cli\Tasks;
 use function Canvas\Core\appPath;
 use Phalcon\Cache\Backend\Libmemcached;
 use Phalcon\Cli\Task as PhTask;
-use RecursiveDirectoryIterator;
-use RecursiveIteratorIterator;
 use Phalcon\Queue\Beanstalk\Extended as BeanstalkExtended;
 use Phalcon\Queue\Beanstalk\Job;
-use function Canvas\Core\envValue;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 
 /**
  * Class ClearcacheTask.
@@ -70,8 +69,8 @@ class ClearcacheTask extends PhTask
     protected function clearMemCached() : void
     {
         echo 'Clearing data cache' . PHP_EOL;
-        
-        $keys = $this->redis->keys('*'.$this->config->app->id.'*');
+
+        $keys = $this->di->get('redis', [false])->keys('*' . $this->config->app->id . '*');
 
         echo sprintf('Found %s keys', count($keys)) . PHP_EOL;
         foreach ($keys as $key) {
