@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare (strict_types = 1);
 
 namespace Canvas\Notifications;
 
@@ -34,14 +34,15 @@ class Notify
      *
      * @return void
      */
-    public static function one(UserInterface $user, NotificationInterface $notification) : bool
+    public static function one(UserInterface $user, NotificationInterface $notification): bool
     {
-        if (Di::getDefault()->has('userData')) {
+        $user = !$notification->getTo() ? $user : $notification->getTo();
+
+        if (Di::getDefault()->has('userData') && !$notification->getFrom()) {
             $from = Di::getDefault()->getUserData();
         } else {
-            $from = $user;
+            $from = !$notification->getFrom() ? $user : $notification->getFrom();
         }
-
         $notification->setTo($user);
         $notification->setFrom($from);
 
