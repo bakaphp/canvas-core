@@ -8,6 +8,7 @@ use Canvas\Dto\Files;
 use Canvas\Mapper\FileMapper;
 use Canvas\Models\FileSystem;
 use Canvas\Models\FileSystemEntities;
+use Canvas\Models\FileSystemSettings;
 use Canvas\Models\SystemModules;
 use Phalcon\Mvc\Model\ResultsetInterface;
 use RuntimeException;
@@ -246,6 +247,9 @@ trait FileSystemModelTrait
 
         //do we allow images by entity to be public to anybody accessing it directly by the entity?
         if ($appPublicImages) {
+            /**
+             * @todo optimize this queries to slow
+             */
             $condition = 'system_modules_id = :system_module_id: AND entity_id = :entity_id: AND is_deleted = :is_deleted:
             AND filesystem_id IN (SELECT f.id from \Canvas\Models\FileSystem f WHERE
                 f.is_deleted = :is_deleted: ' . $fileTypeSql . '
@@ -327,15 +331,58 @@ trait FileSystemModelTrait
 
         //do we allow images by entity to be public to anybody accessing it directly by the entity?
         if ($appPublicImages) {
+            $condition = 'system_modules_id = :system_module_id: AND entity_id = :entity_id: AND is_deleted = :is_deleted: and field_name = :field_name: ';
+        } else {
+            $bindParams['company_id'] = $this->di->getUserData()->currentCompanyId();
+            $condition = 'system_modules_id = :system_module_id: AND entity_id = :entity_id: AND is_deleted = :is_deleted: and field_name = :field_name: and companies_id = :company_id:';
+        }
+
+        return FileSystemEntities::findFirst([
+            'conditions' => $condition,
+            'order' => 'id desc',
+            'bind' => $bindParams
+        ]);
+    }
+
+    /**
+     * Given the filename look for it version with
+     * the key and value associated to the file.
+     *
+     * @param string $fieldName
+     * @param string $key
+     * @param string $value
+     *
+     * @return void
+     */
+    public function getAttachmentByNameAndAttributes(string $fieldName, string $key, string $value)
+    {
+        $systemModule = SystemModules::getSystemModuleByModelName(self::class);
+        $appPublicImages = (bool) $this->di->getApp()->get('public_images');
+
+        $bindParams = [
+            'system_module_id' => $systemModule->getId(),
+            'entity_id' => $this->getId(),
+            'is_deleted' => 0,
+            'field_name' => $fieldName,
+            'name' => $key,
+            'value' => $value
+        ];
+
+        //do we allow images by entity to be public to anybody accessing it directly by the entity?
+        if ($appPublicImages) {
             $condition = 'system_modules_id = :system_module_id: AND entity_id = :entity_id: AND is_deleted = :is_deleted: and field_name = :field_name: 
-            AND filesystem_id IN (SELECT f.id from \Canvas\Models\FileSystem f WHERE
-                f.is_deleted = :is_deleted:
+            AND filesystem_id IN (
+                SELECT s.filesystem_id FROM 
+                    ' . FileSystemSettings::class . ' s 
+                    WHERE name = :name: AND value = :value: 
             )';
         } else {
             $bindParams['company_id'] = $this->di->getUserData()->currentCompanyId();
-            $condition = 'system_modules_id = :system_module_id: AND entity_id = :entity_id: AND is_deleted = :is_deleted: and field_name = :field_name: and companies_id = :company_id:
-            AND filesystem_id IN (SELECT f.id from \Canvas\Models\FileSystem f WHERE
-                f.is_deleted = :is_deleted: AND f.companies_id = :company_id:
+            $condition = 'system_modules_id = :system_module_id: AND entity_id = :entity_id: AND is_deleted = :is_deleted: and field_name = :field_name: and companies_id = :company_id: 
+            AND filesystem_id IN (
+                SELECT s.filesystem_id FROM 
+                    ' . FileSystemSettings::class . ' s 
+                    WHERE name = :name: AND value = :value: 
             )';
         }
 
@@ -347,7 +394,7 @@ trait FileSystemModelTrait
     }
 
     /**
-     * Undocumented function.
+     * Get the file byt it's name.
      *
      * @param string $fieldName
      *
@@ -355,11 +402,35 @@ trait FileSystemModelTrait
      */
     public function getFileByName(string $fieldName) : ?object
     {
+        return $this->fileMapper($this->getAttachmentByName($fieldName));
+    }
+
+    /**
+     * Get file by name and attributes.
+     *
+     * @param string $fieldName
+     * @param string $key
+     * @param string $value
+     *
+     * @return object|null
+     */
+    public function getFileByNameWithAttributes(string $fieldName, string $key, string $value) : ?object
+    {
+        return $this->fileMapper($this->getAttachmentByNameAndAttributes($fieldName, $key, $value));
+    }
+
+    /**
+     * Convert identity to mapper.
+     *
+     * @param FileSystemEntities|null $fileEntity
+     *
+     * @return object|null
+     */
+    protected function fileMapper($fileEntity) : ?object
+    {
         $systemModule = SystemModules::getSystemModuleByModelName(self::class);
 
-        $fileEntity = $this->getAttachmentByName($fieldName);
-
-        if ($fileEntity) {
+        if ($fileEntity instanceof FileSystemEntities) {
             $fileMapper = new FileMapper($this->getId(), $systemModule->getId());
 
             //add a mapper
