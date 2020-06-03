@@ -12,7 +12,7 @@ use Phalcon\Di\ServiceProviderInterface;
 use Phalcon\Mvc\Micro;
 
 /**
- * Absstract class that provides the boostrap structure for any Micro PhalconPHP App.
+ * Abstract class that provides the bootstrap structure for any Micro PhalconPHP App.
  */
 abstract class AbstractBootstrap
 {

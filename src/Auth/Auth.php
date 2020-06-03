@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Canvas\Auth;
 
+use Baka\Contracts\Auth\UserInterface;
+use Baka\Exception\AuthException;
 use Canvas\Models\Users;
 use Exception;
 use stdClass;
@@ -11,13 +13,15 @@ use stdClass;
 abstract class Auth
 {
     /**
-     * Check the user login attems to the app.
+     * Check the user login attempt to the app.
      *
      * @param Users $user
+     *
      * @throws Exception
+     *
      * @return void
      */
-    protected static function loginAttempsValidation(Users $user): bool
+    protected static function loginAttemptsValidation(UserInterface $user) : bool
     {
         //load config
         $config = new stdClass();
@@ -37,7 +41,7 @@ abstract class Auth
             && $config->max_login_attempts
             && $user->user_last_login_try >= (time() - ($config->login_reset_time * 60))
             && $user->user_login_tries >= $config->max_login_attempts) {
-            throw new Exception(sprintf(_('You have exhausted all login attempts.'), $config->max_login_attempts));
+            throw new AuthException(sprintf(_('You have exhausted all login attempts.'), $config->max_login_attempts));
         }
 
         return true;
@@ -47,9 +51,10 @@ abstract class Auth
      * Reset login tries.
      *
      * @param Users $user
+     *
      * @return boolean
      */
-    protected static function resetLoginTries(Users $user): bool
+    protected static function resetLoginTries(UserInterface $user) : bool
     {
         $user->lastvisit = date('Y-m-d H:i:s');
         $user->user_login_tries = 0;
@@ -62,7 +67,7 @@ abstract class Auth
      *
      * @return bool
      */
-    protected static function updateLoginTries(Users $user): bool
+    protected static function updateLoginTries(UserInterface $user) : bool
     {
         if ($user->getId() != Users::ANONYMOUS) {
             $user->user_login_tries += 1;

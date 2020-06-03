@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace Canvas\Auth;
 
+use Canvas\Hashing\Password;
 use Canvas\Models\Users;
 use Exception;
 use Phalcon\Di;
-use RuntimeException;
-use Canvas\Hashing\Password;
 
 class App extends Auth
 {
@@ -17,9 +16,10 @@ class App extends Auth
      *
      * @param string $email
      * @param string $password
-     * @param integer $autologin
-     * @param integer $admin
+     * @param int $autologin
+     * @param int $admin
      * @param string $userIp
+     *
      * @return Users
      */
     public static function login(string $email, string $password, int $autologin = 1, int $admin, string $userIp) : Users
@@ -36,7 +36,7 @@ class App extends Auth
             throw new Exception(_('Invalid Username or Password.'));
         }
 
-        self::loginAttempsValidation($user);
+        self::loginAttemptsValidation($user);
 
         //check if the user exist on this app
         $currentAppUserInfo = $user->getApp();
@@ -70,9 +70,10 @@ class App extends Auth
      *
      * @param Users $user
      * @param string $password
+     *
      * @return bool
      */
-    public static function updatePassword(Users $user, string $password): bool
+    public static function updatePassword(Users $user, string $password) : bool
     {
         $app = Di::getDefault()->getApp();
 
