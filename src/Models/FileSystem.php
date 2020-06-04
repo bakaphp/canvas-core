@@ -6,11 +6,12 @@ namespace Canvas\Models;
 
 use Baka\Database\Contracts\HashTableTrait;
 use Canvas\Http\Exception\NotFoundException;
-use Phalcon\Di;
 use Exception;
+use Phalcon\Di;
 
 /**
  * Classs for FileSystem.
+ *
  * @property Users $userData
  * @property Request $request
  * @property Config $config
@@ -177,25 +178,39 @@ class FileSystem extends AbstractModel
      * Get the element by its entity id.
      *
      * @param string $id
+     *
      * @return FileSystem
      * @throw Exception
      */
-    public static function getAllByEntityId($id, SystemModules $systeModule)
+    public static function getAllByEntityId($id, SystemModules $systemModule)
     {
+        //public images
+        $condition = 'is_deleted = :is_deleted: AND apps_id = :apps_id: AND id in 
+        (SELECT 
+            filesystem_id from \Canvas\Models\FileSystemEntities e
+            WHERE e.system_modules_id = :system_modules_id: AND e.entity_id = :entity_id:
+        )';
+
+        $bind = [
+            'is_deleted' => 0,
+            'apps_id' => Di::getDefault()->getApp()->getId(),
+            'system_modules_id' => $systemModule->getId(),
+            'entity_id' => $id
+        ];
+
+        if ((bool) Di::getDefault()->get('app')->get('public_images') == false) {
+            $condition = 'is_deleted = :is_deleted: AND apps_id = :apps_id: AND companies_id = :companies_id: AND id in 
+                (SELECT 
+                    filesystem_id from \Canvas\Models\FileSystemEntities e
+                    WHERE e.system_modules_id = :system_modules_id: AND e.entity_id = :entity_id:
+                )';
+
+            $bind['companies_id'] = Di::getDefault()->getUserData()->currentCompanyId();
+        }
+
         return FileSystem::find([
-            'conditions' => '
-                is_deleted = ?0 AND apps_id = ?1 AND companies_id = ?2 AND id in 
-                    (SELECT 
-                        filesystem_id from \Canvas\Models\FileSystemEntities e
-                        WHERE e.system_modules_id = ?3 AND e.entity_id = ?4
-                    )',
-            'bind' => [
-                0,
-                Di::getDefault()->getApp()->getId(),
-                Di::getDefault()->getUserData()->currentCompanyId(),
-                $systeModule->getId(),
-                $id
-            ]
+            'conditions' => $condition,
+            'bind' => $bind
         ]);
     }
 
@@ -203,18 +218,27 @@ class FileSystem extends AbstractModel
      * Get the element by its entity id.
      *
      * @param string $id
+     *
      * @return FileSystem
      * @throw Exception
      */
-    public static function getById($id): FileSystem
+    public static function getById($id) : FileSystem
     {
+        //public images
+        $conditions = 'id = :id: AND apps_id = :apps_id: AND is_deleted = 0';
+        $bind = [
+            'id' => $id,
+            'apps_id' => Di::getDefault()->getApp()->getId()
+        ];
+
+        if ((bool) Di::getDefault()->get('app')->get('public_images') == false) {
+            $conditions = 'id = :id: AND companies_id = :companies_id: AND apps_id = :apps_id: AND is_deleted = 0';
+            $bind['companies_id'] = Di::getDefault()->getUserData()->currentCompanyId();
+        }
+
         $file = self::findFirst([
-            'conditions' => 'id = ?0 AND companies_id = ?1 AND apps_id = ?2 AND is_deleted = 0',
-            'bind' => [
-                $id,
-                Di::getDefault()->getUserData()->currentCompanyId(),
-                Di::getDefault()->getApp()->getId()
-            ]
+            'conditions' => $conditions,
+            'bind' => $bind
         ]);
 
         if (!is_object($file)) {
@@ -225,11 +249,11 @@ class FileSystem extends AbstractModel
     }
 
     /**
-     * Given a new string move the file to that localtion.
+     * Given a new string move the file to that location.
      *
      * @return bool
      */
-    public function move(string $location): bool
+    public function move(string $location) : bool
     {
         $appSettingFileConfig = $this->di->get('app')->get('filesystem');
         $fileSystemConfig = $this->di->get('config')->filesystem->{$appSettingFileConfig};
