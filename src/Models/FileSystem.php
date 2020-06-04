@@ -249,7 +249,7 @@ class FileSystem extends AbstractModel
     }
 
     /**
-     * Given a new string move the file to that localtion.
+     * Given a new string move the file to that location.
      *
      * @return bool
      */
