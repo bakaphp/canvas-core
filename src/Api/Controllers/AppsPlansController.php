@@ -53,7 +53,7 @@ class AppsPlansController extends BaseController
      */
     public function onConstruct()
     {
-        if (!$this->userData->hasRole('Default.Admins') || (int) $id === 0) {
+        if (!$this->userData->hasRole('Default.Admins')) {
             $id = $this->userData->getId();
         }
 
