@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Canvas\Traits;
 
-use Canvas\Models\Roles;
-use Canvas\Models\UserRoles;
 use Canvas\Http\Exception\InternalServerErrorException;
 use Canvas\Http\Exception\UnauthorizedException;
+use Canvas\Models\Roles;
+use Canvas\Models\UserRoles;
 
 /**
  * Trait FractalTrait.
@@ -21,9 +21,10 @@ trait PermissionsTrait
      * Example: App.Role.
      *
      * @param string $role
+     *
      * @return boolean
      */
-    public function assignRole(string $role): bool
+    public function assignRole(string $role) : bool
     {
         /**
          * check if we have a dot, that means it legacy and sending the app name
@@ -65,9 +66,10 @@ trait PermissionsTrait
      * Example: App.Role.
      *
      * @param string $role
+     *
      * @return boolean
      */
-    public function removeRole(string $role): bool
+    public function removeRole(string $role) : bool
     {
         $role = Roles::getByAppName($role, $this->getDefaultCompany());
 
@@ -92,9 +94,10 @@ trait PermissionsTrait
      * Check if the user has this role.
      *
      * @param string $role
+     *
      * @return boolean
      */
-    public function hasRole(string $role): bool
+    public function hasRole(string $role) : bool
     {
         $role = Roles::getByAppName($role, $this->getDefaultCompany());
 
@@ -118,9 +121,10 @@ trait PermissionsTrait
      *
      * @param string $action
      * @param bool $throwException
+     *
      * @return boolean
      */
-    public function can(string $action, bool $throwException = false): bool
+    public function can(string $action, bool $throwException = false) : bool
     {
         //if we find the . then les
         if (strpos($action, '.') === false) {
