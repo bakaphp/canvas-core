@@ -72,16 +72,6 @@ class CompaniesCustomFields extends AbstractModel
     }
 
     /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource(): string
-    {
-        return 'companies_custom_fields';
-    }
-
-    /**
      * Set the custom primary field id
      *
      * @param int $id

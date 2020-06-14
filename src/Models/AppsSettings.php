@@ -67,13 +67,4 @@ class AppsSettings extends AbstractModel
         );
     }
 
-    /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource() : string
-    {
-        return 'apps_settings';
-    }
 }

@@ -51,14 +51,4 @@ class UsersAssociatedCompanies extends \Baka\Auth\Models\UsersAssociatedCompany
 
         $this->setSource('users_associated_company');
     }
-
-    /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource(): string
-    {
-        return 'users_associated_company';
-    }
 }

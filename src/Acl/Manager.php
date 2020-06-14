@@ -7,7 +7,7 @@ namespace Canvas\Acl;
 use Phalcon\Db;
 use Phalcon\Db\AdapterInterface as DbAdapter;
 use Phalcon\Acl\Exception;
-use Phalcon\Acl\Resource;
+use Phalcon\Acl\Component;
 use Phalcon\Acl;
 use Phalcon\Acl\Role;
 use Phalcon\Acl\RoleInterface;
@@ -294,15 +294,15 @@ class Manager extends Adapter
      * Example:
      * <code>
      * //Add a resource to the the list allowing access to an action
-     * $acl->addResource(new Phalcon\Acl\Resource('customers'), 'search');
+     * $acl->addResource(new Phalcon\Acl\Component('customers'), 'search');
      * $acl->addResource('customers', 'search');
      * //Add a resource  with an access list
-     * $acl->addResource(new Phalcon\Acl\Resource('customers'), ['create', 'search']);
+     * $acl->addResource(new Phalcon\Acl\Component('customers'), ['create', 'search']);
      * $acl->addResource('customers', ['create', 'search']);
      * $acl->addResource('App.customers', ['create', 'search']);
      * </code>.
      *
-     * @param  \Phalcon\Acl\Resource|string $resource
+     * @param  \Phalcon\Acl\Component|string $resource
      * @param  array|string                 $accessList
      * @return boolean
      */
@@ -312,7 +312,7 @@ class Manager extends Adapter
             //echeck if we have a dot , taht means we are sending the specific app to use
             $resource = $this->setAppByResource($resource);
 
-            $resource = new Resource($resource);
+            $resource = new Component($resource);
         }
 
         if (!ResourcesDB::isResource($resource->getName())) {
@@ -367,14 +367,14 @@ class Manager extends Adapter
     /**
      * {@inheritdoc}
      *
-     * @return \Phalcon\Acl\Resource[]
+     * @return \Phalcon\Acl\Component[]
      */
-    public function getResources() : \Phalcon\Acl\ResourceInterface
+    public function getResources() : \Phalcon\Acl\ComponentInterface
     {
         $resources = [];
 
         foreach (ResourcesDB::find() as $row) {
-            $resources[] = new Resource($row->name, $row->description);
+            $resources[] = new Component($row->name, $row->description);
         }
         return $resources;
     }
@@ -475,7 +475,7 @@ class Manager extends Adapter
     public function isAllowed($role, $resource, $access, array $parameters = null) : bool
     {
         $role = $this->setAppByRole($role);
-        //resoure always overwrites the role app?
+        //resource always overwrites the role app?
         $resource = $this->setAppByResource($resource);
         $roleObj = RolesDB::getByName($role);
 

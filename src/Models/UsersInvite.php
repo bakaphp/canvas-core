@@ -99,16 +99,6 @@ class UsersInvite extends AbstractModel
     }
 
     /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource(): string
-    {
-        return 'users_invite';
-    }
-
-    /**
      * What to do after the creation of a new users
      *  - Assign default role.
      *

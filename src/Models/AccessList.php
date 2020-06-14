@@ -79,16 +79,6 @@ class AccessList extends AbstractModel
     }
 
     /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource(): string
-    {
-        return 'access_list';
-    }
-
-    /**
      * Given the resource and access check if exist.
      *
      * @param Roles $role

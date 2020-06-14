@@ -16,7 +16,7 @@ use Canvas\Models\Subscription as CanvasSubscription;
 use Phalcon\Cashier\Subscription;
 use Canvas\Models\UserCompanyApps;
 use function Baka\paymentGatewayIsActive;
-use Canvas\Validation as CanvasValidation;
+use Baka\Validation as CanvasValidation;
 use Canvas\Models\PaymentMethodsCreds;
 
 /**

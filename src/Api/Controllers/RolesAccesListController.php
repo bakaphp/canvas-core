@@ -15,7 +15,7 @@ use Canvas\Exception\ServerErrorHttpException;
 use Canvas\Models\Roles;
 use Baka\Http\QueryParser;
 use Canvas\Http\Exception\NotFoundException;
-use Canvas\Validation as CanvasValidation;
+use Baka\Validation as CanvasValidation;
 
 /**
  * Class RolesController.

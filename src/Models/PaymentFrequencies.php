@@ -49,14 +49,4 @@ class PaymentFrequencies extends AbstractModel
             ['alias' => 'plans']
         );
     }
-
-    /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource(): string
-    {
-        return 'payment_frequencies';
-    }
 }

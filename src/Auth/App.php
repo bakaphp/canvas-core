@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Canvas\Auth;
 
+use Baka\Auth\Auth;
 use Canvas\Hashing\Password;
 use Canvas\Models\Users;
 use Exception;

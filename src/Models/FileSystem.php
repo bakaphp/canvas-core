@@ -162,17 +162,7 @@ class FileSystem extends AbstractModel
             ['alias' => 'entities']
         );
     }
-
-    /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource() : string
-    {
-        return 'filesystem';
-    }
-
+    
     /**
      * Get the element by its entity id.
      *

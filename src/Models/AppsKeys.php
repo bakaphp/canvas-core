@@ -84,16 +84,6 @@ class AppsKeys extends AbstractModel
     }
 
     /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource() : string
-    {
-        return 'apps_keys';
-    }
-
-    /**
      * Validate Apps Keys by client id, client secret id and apps key.
      *
      * @param string $clientId

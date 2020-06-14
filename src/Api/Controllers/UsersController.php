@@ -11,7 +11,7 @@ use Canvas\Http\Exception\InternalServerErrorException;
 use Canvas\Mapper\UserMapper;
 use Canvas\Models\Users;
 use Canvas\Models\UsersAssociatedApps;
-use Canvas\Validation as CanvasValidation;
+use Baka\Validation as CanvasValidation;
 use Phalcon\Http\Response;
 use Phalcon\Validation\Validator\PresenceOf;
 

@@ -8,31 +8,15 @@ use Phalcon\Validation\Validator\PresenceOf;
 use Canvas\Exception\ServerErrorHttpException;
 use Exception;
 use Carbon\Carbon;
-use Baka\Database\Contracts\HashTableTrait;
+use Baka\Contracts\Database\HashTableTrait;
 use Baka\Blameable\BlameableTrait;
 use Canvas\Traits\UsersAssociatedTrait;
 use Canvas\Traits\FileSystemModelTrait;
 use Baka\Blameable\Blameable;
+use Baka\Contracts\EventsManager\EventManagerAwareTrait;
 use Canvas\Http\Exception\InternalServerErrorException;
-use Canvas\Traits\EventManagerAwareTrait;
 use Phalcon\Di;
 
-/**
- * Class Companies.
- *
- * @package Canvas\Models
- *
- * @property Users $user
- * @property Users $userData
- * @property DefaultCompany $default_company
- * @property CompaniesBranches $branch
- * @property CompaniesBranches $branches
- * @property Subscription $subscription
- * @property Config $config
- * @property UserCompanyApps $app
- * @property \Phalcon\Di $di
- * @property Roles $roles_id
- */
 class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
 {
     use HashTableTrait;
@@ -41,106 +25,19 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
     use BlameableTrait;
     use EventManagerAwareTrait;
 
+    public int $users_id;
+    public ?int $has_activities;
+    public ?int $appPlanId = null;
+    public ?int $currency_id;
+    public string $language;
+    public string $timezone;
+    public string $currency;
+    public int $system_modules_id = 1;
+    public ?string $phone;
+
     const DEFAULT_COMPANY = 'DefaulCompany';
     const DEFAULT_COMPANY_APP = 'DefaulCompanyApp_';
     const PAYMENT_GATEWAY_CUSTOMER_KEY = 'payment_gateway_customer_id';
-
-    /**
-     *
-     * @var integer
-     */
-    public $id;
-
-    /**
-     *
-     * @var string
-     */
-    public $name;
-
-    /**
-     *
-     * @var string
-     */
-    public $profile_image;
-
-    /**
-     *
-     * @var string
-     */
-    public $website;
-
-    /**
-     *
-     * @var integer
-     */
-    public $users_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $has_activities;
-
-    /**
-     *
-     * @var string
-     */
-    public $created_at;
-
-    /**
-     *
-     * @var string
-     */
-    public $updated_at;
-
-    /**
-     *
-     * @var integer
-     */
-    public $is_deleted;
-
-    /**
-     * Provide the app plan id.
-     *
-     * @var integer
-     */
-    public $appPlanId = null;
-
-    /**
-     *
-     * @var integer
-     */
-    public $currency_id;
-
-    /**
-     *
-     * @var string
-     */
-    public $language;
-
-    /**
-     *
-     * @var string
-     */
-    public $timezone;
-
-    /**
-     *
-     * @var string
-     */
-    public $currency;
-
-    /**
-     *
-     * @var integer
-     */
-    public $system_modules_id = 1;
-
-    /**
-     *
-     * @var string
-     */
-    public $phone;
 
     /**
      * Initialize method for model.
@@ -359,16 +256,6 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
         $company->saveOrFail();
 
         return $company;
-    }
-
-    /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource() : string
-    {
-        return 'companies';
     }
 
     /**

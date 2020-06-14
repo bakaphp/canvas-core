@@ -16,7 +16,7 @@ use Exception;
 use Canvas\Http\Exception\UnprocessableEntityException;
 use Canvas\Traits\AuthTrait;
 use Canvas\Notifications\Invitation;
-use Canvas\Validation as CanvasValidation;
+use Baka\Validation as CanvasValidation;
 
 /**
  * Class LanguagesController.

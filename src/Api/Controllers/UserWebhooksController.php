@@ -6,7 +6,7 @@ namespace Canvas\Api\Controllers;
 
 use Canvas\Http\Exception\UnprocessableEntityException;
 use Canvas\Models\UserWebhooks;
-use Canvas\Validation;
+use Baka\Validation;
 use Phalcon\Http\Response;
 use Canvas\Webhooks;
 use Phalcon\Validation\Validator\PresenceOf;

@@ -61,13 +61,4 @@ class Currencies extends AbstractModel
         $this->setSource('currencies');
     }
 
-    /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource() : string
-    {
-        return 'currencies';
-    }
 }

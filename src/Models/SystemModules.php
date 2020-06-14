@@ -6,86 +6,10 @@ namespace Canvas\Models;
 use Phalcon\Di;
 use Canvas\Http\Exception\InternalServerErrorException;
 use Phalcon\Mvc\ModelInterface;
+use Baka\Database\SystemModules as BakaSystemModules;
 
-class SystemModules extends AbstractModel
+class SystemModules extends BakaSystemModules
 {
-    /**
-     *
-     * @var integer
-     */
-    public $id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $name;
-
-    /**
-     *
-     * @var integer
-     */
-    public $slug;
-
-    /**
-     *
-     * @var string
-     */
-    public $model_name;
-
-    /**
-     *
-     * @var integer
-     */
-    public $apps_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $parents_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $menu_order;
-
-    /**
-     *
-     * @var integer
-     */
-    public $use_elastic;
-
-    /**
-     *
-     * @var string
-     */
-    public $browse_fields;
-
-    /**
-     *
-     * @var integer
-     */
-    public $show;
-
-    /**
-     *
-     * @var string
-     */
-    public $created_at;
-
-    /**
-     *
-     * @var string
-     */
-    public $updated_at;
-
-    /**
-     *
-     * @var integer
-     */
-    public $is_deleted;
 
     /**
      * Initialize method for model.
@@ -126,16 +50,6 @@ class SystemModules extends AbstractModel
             'id',
             ['alias' => 'companyBranch']
         );
-    }
-
-    /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource(): string
-    {
-        return 'system_modules';
     }
 
     /**

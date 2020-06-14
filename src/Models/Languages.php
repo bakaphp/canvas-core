@@ -56,13 +56,4 @@ class Languages extends AbstractModel
         $this->setSource('languages');
     }
 
-    /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource(): string
-    {
-        return 'languages';
-    }
 }

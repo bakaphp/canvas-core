@@ -144,16 +144,6 @@ class Roles extends AbstractModel
     }
 
     /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource(): string
-    {
-        return 'roles';
-    }
-
-    /**
      * Check if the role existe in the db.
      *
      * @param AclRole $role

@@ -66,13 +66,4 @@ class CompaniesAssociations extends AbstractModel
         );
     }
 
-    /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource() : string
-    {
-        return 'companies_associations';
-    }
 }

@@ -58,13 +58,4 @@ class CompaniesSettings extends \Baka\Auth\Models\CompanySettings
         $this->setSource('companies_settings');
     }
 
-    /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource(): string
-    {
-        return 'companies_settings';
-    }
 }

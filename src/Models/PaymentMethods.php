@@ -54,16 +54,6 @@ class PaymentMethods extends AbstractModel
      *
      * @return string
      */
-    public function getSource(): string
-    {
-        return 'payment_methods';
-    }
-
-    /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
     public static function getDefault(): self
     {
         return self::findFirst(['conditions' => 'is_default = 1 and is_deleted = 0']);

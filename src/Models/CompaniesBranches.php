@@ -127,14 +127,4 @@ class CompaniesBranches extends AbstractModel
 
         return $this->validate($validator);
     }
-
-    /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource() : string
-    {
-        return 'companies_branches';
-    }
 }

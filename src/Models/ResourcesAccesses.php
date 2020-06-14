@@ -67,16 +67,6 @@ class ResourcesAccesses extends AbstractModel
     }
 
     /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource(): string
-    {
-        return 'resources_accesses';
-    }
-
-    /**
      * Check if it exist
      *
      * @param Resources $resouce

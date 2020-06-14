@@ -95,16 +95,6 @@ class UserCompanyAppsActivities extends AbstractModel
     }
 
     /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource() : string
-    {
-        return 'user_company_apps_activities';
-    }
-
-    /**
      * Get the value of the settins by it key.
      *
      * @param string $key

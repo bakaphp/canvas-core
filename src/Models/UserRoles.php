@@ -87,16 +87,6 @@ class UserRoles extends AbstractModel
     }
 
     /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource(): string
-    {
-        return 'user_roles';
-    }
-
-    /**
     * Validations and business logic.
     */
     public function validation()

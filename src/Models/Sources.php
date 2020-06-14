@@ -69,15 +69,6 @@ class Sources extends AbstractModel
         $this->setSource('sources');
     }
 
-    /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource(): string
-    {
-        return 'sources';
-    }
 
     /**
      * Verify if source is Apple

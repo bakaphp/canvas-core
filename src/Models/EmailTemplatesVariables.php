@@ -109,14 +109,4 @@ class EmailTemplatesVariables extends AbstractModel
 
         $this->setSource('email_templates_variables');
     }
-
-    /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource(): string
-    {
-        return 'email_templates_variables';
-    }
 }

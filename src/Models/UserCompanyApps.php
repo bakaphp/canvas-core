@@ -74,16 +74,6 @@ class UserCompanyApps extends \Baka\Auth\Models\UserCompanyApps
     }
 
     /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource() : string
-    {
-        return 'user_company_apps';
-    }
-
-    /**
      * Get the current company app
      *
      * @return void

@@ -122,14 +122,4 @@ class Resources extends AbstractModel
 
         return $resource;
     }
-
-    /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource(): string
-    {
-        return 'resources';
-    }
 }

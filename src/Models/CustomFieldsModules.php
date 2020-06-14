@@ -69,14 +69,4 @@ class CustomFieldsModules extends AbstractModel
         //     ['alias' => 'app']
         // );
     }
-
-    /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource(): string
-    {
-        return 'custom_fields_modules';
-    }
 }

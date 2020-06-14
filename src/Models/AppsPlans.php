@@ -132,15 +132,6 @@ class AppsPlans extends AbstractModel
         );
     }
 
-    /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource() : string
-    {
-        return 'apps_plans';
-    }
 
     /**
      * Just a preatty function that returns the same object for.

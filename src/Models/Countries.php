@@ -32,13 +32,4 @@ class Countries extends AbstractModel
         $this->setSource('countries');
     }
 
-    /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource() : string
-    {
-        return 'countries';
-    }
 }

@@ -21,12 +21,12 @@ use Phalcon\Validation\Validator\StringLength;
 use Baka\Auth\Models\Sessions;
 use Canvas\Auth\Factory;
 use Canvas\Http\Exception\InternalServerErrorException;
-use Canvas\Validation as CanvasValidation;
+use Baka\Validation as CanvasValidation;
 use Canvas\Notifications\ResetPassword;
 use Canvas\Notifications\PasswordUpdate;
 use Canvas\Notifications\Signup;
 use Canvas\Notifications\UpdateEmail;
-use Canvas\Validations\PasswordValidation;
+use Baka\Validations\PasswordValidation;
 use Canvas\Traits\TokenTrait;
 
 /**

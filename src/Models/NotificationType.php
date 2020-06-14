@@ -89,16 +89,6 @@ class NotificationType extends AbstractModel
     }
 
     /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource(): string
-    {
-        return 'notification_types';
-    }
-
-    /**
      * Get the notification by its key
      *  by defautl in any kanvas app the key will be its classname
      *

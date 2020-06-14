@@ -115,16 +115,6 @@ class Notifications extends AbstractModel
     }
 
     /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource(): string
-    {
-        return 'notifications';
-    }
-
-    /**
      * Mark as Read all the notification from a user.
      *
      * @param Users $user

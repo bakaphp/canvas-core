@@ -84,16 +84,6 @@ class PaymentMethodsCreds extends AbstractModel
     }
 
     /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource(): string
-    {
-        return 'payment_methods_creds';
-    }
-
-    /**
      * Returns the current payment method credentials.
      *
      * @return string

@@ -94,13 +94,4 @@ class Webhooks extends AbstractModel
         );
     }
 
-    /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource(): string
-    {
-        return 'webhooks';
-    }
 }

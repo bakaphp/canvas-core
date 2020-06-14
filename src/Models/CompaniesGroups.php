@@ -80,14 +80,4 @@ class CompaniesGroups extends AbstractModel
             ['alias' => 'companies']
         );
     }
-
-    /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource() : string
-    {
-        return 'companies_groups';
-    }
 }

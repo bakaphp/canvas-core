@@ -98,16 +98,6 @@ class FileSystemEntities extends AbstractModel
     }
 
     /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource() : string
-    {
-        return 'filesystem_entities';
-    }
-
-    /**
      * Get a filesystem entities from this system modules.
      *
      * @param integer $id

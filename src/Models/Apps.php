@@ -4,79 +4,18 @@ declare(strict_types=1);
 namespace Canvas\Models;
 
 use Canvas\Traits\UsersAssociatedTrait;
-use Baka\Database\Contracts\HashTableTrait;
-
-class Apps extends \Baka\Database\Apps
+use Baka\Contracts\Database\HashTableTrait;
+use Baka\Database\Apps as BakaApps;
+class Apps extends BakaApps
 {
-    /**
-     *
-     * @var integer
-     */
-    public $id;
 
-    /**
-     *
-     * @var string
-     */
-    public $key;
+    public string $key;
+    public ?string $url;
+    public int $default_apps_plan_id;
+    public int $is_actived;
+    public int $ecosystem_auth;
+    public int $payments_active;
 
-    /**
-     *
-     * @var string
-     */
-    public $name;
-
-    /**
-     *
-     * @var string
-     */
-    public $description;
-
-    /**
-     *
-     * @var string
-     */
-    public $url;
-
-    /**
-     *
-     * @var integer
-     */
-    public $default_apps_plan_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $is_actived;
-
-    /**
-     * @var integer
-     */
-    public $ecosystem_auth;
-
-    /**
-     * @var integer
-     */
-    public $payments_active;
-
-    /**
-     *
-     * @var string
-     */
-    public $created_at;
-
-    /**
-     *
-     * @var string
-     */
-    public $updated_at;
-
-    /**
-     *
-     * @var integer
-     */
-    public $is_deleted;
 
     /**
      * Ecosystem default app.
@@ -157,16 +96,6 @@ class Apps extends \Baka\Database\Apps
     public function isActive(): bool
     {
         return (bool) $this->is_actived;
-    }
-
-    /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource() : string
-    {
-        return 'apps';
     }
 
     /**

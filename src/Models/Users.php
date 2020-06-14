@@ -4,19 +4,19 @@ declare(strict_types=1);
 namespace Canvas\Models;
 
 use Baka\Auth\Models\Users as BakUser;
-use Baka\Database\Contracts\HashTableTrait;
+use Baka\Contracts\Database\HashTableTrait;
 use Canvas\Auth\App as AppAuth;
 use Canvas\Contracts\Auth\UserInterface;
 use Canvas\Contracts\Notifications\NotifiableTrait;
 use Canvas\Hashing\Password;
-use Canvas\Traits\EventManagerAwareTrait;
 use Canvas\Traits\FileSystemModelTrait;
 use Canvas\Traits\PermissionsTrait;
 use Canvas\Traits\SubscriptionPlanLimitTrait;
-use Canvas\Validations\PasswordValidation;
+use Baka\Validations\PasswordValidation;
 use Carbon\Carbon;
 use Exception;
-use Phalcon\Cashier\Billable;
+use Baka\Cashier\Billable;
+use Baka\Contracts\EventsManager\EventManagerAwareTrait;
 use Phalcon\Di;
 use Phalcon\Security\Random;
 use Phalcon\Validation;
@@ -24,17 +24,6 @@ use Phalcon\Validation\Validator\Email;
 use Phalcon\Validation\Validator\PresenceOf;
 use Phalcon\Validation\Validator\Uniqueness;
 
-/**
- * Class Users.
- *
- * @package Canvas\Models
- *
- * @property Users $user
- * @property Config $config
- * @property Apps $app
- * @property Companies $defaultCompany
- * @property \Phalcon\Di $di
- */
 class Users extends BakUser implements UserInterface
 {
     use PermissionsTrait;
@@ -45,54 +34,13 @@ class Users extends BakUser implements UserInterface
     use NotifiableTrait;
     use EventManagerAwareTrait;
 
-    /**
-     * Description.
-     *
-     * @var integer
-     */
-    public $description;
-
-    /**
-     * Default Company Branch.
-     *
-     * @var integer
-     */
-    public $default_company_branch;
-
-    /**
-     * Roles id.
-     *
-     * @var integer
-     */
-    public $roles_id;
-
-    /**
-     * Stripe id.
-     *
-     * @var string
-     */
-    public $stripe_id;
-
-    /**
-     * Card last four numbers.
-     *
-     * @var integer
-     */
-    public $card_last_four;
-
-    /**
-     * Card Brand.
-     *
-     * @var integer
-     */
-    public $card_brand;
-
-    /**
-     * Trial end date.
-     *
-     * @var string
-     */
-    public $trial_ends_at;
+    public ?string $description;
+    public int $default_company_branch;
+    public int $roles_id;
+    public ?string $stripe_id;
+    public ?string $card_last_four;
+    public ?string $card_brand;
+    public ?string $trial_ends_at;
 
     /**
      * Provide the app plan id
@@ -100,28 +48,21 @@ class Users extends BakUser implements UserInterface
      *
      * @var integer
      */
-    public $appPlanId = null;
+    public ?int $appPlanId = null;
 
     /**
      * Active subscription id.Not an actual table field, used temporarily.
      *
      * @var string
      */
-    public $active_subscription_id;
+    public ?int $active_subscription_id;
 
     /**
      * System Module Id.
      *
      * @var integer
      */
-    public $system_modules_id = 2;
-
-    /**
-     * User email activation code.
-     *
-     * @var string
-     */
-    public $user_activation_email;
+    public int $system_modules_id = 2;
 
     /**
      * Initialize method for model.
@@ -225,7 +166,7 @@ class Users extends BakUser implements UserInterface
     }
 
     /**
-     * Initialize relationshit after fetch
+     * Initialize relationship after fetch
      * since we need company id info.
      *
      * @return void
@@ -312,21 +253,11 @@ class Users extends BakUser implements UserInterface
     }
 
     /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource() : string
-    {
-        return 'users';
-    }
-
-    /**
      * Set hashtable settings table, userConfig ;).
      *
      * @return void
      */
-    private function createSettingsModel() : void
+    protected function createSettingsModel() : void
     {
         $this->settingsModel = new UserConfig();
     }
