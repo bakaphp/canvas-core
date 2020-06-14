@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Canvas\Providers;
 
-use function Canvas\Core\appPath;
+use function Baka\appPath;
 use Phalcon\Cache\Backend\File as BackendFileCache;
 use Phalcon\Cache\Frontend\None as NoneCache;
 use Phalcon\Cache\Frontend\Output as FrontenCacheOutput;
 use Phalcon\Di\ServiceProviderInterface;
-use Phalcon\DiInterface;
+use Phalcon\Di\DiInterface;
 use Phalcon\Mvc\View\Engine\Volt as VoltEngine;
 use Phalcon\Mvc\View\Simple as SimpleView;
 
@@ -18,7 +18,7 @@ class ViewProvider implements ServiceProviderInterface
     /**
      * @param DiInterface $container
      */
-    public function register(DiInterface $container)
+    public function register(DiInterface $container) : void
     {
         $config = $container->get('config');
 

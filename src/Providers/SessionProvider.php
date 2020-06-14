@@ -2,9 +2,9 @@
 
 namespace Canvas\Providers;
 
-use function Canvas\Core\envValue;
+use function Baka\envValue;
 use Phalcon\Di\ServiceProviderInterface;
-use Phalcon\DiInterface;
+use Phalcon\Di\DiInterface;
 use Phalcon\Session\Adapter\Redis;
 
 class SessionProvider implements ServiceProviderInterface
@@ -12,7 +12,7 @@ class SessionProvider implements ServiceProviderInterface
     /**
      * @param DiInterface $container
      */
-    public function register(DiInterface $container)
+    public function register(DiInterface $container) : void
     {
         $app = envValue('GEWAER_APP_ID', 1);
 

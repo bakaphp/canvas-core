@@ -2,11 +2,11 @@
 
 namespace Canvas\Providers;
 
-use function Canvas\Core\envValue;
+use function Baka\envValue;
 use Phalcon\Cache\Backend\Libmemcached;
 use Phalcon\Cache\Frontend\Data;
 use Phalcon\Di\ServiceProviderInterface;
-use Phalcon\DiInterface;
+use Phalcon\Di\DiInterface;
 use Redis;
 
 class CacheDataProvider implements ServiceProviderInterface
@@ -14,7 +14,7 @@ class CacheDataProvider implements ServiceProviderInterface
     /**
      * @param DiInterface $container
      */
-    public function register(DiInterface $container)
+    public function register(DiInterface $container) : void
     {
         $container->setShared(
             'cache',

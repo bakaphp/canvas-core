@@ -2,7 +2,7 @@
 
 use Baka\Router\Route;
 use Baka\Router\RouteGroup;
-use function Canvas\Core\envValue;
+use function Baka\envValue;
 
 $publicRoutes = [
     Route::get('/')->controller('IndexController'),

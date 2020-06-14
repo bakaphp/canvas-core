@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Canvas\Providers;
 
-use function Canvas\Core\appPath;
-use function Canvas\Core\envValue;
+use function Baka\appPath;
+use function Baka\envValue;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Phalcon\Di\ServiceProviderInterface;
-use Phalcon\DiInterface;
+use Phalcon\Di\DiInterface;
 use Raven_Client;
 use Monolog\Handler\RavenHandler;
 
@@ -21,7 +21,7 @@ class LoggerProvider implements ServiceProviderInterface
      *
      * @param DiInterface $container
      */
-    public function register(DiInterface $container)
+    public function register(DiInterface $container) : void
     {
         $config = $container->getShared('config');
 

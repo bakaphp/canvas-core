@@ -9,7 +9,7 @@ use Canvas\Providers\LoggerProvider;
 use Phalcon\Config;
 use Phalcon\Di\FactoryDefault;
 use UnitTester;
-use function Canvas\Core\appPath;
+use function Baka\appPath;
 
 class ErrorHandlerCest
 {

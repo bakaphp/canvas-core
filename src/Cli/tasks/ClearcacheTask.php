@@ -2,7 +2,7 @@
 
 namespace Canvas\Cli\Tasks;
 
-use function Canvas\Core\appPath;
+use function Baka\appPath;
 use Phalcon\Cache\Backend\Libmemcached;
 use Phalcon\Cli\Task as PhTask;
 use Phalcon\Queue\Beanstalk\Extended as BeanstalkExtended;

@@ -20,7 +20,7 @@ use Phalcon\Config as PhConfig;
 use Canvas\Bootstrap\IntegrationTests;
 use Canvas\Models\FileSystem;
 use Canvas\Models\FileSystemEntities;
-use function Canvas\Core\appPath;
+use function Baka\appPath;
 
 // here you can define custom actions
 // all public methods declared in helper class will be available in $I

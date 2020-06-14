@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Canvas\Providers;
 
-use function Canvas\Core\appPath;
+use function Baka\appPath;
 use Baka\Router\Providers\RouterProvider as BakaRouterProvider;
 
 class RouterProvider extends BakaRouterProvider

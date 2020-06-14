@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Canvas\Providers;
 
-use function Canvas\Core\envValue;
+use function Baka\envValue;
 use Phalcon\Di\ServiceProviderInterface;
-use Phalcon\DiInterface;
+use Phalcon\Di\DiInterface;
 use Phalcon\Mvc\Model\Metadata\Memory as MemoryMetaDataAdapter;
 use Phalcon\Mvc\Model\MetaData\Redis;
 use Canvas\Constants\Flags;
@@ -16,7 +16,7 @@ class ModelsMetadataProvider implements ServiceProviderInterface
     /**
      * @param DiInterface $container
      */
-    public function register(DiInterface $container)
+    public function register(DiInterface $container) : void
     {
         $config = $container->getShared('config');
         $app = envValue('GEWAER_APP_ID', 1);

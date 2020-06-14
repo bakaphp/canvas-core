@@ -2,7 +2,7 @@
 
 use Dotenv\Dotenv;
 use Phalcon\Loader;
-use function Canvas\Core\appPath;
+use function Baka\appPath;
 
 // Register the auto loader
 require __DIR__ . '/../src/Core/functions.php';

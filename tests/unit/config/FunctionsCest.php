@@ -4,11 +4,11 @@ namespace Canvas\Tests\unit\config;
 
 use UnitTester;
 use Codeception\PHPUnit\TestCase;
-use function Canvas\Core\appPath;
-use function Canvas\Core\envValue;
-use function Canvas\Core\isJson;
-use function Canvas\Core\appUrl;
-use function Canvas\Core\paymentGatewayIsActive;
+use function Baka\appPath;
+use function Baka\envValue;
+use function Baka\isJson;
+use function Baka\appUrl;
+use function Baka\paymentGatewayIsActive;
 
 class FunctionsCest
 {

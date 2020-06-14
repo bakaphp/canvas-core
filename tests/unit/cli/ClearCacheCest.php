@@ -10,7 +10,7 @@ use Phalcon\Di\FactoryDefault\Cli;
 use UnitTester;
 use function fclose;
 use function iterator_count;
-use function Canvas\Core\appPath;
+use function Baka\appPath;
 use function ob_end_clean;
 use function ob_get_contents;
 use function ob_start;

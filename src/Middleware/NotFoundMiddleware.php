@@ -8,8 +8,8 @@ use Canvas\Http\Response;
 use Canvas\Traits\ResponseTrait;
 use Phalcon\Mvc\Micro;
 use Phalcon\Mvc\Micro\MiddlewareInterface;
-use Phalcon\Mvc\User\Plugin;
-use function Canvas\Core\isSwooleServer;
+use Phalcon\Di\Injectable;
+use function Baka\isSwooleServer;
 
 /**
  * Class NotFoundMiddleware.
@@ -19,7 +19,7 @@ use function Canvas\Core\isSwooleServer;
  * @property Micro    $application
  * @property Response $response
  */
-class NotFoundMiddleware extends Plugin implements MiddlewareInterface
+class NotFoundMiddleware extends Injectable implements MiddlewareInterface
 {
     use ResponseTrait;
 

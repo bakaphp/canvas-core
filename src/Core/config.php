@@ -1,7 +1,7 @@
 <?php
 
-use function Canvas\Core\appPath;
-use function Canvas\Core\envValue;
+use function Baka\appPath;
+use function Baka\envValue;
 use Canvas\Constants\Flags;
 
 return [

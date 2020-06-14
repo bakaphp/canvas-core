@@ -6,12 +6,12 @@
 
 namespace Canvas\Http;
 
-use function Canvas\Core\isJson;
+use function Baka\isJson;
 use Canvas\Traits\RequestJwtTrait;
 use Exception;
 use Phalcon\Di\FactoryDefault;
 use Phalcon\Di\InjectionAwareInterface;
-use Phalcon\DiInterface;
+use Phalcon\Di\DiInterface;
 use Phalcon\Events\Manager;
 use Phalcon\FilterInterface;
 use Phalcon\Http\Request\File;

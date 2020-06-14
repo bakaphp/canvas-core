@@ -10,7 +10,7 @@ use Canvas\Validation;
 use Phalcon\Http\Response;
 use Canvas\Webhooks;
 use Phalcon\Validation\Validator\PresenceOf;
-use function Canvas\Core\isJson;
+use function Baka\isJson;
 
 /**
  * Class LanguagesController.

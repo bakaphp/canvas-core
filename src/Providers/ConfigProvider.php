@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Canvas\Providers;
 
-use function Canvas\Core\appPath;
-use Phalcon\DiInterface;
+use function Baka\appPath;
+use Phalcon\Di\DiInterface;
 use Phalcon\Di\ServiceProviderInterface;
 use Phalcon\Config;
 
@@ -14,7 +14,7 @@ class ConfigProvider implements ServiceProviderInterface
     /**
      * @param DiInterface $container
      */
-    public function register(DiInterface $container)
+    public function register(DiInterface $container) : void 
     {
         $container->setShared(
             'config',

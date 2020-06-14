@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Canvas;
 
-use function Canvas\Core\isJson;
+use function Baka\isJson;
 use Canvas\Models\SystemModules;
 use Canvas\Models\UserWebhooks;
 use GuzzleHttp\Client;
