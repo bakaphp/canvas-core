@@ -185,7 +185,7 @@ class Apps extends \Baka\Database\Apps
      *
      * @return boolean
      */
-    public function subscriptioBased(): bool
+    public function subscriptionBased(): bool
     {
         return (bool) $this->payments_active;
     }

@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Canvas\Listener;
 
-use Phalcon\Events\Event;
-use Canvas\Models\Users;
-use Canvas\Models\Companies;
 use Canvas\Auth\App;
 use Canvas\Models\Apps;
+use Canvas\Models\Companies;
 use Canvas\Models\Roles;
+use Canvas\Models\Users;
 use Canvas\Models\UsersInvite;
+use Phalcon\Events\Event;
 
 class User
 {
@@ -19,15 +19,16 @@ class User
      *
      * @param Event $event
      * @param Users $user
-     * @param boolean $isFirstSignup
+     * @param bool $isFirstSignup
+     *
      * @return void
      */
-    public function afterSignup(Event $event, Users $user, bool $isFirstSignup): void
+    public function afterSignup(Event $event, Users $user, bool $isFirstSignup) : void
     {
         /**
-        * User signing up for a new app / plan
-        * How do we know? well he doesn't have a default_company.
-        */
+         * User signing up for a new app / plan
+         * How do we know? well he doesn't have a default_company.
+         */
         if ($isFirstSignup) {
             /**
              * Let's create a new Companies.
@@ -60,7 +61,7 @@ class User
 
         //Insert record into user_roles
         if (!$role = $user->getDI()->getApp()->get(Apps::APP_DEFAULT_ROLE_SETTING)) {
-            $role = $user->getDI()->getApp()->name . '.' . Roles::getById((int)$user->roles_id)->name;
+            $role = $user->getDI()->getApp()->name . '.' . Roles::getById((int) $user->roles_id)->name;
         }
 
         $user->assignRole($role);
@@ -71,6 +72,7 @@ class User
      *
      * @param Event $event
      * @param Users $user
+     *
      * @return void
      */
     public function afterInvite(Event $event, Users $user, UsersInvite $usersInvite)

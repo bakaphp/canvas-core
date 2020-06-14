@@ -17,7 +17,7 @@ use Canvas\Http\Exception\UnauthorizedException;
 trait PermissionsTrait
 {
     /**
-     * Assigne a user this role
+     * Assigned a user this role
      * Example: App.Role.
      *
      * @param string $role
@@ -26,7 +26,7 @@ trait PermissionsTrait
     public function assignRole(string $role): bool
     {
         /**
-         * check if we have a dot, that mes it legacy and sending the app name
+         * check if we have a dot, that means it legacy and sending the app name
          * not needed any more so we remove it.
          */
         if (strpos($role, '.') !== false) {
