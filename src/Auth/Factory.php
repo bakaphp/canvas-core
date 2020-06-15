@@ -24,7 +24,7 @@ class Factory
                 break;
 
             default:
-                $user = new Users();
+                $user = new Auth();
                 break;
         }
 
