@@ -27,6 +27,7 @@ use Canvas\Notifications\PasswordUpdate;
 use Canvas\Notifications\Signup;
 use Canvas\Notifications\UpdateEmail;
 use Baka\Validations\PasswordValidation;
+use Canvas\Auth\Auth;
 use Canvas\Traits\TokenTrait;
 
 /**
@@ -167,7 +168,7 @@ class AuthController extends \Baka\Auth\AuthController
         try {
             $this->db->begin();
 
-            $user->signUp();
+            Auth::signUp($validation->getValues());
 
             $this->db->commit();
         } catch (Exception $e) {

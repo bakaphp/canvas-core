@@ -274,7 +274,7 @@ class Users extends BakUser implements UserInterface
 
     /**
      * A company owner is the first person that register this company
-     * This only ocurres when signing up the first time, after that all users invites
+     * This only ocurred when signing up the first time, after that all users invites
      * come with a default_company id attached.
      *
      * @return boolean
