@@ -3,49 +3,16 @@ declare(strict_types=1);
 
 namespace Canvas\Models;
 
-use Canvas\Models\Apps;
-
 class AppsSettings extends AbstractModel
 {
+    public int $apps_id;
+    public string $name;
+    public string $value;
+
     /**
      * Default number of settings for an app.
      */
     const APP_DEFAULT_SETTINGS_NUMBER = 16;
-    /**
-     *
-     * @var integer
-     */
-    public $apps_id;
-
-    /**
-     *
-     * @var string
-     */
-    public $name;
-
-    /**
-     *
-     * @var string
-     */
-    public $value;
-
-    /**
-     *
-     * @var string
-     */
-    public $created_at;
-
-    /**
-     *
-     * @var string
-     */
-    public $updated_at;
-
-    /**
-     *
-     * @var integer
-     */
-    public $is_deleted;
 
     /**
      * Sub based app key word.
@@ -66,5 +33,4 @@ class AppsSettings extends AbstractModel
             ['alias' => 'app']
         );
     }
-
 }

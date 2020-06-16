@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace Canvas\Models;
 
-use Canvas\Exception\ModelException;
 use Phalcon\Di;
 
 /**
@@ -19,89 +18,16 @@ use Phalcon\Di;
  */
 class AppsPlans extends AbstractModel
 {
-    /**
-     *
-     * @var integer
-     */
-    public $id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $apps_id;
-
-    /**
-     *
-     * @var string
-     */
-    public $name;
-
-    /**
-     *
-     * @var string
-     */
-    public $description;
-
-    /**
-     *
-     * @var string
-     */
-    public $stripe_id;
-
-    /**
-     *
-     * @var string
-     */
-    public $stripe_plan;
-
-    /**
-     *
-     * @var double
-     */
-    public $pricing;
-
-    /**
-     *
-     * @var integer
-     */
-    public $currency_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $free_trial_dates;
-
-    /**
-     *
-     * @var integer
-     */
-    public $is_default;
-
-    /**
-     *
-     * @var integer
-     */
-    public $payment_frequencies_id;
-
-    /**
-     *
-     * @var string
-     */
-    public $created_at;
-
-    /**
-     *
-     * @var string
-     */
-    public $updated_at;
-
-    /**
-     *
-     * @var integer
-     */
-    public $is_deleted;
+    public int $apps_id;
+    public string $name;
+    public string $description;
+    public string $stripe_id;
+    public string $stripe_plan;
+    public float $pricing;
+    public int $currency_id;
+    public int $free_trial_dates;
+    public int $is_default;
+    public int $payment_frequencies_id;
 
     /**
      * Initialize method for model.
@@ -121,6 +47,14 @@ class AppsPlans extends AbstractModel
             'payment_frequencies_id',
             'Canvas\Models\PaymentFrequencies',
             'id',
+            ['alias' => 'paymentFrequencies']
+        );
+
+        //remove
+        $this->belongsTo(
+            'payment_frequencies_id',
+            'Canvas\Models\PaymentFrequencies',
+            'id',
             ['alias' => 'paymentFrequecies']
         );
 
@@ -131,7 +65,6 @@ class AppsPlans extends AbstractModel
             ['alias' => 'settings']
         );
     }
-
 
     /**
      * Just a preatty function that returns the same object for.

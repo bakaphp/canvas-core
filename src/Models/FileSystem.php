@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace Canvas\Models;
 
-use Baka\Database\Contracts\HashTableTrait;
+use Baka\Contracts\Database\HashTableTrait;
 use Canvas\Http\Exception\NotFoundException;
-use Phalcon\Di;
 use Exception;
+use Phalcon\Di;
 
 /**
  * Classs for FileSystem.
+ *
  * @property Users $userData
  * @property Request $request
  * @property Config $config
@@ -22,89 +23,16 @@ class FileSystem extends AbstractModel
 {
     use HashTableTrait;
 
-    /**
-     *
-     * @var integer
-     */
-    public $id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $companies_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $apps_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $users_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $system_modules_id = 0;
-
-    /**
-     *
-     * @var integer
-     */
-    public $entity_id;
-
-    /**
-     *
-     * @var string
-     */
-    public $name;
-
-    /**
-     *
-     * @var string
-     */
-    public $path;
-
-    /**
-     *
-     * @var string
-     */
-    public $url;
-
-    /**
-     *
-     * @var string
-     */
-    public $size;
-
-    /**
-     *
-     * @var string
-     */
-    public $file_type;
-
-    /**
-     *
-     * @var string
-     */
-    public $created_at;
-
-    /**
-     *
-     * @var string
-     */
-    public $updated_at;
-
-    /**
-     *
-     * @var int
-     */
-    public $is_deleted;
+    public int $companies_id;
+    public int $apps_id;
+    public int $users_id;
+    public int $system_modules_id = 0;
+    public int $entity_id;
+    public string $name;
+    public string $path;
+    public string $url;
+    public string $size;
+    public string $file_type;
 
     /**
      * Initialize method for model.
@@ -162,11 +90,12 @@ class FileSystem extends AbstractModel
             ['alias' => 'entities']
         );
     }
-    
+
     /**
      * Get the element by its entity id.
      *
      * @param string $id
+     *
      * @return FileSystem
      * @throw Exception
      */
@@ -193,10 +122,11 @@ class FileSystem extends AbstractModel
      * Get the element by its entity id.
      *
      * @param string $id
+     *
      * @return FileSystem
      * @throw Exception
      */
-    public static function getById($id): FileSystem
+    public static function getById($id) : FileSystem
     {
         $file = self::findFirst([
             'conditions' => 'id = ?0 AND companies_id = ?1 AND apps_id = ?2 AND is_deleted = 0',
@@ -219,7 +149,7 @@ class FileSystem extends AbstractModel
      *
      * @return bool
      */
-    public function move(string $location): bool
+    public function move(string $location) : bool
     {
         $appSettingFileConfig = $this->di->get('app')->get('filesystem');
         $fileSystemConfig = $this->di->get('config')->filesystem->{$appSettingFileConfig};

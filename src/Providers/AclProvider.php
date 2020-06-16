@@ -2,10 +2,10 @@
 
 namespace Canvas\Providers;
 
-use Phalcon\Di\ServiceProviderInterface;
-use Phalcon\Di\DiInterface;
 use Canvas\Acl\Manager as AclManager;
-use Phalcon\Acl;
+use Phalcon\Acl\Enum;
+use Phalcon\Di\DiInterface;
+use Phalcon\Di\ServiceProviderInterface;
 
 class AclProvider implements ServiceProviderInterface
 {
@@ -32,7 +32,7 @@ class AclProvider implements ServiceProviderInterface
                 );
 
                 //default behavior
-                $acl->setDefaultAction(Acl::ALLOW);
+                $acl->setDefaultAction(Enum::ALLOW);
 
                 return $acl;
             }

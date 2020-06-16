@@ -7,84 +7,21 @@ use Phalcon\Validation;
 use Phalcon\Validation\Validator\PresenceOf;
 
 /**
- * Class CompanyBranches
+ * Class CompanyBranches.
  *
  * @package Canvas\Models
  *
  */
 class CompaniesBranches extends AbstractModel
 {
-    /**
-     *
-     * @var integer
-     */
-    public $id;
-
-    /**
-     *
-     * @var string
-     */
-    public $name;
-
-    /**
-     *
-     * @var string
-     */
-    public $address;
-
-    /**
-     *
-     * @var string
-     */
-    public $email;
-
-    /**
-     *
-     * @var string
-     */
-    public $zipcode;
-
-    /**
-     *
-     * @var string
-     */
-    public $phone;
-
-    /**
-     *
-     * @var integer
-     */
-    public $companies_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $users_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $is_default;
-
-    /**
-     *
-     * @var string
-     */
-    public $created_at;
-
-    /**
-     *
-     * @var string
-     */
-    public $updated_at;
-
-    /**
-     *
-     * @var integer
-     */
-    public $is_deleted;
+    public string $name;
+    public ?string $address = null;
+    public ?string $email = null;
+    public ?string $zipcode = null;
+    public ?string $phone = null;
+    public int $companies_id;
+    public int $users_id;
+    public int $is_default;
 
     /**
      * Initialize method for model.
@@ -109,7 +46,7 @@ class CompaniesBranches extends AbstractModel
     }
 
     /**
-     * Model validation
+     * Model validation.
      *
      * @return void
      */

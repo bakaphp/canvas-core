@@ -4,7 +4,10 @@ declare(strict_types=1);
 namespace Canvas\Models;
 
 use Baka\Auth\Models\Users as BakUser;
+use Baka\Cashier\Billable;
 use Baka\Contracts\Database\HashTableTrait;
+use Baka\Contracts\EventsManager\EventManagerAwareTrait;
+use Baka\Validations\PasswordValidation;
 use Canvas\Auth\App as AppAuth;
 use Canvas\Contracts\Auth\UserInterface;
 use Canvas\Contracts\Notifications\NotifiableTrait;
@@ -12,11 +15,8 @@ use Canvas\Hashing\Password;
 use Canvas\Traits\FileSystemModelTrait;
 use Canvas\Traits\PermissionsTrait;
 use Canvas\Traits\SubscriptionPlanLimitTrait;
-use Baka\Validations\PasswordValidation;
 use Carbon\Carbon;
 use Exception;
-use Baka\Cashier\Billable;
-use Baka\Contracts\EventsManager\EventManagerAwareTrait;
 use Phalcon\Di;
 use Phalcon\Security\Random;
 use Phalcon\Validation;
@@ -34,13 +34,12 @@ class Users extends BakUser implements UserInterface
     use NotifiableTrait;
     use EventManagerAwareTrait;
 
-    public ?string $description;
-    public int $default_company_branch;
+    public int $default_company_branch = 0;
     public int $roles_id;
-    public ?string $stripe_id;
-    public ?string $card_last_four;
-    public ?string $card_brand;
-    public ?string $trial_ends_at;
+    public ?string $stripe_id = null;
+    public ?string $card_last_four = null;
+    public ?string $card_brand = null;
+    public ?string $trial_ends_at = null;
 
     /**
      * Provide the app plan id
@@ -55,7 +54,7 @@ class Users extends BakUser implements UserInterface
      *
      * @var string
      */
-    public ?int $active_subscription_id;
+    public ?int $active_subscription_id = 0;
 
     /**
      * System Module Id.

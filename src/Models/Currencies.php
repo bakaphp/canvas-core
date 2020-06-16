@@ -5,53 +5,10 @@ namespace Canvas\Models;
 
 class Currencies extends AbstractModel
 {
-    /**
-     *
-     * @var integer
-     */
-    public $id;
-
-    /**
-     *
-     * @var string
-     */
-    public $country;
-
-    /**
-     *
-     * @var string
-     */
-    public $currency;
-
-    /**
-     *
-     * @var string
-     */
-    public $code;
-
-    /**
-     *
-     * @var string
-     */
-    public $symbol;
-
-    /**
-     *
-     * @var string
-     */
-    public $created_at;
-
-    /**
-     *
-     * @var string
-     */
-    public $updated_at;
-
-    /**
-     *
-     * @var integer
-     */
-    public $is_deleted;
+    public string $country;
+    public string $currency;
+    public string $code;
+    public string $symbol;
 
     /**
      * Initialize method for model.
@@ -60,5 +17,4 @@ class Currencies extends AbstractModel
     {
         $this->setSource('currencies');
     }
-
 }
