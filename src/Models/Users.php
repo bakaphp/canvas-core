@@ -54,7 +54,7 @@ class Users extends BakUser implements UserInterface
      *
      * @var string
      */
-    public ?int $active_subscription_id = 0;
+    public ?string $active_subscription_id = null;
 
     /**
      * System Module Id.
@@ -584,7 +584,7 @@ class Users extends BakUser implements UserInterface
     }
 
     /**
-     * Reset the user passwrod.
+     * Reset the user password.
      *
      * @param string $newPassword
      *
@@ -613,6 +613,8 @@ class Users extends BakUser implements UserInterface
      * ok lets register / associate to this app
      * yes?
      * it meas he was invites so get the fuck out?
+     *
+     * @deprecated v1
      *
      * @return Users
      */

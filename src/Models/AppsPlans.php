@@ -5,17 +5,6 @@ namespace Canvas\Models;
 
 use Phalcon\Di;
 
-/**
- * Class AppsPlans.
- *
- * @package Canvas\Models
- *
- * @property Users $user
- * @property Config $config
- * @property Apps $app
- * @property Companies $defaultCompany
- * @property \Phalcon\Di $di
- */
 class AppsPlans extends AbstractModel
 {
     public int $apps_id;
@@ -67,7 +56,7 @@ class AppsPlans extends AbstractModel
     }
 
     /**
-     * Just a preatty function that returns the same object for.
+     * Just a pretty function that returns the same object for.
      *
      * $app->settings()->set(key, value);
      * $app->settings()->get(key);

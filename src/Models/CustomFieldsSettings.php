@@ -5,47 +5,9 @@ namespace Canvas\Models;
 
 class CustomFieldsSettings extends AbstractModel
 {
-    /**
-     *
-     * @var integer
-     */
-    public $id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $custom_fields_id;
-
-    /**
-     *
-     * @var string
-     */
-    public $name;
-
-    /**
-     *
-     * @var string
-     */
-    public $value;
-
-    /**
-     *
-     * @var integer
-     */
-    public $is_deleted;
-
-    /**
-     *
-     * @var string
-     */
-    public $created_at;
-
-    /**
-     *
-     * @var string
-     */
-    public $updated_at;
+    public int $custom_fields_id;
+    public string $name;
+    public ?string $value = null;
 
     /**
      * Initialize method for model.
@@ -61,5 +23,4 @@ class CustomFieldsSettings extends AbstractModel
             ['alias' => 'fields']
         );
     }
-
 }

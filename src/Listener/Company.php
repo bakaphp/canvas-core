@@ -100,8 +100,8 @@ class Company
          * Let's associate companies and companies_groups.
          */
         $companiesAssoc = new CompaniesAssociations();
-        $companiesAssoc->companies_id = $company->id;
-        $companiesAssoc->companies_groups_id = $companiesGroup->id;
+        $companiesAssoc->companies_id = $company->getId();
+        $companiesAssoc->companies_groups_id = $companiesGroup->getId();
         $companiesAssoc->saveOrFail();
 
         //assign role

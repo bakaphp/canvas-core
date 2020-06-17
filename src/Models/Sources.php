@@ -19,47 +19,9 @@ use Canvas\Http\Exception\InternalServerErrorException;
  */
 class Sources extends AbstractModel
 {
-    /**
-     *
-     * @var integer
-     */
-    public $id;
-
-    /**
-     *
-     * @var string
-     */
-    public $title;
-
-    /**
-     *
-     * @var string
-     */
-    public $url;
-
-    /**
-     *
-     * @var integer
-     */
-    public $language_id;
-
-    /**
-     *
-     * @var string
-     */
-    public $created_at;
-
-    /**
-     *
-     * @var string
-     */
-    public $updated_at;
-
-    /**
-     *
-     * @var integer
-     */
-    public $is_deleted;
+    public string $title;
+    public string $url;
+    public int $language_id;
 
     /**
      * Initialize method for model.

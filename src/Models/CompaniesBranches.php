@@ -6,12 +6,6 @@ namespace Canvas\Models;
 use Phalcon\Validation;
 use Phalcon\Validation\Validator\PresenceOf;
 
-/**
- * Class CompanyBranches.
- *
- * @package Canvas\Models
- *
- */
 class CompaniesBranches extends AbstractModel
 {
     public string $name;

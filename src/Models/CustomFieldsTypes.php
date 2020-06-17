@@ -5,47 +5,9 @@ namespace Canvas\Models;
 
 class CustomFieldsTypes extends AbstractModel
 {
-    /**
-     *
-     * @var integer
-     */
-    public $id;
-
-    /**
-     *
-     * @var string
-     */
-    public $name;
-
-    /**
-     *
-     * @var string
-     */
+    public string $name;
     public $description;
-
-    /**
-     *
-     * @var string
-     */
-    public $icon;
-
-    /**
-     *
-     * @var integer
-     */
-    public $is_deleted;
-
-    /**
-     *
-     * @var string
-     */
-    public $created_at;
-
-    /**
-     *
-     * @var string
-     */
-    public $updated_at;
+    public ?string $icon = null;
 
     /**
      * Initialize method for model.

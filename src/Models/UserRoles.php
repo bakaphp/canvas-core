@@ -50,8 +50,8 @@ class UserRoles extends AbstractModel
     }
 
     /**
-    * Validations and business logic.
-    */
+     * Validations and business logic.
+     */
     public function validation()
     {
         $validator = new Validation();

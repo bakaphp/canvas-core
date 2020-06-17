@@ -5,41 +5,8 @@ namespace Canvas\Models;
 
 class PaymentMethods extends AbstractModel
 {
-    /**
-     *
-     * @var integer
-     */
-    public $id;
-
-    /**
-     *
-     * @var string
-     */
-    public $name;
-
-    /**
-     *
-     * @var integer
-     */
-    public $is_default;
-
-    /**
-     *
-     * @var string
-     */
-    public $created_at;
-
-    /**
-     *
-     * @var string
-     */
-    public $updated_at;
-
-    /**
-     *
-     * @var integer
-     */
-    public $is_deleted;
+    public string $name;
+    public int $is_default;
 
     /**
      * Initialize method for model.
@@ -54,7 +21,7 @@ class PaymentMethods extends AbstractModel
      *
      * @return string
      */
-    public static function getDefault(): self
+    public static function getDefault() : self
     {
         return self::findFirst(['conditions' => 'is_default = 1 and is_deleted = 0']);
     }
@@ -64,7 +31,7 @@ class PaymentMethods extends AbstractModel
      *
      * @return int
      */
-    public function getId(): int
+    public function getId()
     {
         return (int) $this->id;
     }

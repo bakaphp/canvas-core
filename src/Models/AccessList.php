@@ -4,64 +4,17 @@ declare(strict_types=1);
 
 namespace Canvas\Models;
 
-use Phalcon\Di;
 use Canvas\Http\Exception\NotFoundException;
+use Phalcon\Di;
 
 class AccessList extends AbstractModel
 {
-    /**
-     *
-     * @var string
-     */
-    public $roles_name;
-
-    /**
-     *
-     * @var string
-     */
-    public $resources_name;
-
-    /**
-     *
-     * @var string
-     */
-    public $access_name;
-
-    /**
-     *
-     * @var boolean
-     */
-    public $allowed;
-
-    /**
-     *
-     * @var integer
-     */
-    public $apps_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $roles_id;
-
-    /**
-     *
-     * @var string
-     */
-    public $created_at;
-
-    /**
-     *
-     * @var string
-     */
-    public $updated_at;
-
-    /**
-     *
-     * @var integer
-     */
-    public $is_deleted;
+    public string $roles_name;
+    public string $resources_name;
+    public string $access_name;
+    public int $allowed;
+    public int $apps_id;
+    public int $roles_id;
 
     /**
      * Initialize method for model.
@@ -84,9 +37,10 @@ class AccessList extends AbstractModel
      * @param Roles $role
      * @param string $resourceName
      * @param string $accessName
+     *
      * @return integer
      */
-    public static function exist(Roles $role, string $resourceName, string $accessName): int
+    public static function exist(Roles $role, string $resourceName, string $accessName) : int
     {
         return self::count([
             'conditions' => 'roles_id = ?0 and resources_name = ?1 AND access_name = ?2 AND apps_id = ?3',
@@ -100,6 +54,7 @@ class AccessList extends AbstractModel
      * @param Roles $role
      * @param string $resourceName
      * @param string $accessName
+     *
      * @return integer
      */
     public static function getBy(Roles $role, string $resourceName, string $accessName) : AccessList

@@ -6,64 +6,13 @@ namespace Canvas\Models;
 use Canvas\Http\Exception\InternalServerErrorException;
 use Phalcon\Di;
 
-/**
- * Classs for UserCompanyAppsActivities.
- * @property Users $userData
- * @property Request $request
- * @property Config $config
- * @property Apps $app
- * @property \Phalcon\DI $di
- *
- */
 class UserCompanyAppsActivities extends AbstractModel
 {
-    /**
-     *
-     * @var integer
-     */
-    public $companies_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $company_branches_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $apps_id;
-
-    /**
-     *
-     * @var string
-     */
-    public $key;
-
-    /**
-     *
-     * @var string
-     */
-    public $value;
-
-    /**
-     *
-     * @var string
-     */
-    public $created_at;
-
-    /**
-     *
-     * @var string
-     */
-    public $updated_at;
-
-    /**
-     *
-     * @var integer
-     */
-    public $is_deleted;
+    public int $companies_id;
+    public int $company_branches_id;
+    public int $apps_id;
+    public string $key;
+    public ?string $value = null;
 
     /**
      * Initialize method for model.

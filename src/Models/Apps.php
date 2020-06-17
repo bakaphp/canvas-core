@@ -8,7 +8,6 @@ use Baka\Contracts\Database\HashTableTrait;
 use Baka\Database\Apps as BakaApps;
 class Apps extends BakaApps
 {
-
     public string $key;
     public ?string $url;
     public int $default_apps_plan_id;

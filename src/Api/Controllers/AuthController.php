@@ -4,31 +4,31 @@ declare(strict_types=1);
 
 namespace Canvas\Api\Controllers;
 
-use Canvas\Models\Users;
+use Baka\Auth\Models\Sessions;
+use Baka\Auth\Models\Users as BakaUsers;
+use Baka\Validation as CanvasValidation;
+use Baka\Validations\PasswordValidation;
+use Canvas\Auth\Auth;
+use Canvas\Auth\Factory;
+use Canvas\Exception\ModelException;
+use Canvas\Http\Exception\InternalServerErrorException;
+use Canvas\Http\Exception\NotFoundException;
 use Canvas\Models\Sources;
 use Canvas\Models\UserLinkedSources;
-use Canvas\Exception\ModelException;
-use Baka\Auth\Models\Users as BakaUsers;
+use Canvas\Models\Users;
+use Canvas\Notifications\PasswordUpdate;
+use Canvas\Notifications\ResetPassword;
+use Canvas\Notifications\Signup;
+use Canvas\Notifications\UpdateEmail;
 use Canvas\Traits\AuthTrait;
 use Canvas\Traits\SocialLoginTrait;
-use Canvas\Http\Exception\NotFoundException;
+use Canvas\Traits\TokenTrait;
 use Exception;
 use Phalcon\Http\Response;
 use Phalcon\Validation\Validator\Confirmation;
 use Phalcon\Validation\Validator\Email as EmailValidator;
 use Phalcon\Validation\Validator\PresenceOf;
 use Phalcon\Validation\Validator\StringLength;
-use Baka\Auth\Models\Sessions;
-use Canvas\Auth\Factory;
-use Canvas\Http\Exception\InternalServerErrorException;
-use Baka\Validation as CanvasValidation;
-use Canvas\Notifications\ResetPassword;
-use Canvas\Notifications\PasswordUpdate;
-use Canvas\Notifications\Signup;
-use Canvas\Notifications\UpdateEmail;
-use Baka\Validations\PasswordValidation;
-use Canvas\Auth\Auth;
-use Canvas\Traits\TokenTrait;
 
 /**
  * Class AuthController.
@@ -67,6 +67,7 @@ class AuthController extends \Baka\Auth\AuthController
 
     /**
      * User Login.
+     *
      * @method POST
      * @url /v1/auth
      *
@@ -168,7 +169,7 @@ class AuthController extends \Baka\Auth\AuthController
         try {
             $this->db->begin();
 
-            Auth::signUp($validation->getValues());
+            $user = Auth::signUp($validation->getValues());
 
             $this->db->commit();
         } catch (Exception $e) {
@@ -190,7 +191,7 @@ class AuthController extends \Baka\Auth\AuthController
             'id' => $user->getId(),
         ];
 
-        $user->password = null;
+        $user->password = '';
         $user->notify(new Signup($user));
 
         return $this->response([
@@ -203,9 +204,10 @@ class AuthController extends \Baka\Auth\AuthController
      * Refresh user auth.
      *
      * @return Response
-     * @todo Validate acces_token and refresh token, session's user email and relogin
+     *
+     * @todo Validate access_token and refresh token, session's user email and re-login
      */
-    public function refresh(): Response
+    public function refresh() : Response
     {
         $request = $this->request->getPostData();
         $accessToken = $this->getToken($request['access_token']);
@@ -237,10 +239,12 @@ class AuthController extends \Baka\Auth\AuthController
 
     /**
      * Send email to change current email for user.
+     *
      * @param int $id
+     *
      * @return Response
      */
-    public function sendEmailChange(int $id): Response
+    public function sendEmailChange(int $id) : Response
     {
         //Search for user
         $user = Users::getById($id);
@@ -256,10 +260,12 @@ class AuthController extends \Baka\Auth\AuthController
 
     /**
      * Change user's email.
+     *
      * @param string $hash
+     *
      * @return Response
      */
-    public function changeUserEmail(string $hash): Response
+    public function changeUserEmail(string $hash) : Response
     {
         $request = $this->request->getPostData();
 
@@ -310,9 +316,10 @@ class AuthController extends \Baka\Auth\AuthController
 
     /**
      * Login user using Access Token.
+     *
      * @return Response
      */
-    public function loginBySocial(): Response
+    public function loginBySocial() : Response
     {
         $request = $this->request->getPostData();
 
@@ -336,7 +343,7 @@ class AuthController extends \Baka\Auth\AuthController
      *
      * @return Response
      */
-    public function recover(): Response
+    public function recover() : Response
     {
         $request = $this->request->getPostData();
 
@@ -357,6 +364,7 @@ class AuthController extends \Baka\Auth\AuthController
 
     /**
      * Reset the user password.
+     *
      * @method PUT
      * @url /v1/reset
      *
@@ -393,15 +401,18 @@ class AuthController extends \Baka\Auth\AuthController
     }
 
     /**
-    * Set the email config array we are going to be sending.
-    *
-    * @todo deprecated move to notifications
-    * @param String $emailAction
-    * @param Users  $user
-    * @deprecated version 1
-    * @return void
-    */
-    protected function sendEmail(BakaUsers $user, string $type): void
+     * Set the email config array we are going to be sending.
+     *
+     * @todo deprecated move to notifications
+     *
+     * @param string $emailAction
+     * @param Users  $user
+     *
+     * @deprecated version 1
+     *
+     * @return void
+     */
+    protected function sendEmail(BakaUsers $user, string $type) : void
     {
         return ;
     }

@@ -3,14 +3,13 @@ declare(strict_types=1);
 
 namespace Canvas\Models;
 
-use Phalcon\Di;
-use Canvas\Http\Exception\InternalServerErrorException;
-use Phalcon\Mvc\ModelInterface;
 use Baka\Database\SystemModules as BakaSystemModules;
+use Canvas\Http\Exception\InternalServerErrorException;
+use Phalcon\Di;
+use Phalcon\Mvc\ModelInterface;
 
 class SystemModules extends BakaSystemModules
 {
-
     /**
      * Initialize method for model.
      */
@@ -56,10 +55,12 @@ class SystemModules extends BakaSystemModules
      * Get System Module by its model_name.
      *
      * @deprecated v2
+     *
      * @param string $model_name
+     *
      * @return ModelInterface
      */
-    public static function getSystemModuleByModelName(string $modelName): ModelInterface
+    public static function getSystemModuleByModelName(string $modelName) : ModelInterface
     {
         $module = SystemModules::findFirst([
             'conditions' => 'model_name = ?0 and apps_id = ?1',
@@ -80,9 +81,10 @@ class SystemModules extends BakaSystemModules
      * Get System Module by its model_name.
      *
      * @param string $model_name
+     *
      * @return ModelInterface
      */
-    public static function getByModelName(string $modelName): ModelInterface
+    public static function getByModelName(string $modelName) : ModelInterface
     {
         return self::getSystemModuleByModelName($modelName);
     }
@@ -91,9 +93,10 @@ class SystemModules extends BakaSystemModules
      * Get System Module by Name.
      *
      * @param string $name
+     *
      * @return ModelInterface
      */
-    public static function getByName(string $name): ModelInterface
+    public static function getByName(string $name) : ModelInterface
     {
         return self::findFirstOrFail([
             'conditions' => 'name = ?0 and apps_id = ?1',
@@ -108,9 +111,10 @@ class SystemModules extends BakaSystemModules
      * Get System Module by id.
      *
      * @param int $id
+     *
      * @return ModelInterface
      */
-    public static function getById($id): ModelInterface
+    public static function getById($id) : ModelInterface
     {
         $module = SystemModules::findFirstOrFail([
             'conditions' => 'id = ?0 and apps_id = ?1',
@@ -127,9 +131,10 @@ class SystemModules extends BakaSystemModules
      * Get System Module by id.
      *
      * @param int $id
+     *
      * @return ModelInterface
      */
-    public static function getBySlug(string $slug): ModelInterface
+    public static function getBySlug(string $slug) : ModelInterface
     {
         $module = SystemModules::findFirstOrFail([
             'conditions' => 'slug = ?0 and apps_id = ?1',
@@ -147,7 +152,7 @@ class SystemModules extends BakaSystemModules
      *
      * @return bool
      */
-    public function useElastic(): bool
+    public function useElastic() : bool
     {
         return (bool) $this->use_elastic;
     }

@@ -6,70 +6,13 @@ namespace Canvas\Models;
 use Canvas\Http\Exception\UnprocessableEntityException;
 use Phalcon\Di;
 
-/**
- * Classs for Email Templates.
- * @property Users $userData
- * @property Request $request
- * @property Config $config
- * @property Apps $app
- * @property \Phalcon\DI $di
- *
- */
 class EmailTemplates extends AbstractModel
 {
-    /**
-     *
-     * @var integer
-     */
-    public $id;
-
-    /**
-     *
-     * @var string
-     */
-    public $companies_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $app_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $name;
-
-    /**
-     *
-     * @var integer
-     */
-    public $template;
-
-    /**
-     *
-     * @var string
-     */
-    public $users_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $is_deleted;
-
-    /**
-     *
-     * @var string
-     */
-    public $created_at;
-
-    /**
-     *
-     * @var string
-     */
-    public $updated_at;
+    public int $companies_id;
+    public int $app_id;
+    public string $name;
+    public string $template;
+    public int $users_id;
 
     /**
      * Initialize method for model.
@@ -102,10 +45,12 @@ class EmailTemplates extends AbstractModel
 
     /**
      * Retrieve email template by name.
+     *
      * @param $name
+     *
      * @return EmailTemplates
      */
-    public static function getByName(string $name): EmailTemplates
+    public static function getByName(string $name) : EmailTemplates
     {
         $di = Di::getDefault();
         $appId = $di->getApp()->getId();

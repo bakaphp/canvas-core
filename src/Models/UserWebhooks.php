@@ -4,76 +4,18 @@ declare(strict_types=1);
 namespace Canvas\Models;
 
 use Phalcon\Di;
-use Phalcon\Validation\Validator\Url;
 use Phalcon\Validation;
+use Phalcon\Validation\Validator\Url;
 
 class UserWebhooks extends AbstractModel
 {
-    /**
-     *
-     * @var integer
-     */
-    public $id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $webhooks_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $apps_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $users_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $companies_id;
-
-    /**
-     *
-     * @var string
-     */
-    public $url;
-
-    /**
-     *
-     * @var string
-     */
-    public $method;
-
-    /**
-     *
-     * @var string
-     */
-    public $format;
-
-    /**
-     *
-     * @var integer
-     */
-    public $is_deleted;
-
-    /**
-     *
-     * @var string
-     */
-    public $created_at;
-
-    /**
-     *
-     * @var string
-     */
-    public $updated_at;
+    public int $webhooks_id;
+    public int $apps_id;
+    public int $users_id;
+    public int $companies_id;
+    public string $url;
+    public string $method;
+    public string $format;
 
     /**
      * Initialize method for model.
@@ -133,11 +75,11 @@ class UserWebhooks extends AbstractModel
     }
 
     /**
-    * Get element by Id.
-    *
-    * @return Webhooks
-    */
-    public static function getById($id): self
+     * Get element by Id.
+     *
+     * @return Webhooks
+     */
+    public static function getById($id) : self
     {
         return self::findFirstOrFail([
             'conditions' => 'id = ?0 AND apps_id = ?1 AND companies_id = ?2 and is_deleted = 0',

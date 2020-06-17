@@ -5,17 +5,8 @@ namespace Canvas\Models;
 
 class AppsRoles extends \Baka\Auth\Models\AppsRoles
 {
-    /**
-     *
-     * @var integer
-     */
-    public $apps_id;
-
-    /**
-     *
-     * @var string
-     */
-    public $roles_name;
+    public int $apps_id;
+    public string $roles_name;
 
     /**
      * Initialize method for model.
@@ -33,5 +24,4 @@ class AppsRoles extends \Baka\Auth\Models\AppsRoles
             ['alias' => 'app']
         );
     }
-
 }

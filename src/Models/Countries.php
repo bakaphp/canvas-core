@@ -5,24 +5,8 @@ namespace Canvas\Models;
 
 class Countries extends AbstractModel
 {
-    /**
-     *
-     * @var integer
-     */
-    public $id;
-
-    /**
-     *
-     * @var string
-     */
-    public $name;
-
-    /**
-     *
-     * @var string
-     */
-    public $flag;
-
+    public string $name;
+    public ?string $flag = null;
 
     /**
      * Initialize method for model.
@@ -31,5 +15,4 @@ class Countries extends AbstractModel
     {
         $this->setSource('countries');
     }
-
 }

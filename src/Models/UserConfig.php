@@ -5,7 +5,6 @@ namespace Canvas\Models;
 
 class UserConfig extends \Baka\Auth\Models\UserConfig
 {
-
     /**
      * Initialize method for model.
      */

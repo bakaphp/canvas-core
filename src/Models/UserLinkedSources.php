@@ -2,11 +2,11 @@
 declare(strict_types=1);
 
 namespace Canvas\Models;
+
 use Baka\Auth\Models\UserLinkedSources as BakaUserLinkedSources;
 
 class UserLinkedSources extends BakaUserLinkedSources
 {
-
     /**
      * Initialize method for model.
      */
@@ -19,11 +19,13 @@ class UserLinkedSources extends BakaUserLinkedSources
     }
 
     /**
-     * Get all user linked sources by user's id
+     * Get all user linked sources by user's id.
+     *
      * @param int $usersId
+     *
      * @return array
      */
-    public static function getMobileUserLinkedSources(int $usersId): array
+    public static function getMobileUserLinkedSources(int $usersId) : array
     {
         $userDevicesArray = [
             2 => [],
@@ -46,6 +48,5 @@ class UserLinkedSources extends BakaUserLinkedSources
         }
 
         return $userDevicesArray;
-
     }
 }

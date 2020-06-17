@@ -5,11 +5,8 @@ declare(strict_types=1);
 namespace Canvas\Providers;
 
 use function Baka\appPath;
-use Phalcon\Cache\Backend\File as BackendFileCache;
-use Phalcon\Cache\Frontend\None as NoneCache;
-use Phalcon\Cache\Frontend\Output as FrontenCacheOutput;
-use Phalcon\Di\ServiceProviderInterface;
 use Phalcon\Di\DiInterface;
+use Phalcon\Di\ServiceProviderInterface;
 use Phalcon\Mvc\View\Engine\Volt as VoltEngine;
 use Phalcon\Mvc\View\Simple as SimpleView;
 
@@ -29,13 +26,13 @@ class ViewProvider implements ServiceProviderInterface
             $view = new SimpleView();
             $view->setViewsDir($config->filesystem->local->path . '/view/');
             $view->registerEngines([
-                '.volt' => function ($view, $container) use ($config) {
+                '.volt' => function ($view) use ($config, $container) {
                     $volt = new VoltEngine($view, $container);
                     $volt->setOptions([
                         //CACHE save DISABLED IN DEV ENVIRONMENT
-                        'compiledPath' => appPath('storage/cache/volt/'),
-                        'compiledSeparator' => '_',
-                        'compileAlways' => !$config->app->production,
+                        'path ' => appPath('storage/cache/volt/'),
+                        'separator ' => '_',
+                        'always ' => !$config->app->production,
                     ]);
 
                     $volt->getCompiler()->addExtension(new class {
@@ -56,26 +53,5 @@ class ViewProvider implements ServiceProviderInterface
 
             return $view;
         });
-
-        /**
-         * View cache.
-         */
-        $container->set(
-            'viewCache',
-            function () use ($config) {
-                if (!$config->app->production) {
-                    $frontCache = new NoneCache();
-                } else {
-                    //Cache data for one day by default
-                    $frontCache = new FrontenCacheOutput([
-                        'lifetime' => 172800,
-                    ]);
-                }
-                return new BackendFileCache($frontCache, [
-                    'cacheDir' => appPath('storage/cache/volt/'),
-                    'prefix' => $config->app->id . '-',
-                ]);
-            }
-        );
     }
 }

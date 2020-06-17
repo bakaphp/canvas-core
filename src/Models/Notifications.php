@@ -7,83 +7,15 @@ use Phalcon\Di;
 
 class Notifications extends AbstractModel
 {
-    /**
-     *
-     * @var integer
-     */
-    public $id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $from_users_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $users_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $companies_id;
-
-    /**
-    *
-    * @var integer
-    */
-    public $apps_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $system_modules_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $notification_type_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $entity_id;
-
-    /**
-     *
-     * @var string
-     */
-    public $content;
-
-    /**
-     *
-     * @var integer
-     */
-    public $read;
-
-    /**
-     *
-     * @var integer
-     */
-    public $is_deleted;
-
-    /**
-     *
-     * @var string
-     */
-    public $created_at;
-
-    /**
-     *
-     * @var string
-     */
-    public $updated_at;
+    public int $from_users_id;
+    public int $users_id;
+    public int $companies_id;
+    public int $apps_id;
+    public int $system_modules_id;
+    public int $notification_type_id;
+    public int $entity_id;
+    public string $content;
+    public int $read;
 
     /**
      * Initialize method for model.
@@ -118,9 +50,10 @@ class Notifications extends AbstractModel
      * Mark as Read all the notification from a user.
      *
      * @param Users $user
+     *
      * @return void
      */
-    public static function markAsRead(Users $user): bool
+    public static function markAsRead(Users $user) : bool
     {
         $result = Di::getDefault()->getDb()->prepare(
             'UPDATE notifications set `read` = 1 WHERE users_id = ? AND companies_id = ? AND apps_id = ?'
@@ -140,7 +73,7 @@ class Notifications extends AbstractModel
      *
      * @return int
      */
-    public static function totalUnRead(Users $user): int
+    public static function totalUnRead(Users $user) : int
     {
         return self::count([
             'conditions' => 'is_deleted = 0 AND read = 0 AND users_id = ?0 AND companies_id = ?1 AND apps_id = ?2',

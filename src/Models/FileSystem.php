@@ -9,16 +9,7 @@ use Canvas\Http\Exception\NotFoundException;
 use Exception;
 use Phalcon\Di;
 
-/**
- * Classs for FileSystem.
- *
- * @property Users $userData
- * @property Request $request
- * @property Config $config
- * @property Apps $app
- * @property \Phalcon\DI $di
- *
- */
+
 class FileSystem extends AbstractModel
 {
     use HashTableTrait;

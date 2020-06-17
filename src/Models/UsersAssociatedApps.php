@@ -5,47 +5,13 @@ namespace Canvas\Models;
 
 class UsersAssociatedApps extends AbstractModel
 {
-    /**
-     *
-     * @var integer
-     */
-    public $users_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $apps_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $companies_id;
-
-    /**
-     *
-     * @var string
-     */
-    public $identify_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $user_active;
-
-    /**
-     *
-     * @var string
-     */
-    public $user_role;
-
-    /**
-     *
-     * @var string
-     */
-    public $password;
+    public int $users_id;
+    public int $apps_id;
+    public int $companies_id;
+    public string $identify_id;
+    public int $user_active;
+    public string $user_role;
+    public ?string $password = null;
 
     /**
      * Initialize method for model.
@@ -75,5 +41,4 @@ class UsersAssociatedApps extends AbstractModel
 
         $this->setSource('users_associated_apps');
     }
-
 }

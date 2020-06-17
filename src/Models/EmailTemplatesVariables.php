@@ -3,76 +3,14 @@ declare(strict_types=1);
 
 namespace Canvas\Models;
 
-/**
- * Classs for Email Templates
- * @property Users $userData
- * @property Request $request
- * @property Config $config
- * @property Apps $app
- * @property \Phalcon\DI $di
- *
- */
 class EmailTemplatesVariables extends AbstractModel
 {
-    /**
-     *
-     * @var integer
-     */
-    public $id;
-
-    /**
-     *
-     * @var string
-     */
-    public $companies_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $apps_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $system_modules_id;
-
-    /**
-     *
-     * @var string
-     */
-    public $users_id;
-
-    /**
-     *
-     * @var string
-     */
-    public $name;
-
-    /**
-     *
-     * @var integer
-     */
-    public $value;
-
-    /**
-     *
-     * @var integer
-     */
-    public $is_deleted;
-
-    /**
-     *
-     * @var string
-     */
-    public $created_at;
-
-    /**
-     *
-     * @var string
-     */
-    public $updated_at;
+    public int $companies_id;
+    public int $apps_id;
+    public int $system_modules_id;
+    public int $users_id;
+    public string $name;
+    public string $value;
 
     /**
      * Initialize method for model.
