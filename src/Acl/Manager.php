@@ -504,7 +504,7 @@ class Manager extends AbstractAdapter
             "AND resources_name IN (?, '*')",
             // access_name should be given one or 'any'
             //"AND access_name IN (?, '*')", you need to specify * , we are forcing to check always for permissions
-            'AND access_name IN (?)',
+            "AND access_name IN (?, '*')",
             'AND apps_id = ? ',
             'AND roles_id = ? ',
             // order be the sum of bool for 'literals' before 'any'
@@ -514,7 +514,17 @@ class Manager extends AbstractAdapter
         ]);
 
         // fetch one entry...
-        $allowed = $this->connection->fetchOne($sql, Enum::FETCH_NUM, [$roleObj->getId(), $resource, $access, $this->getApp()->getId(), $roleObj->getId()]);
+        $allowed = $this->connection->fetchOne(
+            $sql,
+            Enum::FETCH_NUM,
+            [
+                $roleObj->getId(),
+                $resource,
+                $access,
+                $this->getApp()->getId(),
+                $roleObj->getId()
+            ]
+        );
 
         if (is_array($allowed)) {
             return (bool) $allowed[0];
