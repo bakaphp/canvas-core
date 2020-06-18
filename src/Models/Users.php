@@ -23,6 +23,7 @@ use Phalcon\Validation;
 use Phalcon\Validation\Validator\Email;
 use Phalcon\Validation\Validator\PresenceOf;
 use Phalcon\Validation\Validator\Uniqueness;
+use ReflectionClass;
 
 /**
  * Class Users.
@@ -756,5 +757,21 @@ class Users extends BakUser implements UserInterface
         }
 
         return $this->firstname . '.' . $this->lastname;
+    }
+
+    /**
+     * Verify if the user bellow to the current app.
+     *
+     * @return boolean
+     */
+    public function inApp() : bool
+    {
+        $appId = Di::getDefault()->get('app')->getId();
+
+        if ($this->getApps("apps_id = {$appId}")->count()) {
+            return true;
+        }
+
+        throw new Exception((new ReflectionClass(new static))->getShortName() . ' Record not found');
     }
 }
