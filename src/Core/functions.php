@@ -5,6 +5,18 @@ namespace Canvas\Core;
 use function function_exists;
 use function getenv;
 
+if (!function_exists('Canvas\Core\basePath')) {
+    /**
+     * Get the application base path.
+     *
+     * @return string
+     */
+    function basePath() : string
+    {
+        return getenv('APP_BASE_PATH') ?: dirname(dirname(getcwd()));
+    }
+}
+
 if (!function_exists('Canvas\Core\appPath')) {
     /**
      * Get the application path.
@@ -13,16 +25,17 @@ if (!function_exists('Canvas\Core\appPath')) {
      *
      * @return string
      */
-    function appPath(string $path = ''): string
+    function appPath(string $path = '') : string
     {
-        $currentDir = dirname(dirname(getcwd())) . ($path ? DIRECTORY_SEPARATOR . $path : $path);
+        $currentDir = basePath() . ($path ? DIRECTORY_SEPARATOR . $path : $path);
 
         /**
          * since we are calling this file from the diferent path we have to verify if its cli.
+         *
          * @todo look for a better solution , hate this
          */
         if (php_sapi_name() == 'cli') {
-            $currentDir = getcwd() . DIRECTORY_SEPARATOR. $path;
+            $currentDir = getcwd() . DIRECTORY_SEPARATOR . $path;
         }
 
         return $currentDir;
@@ -83,7 +96,7 @@ if (!function_exists('Canvas\Core\paymentGatewayIsActive')) {
      *
      * @return boolean
      */
-    function paymentGatewayIsActive(): bool
+    function paymentGatewayIsActive() : bool
     {
         return !empty(getenv('STRIPE_SECRET')) ? true : false;
     }
@@ -94,9 +107,10 @@ if (!function_exists('Canvas\Core\isJson')) {
      * Given a string determine if its a json.
      *
      * @param string $string
+     *
      * @return boolean
      */
-    function isJson(string $string): bool
+    function isJson(string $string) : bool
     {
         json_decode($string);
         return (bool ) (json_last_error() == JSON_ERROR_NONE);
@@ -109,7 +123,7 @@ if (!function_exists('Canvas\Core\isSwooleServer')) {
      *
      * @return boolean
      */
-    function isSwooleServer(): bool
+    function isSwooleServer() : bool
     {
         return defined('ENGINE') && ENGINE === 'SWOOLE' ? true : false;
     }
