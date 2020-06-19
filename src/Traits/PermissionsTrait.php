@@ -138,7 +138,7 @@ trait PermissionsTrait
         //get your user account role for this app or the canvas ecosystem
         if (!$role = $this->getPermission()) {
             throw new InternalServerErrorException(
-                'ACL - User doesnt have any set roles in this current app ' . $this->di->getApp()->name
+                'ACL - User doesn\'t have any set roles in this current app ' . $this->di->getApp()->name
             );
         }
 
