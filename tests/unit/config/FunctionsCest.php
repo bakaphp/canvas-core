@@ -4,6 +4,7 @@ namespace Canvas\Tests\unit\config;
 
 use function Canvas\Core\appPath;
 use function Canvas\Core\appUrl;
+use function Canvas\Core\basePath;
 use function Canvas\Core\envValue;
 use function Canvas\Core\isJson;
 use function Canvas\Core\paymentGatewayIsActive;
