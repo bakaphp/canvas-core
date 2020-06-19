@@ -2,16 +2,29 @@
 
 namespace Canvas\Tests\unit\config;
 
-use UnitTester;
-use Codeception\PHPUnit\TestCase;
 use function Canvas\Core\appPath;
+use function Canvas\Core\appUrl;
 use function Canvas\Core\envValue;
 use function Canvas\Core\isJson;
-use function Canvas\Core\appUrl;
 use function Canvas\Core\paymentGatewayIsActive;
+use UnitTester;
 
 class FunctionsCest
 {
+    // BasePath
+    public function checkBasePathWithEnv(UnitTester $I)
+    {
+        putenv('APP_BASE_PATH=/home');
+        $I->assertEquals('/home', basePath());
+        putenv('APP_BASE_PATH');
+    }
+
+    public function checkBasePath(UnitTester $I)
+    {
+        $path = dirname(dirname(dirname(__DIR__)));
+        $I->assertEquals($path, basePath());
+    }
+
     // AppPath
     public function checkApppath(UnitTester $I)
     {
@@ -44,17 +57,16 @@ class FunctionsCest
         $I->assertEquals('someval', envValue('SOMEVAL'));
     }
 
-
     //AppUrl
     public function checkAppUrlTrue(UnitTester $I)
     {
-        $I->assertNotEmpty(appUrl('users',1));
+        $I->assertNotEmpty(appUrl('users', 1));
     }
 
     //IsJson
     public function checkIsJsonTrue(UnitTester $I)
     {
-        $array = ['name'=>'example'];
+        $array = ['name' => 'example'];
         $I->assertTrue(isJson(json_encode($array)));
     }
 
