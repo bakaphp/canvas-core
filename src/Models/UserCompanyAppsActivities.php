@@ -12,7 +12,7 @@ class UserCompanyAppsActivities extends AbstractModel
     public int $company_branches_id;
     public int $apps_id;
     public string $key;
-    public ?string $value = null;
+    public $value;
 
     /**
      * Initialize method for model.

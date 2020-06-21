@@ -6,9 +6,9 @@ namespace Canvas\Models;
 class Currencies extends AbstractModel
 {
     public string $country;
-    public string $currency;
-    public string $code;
-    public string $symbol;
+    public ?string $currency = null;
+    public ?string $code = null;
+    public ?string $symbol = null;
 
     /**
      * Initialize method for model.

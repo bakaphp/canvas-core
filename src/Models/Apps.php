@@ -3,21 +3,22 @@ declare(strict_types=1);
 
 namespace Canvas\Models;
 
-use Canvas\Traits\UsersAssociatedTrait;
 use Baka\Contracts\Database\HashTableTrait;
 use Baka\Database\Apps as BakaApps;
+use Canvas\Traits\UsersAssociatedTrait;
+
 class Apps extends BakaApps
 {
     public string $key;
-    public ?string $url;
+    public ?string $url = null;
     public int $default_apps_plan_id;
     public int $is_actived;
     public int $ecosystem_auth;
     public int $payments_active;
 
-
     /**
      * Ecosystem default app.
+     *
      * @var string
      */
     const CANVAS_DEFAULT_APP_ID = 1;
@@ -74,9 +75,10 @@ class Apps extends BakaApps
      * You can only get 2 variations or default in DB or the api app.
      *
      * @param string $name
+     *
      * @return Apps
      */
-    public static function getACLApp(string $name): Apps
+    public static function getACLApp(string $name) : Apps
     {
         if (trim($name) == self::CANVAS_DEFAULT_APP_NAME) {
             $app = self::findFirst(1);
@@ -92,7 +94,7 @@ class Apps extends BakaApps
      *
      * @return boolean
      */
-    public function isActive(): bool
+    public function isActive() : bool
     {
         return (bool) $this->is_actived;
     }
@@ -103,7 +105,7 @@ class Apps extends BakaApps
      *
      * @return boolean
      */
-    public function ecosystemAuth(): bool
+    public function ecosystemAuth() : bool
     {
         return (bool) $this->ecosystem_auth;
     }
@@ -113,7 +115,7 @@ class Apps extends BakaApps
      *
      * @return boolean
      */
-    public function subscriptionBased(): bool
+    public function subscriptionBased() : bool
     {
         return (bool) $this->payments_active;
     }

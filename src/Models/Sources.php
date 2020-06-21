@@ -4,14 +4,11 @@ declare(strict_types=1);
 
 namespace Canvas\Models;
 
-use Phalcon\Di;
-use Canvas\Exception\ModelException;
 use Baka\ASDecoder;
 use Canvas\Http\Exception\InternalServerErrorException;
 
-
 /**
- * Class Resources
+ * Class Resources.
  *
  * @package Canvas\Models
  *
@@ -21,7 +18,7 @@ class Sources extends AbstractModel
 {
     public string $title;
     public string $url;
-    public int $language_id;
+    public ?int $language_id = null;
 
     /**
      * Initialize method for model.
@@ -31,21 +28,22 @@ class Sources extends AbstractModel
         $this->setSource('sources');
     }
 
-
     /**
-     * Verify if source is Apple
+     * Verify if source is Apple.
      */
-    public function isApple(): bool
+    public function isApple() : bool
     {
         return $this->title == 'apple';
     }
 
     /**
      * Validate Apple User.
+     *
      * @param string $identityToken
+     *
      * @return object
      */
-    public function validateAppleUser(string $identityToken): object
+    public function validateAppleUser(string $identityToken) : object
     {
         $appleUserInfo = ASDecoder::getAppleSignInPayload($identityToken);
 

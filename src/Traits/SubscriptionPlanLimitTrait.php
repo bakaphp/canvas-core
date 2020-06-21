@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Canvas\Traits;
 
-use Canvas\Models\Subscription;
-use Canvas\Models\UserCompanyAppsActivities;
 use Canvas\Exception\SubscriptionPlanLimitException;
 use Canvas\Http\Exception\InternalServerErrorException;
-use ReflectionClass;
+use Canvas\Models\Subscription;
+use Canvas\Models\UserCompanyAppsActivities;
 use Phalcon\Di;
+use ReflectionClass;
 
 /**
  * Trait ResponseTrait.
@@ -41,6 +41,7 @@ trait SubscriptionPlanLimitTrait
      * Validate if the current module for this app is at the limit of the paid plan.
      *
      * @throws SubscriptionPlanLimitException
+     *
      * @return boolean
      */
     public function isAtLimit() : bool
@@ -50,7 +51,7 @@ trait SubscriptionPlanLimitTrait
         }
 
         //if its not a subscription based app top this
-        if (!Di::getDefault()->get('app')->subscriptioBased()) {
+        if (!Di::getDefault()->get('app')->subscriptionBased()) {
             return false;
         }
 
@@ -80,6 +81,7 @@ trait SubscriptionPlanLimitTrait
      * Call at the afterCreate of all modules which are part of a plan activity.
      *
      * @throws InternalServerErrorException
+     *
      * @return boolean
      */
     public function updateAppActivityLimit() : bool
@@ -89,7 +91,7 @@ trait SubscriptionPlanLimitTrait
         }
 
         //if its not a subscription based app top this
-        if (!Di::getDefault()->get('app')->subscriptioBased()) {
+        if (!Di::getDefault()->get('app')->subscriptionBased()) {
             return false;
         }
 

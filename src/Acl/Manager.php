@@ -159,8 +159,8 @@ class Manager extends AbstractAdapter
      *
      * Example:
      * <code>
-     * $acl->addRole(new Phalcon\Acl\Role('administrator'), 'consultor');
-     * $acl->addRole('administrator', 'consultor');
+     * $acl->addRole(new Phalcon\Acl\Role('administrator'), 'consulter');
+     * $acl->addRole('administrator', 'consulter');
      * </code>
      *
      * @param  \Phalcon\Acl\Role|string $role
@@ -197,7 +197,7 @@ class Manager extends AbstractAdapter
             $accessListDB->roles_id = $rolesDB->getId();
             $accessListDB->resources_name = '*';
             $accessListDB->access_name = '*';
-            $accessListDB->allowed = $this->_defaultAccess;
+            $accessListDB->allowed = $this->noArgumentsDefaultAction;
             $accessListDB->apps_id = $this->getApp()->getId();
             $accessListDB->saveOrFail();
         }
@@ -533,7 +533,7 @@ class Manager extends AbstractAdapter
         /**
          * Return the default access action.
          */
-        return (bool) $this->_defaultAccess;
+        return (bool) $this->noArgumentsDefaultAction;
     }
 
     /**
@@ -617,7 +617,7 @@ class Manager extends AbstractAdapter
             $accessListDB->roles_name = $roleName;
             $accessListDB->resources_name = $resourceName;
             $accessListDB->access_name = '*';
-            $accessListDB->allowed = $this->_defaultAccess;
+            $accessListDB->allowed = $this->noArgumentsDefaultAction;
             $accessListDB->apps_id = $this->getApp()->getId();
             $accessListDB->saveOrFail();
         }

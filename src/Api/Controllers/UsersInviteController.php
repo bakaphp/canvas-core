@@ -4,22 +4,24 @@ declare(strict_types=1);
 
 namespace Canvas\Api\Controllers;
 
-use Canvas\Models\UsersInvite;
-use Canvas\Models\Users;
+use Baka\Http\Exception\NotFoundException;
+use Baka\Validation as CanvasValidation;
+use Canvas\Auth\Auth;
+use Canvas\Http\Exception\UnprocessableEntityException;
 use Canvas\Models\Roles;
+use Canvas\Models\Users;
+use Canvas\Models\UsersInvite;
+use Canvas\Notifications\Invitation;
+use Canvas\Traits\AuthTrait;
+use Exception;
+use Phalcon\Http\Response;
 use Phalcon\Security\Random;
 use Phalcon\Validation\Validator\PresenceOf;
 use Phalcon\Validation\Validator\StringLength;
-use Canvas\Exception\NotFoundHttpException;
-use Phalcon\Http\Response;
-use Exception;
-use Canvas\Http\Exception\UnprocessableEntityException;
-use Canvas\Traits\AuthTrait;
-use Canvas\Notifications\Invitation;
-use Baka\Validation as CanvasValidation;
 
 /**
  * Class LanguagesController.
+ *
  * @property Users $userData
  * @property Request $request
  * @property Config $config
@@ -29,6 +31,7 @@ use Baka\Validation as CanvasValidation;
  * @property Payload $payload
  * @property Exp $exp
  * @property JWT $jwt
+ *
  * @package Canvas\Api\Controllers
  *
  */
@@ -83,10 +86,12 @@ class UsersInviteController extends BaseController
 
     /**
      * Get users invite by hash.
+     *
      * @param string $hash
+     *
      * @return Response
      */
-    public function getByHash(string $hash):Response
+    public function getByHash(string $hash) : Response
     {
         $userInvite = $this->model::findFirst([
             'conditions' => 'invite_hash =  ?0 and is_deleted = 0',
@@ -94,7 +99,7 @@ class UsersInviteController extends BaseController
         ]);
 
         if (!is_object($userInvite)) {
-            throw new NotFoundHttpException('Users Invite not found');
+            throw new NotFoundException('Users Invite not found');
         }
 
         return $this->response($userInvite);
@@ -102,9 +107,10 @@ class UsersInviteController extends BaseController
 
     /**
      * Sets up invitation information for a would be user.
+     *
      * @return Response
      */
-    public function insertInvite(): Response
+    public function insertInvite() : Response
     {
         $request = $this->request->getPostData();
         $random = new Random();
@@ -124,7 +130,7 @@ class UsersInviteController extends BaseController
         $userInvite->companies_id = $this->userData->getDefaultCompany()->getId();
         $userInvite->users_id = $this->userData->getId();
         $userInvite->app_id = $this->app->getId();
-        $userInvite->role_id = Roles::existsById((int)$request['role_id'])->id;
+        $userInvite->role_id = (int) Roles::existsById((int)$request['role_id'])->id;
         $userInvite->email = $request['email'];
         $userInvite->invite_hash = $random->base58();
         $userInvite->created_at = date('Y-m-d H:m:s');
@@ -144,9 +150,10 @@ class UsersInviteController extends BaseController
 
     /**
      * Add invited user to our system.
+     *
      * @return Response
      */
-    public function processUserInvite(string $hash): Response
+    public function processUserInvite(string $hash) : Response
     {
         $request = $this->request->getPostData();
         $request['password'] = ltrim(trim($request['password']));
@@ -184,7 +191,7 @@ class UsersInviteController extends BaseController
                 $this->db->begin();
 
                 //signup
-                $newUser->signup();
+                $newUser = Auth::signUp($newUser->toArray());
 
                 $this->db->commit();
             } catch (Exception $e) {

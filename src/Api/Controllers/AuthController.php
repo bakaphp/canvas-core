@@ -334,7 +334,9 @@ class AuthController extends \Baka\Auth\AuthController
             $request['email'] = $appleUserInfo->email;
         }
 
-        return $this->response($this->providerLogin($source, $request['social_id'], $request));
+        return $this->response(
+            $this->providerLogin($source, $request['social_id'], $request)
+        );
     }
 
     /**

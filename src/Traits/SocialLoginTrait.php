@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Canvas\Traits;
 
+use Baka\Auth\Auth;
 use Canvas\Http\Exception\UnprocessableEntityException;
 use Canvas\Models\Sources;
 use Canvas\Models\UserLinkedSources;
@@ -110,32 +111,32 @@ trait SocialLoginTrait
     protected function createUser(Sources $source, string $identifier, array $userInfo, string $password) : Users
     {
         $random = new Random();
-
+        $userObj = new Users();
         //Create a new User
-        $newUser = new Users();
-        $newUser->firstname = $userInfo['firstname'];
-        $newUser->lastname = $userInfo['lastname'];
-        $newUser->displayname = $newUser->generateDefaultDisplayname();
-        $newUser->password = $password;
-        $newUser->email = $userInfo['email'];
-        $newUser->user_active = 1;
-        $newUser->roles_id = 1;
-        $newUser->created_at = date('Y-m-d H:m:s');
-        $newUser->defaultCompanyName = $newUser->displayname . ' Company';
+
+        $newUser['firstname'] = $userInfo['firstname'];
+        $newUser['lastname'] = $userInfo['lastname'];
+        $newUser['displayname'] = $userObj->generateDefaultDisplayname();
+        $newUser['password'] = $password;
+        $newUser['email'] = $userInfo['email'];
+        $newUser['user_active'] = 1;
+        $newUser['roles_id'] = 1;
+        $newUser['created_at'] = date('Y-m-d H:m:s');
+        $newUser['defaultCompanyName'] = $newUser['displayname'] . ' Company';
 
         try {
             $this->db->begin();
 
             //signup
-            $newUser->signup();
+            $user = Auth::signUp($newUser);
 
             $newLinkedSource = new UserLinkedSources();
-            $newLinkedSource->users_id = $newUser->id;
+            $newLinkedSource->users_id = $user->getId();
             $newLinkedSource->source_id = $source->getId();
             $newLinkedSource->source_users_id = $identifier;
             $newLinkedSource->source_users_id_text = $identifier;
             $newLinkedSource->source_username = ucfirst($source->title) . 'Login-' . $random->base58();
-            $newLinkedSource->save();
+            $newLinkedSource->saveOrFail();
 
             $this->db->commit();
         } catch (Exception $e) {
@@ -144,6 +145,6 @@ trait SocialLoginTrait
             throw new UnprocessableEntityException($e->getMessage());
         }
 
-        return $newUser;
+        return $user;
     }
 }

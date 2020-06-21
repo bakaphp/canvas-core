@@ -36,9 +36,9 @@ class Subscription extends BakaSubscription
     public ?int $payment_frequency_id = null;
     public ?string $trial_ends_at = null;
     public ?int $trial_ends_days = null;
-    public int $is_freetrial= 0;
-    public int $is_active= 0;
-    public int $paid= 0;
+    public int $is_freetrial = 0;
+    public int $is_active = 0;
+    public int $paid = 0;
     public ?string $charge_date = null;
     public ?string $ends_at = null;
     public ?string $grace_period_ends = null;
@@ -119,7 +119,7 @@ class Subscription extends BakaSubscription
     public static function getPaymentStatus(Users $user) : bool
     {
         //if its not subscription based return true to ignore any payment status
-        if (!Di::getDefault()->getApp()->subscriptioBased()) {
+        if (!Di::getDefault()->getApp()->subscriptionBased()) {
             return true;
         }
 
@@ -137,7 +137,7 @@ class Subscription extends BakaSubscription
      */
     public function active() : bool
     {
-        if (!Di::getDefault()->getApp()->subscriptioBased()) {
+        if (!Di::getDefault()->getApp()->subscriptionBased()) {
             return true;
         }
 
@@ -151,7 +151,7 @@ class Subscription extends BakaSubscription
      */
     public function paid() : bool
     {
-        if (!Di::getDefault()->getApp()->subscriptioBased()) {
+        if (!Di::getDefault()->getApp()->subscriptionBased()) {
             return true;
         }
 
@@ -189,7 +189,7 @@ class Subscription extends BakaSubscription
      */
     public static function getActiveSubscription() : self
     {
-        $userSubscription = PhalconSubscription::findFirstOrFail([
+        $userSubscription = self::findFirstOrFail([
             'conditions' => 'companies_id = ?0 and apps_id = ?1 and is_deleted  = 0',
             'bind' => [Di::getDefault()->getUserData()->currentCompanyId(), Di::getDefault()->getApp()->getId()]
         ]);

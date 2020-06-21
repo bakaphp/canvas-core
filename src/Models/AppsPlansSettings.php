@@ -8,7 +8,7 @@ class AppsPlansSettings extends AbstractModel
     public int $apps_plans_id;
     public int $apps_id;
     public string $key;
-    public ?string $value = null;
+    public $value;
 
     /**
      * Initialize method for model.

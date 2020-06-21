@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Canvas\Api\Controllers;
 
+use Canvas\Http\Exception\InternalServerErrorException;
 use Exception;
 use PDOException;
 use Phalcon\Http\Response;
-use Canvas\Http\Exception\InternalServerErrorException;
+use PhpAmqpLib\Exception\AMQPIOException;
 use RedisException;
-use PhpAmqpLib\Exception\AMQPIOException ;
 
 /**
  * Class IndexController.
@@ -37,7 +37,7 @@ class IndexController extends BaseController
     }
 
     /**
-     * Show the status of the diferent services.
+     * Show the status of the different services.
      *
      * @method GET
      * @url /status
