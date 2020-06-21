@@ -28,9 +28,9 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
     public ?int $has_activities = 0;
     public ?int $appPlanId = null;
     public ?int $currency_id = 0;
-    public string $language;
-    public string $timezone;
-    public string $currency;
+    public ?string $language = null;
+    public ?string $timezone = null;
+    public ?string $currency = null;
     public int $system_modules_id = 1;
     public ?string $phone = null;
 

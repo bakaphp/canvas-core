@@ -222,7 +222,7 @@ class PaymentsController extends BaseController
      */
     public function updateSubscriptionPaymentStatus(Users $user, array $payload): void
     {
-        $chargeDate = date('Y-m-d H:i:s', $payload['data']['object']['created']);
+        $chargeDate = date('Y-m-d H:i:s', (int) $payload['data']['object']['created']);
 
         //Fetch current user subscription
         $subscription = Subscription::getByDefaultCompany($user);
