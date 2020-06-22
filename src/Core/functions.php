@@ -13,7 +13,15 @@ if (!function_exists('Canvas\Core\basePath')) {
      */
     function basePath() : string
     {
-        return getenv('APP_BASE_PATH') ?: dirname(dirname(getcwd()));
+        if ($basePath = getenv('APP_BASE_PATH')) {
+            return $basePath;
+        }
+
+        if (php_sapi_name() == 'cli') {
+            return getcwd();
+        }
+
+        return  dirname(dirname(getcwd()));
     }
 }
 
