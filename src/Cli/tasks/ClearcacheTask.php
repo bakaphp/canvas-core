@@ -3,21 +3,12 @@
 namespace Canvas\Cli\Tasks;
 
 use function Baka\appPath;
-use Phalcon\Cache\Backend\Libmemcached;
 use Phalcon\Cli\Task as PhTask;
 use Phalcon\Queue\Beanstalk\Extended as BeanstalkExtended;
 use Phalcon\Queue\Beanstalk\Job;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 
-/**
- * Class ClearcacheTask.
- *
- * @package Canvas\Cli\Tasks
- *
- * @property Libmemcached $cache
- * @property Config $config
- */
 class ClearcacheTask extends PhTask
 {
     /**
@@ -98,7 +89,7 @@ class ClearcacheTask extends PhTask
             // Here we should collect the meta information, make the screenshots, convert the video to the FLV etc.
 
             $sessionId = $job->getBody();
-            echo "\nProccessing:  {$sessionId}\n";
+            echo "\nProcessing:  {$sessionId}\n";
 
             $session = new \Baka\Auth\Models\Sessions();
             $session->clean($sessionId, true);

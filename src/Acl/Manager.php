@@ -507,6 +507,7 @@ class Manager extends AbstractAdapter
             "AND access_name IN (?, '*')",
             'AND apps_id = ? ',
             'AND roles_id = ? ',
+            'AND is_deleted = 0 ',
             // order be the sum of bool for 'literals' before 'any'
             'ORDER BY ' . $this->connection->escapeIdentifier('allowed') . ' DESC',
             // get only one...

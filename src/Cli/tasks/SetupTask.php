@@ -3,8 +3,6 @@
 namespace Canvas\Cli\Tasks;
 
 use Phalcon\Cli\Task as PhTask;
-use Canvas\Cli\Tasks\AclTask;
-use Canvas\Cli\Tasks\EmailtemplatesTask;
 
 /**
  * Class AclTask.

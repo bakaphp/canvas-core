@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Canvas\Filesystem;
 
+use Baka\Validations\File as FileValidation;
 use Canvas\Models\FileSystem;
 use Exception;
 use Phalcon\Di;
 use Phalcon\Http\Request\File;
+use Phalcon\Http\Request\FileInterface;
 use Phalcon\Image\Adapter\Gd;
 use Phalcon\Text;
 
@@ -21,7 +23,7 @@ class Helper
      *
      * @return string
      */
-    public static function generateUniqueName(File $file, string $dir, $withPath = false) : string
+    public static function generateUniqueName(FileInterface $file, string $dir, $withPath = false) : string
     {
         // the provided path has to be a dir
         if (!is_dir($dir)) {
@@ -66,8 +68,10 @@ class Helper
      *
      * @return bool
      */
-    public static function upload(File $file) : FileSystem
+    public static function upload(FileInterface $file) : FileSystem
     {
+        FileValidation::validate($file);
+
         $di = Di::getDefault();
         $config = $di->get('config');
 
@@ -103,7 +107,7 @@ class Helper
         $fileSystem->saveOrFail();
 
         //set the unique name we generate
-        $fileSystem->set('unique_name', $uploadFileNameWithPath);
+        $fileSystem->set('unique_name', Text::reduceSlashes($uploadFileNameWithPath));
 
         return $fileSystem;
     }
@@ -115,7 +119,7 @@ class Helper
      *
      * @return boolean
      */
-    public static function isImage(File $file) : bool
+    public static function isImage(FileInterface $file) : bool
     {
         return strpos(mime_content_type($file->getTempName()), 'image/') === 0;
     }
@@ -128,7 +132,7 @@ class Helper
      *
      * @return void
      */
-    public static function setImageDimensions(File $file, FileSystem $fileSystem) : void
+    public static function setImageDimensions(FileInterface $file, FileSystem $fileSystem) : void
     {
         if (Helper::isImage($file)) {
             $image = new Gd($file->getTempName());

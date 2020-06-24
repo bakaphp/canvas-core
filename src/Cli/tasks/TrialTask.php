@@ -2,18 +2,19 @@
 
 namespace Canvas\Cli\Tasks;
 
-use Phalcon\Cli\Task as PhTask;
 use Canvas\Models\Subscription;
 use Carbon\Carbon;
-use \Datetime;
+use Datetime;
+use Phalcon\Cli\Task as PhTask;
 
 class TrialTask extends PhTask
 {
     /**
      * Unset subscription trial_ends_at if trial has ended.
+     *
      * @return void
      */
-    public function unsetTrialEndsAtAction(): void
+    public function unsetTrialEndsAtAction() : void
     {
         $subscriptions = Subscription::find([
             'conditions' => 'is_deleted = 0 and is_active = 1'
