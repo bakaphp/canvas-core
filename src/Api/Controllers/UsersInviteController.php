@@ -19,22 +19,7 @@ use Phalcon\Security\Random;
 use Phalcon\Validation\Validator\PresenceOf;
 use Phalcon\Validation\Validator\StringLength;
 
-/**
- * Class LanguagesController.
- *
- * @property Users $userData
- * @property Request $request
- * @property Config $config
- * @property Apps $app
- * @property Mail $mail
- * @property Auth $auth
- * @property Payload $payload
- * @property Exp $exp
- * @property JWT $jwt
- *
- * @package Canvas\Api\Controllers
- *
- */
+
 class UsersInviteController extends BaseController
 {
     use AuthTrait;
@@ -73,15 +58,15 @@ class UsersInviteController extends BaseController
     public function onConstruct()
     {
         $this->model = new UsersInvite();
-        $additionaFields = [
+        $additionalFields = [
             ['is_deleted', ':', '0'],
         ];
 
         if ($this->di->has('userData')) {
-            $additionaFields[] = ['companies_id', ':', $this->userData->currentCompanyId()];
+            $additionalFields[] = ['companies_id', ':', $this->userData->currentCompanyId()];
         }
 
-        $this->additionalSearchFields = $additionaFields;
+        $this->additionalSearchFields = $additionalFields;
     }
 
     /**
@@ -207,6 +192,8 @@ class UsersInviteController extends BaseController
 
         //Lets login the new user
         $authInfo = $this->loginUsers($usersInvite->email, $request['password']);
+        //move to DTO
+        $newUser->password = null;
 
         if (!defined('API_TESTS')) {
             $usersInvite->softDelete();

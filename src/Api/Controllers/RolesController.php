@@ -6,13 +6,6 @@ namespace Canvas\Api\Controllers;
 
 use Canvas\Models\Roles;
 
-/**
- * Class RolesController
- *
- * @package Canvas\Api\Controllers
- *
- * @property Users $userData
- */
 class RolesController extends BaseController
 {
     /*
@@ -30,7 +23,7 @@ class RolesController extends BaseController
     protected $updateFields = [];
 
     /**
-     * set objects
+     * set objects.
      *
      * @return void
      */
@@ -38,7 +31,7 @@ class RolesController extends BaseController
     {
         $this->model = new Roles();
 
-        //get the list of roes for the systema + my company
+        //get the list of roes for the systems + my company
         $this->additionalSearchFields = [
             ['is_deleted', ':', '0'],
             ['companies_id', ':', '1|' . $this->userData->currentCompanyId()],

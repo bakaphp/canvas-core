@@ -42,6 +42,13 @@ class Roles extends AbstractModel
             'roles_id',
             ['alias' => 'accesList']
         );
+
+        $this->hasMany(
+            'id',
+            'Canvas\Models\AccessList',
+            'roles_id',
+            ['alias' => 'accessList']
+        );
     }
 
     /**

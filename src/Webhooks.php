@@ -88,12 +88,13 @@ class Webhooks
         $systemModule = SystemModules::getByName($module);
 
         $webhooks = UserWebhooks::find([
-            'conditions' => 'apps_id = ?0 AND companies_id = ?1 
+            'conditions' => 'apps_id = ?0 AND companies_id = ?1 AND is_deleted = 0
                             AND webhooks_id in 
                                 (SELECT Canvas\Models\Webhooks.id FROM Canvas\Models\Webhooks 
                                     WHERE Canvas\Models\Webhooks.apps_id = ?0 
                                     AND Canvas\Models\Webhooks.system_modules_id = ?2 
                                     AND Canvas\Models\Webhooks.action = ?3
+                                    AND Canvas\Models\Webhooks.is_deleted = 0
                                 )',
             'bind' => [
                 $appId,

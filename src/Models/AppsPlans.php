@@ -3,10 +3,13 @@ declare(strict_types=1);
 
 namespace Canvas\Models;
 
+use Baka\Contracts\Database\HashTableTrait;
 use Phalcon\Di;
 
 class AppsPlans extends AbstractModel
 {
+    use HashTableTrait;
+    
     public int $apps_id;
     public string $name;
     public string $description;
@@ -124,9 +127,7 @@ class AppsPlans extends AbstractModel
 
         $setting->value = $value;
 
-        $setting->saveOrFail();
-
-        return true;
+        return $setting->saveOrFail();
     }
 
     /**
@@ -136,7 +137,7 @@ class AppsPlans extends AbstractModel
      */
     public function afterSave()
     {
-        //if we udpate the is_default for this plan we need to remove all others and update the main app
+        //if we update the is_default for this plan we need to remove all others and update the main app
         if ($this->is_default) {
             $this->app->default_apps_plan_id = $this->getId();
             $this->app->update();
