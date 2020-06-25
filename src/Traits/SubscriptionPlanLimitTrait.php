@@ -11,7 +11,6 @@ use Canvas\Models\Subscription;
 use Canvas\Models\UserCompanyAppsActivities;
 use Phalcon\Di;
 
-
 trait SubscriptionPlanLimitTrait
 {
     /**

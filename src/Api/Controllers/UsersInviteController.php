@@ -19,7 +19,6 @@ use Phalcon\Security\Random;
 use Phalcon\Validation\Validator\PresenceOf;
 use Phalcon\Validation\Validator\StringLength;
 
-
 class UsersInviteController extends BaseController
 {
     use AuthTrait;
