@@ -25,14 +25,4 @@ class PaymentMethods extends AbstractModel
     {
         return self::findFirst(['conditions' => 'is_default = 1 and is_deleted = 0']);
     }
-
-    /**
-     * Returns table name mapped in the model.
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return (int) $this->id;
-    }
 }

@@ -7,6 +7,7 @@ use Baka\Auth\Models\Users as BakUser;
 use Baka\Cashier\Billable;
 use Baka\Contracts\Database\HashTableTrait;
 use Baka\Contracts\EventsManager\EventManagerAwareTrait;
+use Baka\Hashing\Keys;
 use Baka\Validations\PasswordValidation;
 use Canvas\Auth\App as AppAuth;
 use Canvas\Contracts\Auth\UserInterface;
@@ -664,7 +665,7 @@ class Users extends BakUser implements UserInterface
      */
     public function generateForgotHash() : string
     {
-        $this->user_activation_forgot = $this->generateActivationKey();
+        $this->user_activation_forgot = Keys::make();
         $this->updateOrFail();
 
         return $this->user_activation_forgot;

@@ -1,7 +1,7 @@
 <?php
 
-use Phinx\Migration\AbstractMigration;
 use Phinx\Db\Adapter\MysqlAdapter;
+use Phinx\Migration\AbstractMigration;
 
 class AclUpdateStructureAgain extends AbstractMigration
 {
@@ -13,7 +13,7 @@ class AclUpdateStructureAgain extends AbstractMigration
             'engine' => 'InnoDB',
             'encoding' => 'utf8',
             'collation' => 'utf8_general_ci',
-            'comment' => "\t\t\t\t\t",
+            'comment' => '',
             'row_format' => 'Dynamic',
         ]);
         $table->addColumn('has_activities', 'boolean', [

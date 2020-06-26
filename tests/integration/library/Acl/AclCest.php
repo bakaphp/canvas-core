@@ -48,7 +48,7 @@ class AclCest
     {
         $acl = $this->aclService($I);
 
-        $I->assertTrue($acl->addResource('Default.Users', ['read', 'list', 'create', 'update', 'delete']));
+        $I->assertTrue($acl->addComponent('Default.Users', ['read', 'list', 'create', 'update', 'delete']));
     }
 
     public function checkAllowPermission(IntegrationTester $I)
