@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace Canvas\Models;
 
-use Canvas\Exception\ModelException;
 use Phalcon\Di;
 
 /**
@@ -36,6 +35,12 @@ class AppsPlans extends AbstractModel
      * @var string
      */
     public $name;
+
+    /**
+     *
+     * @var string
+     */
+    public $payment_ìnterval;
 
     /**
      *

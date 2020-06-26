@@ -1,7 +1,7 @@
 u<?php
 
-use Phinx\Seed\AbstractSeed;
 use Phalcon\Security\Random;
+use Phinx\Seed\AbstractSeed;
 
 class InitGewaer extends AbstractSeed
 {
@@ -219,6 +219,7 @@ class InitGewaer extends AbstractSeed
             [
                 'apps_id' => '1',
                 'name' => 'monthly-10-1',
+                'payment_ìnterval' => 'monthly',
                 'description' => 'monthly-10-1',
                 'stripe_id' => 'monthly-10-1',
                 'stripe_plan' => 'monthly-10-1',
@@ -231,6 +232,7 @@ class InitGewaer extends AbstractSeed
             ], [
                 'apps_id' => '1',
                 'name' => 'monthly-10-2',
+                'payment_ìnterval' => 'monthly',
                 'description' => 'monthly-10-2',
                 'stripe_id' => 'monthly-10-2',
                 'stripe_plan' => 'monthly-10-2',
@@ -244,6 +246,7 @@ class InitGewaer extends AbstractSeed
             [
                 'apps_id' => '1',
                 'name' => 'yearly-10-1',
+                'payment_ìnterval' => 'yearly',
                 'description' => 'yearly-10-1',
                 'stripe_id' => 'yearly-10-1',
                 'stripe_plan' => 'yearly-10-1',
@@ -256,6 +259,7 @@ class InitGewaer extends AbstractSeed
             ], [
                 'apps_id' => '1',
                 'name' => 'yearly-10-2',
+                'payment_ìnterval' => 'yearly',
                 'description' => 'yearly-10-2',
                 'stripe_id' => 'yearly-10-2',
                 'stripe_plan' => 'yearly-10-2',
