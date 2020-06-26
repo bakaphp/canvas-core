@@ -5,7 +5,6 @@ namespace Canvas\Models;
 
 use Phalcon\Di;
 use Stripe\Token as StripeToken;
-use Canvas\Models\PaymentMethods;
 
 class PaymentMethodsCreds extends AbstractModel
 {
@@ -44,6 +43,12 @@ class PaymentMethodsCreds extends AbstractModel
      * @var string
      */
     public $payment_ending_numbers;
+
+    /**
+     *
+     * @var string
+     */
+    public $payment_methods_brand;
 
     /**
      *
@@ -88,7 +93,7 @@ class PaymentMethodsCreds extends AbstractModel
      *
      * @return string
      */
-    public function getSource(): string
+    public function getSource() : string
     {
         return 'payment_methods_creds';
     }
@@ -98,7 +103,7 @@ class PaymentMethodsCreds extends AbstractModel
      *
      * @return string
      */
-    public function getCurrentPaymentMethodCreds(): self
+    public function getCurrentPaymentMethodCreds() : self
     {
         return self::findFirstOrFail([
             'conditions' => 'users_id = ?0 and companies_id = ?1 and apps_id = ?2 and is_deleted = 0',
@@ -115,9 +120,10 @@ class PaymentMethodsCreds extends AbstractModel
      * Create a new record from Stripe Token.
      *
      * @param string $token
+     *
      * @return return self
      */
-    public static function createByStripeToken(string $token): self
+    public static function createByStripeToken(string $token) : self
     {
         $ccInfo = self::getCardInfoFromStripe($token);
 
@@ -127,6 +133,7 @@ class PaymentMethodsCreds extends AbstractModel
         $paymentMethodCred->apps_id = Di::getDefault()->getApp()->getId();
         $paymentMethodCred->payment_methods_id = PaymentMethods::getDefault()->getId();
         $paymentMethodCred->payment_ending_numbers = $ccInfo->card->last4;
+        $paymentMethodCred->payment_methods_brand = $ccInfo->card->brand;
         $paymentMethodCred->expiration_date = $ccInfo->card->exp_year . '-' . $ccInfo->card->exp_month . '-' . '01';
         $paymentMethodCred->zip_code = $ccInfo->card->address_zip;
         $paymentMethodCred->created_at = date('Y-m-d H:m:s');
@@ -139,9 +146,10 @@ class PaymentMethodsCreds extends AbstractModel
      * Get Credit Card information from Stripe.
      *
      * @param string $token
+     *
      * @return return StripeToken
      */
-    private function getCardInfoFromStripe(string $token): StripeToken
+    private function getCardInfoFromStripe(string $token) : StripeToken
     {
         return StripeToken::retrieve($token, [
             'api_key' => Di::getDefault()->getConfig()->stripe->secret
