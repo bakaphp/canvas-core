@@ -103,7 +103,7 @@ class Helper
         $fileSystem->saveOrFail();
 
         //set the unique name we generate
-        $fileSystem->set('unique_name', $fileName);
+        $fileSystem->set('unique_name', $uploadFileNameWithPath);
 
         return $fileSystem;
     }

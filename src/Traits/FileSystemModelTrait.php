@@ -8,6 +8,7 @@ use Canvas\Dto\Files;
 use Canvas\Mapper\FileMapper;
 use Canvas\Models\FileSystem;
 use Canvas\Models\FileSystemEntities;
+use Canvas\Models\FileSystemSettings;
 use Canvas\Models\SystemModules;
 use Phalcon\Mvc\Model\ResultsetInterface;
 use RuntimeException;
@@ -218,55 +219,6 @@ trait FileSystemModelTrait
     }
 
     /**
-     * Get all the files attach for the given module.
-     *
-     * @param string $fileType filter the files by their type
-     *
-     * @return array
-     */
-    public function getAttachments(string $fileType = null) : ResultsetInterface
-    {
-        $systemModule = SystemModules::getSystemModuleByModelName(self::class);
-        $appPublicImages = (bool) $this->di->getApp()->get('public_images');
-
-        $bindParams = [
-            'system_module_id' => $systemModule->getId(),
-            'entity_id' => $this->getId(),
-            'is_deleted' => 0,
-        ];
-
-        /**
-         * We can also filter the attachments by its file type.
-         */
-        $fileTypeSql = null;
-        if ($fileType) {
-            $fileTypeSql = !is_null($fileType) ? 'AND f.file_type = :file_type:' : null;
-            $bindParams['file_type'] = $fileType;
-        }
-
-        //do we allow images by entity to be public to anybody accessing it directly by the entity?
-        if ($appPublicImages) {
-            $condition = 'system_modules_id = :system_module_id: AND entity_id = :entity_id: AND is_deleted = :is_deleted:
-            AND filesystem_id IN (SELECT f.id from \Canvas\Models\FileSystem f WHERE
-                f.is_deleted = :is_deleted: ' . $fileTypeSql . '
-            )';
-        } else {
-            $bindParams['company_id'] = $this->di->getUserData()->currentCompanyId();
-
-            $condition = 'system_modules_id = :system_module_id: AND entity_id = :entity_id: AND is_deleted = :is_deleted: and companies_id = :company_id:
-            AND filesystem_id IN (SELECT f.id from \Canvas\Models\FileSystem f WHERE
-                f.is_deleted = :is_deleted: AND f.companies_id = :company_id: ' . $fileTypeSql . '
-            )';
-        }
-
-        return FileSystemEntities::find([
-            'conditions' => $condition,
-            'order' => 'id desc',
-            'bind' => $bindParams
-        ]);
-    }
-
-    /**
      * Overwrite the relationship of the filesystem to return the attachment structure
      * to the given user.
      *
@@ -302,12 +254,33 @@ trait FileSystemModelTrait
     }
 
     /**
+     * Get all the files matching the field name.
+     *
+     * @param string $fieldName
+     *
+     * @return array
+     */
+    public function getFilesByName(string $fieldName) : array
+    {
+        $systemModule = SystemModules::getSystemModuleByModelName(self::class);
+
+        $attachments = $this->getAttachmentsByName($fieldName);
+
+        $fileMapper = new FileMapper($this->getId(), $systemModule->getId());
+
+        //add a mapper
+        $this->di->getDtoConfig()
+            ->registerMapping(FileSystemEntities::class, Files::class)
+            ->useCustomMapper($fileMapper);
+
+        return $this->di->getMapper()->mapMultiple($attachments, Files::class);
+    }
+
+    /**
      * Get a file by its fieldname.
      *
-     * @todo this will be a performance issue in the futur look for better ways to handle this
+     * @todo this will be a performance issue in the future look for better ways to handle this
      * when a company has over 1k images
-     *
-     * @deprecated version 0.2
      *
      * @param string $name
      *
@@ -315,39 +288,35 @@ trait FileSystemModelTrait
      */
     public function getAttachmentByName(string $fieldName)
     {
-        $systemModule = SystemModules::getSystemModuleByModelName(self::class);
-        $appPublicImages = (bool) $this->di->getApp()->get('public_images');
-
-        $bindParams = [
-            'system_module_id' => $systemModule->getId(),
-            'entity_id' => $this->getId(),
-            'is_deleted' => 0,
-            'field_name' => $fieldName,
-        ];
-
-        //do we allow images by entity to be public to anybody accessing it directly by the entity?
-        if ($appPublicImages) {
-            $condition = 'system_modules_id = :system_module_id: AND entity_id = :entity_id: AND is_deleted = :is_deleted: and field_name = :field_name: 
-            AND filesystem_id IN (SELECT f.id from \Canvas\Models\FileSystem f WHERE
-                f.is_deleted = :is_deleted:
-            )';
-        } else {
-            $bindParams['company_id'] = $this->di->getUserData()->currentCompanyId();
-            $condition = 'system_modules_id = :system_module_id: AND entity_id = :entity_id: AND is_deleted = :is_deleted: and field_name = :field_name: and companies_id = :company_id:
-            AND filesystem_id IN (SELECT f.id from \Canvas\Models\FileSystem f WHERE
-                f.is_deleted = :is_deleted: AND f.companies_id = :company_id:
-            )';
-        }
+        $criteria = $this->searchCriteriaForFilesByName($fieldName);
 
         return FileSystemEntities::findFirst([
-            'conditions' => $condition,
+            'conditions' => $criteria['conditions'],
             'order' => 'id desc',
-            'bind' => $bindParams
+            'bind' => $criteria['bind'],
         ]);
     }
 
     /**
-     * Undocumented function.
+     * Get a files by its fieldname.
+     *
+     * @param string $name
+     *
+     * @return void
+     */
+    public function getAttachmentsByName(string $fieldName)
+    {
+        $criteria = $this->searchCriteriaForFilesByName($fieldName);
+
+        return FileSystemEntities::find([
+            'conditions' => $criteria['conditions'],
+            'order' => 'id desc',
+            'bind' => $criteria['bind'],
+        ]);
+    }
+
+    /**
+     * Get the file byt it's name.
      *
      * @param string $fieldName
      *
@@ -355,11 +324,35 @@ trait FileSystemModelTrait
      */
     public function getFileByName(string $fieldName) : ?object
     {
+        return $this->fileMapper($this->getAttachmentByName($fieldName));
+    }
+
+    /**
+     * Get file by name and attributes.
+     *
+     * @param string $fieldName
+     * @param string $key
+     * @param string $value
+     *
+     * @return object|null
+     */
+    public function getFileByNameWithAttributes(string $fieldName, string $key, string $value) : ?object
+    {
+        return $this->fileMapper($this->getAttachmentByNameAndAttributes($fieldName, $key, $value));
+    }
+
+    /**
+     * Convert identity to mapper.
+     *
+     * @param FileSystemEntities|null $fileEntity
+     *
+     * @return object|null
+     */
+    protected function fileMapper($fileEntity) : ?object
+    {
         $systemModule = SystemModules::getSystemModuleByModelName(self::class);
 
-        $fileEntity = $this->getAttachmentByName($fieldName);
-
-        if ($fileEntity) {
+        if ($fileEntity instanceof FileSystemEntities) {
             $fileMapper = new FileMapper($this->getId(), $systemModule->getId());
 
             //add a mapper
@@ -386,5 +379,139 @@ trait FileSystemModelTrait
     protected function filesNewAttachedPath() : ?string
     {
         return null;
+    }
+
+    /**
+     * Search Criteria for file by name.
+     *
+     * @param string $fieldName
+     *
+     * @return array
+     */
+    protected function searchCriteriaForFilesByName(string $fieldName) : array
+    {
+        $systemModule = SystemModules::getSystemModuleByModelName(self::class);
+        $appPublicImages = (bool) $this->di->getApp()->get('public_images');
+
+        $bindParams = [
+            'system_module_id' => $systemModule->getId(),
+            'entity_id' => $this->getId(),
+            'is_deleted' => 0,
+            'field_name' => $fieldName,
+        ];
+
+        //do we allow images by entity to be public to anybody accessing it directly by the entity?
+        if ($appPublicImages) {
+            $condition = 'system_modules_id = :system_module_id: AND entity_id = :entity_id: AND is_deleted = :is_deleted: and field_name = :field_name: ';
+        } else {
+            $bindParams['company_id'] = $this->di->getUserData()->currentCompanyId();
+            $condition = 'system_modules_id = :system_module_id: AND entity_id = :entity_id: AND is_deleted = :is_deleted: and field_name = :field_name: and companies_id = :company_id:';
+        }
+
+        return [
+            'bind' => $bindParams,
+            'conditions' => $condition
+        ];
+    }
+
+    /**
+     * Given the filename look for it version with
+     * the key and value associated to the file.
+     *
+     * @param string $fieldName
+     * @param string $key
+     * @param string $value
+     *
+     * @return void
+     */
+    public function getAttachmentByNameAndAttributes(string $fieldName, string $key, string $value)
+    {
+        $systemModule = SystemModules::getSystemModuleByModelName(self::class);
+        $appPublicImages = (bool) $this->di->getApp()->get('public_images');
+
+        $bindParams = [
+            'system_module_id' => $systemModule->getId(),
+            'entity_id' => $this->getId(),
+            'is_deleted' => 0,
+            'field_name' => $fieldName,
+            'name' => $key,
+            'value' => $value
+        ];
+
+        //do we allow images by entity to be public to anybody accessing it directly by the entity?
+        if ($appPublicImages) {
+            $condition = 'system_modules_id = :system_module_id: AND entity_id = :entity_id: AND is_deleted = :is_deleted: and field_name = :field_name: 
+            AND filesystem_id IN (
+                SELECT s.filesystem_id FROM 
+                    ' . FileSystemSettings::class . ' s 
+                    WHERE name = :name: AND value = :value: 
+            )';
+        } else {
+            $bindParams['company_id'] = $this->di->getUserData()->currentCompanyId();
+            $condition = 'system_modules_id = :system_module_id: AND entity_id = :entity_id: AND is_deleted = :is_deleted: and field_name = :field_name: and companies_id = :company_id: 
+            AND filesystem_id IN (
+                SELECT s.filesystem_id FROM 
+                    ' . FileSystemSettings::class . ' s 
+                    WHERE name = :name: AND value = :value: 
+            )';
+        }
+
+        return FileSystemEntities::findFirst([
+            'conditions' => $condition,
+            'order' => 'id desc',
+            'bind' => $bindParams
+        ]);
+    }
+
+    /**
+     * Get all the files attach for the given module.
+     *
+     * @param string $fileType filter the files by their type
+     *
+     * @return array
+     */
+    public function getAttachments(string $fileType = null) : ResultsetInterface
+    {
+        $systemModule = SystemModules::getSystemModuleByModelName(self::class);
+        $appPublicImages = (bool) $this->di->getApp()->get('public_images');
+
+        $bindParams = [
+            'system_module_id' => $systemModule->getId(),
+            'entity_id' => $this->getId(),
+            'is_deleted' => 0,
+        ];
+
+        /**
+         * We can also filter the attachments by its file type.
+         */
+        $fileTypeSql = null;
+        if ($fileType) {
+            $fileTypeSql = !is_null($fileType) ? 'AND f.file_type = :file_type:' : null;
+            $bindParams['file_type'] = $fileType;
+        }
+
+        //do we allow images by entity to be public to anybody accessing it directly by the entity?
+        if ($appPublicImages) {
+            /**
+             * @todo optimize this queries to slow
+             */
+            $condition = 'system_modules_id = :system_module_id: AND entity_id = :entity_id: AND is_deleted = :is_deleted:
+            AND filesystem_id IN (SELECT f.id from \Canvas\Models\FileSystem f WHERE
+                f.is_deleted = :is_deleted: ' . $fileTypeSql . '
+            )';
+        } else {
+            $bindParams['company_id'] = $this->di->getUserData()->currentCompanyId();
+
+            $condition = 'system_modules_id = :system_module_id: AND entity_id = :entity_id: AND is_deleted = :is_deleted: and companies_id = :company_id:
+            AND filesystem_id IN (SELECT f.id from \Canvas\Models\FileSystem f WHERE
+                f.is_deleted = :is_deleted: AND f.companies_id = :company_id: ' . $fileTypeSql . '
+            )';
+        }
+
+        return FileSystemEntities::find([
+            'conditions' => $condition,
+            'order' => 'id desc',
+            'bind' => $bindParams
+        ]);
     }
 }
