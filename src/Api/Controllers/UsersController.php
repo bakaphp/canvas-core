@@ -52,7 +52,8 @@ class UsersController extends BakaUsersController
         'family',
         'cell_phone_number',
         'country_id',
-        'location'
+        'location',
+        'user_active'
     ];
 
     /*
@@ -78,7 +79,8 @@ class UsersController extends BakaUsersController
         'default_company_branch',
         'cell_phone_number',
         'country_id',
-        'location'
+        'location',
+        'user_active'
     ];
 
     /**
