@@ -116,6 +116,6 @@ class MenusLinks extends AbstractModel
      */
     public function isParent(): bool
     {
-        return $this->parent_id == 0 ? true : false;
+        return $this->parent_id == 0
     }
 }
