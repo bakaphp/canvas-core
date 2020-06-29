@@ -106,6 +106,13 @@ class SystemModules extends AbstractModel
             ['alias' => 'webhook']
         );
 
+        $this->hasMany(
+            'id',
+            'Canvas\Models\MenuLinks',
+            'system_modules_id',
+            ['alias' => 'menusLinks']
+        );
+
         $this->belongsTo(
             'companies_id',
             'Canvas\Models\Companies',
