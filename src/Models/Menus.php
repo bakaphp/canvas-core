@@ -59,6 +59,13 @@ class Menus extends AbstractModel
     public function initialize()
     {
         $this->setSource('menus');
+
+        $this->hasMany(
+            'id',
+            'Canvas\Models\MenusLinks',
+            'menus_id',
+            ['alias' => 'links']
+        );
     }
 
     /**

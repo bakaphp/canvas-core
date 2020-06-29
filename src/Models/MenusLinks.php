@@ -77,6 +77,20 @@ class MenusLinks extends AbstractModel
     public function initialize()
     {
         $this->setSource('menus_links');
+
+        $this->belongsTo(
+            'menus_id',
+            'Canvas\Models\Menus',
+            'id',
+            ['alias' => 'menus']
+        );
+
+        $this->belongsTo(
+            'system_modules_id',
+            'Canvas\Models\SystemModules',
+            'id',
+            ['alias' => 'modules']
+        );
     }
 
     /**
