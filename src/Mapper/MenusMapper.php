@@ -27,7 +27,7 @@ class MenusMapper extends CustomMapper
 
         foreach ($menus->getLinks() as $link) {
 
-            if($link->parent_id == 0)
+            if($link->isParent())
             {
                 $childLinks = MenusLinks::find([
                     'conditions' => 'parent_id = ?0 and is_deleted = 0',
