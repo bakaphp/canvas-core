@@ -79,6 +79,13 @@ class MenusLinks extends AbstractModel
         $this->setSource('menus_links');
 
         $this->belongsTo(
+            'parent_id',
+            'Canvas\Models\MenusLinks',
+            'id',
+            ['alias' => 'childLinks']
+        );
+
+        $this->belongsTo(
             'menus_id',
             'Canvas\Models\Menus',
             'id',
