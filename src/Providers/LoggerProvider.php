@@ -46,7 +46,7 @@ class LoggerProvider implements ServiceProviderInterface
                 if ($config->app->production) {
                     //sentry logger
                     $client = ClientBuilder::create([
-                        'https://' . getenv('SENTRY_RPOJECT_SECRET') . '@sentry.io/' . getenv('SENTRY_PROJECT_ID')
+                        'dsn' => 'https://' . getenv('SENTRY_RPOJECT_SECRET') . '@sentry.io/' . getenv('SENTRY_PROJECT_ID')
                     ])->getClient();
 
                     $hub = Hub::setCurrent(new Hub($client));
