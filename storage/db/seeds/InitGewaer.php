@@ -1,7 +1,7 @@
 u<?php
 
-use Phinx\Seed\AbstractSeed;
 use Phalcon\Security\Random;
+use Phinx\Seed\AbstractSeed;
 
 class InitGewaer extends AbstractSeed
 {
@@ -135,6 +135,7 @@ class InitGewaer extends AbstractSeed
                 'displayname' => 'anonymous',
                 'system_modules_id' => 2,
                 'default_company_branch' => 1,
+                'user_last_login_try' => 0,
                 'created_at' => date('Y-m-d H:i:s'),
                 'status' => 1,
                 'user_active' => 1,
@@ -150,6 +151,7 @@ class InitGewaer extends AbstractSeed
                 'displayname' => 'nobody',
                 'system_modules_id' => 2,
                 'default_company_branch' => 1,
+                'user_last_login_try' => 0,
                 'created_at' => date('Y-m-d H:i:s'),
                 'status' => 1,
                 'user_active' => 1,

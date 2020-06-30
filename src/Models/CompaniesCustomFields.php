@@ -6,7 +6,7 @@ namespace Canvas\Models;
 class CompaniesCustomFields extends AbstractModel
 {
     public int $companies_id;
-    public int $custom_fields_id;
+    public int $custom_fields_id = 0;
     public ?string $value = null;
 
     /**

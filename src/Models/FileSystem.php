@@ -22,7 +22,7 @@ class FileSystem extends AbstractModel
     public string $name;
     public string $path;
     public string $url;
-    public string $size;
+    public int $size;
     public string $file_type;
 
     /**

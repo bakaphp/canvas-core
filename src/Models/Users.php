@@ -36,7 +36,7 @@ class Users extends BakUser implements UserInterface
     use EventManagerAwareTrait;
 
     public int $default_company_branch = 0;
-    public int $roles_id;
+    public ?int $roles_id = null;
     public ?string $stripe_id = null;
     public ?string $card_last_four = null;
     public ?string $card_brand = null;

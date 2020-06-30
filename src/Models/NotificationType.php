@@ -13,7 +13,7 @@ class NotificationType extends AbstractModel
     public string $key;
     public ?string $description = null;
     public ?string $template = null;
-    public string $icon_url;
+    public ?string $icon_url = null;
     public int $with_realtime;
 
     /**
