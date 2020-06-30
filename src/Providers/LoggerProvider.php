@@ -11,8 +11,9 @@ use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Phalcon\Di\ServiceProviderInterface;
 use Phalcon\DiInterface;
-use Raven_Client;
-use Monolog\Handler\RavenHandler;
+use Sentry\ClientBuilder;
+use Sentry\Monolog\Handler as SentryHandler;
+use Sentry\State\Hub;
 
 class LoggerProvider implements ServiceProviderInterface
 {
@@ -44,8 +45,13 @@ class LoggerProvider implements ServiceProviderInterface
                 //only run logs in production
                 if ($config->app->logsReport) {
                     //sentry logger
-                    $client = new Raven_Client('https://' . getenv('SENTRY_RPOJECT_SECRET') . '@sentry.io/' . getenv('SENTRY_PROJECT_ID'));
-                    $handlerSentry = new RavenHandler($client, Logger::ERROR);
+                    $client = ClientBuilder::create([
+                        'https://' . getenv('SENTRY_RPOJECT_SECRET') . '@sentry.io/' . getenv('SENTRY_PROJECT_ID')
+                    ])->getClient();
+
+                    $hub = Hub::setCurrent(new Hub($client));
+
+                    $handlerSentry = new SentryHandler($hub, Logger::ERROR);
                     $handlerSentry->setFormatter(new LineFormatter("%message% %context% %extra%\n"));
                     $logger->pushHandler($handlerSentry);
                 }
