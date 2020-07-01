@@ -107,7 +107,7 @@ class Helper
         $fileSystem->saveOrFail();
 
         //set the unique name we generate
-        $fileSystem->set('unique_name', Text::reduceSlashes($uploadFileNameWithPath));
+        $fileSystem->set('unique_name', Text::reduceSlashes(DIRECTORY_SEPARATOR . $uploadFileNameWithPath));
 
         return $fileSystem;
     }

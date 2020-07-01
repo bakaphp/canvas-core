@@ -167,7 +167,7 @@ class Subscription extends BakaSubscription
     {
         $this->is_active = 1;
         $this->paid = 1;
-        $this->grace_period_ends = new RawValue('NULL');
+        //$this->grace_period_ends = new RawValue('NULL');
         $this->ends_at = Carbon::now()->addDays(30)->toDateTimeString();
         $this->next_due_payment = $this->ends_at;
         $this->is_cancelled = 0;

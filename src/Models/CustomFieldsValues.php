@@ -8,7 +8,7 @@ class CustomFieldsValues extends AbstractModel
     public int $custom_fields_id;
     public string $label;
     public ?string $value = null;
-    public int $is_default;
+    public int $is_default = 0;
 
     /**
      * Initialize method for model.

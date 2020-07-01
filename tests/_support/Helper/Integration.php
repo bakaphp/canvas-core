@@ -3,24 +3,18 @@
 namespace Helper;
 
 use Baka\Database\SystemModules;
-use Codeception\Module;
-use Codeception\Exception\TestRuntimeException;
-use Codeception\TestInterface;
-use Canvas\Bootstrap\Api;
-use Canvas\Models\Users;
-use Niden\Models\Companies;
-use Niden\Models\CompaniesXProducts;
-use Niden\Models\Individuals;
-use Niden\Models\IndividualTypes;
-use Niden\Models\Products;
-use Niden\Models\ProductTypes;
-use Niden\Mvc\Model\AbstractModel;
-use Phalcon\DI\FactoryDefault as PhDI;
-use Phalcon\Config as PhConfig;
 use Canvas\Bootstrap\IntegrationTests;
 use Canvas\Models\FileSystem;
 use Canvas\Models\FileSystemEntities;
-use function Baka\appPath;
+use Canvas\Models\Users;
+use Codeception\Exception\TestRuntimeException;
+use Codeception\Module;
+use Codeception\TestInterface;
+use Faker\Factory;
+use Faker\Generator;
+use Niden\Mvc\Model\AbstractModel;
+use Phalcon\Config as PhConfig;
+use Phalcon\DI\FactoryDefault as PhDI;
 
 // here you can define custom actions
 // all public methods declared in helper class will be available in $I
@@ -51,6 +45,8 @@ class Integration extends Module
         //Set default user
         $user = Users::findFirst(1);
         $this->diContainer->setShared('userData', $user);
+        $this->diContainer->setShared('userProvider', new Users());
+
         $this->savedModels = [];
         $this->savedRecords = [];
     }
@@ -65,6 +61,16 @@ class Integration extends Module
             $this->diContainer->get('db')->rollback();
         }
         $this->diContainer->get('db')->close();
+    }
+
+    /**
+     * Faker data.
+     *
+     * @return void
+     */
+    public function faker() : Generator
+    {
+        return Factory::create();
     }
 
     /**
@@ -92,7 +98,7 @@ class Integration extends Module
      *
      * @return array
      */
-    public function getModelRelationships(string $class): array
+    public function getModelRelationships(string $class) : array
     {
         /** @var AbstractModel $class */
         $model = new $class();
@@ -305,7 +311,7 @@ class Integration extends Module
      *
      * @return FileSystemEntities
      */
-    public function getFileSystemEntity(): FileSystemEntities
+    public function getFileSystemEntity() : FileSystemEntities
     {
         $newFilesystem = new FileSystem();
         $newFilesystem->companies_id = $this->grabFromDi('userData')->currentCompanyId();

@@ -2,14 +2,13 @@
 
 namespace Canvas\Providers;
 
+use function Baka\envValue;
 use Phalcon\Cache;
+use Phalcon\Cache\Adapter\Redis;
 use Phalcon\Cache\AdapterFactory;
-use Phalcon\Config;
 use Phalcon\Di\DiInterface;
 use Phalcon\Di\ServiceProviderInterface;
 use Phalcon\Storage\SerializerFactory;
-use Phalcon\Cache\Adapter\Redis;
-use function Baka\envValue;
 
 class CacheDataProvider implements ServiceProviderInterface
 {
@@ -31,12 +30,12 @@ class CacheDataProvider implements ServiceProviderInterface
 
                 $options['prefix'] = $app . '-app-cache';
 
-
                 $serializerFactory = new SerializerFactory();
                 $adapterFactory = new AdapterFactory($serializerFactory);
                 $adapter = $adapterFactory->newInstance($adapter, $options);
 
                 return new Cache($adapter);
-        });
+            }
+        );
     }
 }

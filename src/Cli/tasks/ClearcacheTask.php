@@ -4,8 +4,6 @@ namespace Canvas\Cli\Tasks;
 
 use function Baka\appPath;
 use Phalcon\Cli\Task as PhTask;
-use Phalcon\Queue\Beanstalk\Extended as BeanstalkExtended;
-use Phalcon\Queue\Beanstalk\Job;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 
@@ -74,31 +72,11 @@ class ClearcacheTask extends PhTask
     /**
      * Clean user session.
      *
+     * @deprecated version 1
+     *
      * @return void
      */
     public function sessionsAction() : void
     {
-        //call queue
-        $queue = new BeanstalkExtended([
-            'host' => $this->config->beanstalk->host,
-            'prefix' => $this->config->beanstalk->prefix,
-        ]);
-
-        //call que que tube
-        $queue->addWorker(getenv('SESSION_QUEUE'), function (Job $job) {
-            // Here we should collect the meta information, make the screenshots, convert the video to the FLV etc.
-
-            $sessionId = $job->getBody();
-            echo "\nProcessing:  {$sessionId}\n";
-
-            $session = new \Baka\Auth\Models\Sessions();
-            $session->clean($sessionId, true);
-
-            // It's very important to send the right exit code!
-            exit(0);
-        });
-
-        // Start processing queues
-        $queue->doWork();
     }
 }

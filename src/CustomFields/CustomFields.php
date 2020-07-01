@@ -63,9 +63,10 @@ class CustomFields extends BakaCustomFields
      * related module.
      *
      * @param array $values
+     *
      * @return bool
      */
-    public function addValues(array $values): bool
+    public function addValues(array $values) : bool
     {
         if ($this->values) {
             $this->values->delete();
@@ -79,7 +80,6 @@ class CustomFields extends BakaCustomFields
             $customFieldsValue->saveOrFail();
         }
 
-        
         return true;
     }
 }
