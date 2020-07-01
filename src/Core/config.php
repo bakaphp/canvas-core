@@ -40,8 +40,8 @@ return [
         ]
     ],
     'filesystem' => [
-        //temp directoy where we will upload our files before moving them to the final location
-        'uploadDirectoy' => appPath(envValue('LOCAL_UPLOAD_DIR_TEMP')),
+        //temp directory where we will upload our files before moving them to the final location
+        'uploadDirectory' => appPath(envValue('LOCAL_UPLOAD_DIR_TEMP')),
         'local' => [
             'path' => appPath(envValue('LOCAL_UPLOAD_DIR')),
             'cdn' => envValue('FILESYSTEM_CDN_URL'),
