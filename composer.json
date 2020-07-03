@@ -35,11 +35,11 @@
         "norkunas/onesignal-php-api": "^1.12",
         "phalcon/incubator": "~3.4",
         "php-amqplib/php-amqplib": "^2.9",
-        "php-http/guzzle6-adapter": "1.1",
+        "php-http/guzzle6-adapter": "^2.0",
         "psr/log": "^1.0",
         "pusher/pusher-php-server": "3.4.1",
         "robmorgan/phinx": "0.*",
-        "sentry/sentry": "^1.9",
+        "sentry/sentry": "^2.4",
         "sly/notification-pusher": "2.x",
         "vlucas/phpdotenv": "^2.4",
         "bakaphp/php-apple-signin": "^2.0"
