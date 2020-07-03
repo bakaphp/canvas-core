@@ -5,47 +5,10 @@ namespace Canvas\Models;
 
 class AppsPlansSettings extends AbstractModel
 {
-    /**
-     *
-     * @var integer
-     */
-    public $apps_plans_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $apps_id;
-
-    /**
-     *
-     * @var string
-     */
-    public $key;
-
-    /**
-     *
-     * @var string
-     */
+    public int $apps_plans_id;
+    public int $apps_id;
+    public string $key;
     public $value;
-
-    /**
-     *
-     * @var string
-     */
-    public $created_at;
-
-    /**
-     *
-     * @var string
-     */
-    public $updated_at;
-
-    /**
-     *
-     * @var integer
-     */
-    public $is_deleted;
 
     /**
      * Initialize method for model.
@@ -60,15 +23,5 @@ class AppsPlansSettings extends AbstractModel
             'id',
             ['alias' => 'app']
         );
-    }
-
-    /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource() : string
-    {
-        return 'apps_plans_settings';
     }
 }

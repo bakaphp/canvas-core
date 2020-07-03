@@ -3,31 +3,20 @@
 namespace Canvas\Cli\Tasks;
 
 use Canvas\Contracts\Queue\QueueableJobInterface;
-use Phalcon\Cli\Task as PhTask;
 use Canvas\Models\Users;
 use Canvas\Queue\Queue;
+use Phalcon\Cli\Task as PhTask;
 use Phalcon\Mvc\Model;
 use Throwable;
 
-/**
- * CLI To send push notification and pusher msg.
- *
- * @package Canvas\Cli\Tasks
- *
- * @property Config $config
- * @property \Pusher\Pusher $pusher
- * @property \Monolog\Logger $log
- * @property Channel $channel
- * @property Queue $queue
- *
- */
 class QueueTask extends PhTask
 {
     /**
      * Queue action for mobile notifications.
+     *
      * @return void
      */
-    public function mainAction(array $params): void
+    public function mainAction() : void
     {
         echo 'Canvas Ecosystem Queue Jobs: events | notifications | jobs' . PHP_EOL;
     }
@@ -120,7 +109,7 @@ class QueueTask extends PhTask
             //disable the queue so we process it now
             $notification->disableQueue();
 
-            //run notify for the specifiy user
+            //run notify for the specify user
             $user->notify($notification);
 
             $this->log->info(
@@ -136,9 +125,9 @@ class QueueTask extends PhTask
      *
      * @return void
      */
-    public function jobsAction(array $params)
+    public function jobsAction(?string $queueName = null)
     {
-        $queue = !isset($params[0]) ? QUEUE::JOBS : $params[0];
+        $queue = is_null($queueName) ? QUEUE::JOBS : $queueName;
 
         $callback = function ($msg) {
             //check the db before running anything
@@ -167,8 +156,8 @@ class QueueTask extends PhTask
             }
 
             if (!$job['job'] instanceof QueueableJobInterface) {
-                echo 'This Job is not queable ' . $msg->delivery_info['consumer_tag'] ;
-                $this->log->error('This Job is not queable ' . $msg->delivery_info['consumer_tag']);
+                echo 'This Job is not queueable ' . $msg->delivery_info['consumer_tag'] ;
+                $this->log->error('This Job is not queueable ' . $msg->delivery_info['consumer_tag']);
                 return;
             }
 
@@ -201,7 +190,7 @@ class QueueTask extends PhTask
      *
      * @return boolean
      */
-    protected function isDbConnected(string $dbProvider): bool
+    protected function isDbConnected(string $dbProvider) : bool
     {
         try {
             $this->di->get($dbProvider)->fetchAll('SELECT 1');

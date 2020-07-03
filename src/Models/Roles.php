@@ -4,78 +4,22 @@ declare(strict_types=1);
 namespace Canvas\Models;
 
 use Baka\Database\Exception\ModelNotFoundException;
+use Canvas\Http\Exception\InternalServerErrorException;
+use Canvas\Http\Exception\UnprocessableEntityException;
+use Phalcon\Acl\Role as AclRole;
 use Phalcon\Di;
 use Phalcon\Validation;
 use Phalcon\Validation\Validator\PresenceOf;
 use Phalcon\Validation\Validator\StringLength;
-use Phalcon\Acl\Role as AclRole;
-use Canvas\Http\Exception\InternalServerErrorException;
-use Canvas\Http\Exception\UnprocessableEntityException;
 use Phalcon\Validation\Validator\Uniqueness;
 
-/**
- * Class Roles.
- *
- * @package Canvas\Models
- *
- * @property AccesList $accesList
- * @property \Phalcon\Di $di
- */
 class Roles extends AbstractModel
 {
-    /**
-     *
-     * @var integer
-     */
-    public $id;
-
-    /**
-     *
-     * @var string
-     */
-    public $name;
-
-    /**
-     *
-     * @var string
-     */
-    public $description;
-
-    /**
-     *
-     * @var integer
-     */
-    public $scope;
-
-    /**
-     *
-     * @var integer
-     */
-    public $companies_id;
-
-    /**
-     *
-     * @var int
-     */
-    public $apps_id;
-
-    /**
-     *
-     * @var string
-     */
-    public $created_at;
-
-    /**
-     *
-     * @var string
-     */
-    public $updated_at;
-
-    /**
-     *
-     * @var integer
-     */
-    public $is_deleted;
+    public string $name;
+    public ?string$description;
+    public ?int $scope;
+    public int $companies_id;
+    public int $apps_id;
 
     /**
      * Default ACL company.
@@ -97,6 +41,13 @@ class Roles extends AbstractModel
             'Canvas\Models\AccessList',
             'roles_id',
             ['alias' => 'accesList']
+        );
+
+        $this->hasMany(
+            'id',
+            'Canvas\Models\AccessList',
+            'roles_id',
+            ['alias' => 'accessList']
         );
     }
 
@@ -144,22 +95,13 @@ class Roles extends AbstractModel
     }
 
     /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource(): string
-    {
-        return 'roles';
-    }
-
-    /**
      * Check if the role existe in the db.
      *
      * @param AclRole $role
+     *
      * @return int
      */
-    public static function exist(AclRole $role): int
+    public static function exist(AclRole $role) : int
     {
         $companyId = Di::getDefault()->getAcl()->getCompany()->getId();
 
@@ -179,6 +121,7 @@ class Roles extends AbstractModel
      * with your current app, this also check with de defautl company ap.
      *
      * @param string $roleName
+     *
      * @return boolean
      */
     public static function isRole(string $roleName) : bool
@@ -200,9 +143,10 @@ class Roles extends AbstractModel
      * Get the entity by its name.
      *
      * @param string $name
+     *
      * @return Roles
      */
-    public static function getByName(string $name): Roles
+    public static function getByName(string $name) : Roles
     {
         $companyId = Di::getDefault()->getAcl()->getCompany()->getId();
 
@@ -230,9 +174,10 @@ class Roles extends AbstractModel
      * Get the entity by its name.
      *
      * @param string $name
+     *
      * @return Roles
      */
-    public static function getById(int $id): Roles
+    public static function getById(int $id) : Roles
     {
         $companyId = Di::getDefault()->getAcl()->getCompany()->getId();
 
@@ -253,9 +198,10 @@ class Roles extends AbstractModel
      * Get the Role by it app name.
      *
      * @param string $role
+     *
      * @return Roles
      */
-    public static function getByAppName(string $role, Companies $company): Roles
+    public static function getByAppName(string $role, Companies $company) : Roles
     {
         //echeck if we have a dot , taht means we are sending the specific app to use
         if (strpos($role, '.') === false) {
@@ -289,7 +235,7 @@ class Roles extends AbstractModel
      *
      * @return Roles
      */
-    public function copy(): Roles
+    public function copy() : Roles
     {
         $accesList = $this->accesList;
 
@@ -320,6 +266,7 @@ class Roles extends AbstractModel
      *
      * @param string $roleName
      * @param string $roleToInherit
+     *
      * @return boolean
      */
     public static function addInherit(string $roleName, string $roleToInherit)
@@ -369,10 +316,12 @@ class Roles extends AbstractModel
 
     /**
      * Check if role exists by its id.
-     * @param integer $role_id
+     *
+     * @param int $role_id
+     *
      * @return Roles
      */
-    public static function existsById(int $id): Roles
+    public static function existsById(int $id) : Roles
     {
         $role = self::getById($id);
 
@@ -387,9 +336,10 @@ class Roles extends AbstractModel
      * Assign the default app role to a given user.
      *
      * @param Users $user
+     *
      * @return bool
      */
-    public static function assignDefault(Users $user): bool
+    public static function assignDefault(Users $user) : bool
     {
         $apps = Di::getDefault()->getApp();
         $userRoles = UserRoles::findFirst([

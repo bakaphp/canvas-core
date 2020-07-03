@@ -15,7 +15,7 @@ use Phalcon\Di;
 class Template
 {
     /**
-     * Given the email tempalte name and its params
+     * Given the email template name and its params
      *  - create the files
      *  - render it with the variables
      *  - return the content string for use to use anywhere.

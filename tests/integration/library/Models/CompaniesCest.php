@@ -46,6 +46,7 @@ class CompaniesCest
             [1, 'id', UserCompanyApps::class, 'companies_id', ['alias' => 'apps', 'params' => ['conditions' => 'apps_id = 1']]],
             [1, 'id', Subscription::class, 'companies_id', ['alias' => 'subscription', 'params' => ['conditions' => 'apps_id = 1 AND is_deleted = 0', 'order' => 'id DESC']]],
             [1, 'id', FileSystemEntities::class, 'entity_id', ['alias' => 'files', 'params' => ['conditions' => 'system_modules_id = ?0', 'bind' => [1]]]],
+            [4, 'id', Users::class, 'id', ['alias' => 'users', 'params' => ['conditions' => 'apps_id = 1 AND Canvas\Models\UsersAssociatedApps.is_deleted = 0']]],
         ];
 
         $I->assertEquals($expected, $actual);

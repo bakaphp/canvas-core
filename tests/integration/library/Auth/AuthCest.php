@@ -3,6 +3,7 @@
 namespace Gewaer\Tests\integration\library\Jobs;
 
 use Canvas\Auth\App;
+use Canvas\Auth\Auth;
 use Canvas\Auth\Factory;
 use Canvas\Hashing\Password;
 use Canvas\Models\Users;
@@ -12,7 +13,6 @@ use Page\Data;
 
 class AuthCest
 {
-    
     public function setAppPassword(IntegrationTester $I)
     {
         $oldUser = Users::findFirstByEmail(Data::loginJsonDefaultUser()['email']);
@@ -61,13 +61,14 @@ class AuthCest
      * User object since the password is the same for all apps.
      *
      * @param IntegrationTester $I
+     *
      * @return void
      */
     public function getEcosystemLogin(IntegrationTester $I)
     {
         $appAuthConfig = Factory::create(true);
 
-        $I->assertTrue($appAuthConfig instanceof Users);
+        $I->assertTrue($appAuthConfig instanceof Auth);
     }
 
     /**
@@ -75,6 +76,7 @@ class AuthCest
      * object where the password is uniq for that app.
      *
      * @param IntegrationTester $I
+     *
      * @return void
      */
     public function getAppLogin(IntegrationTester $I)

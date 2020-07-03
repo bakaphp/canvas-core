@@ -3,16 +3,16 @@
 namespace Canvas\Providers;
 
 use Phalcon\Di\ServiceProviderInterface;
-use Phalcon\DiInterface;
+use Phalcon\Di\DiInterface;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
-use function Canvas\Core\envValue;
+use function Baka\envValue;
 
 class QueueProvider implements ServiceProviderInterface
 {
     /**
      * @param DiInterface $container
      */
-    public function register(DiInterface $container)
+    public function register(DiInterface $container) : void
     {
         $container->setShared(
             'queue',

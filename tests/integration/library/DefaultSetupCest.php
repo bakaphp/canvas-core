@@ -2,16 +2,18 @@
 
 namespace Gewaer\Tests\integration\library\Models;
 
+use Canvas\Auth\Auth;
 use Canvas\Models\Apps;
 use Canvas\Models\AppsPlans;
 use Canvas\Models\AppsSettings;
 use Canvas\Models\Companies;
-use Canvas\Models\Users;
 use Canvas\Models\Roles;
-use Canvas\Models\UsersInvite;
 use Canvas\Models\Subscription;
-use Phalcon\Security\Random;
+use Canvas\Models\Users;
+use Canvas\Models\UsersInvite;
+use Faker\Factory;
 use IntegrationTester;
+use Phalcon\Security\Random;
 
 class DefaultSetupCest
 {
@@ -25,18 +27,20 @@ class DefaultSetupCest
 
     private $usersInviteEmail;
 
-
     public function onContruct()
     {
-        $this->random =  new Random();
-        $this->email = 'Email-' . $this->random->base58() . '@example.com';
-        $this->password = 'password';
-        $this->app = Apps::getACLApp(Apps::CANVAS_DEFAULT_APP_NAME);
+        $faker = Factory::create();
+        $this->random = new Random();
+        $this->email = strtolower($faker->firstname . '@example.com');
+        $this->password = $faker->password;
+        $this->app = Apps::findFirst();
     }
+
     /**
      * Confirm the default apps exist.
      *
      * @param IntegrationTester $I
+     *
      * @return void
      */
     public function getDefaultApp(IntegrationTester $I)
@@ -45,9 +49,10 @@ class DefaultSetupCest
     }
 
     /**
-     * Validate is an app has an active status or not
+     * Validate is an app has an active status or not.
      *
      * @param UnitTester $I
+     *
      * @return void
      */
     public function isActive(IntegrationTester $I)
@@ -59,6 +64,7 @@ class DefaultSetupCest
      * Confirm the default apps exist.
      *
      * @param IntegrationTester $I
+     *
      * @return void
      */
     public function getDefaultPlan(IntegrationTester $I)
@@ -67,16 +73,17 @@ class DefaultSetupCest
     }
 
     /**
-     * Confirm all the apps settings
+     * Confirm all the apps settings.
      *
      * @param IntegrationTester $I
+     *
      * @return void
      */
     public function getAllAppSettings(IntegrationTester $I)
     {
         $appSettings = AppsSettings::find([
-            'conditions'=> 'apps_id = ?0 and is_deleted = 0',
-            'bind'=>[$this->app->id]
+            'conditions' => 'apps_id = ?0 and is_deleted = 0',
+            'bind' => [$this->app->id]
         ]);
 
         //Assert true if we got the exact number of settings for the app. These are the most basic settings used by an app.
@@ -84,9 +91,10 @@ class DefaultSetupCest
     }
 
     /**
-     * Get the active subscription for this company app
+     * Get the active subscription for this company app.
      *
      * @param IntegrationTester $I
+     *
      * @return void
      */
     public function getActiveSubscriptionForThisApp(IntegrationTester $I)
@@ -95,80 +103,86 @@ class DefaultSetupCest
     }
 
     /**
-     * Get all Roles of the app
+     * Get all Roles of the app.
      *
      * @param IntegrationTester $I
+     *
      * @return void
      */
     public function getAllRoles(IntegrationTester $I)
     {
         $role = Roles::find([
-            'conditions'=> 'apps_id = ?0 and is_deleted = 0',
-            'bind'=>[$this->app->id]
+            'conditions' => 'apps_id = ?0 and is_deleted = 0',
+            'bind' => [$this->app->id]
         ]);
         $I->assertTrue(is_object($role));
     }
 
     /**
-     * Register a new Company
+     * Register a new Company.
      *
      * @param IntegrationTester $I
+     *
      * @return void
      */
     public function registerCompanyTest(IntegrationTester $I)
     {
         $random = new Random();
-        $newCompany = Companies::register( $I->grabFromDi('userData'), 'TestCompany-'. $random->base58());
+        $newCompany = Companies::register($I->grabFromDi('userData'), 'TestCompany-' . $random->base58());
         $I->assertTrue($newCompany instanceof Companies);
     }
 
     /**
-     * Signup a new user
+     * Signup a new user.
      *
      * @param IntegrationTester $I
+     *
      * @return void
      */
     public function signupTest(IntegrationTester $I)
     {
-        $user = new Users();
-        $user->email = $this->email;
-        $user->firstname = 'Firstname-' . $this->random->base58();
-        $user->lastname = 'Lastname-' . $this->random->base58();
-        $user->password = $this->password;
-        $user->displayname = 'DisplayName-' . $this->random->base58();
-        $user->defaultCompanyName = 'Company-' . $this->random->base58();
-        $I->assertTrue($user->signup() instanceof Users);
-        
+        $user = [
+            'email' => $this->email,
+            'firstname' => $I->faker()->firstname,
+            'lastname' => $I->faker()->lastname,
+            'password' => $this->password,
+            'displayname' => $I->faker()->name,
+            'defaultCompanyName' => $I->faker()->company,
+        ];
+
+        $I->assertTrue(Auth::signUp($user) instanceof Users);
     }
 
-
     /**
-     * Login the new user
+     * Login the new user.
      *
      * @param IntegrationTester $I
+     *
      * @return void
      */
     public function loginTest(IntegrationTester $I)
     {
-        $I->assertTrue(Users::login($this->email, $this->password, 1, 0, '127.0.0.1') instanceof Users);
+        $I->assertTrue(Auth::login($this->email, $this->password, 1, 0, $I->faker()->ipv4) instanceof Users);
     }
 
     /**
-     * Check if email does not exist on system for users invite
+     * Check if email does not exist on system for users invite.
      *
      * @param IntegrationTester $I
+     *
      * @return void
      */
     public function emailIsValidTest(IntegrationTester $I)
     {
-        $this->usersInviteEmail = $this->random->base58() . '@example.com';
+        $this->usersInviteEmail = $I->faker()->email;
         $I->assertTrue(UsersInvite::isValid($this->usersInviteEmail));
     }
 
     /**
-     * Verify if users invite exists by hash
+     * Verify if users invite exists by hash.
      *
      * @param IntegrationTester $I
+     *
      * @return void
      */
     public function getUsersInviteByHashTest(IntegrationTester $I)

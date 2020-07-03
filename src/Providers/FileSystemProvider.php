@@ -3,7 +3,7 @@
 namespace Canvas\Providers;
 
 use Phalcon\Di\ServiceProviderInterface;
-use Phalcon\DiInterface;
+use Phalcon\Di\DiInterface;
 use League\Flysystem\Adapter\Local;
 use League\Flysystem\AwsS3v3\AwsS3Adapter;
 use League\Flysystem\Filesystem;
@@ -14,7 +14,7 @@ class FileSystemProvider implements ServiceProviderInterface
     /**
      * @param DiInterface $container
      */
-    public function register(DiInterface $container)
+    public function register(DiInterface $container) : void
     {
         $config = $container->getShared('config');
 

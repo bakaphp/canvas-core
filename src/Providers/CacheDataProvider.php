@@ -2,28 +2,39 @@
 
 namespace Canvas\Providers;
 
-use function Canvas\Core\envValue;
-use Phalcon\Cache\Backend\Libmemcached;
-use Phalcon\Cache\Frontend\Data;
+use function Baka\envValue;
+use Phalcon\Cache;
+use Phalcon\Cache\Adapter\Redis;
+use Phalcon\Cache\AdapterFactory;
+use Phalcon\Di\DiInterface;
 use Phalcon\Di\ServiceProviderInterface;
-use Phalcon\DiInterface;
-use Redis;
+use Phalcon\Storage\SerializerFactory;
 
 class CacheDataProvider implements ServiceProviderInterface
 {
     /**
      * @param DiInterface $container
      */
-    public function register(DiInterface $container)
+    public function register(DiInterface $container) : void
     {
+        $config = $container->getShared('config');
+        $app = envValue('GEWAER_APP_ID', 1);
+
         $container->setShared(
             'cache',
-            function () {
+            function () use ($config, $app) {
                 //Connect to redis
-                $redis = new Redis();
-                $redis->connect(envValue('REDIS_HOST', '127.0.0.1'), (int) envValue('REDIS_PORT', 6379));
-                $redis->setOption(Redis::OPT_SERIALIZER, Redis::SERIALIZER_PHP);
-                return $redis;
+                $cache = $config->get('cache')->toArray();
+                $adapter = $cache['adapter'];
+                $options = $cache['options'][$adapter] ?? [];
+
+                $options['prefix'] = $app . '-app-cache';
+
+                $serializerFactory = new SerializerFactory();
+                $adapterFactory = new AdapterFactory($serializerFactory);
+                $adapter = $adapterFactory->newInstance($adapter, $options);
+
+                return new Cache($adapter);
             }
         );
     }

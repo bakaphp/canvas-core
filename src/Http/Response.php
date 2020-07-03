@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Canvas\Http;
 
-use Phalcon\Http\Response as PhResponse;
-use Phalcon\Mvc\Model\MessageInterface as ModelMessage;
-use Phalcon\Validation\Message\Group as ValidationMessage;
-use Canvas\Exception\ServerErrorHttpException;
 use Canvas\Constants\Flags;
+use Canvas\Exception\ServerErrorHttpException;
 use Canvas\Http\Exception\InternalServerErrorException;
 use Error;
 use Phalcon\Di;
+use Phalcon\Http\Response as PhResponse;
+use Phalcon\Mvc\Model\MessageInterface as ModelMessage;
+use Phalcon\Validation\Message\Group as ValidationMessage;
 use Throwable;
 
 class Response extends PhResponse
@@ -51,6 +51,7 @@ class Response extends PhResponse
 
     /**
      * Returns the http code description or if not found the code itself.
+     *
      * @param int $code
      *
      * @return int|string
@@ -69,7 +70,7 @@ class Response extends PhResponse
      *
      * @return PhResponse
      */
-    public function send(): PhResponse
+    public function send() : PhResponse
     {
         $content = $this->getContent();
         $data = $content;
@@ -77,6 +78,7 @@ class Response extends PhResponse
 
         /**
          * At the moment we are only using this format for error msg.
+         *
          * @todo change in the future to implemente other formats
          */
         if ($this->getStatusCode() != 200) {
@@ -117,7 +119,7 @@ class Response extends PhResponse
      *
      * @return Response
      */
-    public function setPayloadError(string $detail = ''): Response
+    public function setPayloadError(string $detail = '') : Response
     {
         $this->setJsonContent([
             'errors' => [
@@ -136,7 +138,7 @@ class Response extends PhResponse
      *
      * @return Response
      */
-    public function setPayloadErrors($errors): Response
+    public function setPayloadErrors($errors) : Response
     {
         $data = [];
         foreach ($errors as $error) {
@@ -155,7 +157,7 @@ class Response extends PhResponse
      *
      * @return Response
      */
-    public function setPayloadSuccess($content = []): Response
+    public function setPayloadSuccess($content = []) : Response
     {
         $data = (true === is_array($content)) ? $content : ['data' => $content];
         $data = (true === isset($data['data'])) ? $data : ['data' => $data];
@@ -169,9 +171,10 @@ class Response extends PhResponse
      * Handle the exception we throw from our api.
      *
      * @param Throwable $e
+     *
      * @return Response
      */
-    public function handleException(Throwable $e): Response
+    public function handleException(Throwable $e) : Response
     {
         $request = new Request();
         $identifier = $request->getServerAddress();
@@ -189,7 +192,7 @@ class Response extends PhResponse
                 'type' => $httpMessage,
                 'identifier' => $identifier,
                 'message' => $e->getMessage(),
-                'trace' => strtolower($config->app->env) != Flags::PRODUCTION ? $e->getTraceAsString() : null,
+                'trace' => $config->app->production ? $e->getTraceAsString() : null,
                 'data' => $data,
             ],
         ]);

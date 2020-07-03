@@ -2,7 +2,7 @@
 
 namespace Canvas\Bootstrap;
 
-use function Canvas\Core\appPath;
+use function Baka\appPath;
 use Phalcon\Di\FactoryDefault;
 
 class IntegrationTests extends Api

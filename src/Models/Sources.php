@@ -4,14 +4,11 @@ declare(strict_types=1);
 
 namespace Canvas\Models;
 
-use Phalcon\Di;
-use Canvas\Exception\ModelException;
 use Baka\ASDecoder;
 use Canvas\Http\Exception\InternalServerErrorException;
 
-
 /**
- * Class Resources
+ * Class Resources.
  *
  * @package Canvas\Models
  *
@@ -19,47 +16,9 @@ use Canvas\Http\Exception\InternalServerErrorException;
  */
 class Sources extends AbstractModel
 {
-    /**
-     *
-     * @var integer
-     */
-    public $id;
-
-    /**
-     *
-     * @var string
-     */
-    public $title;
-
-    /**
-     *
-     * @var string
-     */
-    public $url;
-
-    /**
-     *
-     * @var integer
-     */
-    public $language_id;
-
-    /**
-     *
-     * @var string
-     */
-    public $created_at;
-
-    /**
-     *
-     * @var string
-     */
-    public $updated_at;
-
-    /**
-     *
-     * @var integer
-     */
-    public $is_deleted;
+    public string $title;
+    public string $url;
+    public ?int $language_id = null;
 
     /**
      * Initialize method for model.
@@ -70,29 +29,21 @@ class Sources extends AbstractModel
     }
 
     /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
+     * Verify if source is Apple.
      */
-    public function getSource(): string
-    {
-        return 'sources';
-    }
-
-    /**
-     * Verify if source is Apple
-     */
-    public function isApple(): bool
+    public function isApple() : bool
     {
         return $this->title == 'apple';
     }
 
     /**
      * Validate Apple User.
+     *
      * @param string $identityToken
+     *
      * @return object
      */
-    public function validateAppleUser(string $identityToken): object
+    public function validateAppleUser(string $identityToken) : object
     {
         $appleUserInfo = ASDecoder::getAppleSignInPayload($identityToken);
 

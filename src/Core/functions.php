@@ -1,31 +1,11 @@
 <?php
 
-namespace Canvas\Core;
+namespace Baka;
 
 use function function_exists;
 use function getenv;
 
-if (!function_exists('Canvas\Core\basePath')) {
-    /**
-     * Get the application base path.
-     *
-     * @return string
-     */
-    function basePath() : string
-    {
-        if ($basePath = getenv('APP_BASE_PATH')) {
-            return $basePath;
-        }
-
-        if (php_sapi_name() == 'cli') {
-            return getcwd();
-        }
-
-        return  dirname(dirname(getcwd()));
-    }
-}
-
-if (!function_exists('Canvas\Core\appPath')) {
+if (!function_exists('Baka\appPath')) {
     /**
      * Get the application path.
      *
@@ -50,7 +30,7 @@ if (!function_exists('Canvas\Core\appPath')) {
     }
 }
 
-if (!function_exists('Canvas\Core\envValue')) {
+if (!function_exists('Baka\envValue')) {
     /**
      * Gets a variable from the environment, returns it properly formatted or the
      * default if it does not exist.
@@ -78,7 +58,7 @@ if (!function_exists('Canvas\Core\envValue')) {
     }
 }
 
-if (!function_exists('Canvas\Core\appUrl')) {
+if (!function_exists('Baka\appUrl')) {
     /**
      * Constructs a URL for links with resource and id.
      *
@@ -98,7 +78,7 @@ if (!function_exists('Canvas\Core\appUrl')) {
     }
 }
 
-if (!function_exists('Canvas\Core\paymentGatewayIsActive')) {
+if (!function_exists('Baka\paymentGatewayIsActive')) {
     /**
      * Do we have a payment metho actived on the app?
      *
@@ -110,7 +90,7 @@ if (!function_exists('Canvas\Core\paymentGatewayIsActive')) {
     }
 }
 
-if (!function_exists('Canvas\Core\isJson')) {
+if (!function_exists('Baka\isJson')) {
     /**
      * Given a string determine if its a json.
      *
@@ -125,7 +105,7 @@ if (!function_exists('Canvas\Core\isJson')) {
     }
 }
 
-if (!function_exists('Canvas\Core\isSwooleServer')) {
+if (!function_exists('Baka\isSwooleServer')) {
     /**
      * Are we running a Swoole Server for this app?
      *

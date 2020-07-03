@@ -5,41 +5,8 @@ namespace Canvas\Models;
 
 class CustomFieldsModules extends AbstractModel
 {
-    /**
-     *
-     * @var integer
-     */
-    public $id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $apps_id;
-
-    /**
-     *
-     * @var string
-     */
-    public $name;
-
-    /**
-     *
-     * @var integer
-     */
-    public $is_deleted;
-
-    /**
-     *
-     * @var string
-     */
-    public $created_at;
-
-    /**
-     *
-     * @var string
-     */
-    public $updated_at;
+    public int $apps_id;
+    public string $name;
 
     /**
      * Initialize method for model.
@@ -68,15 +35,5 @@ class CustomFieldsModules extends AbstractModel
         //     'id',
         //     ['alias' => 'app']
         // );
-    }
-
-    /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource(): string
-    {
-        return 'custom_fields_modules';
     }
 }

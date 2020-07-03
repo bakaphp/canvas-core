@@ -5,41 +5,9 @@ namespace Canvas\Models;
 
 class CompaniesSettings extends \Baka\Auth\Models\CompanySettings
 {
-    /**
-     *
-     * @var integer
-     */
-    public $companies_id;
-
-    /**
-     *
-     * @var string
-     */
-    public $name;
-
-    /**
-     *
-     * @var string
-     */
-    public $value;
-
-    /**
-     *
-     * @var string
-     */
-    public $created_at;
-
-    /**
-     *
-     * @var string
-     */
-    public $updated_at;
-
-    /**
-     *
-     * @var integer
-     */
-    public $is_deleted;
+    public int $companies_id;
+    public string $name;
+    public string $value;
 
     /**
      * Initialize method for model.
@@ -56,15 +24,5 @@ class CompaniesSettings extends \Baka\Auth\Models\CompanySettings
         );
 
         $this->setSource('companies_settings');
-    }
-
-    /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource(): string
-    {
-        return 'companies_settings';
     }
 }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Canvas\Bootstrap;
 
-use function Canvas\Core\appPath;
+use function Baka\appPath;
 use Phalcon\Cli\Console;
 use Phalcon\Di\FactoryDefault\Cli as PhCli;
 use Throwable;

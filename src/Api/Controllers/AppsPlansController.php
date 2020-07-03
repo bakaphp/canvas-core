@@ -15,8 +15,8 @@ use Canvas\Http\Exception\UnprocessableEntityException;
 use Canvas\Models\Subscription as CanvasSubscription;
 use Phalcon\Cashier\Subscription;
 use Canvas\Models\UserCompanyApps;
-use function Canvas\Core\paymentGatewayIsActive;
-use Canvas\Validation as CanvasValidation;
+use function Baka\paymentGatewayIsActive;
+use Baka\Validation as CanvasValidation;
 use Canvas\Models\PaymentMethodsCreds;
 
 /**

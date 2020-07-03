@@ -3,7 +3,7 @@
 namespace Canvas\Providers;
 
 use Phalcon\Di\ServiceProviderInterface;
-use Phalcon\DiInterface;
+use Phalcon\Di\DiInterface;
 use Canvas\Models\Apps;
 use Canvas\Http\Exception\InternalServerErrorException;
 use Phalcon\Http\Request;
@@ -13,7 +13,7 @@ class AppProvider implements ServiceProviderInterface
     /**
      * @param DiInterface $container
      */
-    public function register(DiInterface $container)
+    public function register(DiInterface $container) : void
     {
         $config = $container->getShared('config');
         

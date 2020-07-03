@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Canvas\Api\Controllers;
 
+use function Baka\isJson;
+use Baka\Validation;
 use Canvas\Http\Exception\UnprocessableEntityException;
 use Canvas\Models\UserWebhooks;
-use Canvas\Validation;
-use Phalcon\Http\Response;
 use Canvas\Webhooks;
+use Phalcon\Http\Response;
 use Phalcon\Validation\Validator\PresenceOf;
-use function Canvas\Core\isJson;
 
 /**
  * Class LanguagesController.
@@ -68,12 +68,13 @@ class UserWebhooksController extends BaseController
     }
 
     /**
-    * Given the weebhook id, we run a test for it.
-    *
-    * @param integer $id
-    * @return Response
-    */
-    public function execute(string $name): Response
+     * Given the webhook id, we run a test for it.
+     *
+     * @param int $id
+     *
+     * @return Response
+     */
+    public function execute(string $name) : Response
     {
         $request = $this->request->getPostData();
         $validation = new Validation();

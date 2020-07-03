@@ -2,22 +2,11 @@
 
 namespace Canvas\Cli\Tasks;
 
-use function Canvas\Core\appPath;
-use Phalcon\Cache\Backend\Libmemcached;
+use function Baka\appPath;
 use Phalcon\Cli\Task as PhTask;
-use Phalcon\Queue\Beanstalk\Extended as BeanstalkExtended;
-use Phalcon\Queue\Beanstalk\Job;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 
-/**
- * Class ClearcacheTask.
- *
- * @package Canvas\Cli\Tasks
- *
- * @property Libmemcached $cache
- * @property Config $config
- */
 class ClearcacheTask extends PhTask
 {
     /**
@@ -82,6 +71,8 @@ class ClearcacheTask extends PhTask
 
     /**
      * Clean user session.
+     *
+     * @deprecated version 1
      *
      * @return void
      */

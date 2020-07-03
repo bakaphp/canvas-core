@@ -5,7 +5,7 @@ namespace Canvas\Tests\unit\config;
 use Canvas\Http\Response;
 use UnitTester;
 use function function_exists;
-use function Canvas\Core\appPath;
+use function Baka\appPath;
 
 class AutoloaderCest
 {
@@ -42,6 +42,6 @@ class AutoloaderCest
 
         $class = new Response();
         $I->assertTrue($class instanceof Response);
-        $I->assertTrue(function_exists('Canvas\Core\envValue'));
+        $I->assertTrue(function_exists('Baka\envValue'));
     }
 }

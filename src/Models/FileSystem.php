@@ -4,108 +4,26 @@ declare(strict_types=1);
 
 namespace Canvas\Models;
 
-use Baka\Database\Contracts\HashTableTrait;
+use Baka\Contracts\Database\HashTableTrait;
 use Canvas\Http\Exception\NotFoundException;
 use Exception;
 use Phalcon\Di;
 
-/**
- * Classs for FileSystem.
- *
- * @property Users $userData
- * @property Request $request
- * @property Config $config
- * @property Apps $app
- * @property \Phalcon\DI $di
- *
- */
+
 class FileSystem extends AbstractModel
 {
     use HashTableTrait;
 
-    /**
-     *
-     * @var integer
-     */
-    public $id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $companies_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $apps_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $users_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $system_modules_id = 0;
-
-    /**
-     *
-     * @var integer
-     */
-    public $entity_id;
-
-    /**
-     *
-     * @var string
-     */
-    public $name;
-
-    /**
-     *
-     * @var string
-     */
-    public $path;
-
-    /**
-     *
-     * @var string
-     */
-    public $url;
-
-    /**
-     *
-     * @var string
-     */
-    public $size;
-
-    /**
-     *
-     * @var string
-     */
-    public $file_type;
-
-    /**
-     *
-     * @var string
-     */
-    public $created_at;
-
-    /**
-     *
-     * @var string
-     */
-    public $updated_at;
-
-    /**
-     *
-     * @var int
-     */
-    public $is_deleted;
+    public int $companies_id;
+    public int $apps_id;
+    public int $users_id;
+    public int $system_modules_id = 0;
+    public int $entity_id;
+    public string $name;
+    public string $path;
+    public string $url;
+    public int $size;
+    public string $file_type;
 
     /**
      * Initialize method for model.
@@ -162,16 +80,6 @@ class FileSystem extends AbstractModel
             'filesystem_id',
             ['alias' => 'entities']
         );
-    }
-
-    /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource() : string
-    {
-        return 'filesystem';
     }
 
     /**

@@ -4,19 +4,20 @@ declare(strict_types=1);
 namespace Canvas\Models;
 
 use Baka\Auth\Models\Users as BakUser;
-use Baka\Database\Contracts\HashTableTrait;
+use Baka\Cashier\Billable;
+use Baka\Contracts\Database\HashTableTrait;
+use Baka\Contracts\EventsManager\EventManagerAwareTrait;
+use Baka\Hashing\Keys;
+use Baka\Validations\PasswordValidation;
 use Canvas\Auth\App as AppAuth;
 use Canvas\Contracts\Auth\UserInterface;
 use Canvas\Contracts\Notifications\NotifiableTrait;
 use Canvas\Hashing\Password;
-use Canvas\Traits\EventManagerAwareTrait;
 use Canvas\Traits\FileSystemModelTrait;
 use Canvas\Traits\PermissionsTrait;
 use Canvas\Traits\SubscriptionPlanLimitTrait;
-use Canvas\Validations\PasswordValidation;
 use Carbon\Carbon;
 use Exception;
-use Phalcon\Cashier\Billable;
 use Phalcon\Di;
 use Phalcon\Security\Random;
 use Phalcon\Validation;
@@ -25,17 +26,6 @@ use Phalcon\Validation\Validator\PresenceOf;
 use Phalcon\Validation\Validator\Uniqueness;
 use ReflectionClass;
 
-/**
- * Class Users.
- *
- * @package Canvas\Models
- *
- * @property Users $user
- * @property Config $config
- * @property Apps $app
- * @property Companies $defaultCompany
- * @property \Phalcon\Di $di
- */
 class Users extends BakUser implements UserInterface
 {
     use PermissionsTrait;
@@ -46,54 +36,12 @@ class Users extends BakUser implements UserInterface
     use NotifiableTrait;
     use EventManagerAwareTrait;
 
-    /**
-     * Description.
-     *
-     * @var integer
-     */
-    public $description;
-
-    /**
-     * Default Company Branch.
-     *
-     * @var integer
-     */
-    public $default_company_branch;
-
-    /**
-     * Roles id.
-     *
-     * @var integer
-     */
-    public $roles_id;
-
-    /**
-     * Stripe id.
-     *
-     * @var string
-     */
-    public $stripe_id;
-
-    /**
-     * Card last four numbers.
-     *
-     * @var integer
-     */
-    public $card_last_four;
-
-    /**
-     * Card Brand.
-     *
-     * @var integer
-     */
-    public $card_brand;
-
-    /**
-     * Trial end date.
-     *
-     * @var string
-     */
-    public $trial_ends_at;
+    public int $default_company_branch = 0;
+    public ?int $roles_id = null;
+    public ?string $stripe_id = null;
+    public ?string $card_last_four = null;
+    public ?string $card_brand = null;
+    public ?string $trial_ends_at = null;
 
     /**
      * Provide the app plan id
@@ -101,28 +49,21 @@ class Users extends BakUser implements UserInterface
      *
      * @var integer
      */
-    public $appPlanId = null;
+    public ?int $appPlanId = null;
 
     /**
      * Active subscription id.Not an actual table field, used temporarily.
      *
      * @var string
      */
-    public $active_subscription_id;
+    public ?string $active_subscription_id = null;
 
     /**
      * System Module Id.
      *
      * @var integer
      */
-    public $system_modules_id = 2;
-
-    /**
-     * User email activation code.
-     *
-     * @var string
-     */
-    public $user_activation_email;
+    public int $system_modules_id = 2;
 
     /**
      * Initialize method for model.
@@ -226,7 +167,7 @@ class Users extends BakUser implements UserInterface
     }
 
     /**
-     * Initialize relationshit after fetch
+     * Initialize relationship after fetch
      * since we need company id info.
      *
      * @return void
@@ -313,21 +254,11 @@ class Users extends BakUser implements UserInterface
     }
 
     /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource() : string
-    {
-        return 'users';
-    }
-
-    /**
      * Set hashtable settings table, userConfig ;).
      *
      * @return void
      */
-    private function createSettingsModel() : void
+    protected function createSettingsModel() : void
     {
         $this->settingsModel = new UserConfig();
     }
@@ -344,7 +275,7 @@ class Users extends BakUser implements UserInterface
 
     /**
      * A company owner is the first person that register this company
-     * This only ocurres when signing up the first time, after that all users invites
+     * This only ocurred when signing up the first time, after that all users invites
      * come with a default_company id attached.
      *
      * @return boolean
@@ -655,7 +586,7 @@ class Users extends BakUser implements UserInterface
     }
 
     /**
-     * Reset the user passwrod.
+     * Reset the user password.
      *
      * @param string $newPassword
      *
@@ -684,6 +615,8 @@ class Users extends BakUser implements UserInterface
      * ok lets register / associate to this app
      * yes?
      * it meas he was invites so get the fuck out?
+     *
+     * @deprecated v1
      *
      * @return Users
      */
@@ -733,7 +666,7 @@ class Users extends BakUser implements UserInterface
      */
     public function generateForgotHash() : string
     {
-        $this->user_activation_forgot = $this->generateActivationKey();
+        $this->user_activation_forgot = Keys::make();
         $this->updateOrFail();
 
         return $this->user_activation_forgot;

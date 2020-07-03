@@ -8,7 +8,7 @@ use Canvas\Models\UserLinkedSources;
 use Baka\Auth\Models\Sources;
 use Phalcon\Http\Response;
 use Phalcon\Validation\Validator\PresenceOf;
-use Canvas\Validation as CanvasValidation;
+use Baka\Validation as CanvasValidation;
 use Baka\ASDecoder;
 
 use Canvas\Http\Exception\InternalServerErrorException;

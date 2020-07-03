@@ -6,12 +6,12 @@
 
 namespace Canvas\Http;
 
-use function Canvas\Core\isJson;
+use function Baka\isJson;
 use Canvas\Traits\RequestJwtTrait;
 use Exception;
+use Phalcon\Di\DiInterface;
 use Phalcon\Di\FactoryDefault;
 use Phalcon\Di\InjectionAwareInterface;
-use Phalcon\DiInterface;
 use Phalcon\Events\Manager;
 use Phalcon\FilterInterface;
 use Phalcon\Http\Request\File;
@@ -130,7 +130,7 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      *
      * @return void
      */
-    public function setDI(DiInterface $dependencyInjector)
+    public function setDI(DiInterface $dependencyInjector) : void
     {
         $this->_dependencyInjector = $dependencyInjector;
     }
@@ -140,7 +140,7 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      *
      * @return void
      */
-    public function getDI()
+    public function getDI() : DiInterface
     {
         return $this->_dependencyInjector;
     }
@@ -203,7 +203,7 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      *
      * @return string|null
      */
-    public function getServer($name)
+    public function getServer(string $name) : ?string
     {
         $name = strtoupper(str_replace(['-'], '_', $name));
         if (isset($this->server[$name])) {
@@ -247,7 +247,7 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      *
      * @return boolean
      */
-    public function has($name)
+    public function has($name) : bool
     {
         $source = array_merge($this->get, $this->post);
         return isset($source[$name]);
@@ -260,7 +260,7 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      *
      * @return boolean
      */
-    public function hasPost($name)
+    public function hasPost($name) : bool
     {
         return isset($this->post[$name]);
     }
@@ -272,7 +272,7 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      *
      * @return boolean
      */
-    public function hasPut($name)
+    public function hasPut($name) : bool
     {
         $put = $this->getPut();
 
@@ -286,7 +286,7 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      *
      * @return boolean
      */
-    public function hasQuery($name)
+    public function hasQuery($name) : bool
     {
         return isset($this->get[$name]);
     }
@@ -298,7 +298,7 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      *
      * @return boolean
      */
-    public function hasServer($name)
+    public function hasServer($name) : bool
     {
         $name = strtoupper(str_replace(['-'], '_', $name));
 
@@ -312,7 +312,7 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      *
      * @return boolean
      */
-    public function hasHeader($header)
+    public function hasHeader($header) : bool
     {
         if ($this->hasServer($header)) {
             return true;
@@ -330,7 +330,7 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      *
      * @return string|void
      */
-    public function getHeader($header)
+    public function getHeader($header) : string
     {
         $header = $this->getServer($header);
         if (isset($header)) {
@@ -350,7 +350,7 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      *
      * @return string
      */
-    public function getScheme()
+    public function getScheme() : string
     {
         $https = $this->getServer('HTTPS');
         if ($https && $https != 'off') {
@@ -365,7 +365,7 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      *
      * @return boolean
      */
-    public function isAjax()
+    public function isAjax() : bool
     {
         return $this->getServer('HTTP_X_REQUESTED_WITH') === 'XMLHttpRequest';
     }
@@ -375,7 +375,7 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      *
      * @return boolean
      */
-    public function isSoap()
+    public function isSoap() : bool
     {
         if ($this->hasServer('HTTP_SOAPACTION')) {
             return true;
@@ -394,7 +394,7 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      *
      * @return boolean
      */
-    public function isSoapRequested()
+    public function isSoapRequested() : bool
     {
         return $this->isSoap();
     }
@@ -404,7 +404,7 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      *
      * @return boolean
      */
-    public function isSecure()
+    public function isSecure() : bool
     {
         return $this->getScheme() === 'https';
     }
@@ -414,7 +414,7 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      *
      * @return boolean
      */
-    public function isSecureRequest()
+    public function isSecureRequest() : bool
     {
         return $this->isSecure();
     }
@@ -424,7 +424,7 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      *
      * @return string
      */
-    public function getRawBody()
+    public function getRawBody() : string
     {
         return $this->_rawBody;
     }
@@ -451,7 +451,7 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      *
      * @return string
      */
-    public function getServerAddress()
+    public function getServerAddress() : string
     {
         $serverAddr = $this->getServer('SERVER_ADDR');
         if ($serverAddr) {
@@ -466,7 +466,7 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      *
      * @return string
      */
-    public function getServerName()
+    public function getServerName() : string
     {
         $serverName = $this->getServer('SERVER_NAME');
         if ($serverName) {
@@ -481,7 +481,7 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      *
      * @return string
      */
-    public function getHttpHost()
+    public function getHttpHost() : string
     {
         $strict = $this->_strictHostCheck;
 
@@ -546,7 +546,7 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      *
      * @return int
      */
-    public function getPort()
+    public function getPort() : int
     {
         /**
          * Get the server name from $_SERVER["HTTP_HOST"].
@@ -569,7 +569,7 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
     /**
      * Gets HTTP URI which request has been made.
      */
-    public function getURI()
+    public function getURI(bool $onlyPath = null) : string
     {
         $requestURI = $this->getServer('request_uri'); //$this->getServer('REQUEST_URI') == $this->getQuery('_url') ? $this->getServer('REQUEST_URI') : $this->getQuery('_url');
         if ($requestURI) {
@@ -622,7 +622,7 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      *
      * @return string
      */
-    public function getMethod()
+    public function getMethod() : string
     {
         $returnMethod = $this->getServer('REQUEST_METHOD');
         if (!isset($returnMethod)) {
@@ -653,7 +653,7 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      *
      * @return string|void
      */
-    public function getUserAgent()
+    public function getUserAgent() : string
     {
         $userAgent = $this->getServer('HTTP_USER_AGENT');
         if ($userAgent) {
@@ -670,7 +670,7 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      *
      * @return boolean
      */
-    public function isMethod($methods, $strict = false)
+    public function isMethod($methods, $strict = false) : bool
     {
         $httpMethod = $this->getMethod();
 
@@ -703,7 +703,7 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      *
      * @return boolean
      */
-    public function isPost()
+    public function isPost() : bool
     {
         return $this->getMethod() === 'POST';
     }
@@ -713,7 +713,7 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      *
      * @return boolean
      */
-    public function isGet()
+    public function isGet() : bool
     {
         return $this->getMethod() === 'GET';
     }
@@ -723,7 +723,7 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      *
      * @return boolean
      */
-    public function isPut()
+    public function isPut() : bool
     {
         return $this->getMethod() === 'PUT';
     }
@@ -733,7 +733,7 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      *
      * @return boolean
      */
-    public function isPatch()
+    public function isPatch() : bool
     {
         return $this->getMethod() === 'PATCH';
     }
@@ -743,7 +743,7 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      *
      * @return boolean
      */
-    public function isHead()
+    public function isHead() : bool
     {
         return $this->getMethod() === 'HEAD';
     }
@@ -753,7 +753,7 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      *
      * @return boolean
      */
-    public function isDelete()
+    public function isDelete() : bool
     {
         return $this->getMethod() === 'DELETE';
     }
@@ -763,7 +763,7 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      *
      * @return boolean
      */
-    public function isOptions()
+    public function isOptions() : bool
     {
         return $this->getMethod() === 'OPTIONS';
     }
@@ -773,7 +773,7 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      *
      * @return boolean
      */
-    public function isPurge()
+    public function isPurge() : bool
     {
         return $this->getMethod() === 'PURGE';
     }
@@ -783,7 +783,7 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      *
      * @return boolean
      */
-    public function isTrace()
+    public function isTrace() : bool
     {
         return $this->getMethod() === 'TRACE';
     }
@@ -793,7 +793,7 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      *
      * @return boolean
      */
-    public function isConnect()
+    public function isConnect() : bool
     {
         return $this->getMethod() === 'CONNECT';
     }
@@ -805,7 +805,7 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      *
      * @return string
      */
-    public function hasFiles($onlySuccessful = false)
+    public function hasFiles($onlySuccessful = false) : bool
     {
         $numberFiles = 0;
 
@@ -862,7 +862,7 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      *
      * @return array
      */
-    public function getUploadedFiles($onlySuccessful = false)
+    public function getUploadedFiles(bool $onlySuccessful = null, bool $namedKeys = null) : array
     {
         $files = [];
 
@@ -983,7 +983,7 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      *
      * @return array
      */
-    public function getHeaders()
+    public function getHeaders() : array
     {
         $headers = [];
         $contentHeaders = ['CONTENT_TYPE' => true, 'CONTENT_LENGTH' => true, 'CONTENT_MD5' => true];
@@ -1019,7 +1019,7 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      *
      * @return string|void
      */
-    public function getHTTPReferer()
+    public function getHTTPReferer() : string
     {
         $httpReferer = $this->getServer('HTTP_REFERER');
         if ($httpReferer) {
@@ -1062,7 +1062,7 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      *
      * @return array
      */
-    public function getAcceptableContent()
+    public function getAcceptableContent() : array
     {
         return $this->_getQualityHeader('HTTP_ACCEPT', 'accept');
     }
@@ -1072,7 +1072,7 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      *
      * @return string
      */
-    public function getBestAccept()
+    public function getBestAccept() : string
     {
         return $this->_getBestQuality($this->getAcceptableContent(), 'accept');
     }
@@ -1082,7 +1082,7 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      *
      * @return array
      */
-    public function getClientCharsets()
+    public function getClientCharsets() : array
     {
         return $this->_getQualityHeader('HTTP_ACCEPT_CHARSET', 'charset');
     }
@@ -1092,7 +1092,7 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      *
      * @return string
      */
-    public function getBestCharset()
+    public function getBestCharset() : string
     {
         return $this->_getBestQuality($this->getClientCharsets(), 'charset');
     }
@@ -1102,7 +1102,7 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      *
      * @return array
      */
-    public function getLanguages()
+    public function getLanguages() : array
     {
         return $this->_getQualityHeader('HTTP_ACCEPT_LANGUAGE', 'language');
     }
@@ -1112,7 +1112,7 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      *
      * @return string
      */
-    public function getBestLanguage()
+    public function getBestLanguage() : string
     {
         return $this->_getBestQuality($this->getLanguages(), 'language');
     }
@@ -1122,7 +1122,7 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      *
      * @return array|void
      */
-    public function getBasicAuth()
+    public function getBasicAuth() : ?array
     {
         if ($this->hasServer('PHP_AUTH_USER') && $this->hasServer('PHP_AUTH_PW')) {
             return [
@@ -1139,7 +1139,7 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
      *
      * @return array
      */
-    public function getDigestAuth()
+    public function getDigestAuth() : array
     {
         $auth = [];
         if ($this->hasServer('PHP_AUTH_DIGEST')) {
@@ -1221,7 +1221,7 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
     /**
      * Gets content type which request has been made.
      */
-    public function getContentType()
+    public function getContentType() : ?string
     {
         $contentType = $this->getHeader('CONTENT_TYPE');
         if ($contentType) {
@@ -1403,5 +1403,13 @@ class SwooleRequest implements RequestInterface, InjectionAwareInterface
     public function isEmptyBearerToken() : bool
     {
         return true === empty($this->getBearerTokenFromHeader());
+    }
+
+    /**
+     * Get number of files
+     */
+    public function numFiles(bool $onlySuccessful = bool) : int
+    {
+        return count($this->files);
     }
 }

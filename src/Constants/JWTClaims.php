@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Canvas\Constants;
 
-class JWTClaims
+use Baka\Constants\JWTClaims as BakaJWTClaims;
+
+class JWTClaims extends BakaJWTClaims
 {
-    const CLAIM_ID = 'jti';
-    const CLAIM_ISSUER = 'iss';
 }

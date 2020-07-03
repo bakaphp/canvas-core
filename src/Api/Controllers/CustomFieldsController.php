@@ -11,14 +11,7 @@ use Canvas\Dto\CustomFields as CustomFieldsDto;
 use Canvas\Mapper\CustomFieldsMapper;
 use Canvas\Contracts\Controllers\ProcessOutputMapperTrait;
 
-/**
- * Class LanguagesController.
- *
- * @package Canvas\Api\Controllers
- * @property Users $userData
- * @property Apps $app
- *
- */
+
 class CustomFieldsController extends BaseController
 {
     use ProcessOutputMapperTrait;
@@ -86,7 +79,7 @@ class CustomFieldsController extends BaseController
     }
 
     /**
-    * Process the create request and trecurd the boject.
+    * Process the create request and record the object.
     *
     * @return ModelInterface
     * @throws Exception

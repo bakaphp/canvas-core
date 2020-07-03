@@ -5,7 +5,7 @@ namespace Canvas\CustomFields;
 
 use Canvas\Models\CustomFieldsModules;
 use Canvas\Models\AbstractModel;
-use Baka\Database\Contracts\CustomFields\CustomFieldsTrait;
+use Baka\Contracts\CustomFields\CustomFieldsTrait;
 use PDO;
 
 /**

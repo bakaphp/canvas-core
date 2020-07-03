@@ -2,11 +2,11 @@
 
 namespace Canvas\Cli\Tasks;
 
-use Phalcon\Cli\Task as PhTask;
 use Canvas\Models\FileSystem;
+use Phalcon\Cli\Task as PhTask;
 
 /**
- * Class AclTask
+ * Class AclTask.
  *
  * @package Canvas\Cli\Tasks;
  *
@@ -16,7 +16,7 @@ use Canvas\Models\FileSystem;
 class FileSystemTask extends PhTask
 {
     /**
-     * Create the default roles of the system
+     * Create the default roles of the system.
      *
      * @return void
      */
@@ -26,17 +26,17 @@ class FileSystemTask extends PhTask
     }
 
     /**
-     * Default roles for the crm system
+     * Default roles for the crm system.
      *
      * @return void
      */
-    public function purgeImagesAction(array $params):void
+    public function purgeImagesAction(int $fullDelete = 0, string $fileSystem) : void
     {
-        //Option to fully delete or softdelete an image
-        $fullDelete = $params[0];
+        //Option to fully delete or soft delete an image
+        //$fullDelete = $params[0];
 
-        // Specify the filisystem from which to erase
-        $fileSystem = $params[1];
+        // Specify the filesystem from which to erase
+        //$fileSystem = $params[1];
 
         $detachedImages = FileSystem::find([
             'conditions' => 'users_id = 0 and is_deleted = 0'

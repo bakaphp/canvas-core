@@ -3,8 +3,8 @@
 namespace Canvas\Providers;
 
 use Phalcon\Di\ServiceProviderInterface;
-use Phalcon\DiInterface;
-use function Canvas\Core\envValue;
+use Phalcon\Di\DiInterface;
+use function Baka\envValue;
 use Hybridauth\Hybridauth;
 
 class SocialLoginProvider implements ServiceProviderInterface
@@ -12,7 +12,7 @@ class SocialLoginProvider implements ServiceProviderInterface
     /**
      * @param DiInterface $container
      */
-    public function register(DiInterface $container)
+    public function register(DiInterface $container) : void
     {
         $config = $container->getShared('config');
 
