@@ -7,7 +7,6 @@ namespace Canvas\Filesystem;
 use Baka\Filesystem\Helper as FilesystemHelper;
 use Baka\Validations\File as FileValidation;
 use Canvas\Models\FileSystem;
-use Exception;
 use Phalcon\Di;
 use Phalcon\Http\Request\File;
 use Phalcon\Http\Request\FileInterface;
@@ -16,7 +15,6 @@ use Phalcon\Text;
 
 class Helper extends FilesystemHelper
 {
-
     /**
      * Given a file create it in the filesystem.
      *

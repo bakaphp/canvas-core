@@ -133,8 +133,6 @@ class AuthController extends \Baka\Auth\AuthController
         //Ok let validate user password
         $validation = new CanvasValidation();
         $validation->add('password', new PresenceOf(['message' => _('The password is required.')]));
-        $validation->add('firstname', new PresenceOf(['message' => _('The firstname is required.')]));
-        $validation->add('lastname', new PresenceOf(['message' => _('The lastname is required.')]));
         $validation->add('email', new EmailValidator(['message' => _('The email is not valid.')]));
 
         $validation->add(
@@ -151,6 +149,8 @@ class AuthController extends \Baka\Auth\AuthController
         ]));
 
         $validation->setFilters('password', 'trim');
+        $validation->setFilters('firstname', 'trim');
+        $validation->setFilters('lastname', 'trim');
         $validation->setFilters('displayname', 'trim');
         $validation->setFilters('default_company', 'trim');
 
@@ -161,8 +161,8 @@ class AuthController extends \Baka\Auth\AuthController
         $user->firstname = $validation->getValue('firstname');
         $user->lastname = $validation->getValue('lastname');
         $user->password = $validation->getValue('password');
+        $user->displayname = !empty($validation->getValue('displayname')) ? $validation->getValue('displayname') : $user->generateDefaultDisplayname();
         $userIp = !defined('API_TESTS') ? $this->request->getClientAddress() : '127.0.0.1'; //help getting the client ip on scrutinizer :(
-        $user->displayname = $validation->getValue('displayname');
         $user->defaultCompanyName = $validation->getValue('default_company');
 
         //user registration
@@ -204,8 +204,10 @@ class AuthController extends \Baka\Auth\AuthController
      * Refresh user auth.
      *
      * @return Response
-     *
+<<<<<<< HEAD
      * @todo Validate access_token and refresh token, session's user email and re-login
+     * @todo Validate acces_token and refresh token, session's user email and relogin
+>>>>>>> 6db85dbc4b743f7ee0e434bac1c35c3108557eb5
      */
     public function refresh() : Response
     {
