@@ -56,7 +56,7 @@ class Helper extends FilesystemHelper
         $fileSystem->path = Text::reduceSlashes($completeFilePath);
         $fileSystem->url = Text::reduceSlashes($fileSystemConfig->cdn . DIRECTORY_SEPARATOR . $uploadFileNameWithPath);
         $fileSystem->file_type = $file->getExtension();
-        $fileSystem->size = $file->getSize();
+        $fileSystem->size = (string) $file->getSize();
 
         $fileSystem->saveOrFail();
 

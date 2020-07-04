@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Canvas\Acl\Http\Exception;
+namespace Canvas\Http\Exception;
 
 use Canvas\Http\Response;
 use Baka\Exception\HttpException;
