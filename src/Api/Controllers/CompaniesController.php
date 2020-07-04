@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Canvas\Api\Controllers;
 
-use Baka\Http\Contracts\Api\CrudCustomFieldsBehaviorTrait;
+use Baka\Contracts\Http\Api\CrudCustomFieldsBehaviorTrait;
 use Baka\Http\Exception\UnauthorizedException;
 use Canvas\Models\Companies;
 use Phalcon\Http\Response;

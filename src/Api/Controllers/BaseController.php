@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Canvas\Api\Controllers;
 
+use Baka\Contracts\Http\Api\CrudBehaviorTrait;
 use Baka\Http\Api\BaseController as BakaBaseController;
-use Baka\Http\Contracts\Api\CrudBehaviorTrait;
 
 /**
  * Class BaseController.

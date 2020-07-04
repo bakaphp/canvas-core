@@ -198,7 +198,7 @@ class Notification implements NotificationInterface
      *
      * @return boolean
      */
-    protected function sendToQueue() : bool
+    public function sendToQueue() : bool
     {
         $notificationData = [
             'from' => $this->fromUser,
