@@ -2,8 +2,8 @@
 
 namespace Canvas\Cli\Jobs;
 
-use Canvas\Contracts\Queue\QueueableJobInterface;
-use Canvas\Jobs\Job;
+use Baka\Contracts\Queue\QueueableJobInterface;
+use Baka\Jobs\Job;
 use Phalcon\Di;
 use Canvas\Models\Apps as CanvasApps;
 use Phalcon\Security\Random;

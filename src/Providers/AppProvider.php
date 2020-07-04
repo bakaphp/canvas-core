@@ -5,7 +5,7 @@ namespace Canvas\Providers;
 use Phalcon\Di\ServiceProviderInterface;
 use Phalcon\Di\DiInterface;
 use Canvas\Models\Apps;
-use Canvas\Http\Exception\InternalServerErrorException;
+use Baka\Http\Exception\InternalServerErrorException;
 use Phalcon\Http\Request;
 
 class AppProvider implements ServiceProviderInterface

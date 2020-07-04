@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Canvas\Api\Controllers;
 
-use Canvas\Http\Exception\NotFoundException;
+use Baka\Http\Exception\NotFoundException;
 use Canvas\Models\EmailTemplates;
 use Canvas\Models\Users;
 use Phalcon\Http\Response;

@@ -3,7 +3,7 @@
 namespace Gewaer\Tests\integration\library\Jobs;
 
 use Canvas\Cli\Jobs\PushNotifications;
-use Canvas\Jobs\PendingDispatch;
+use Baka\Jobs\PendingDispatch;
 use Canvas\Models\Users;
 use Canvas\Notifications\PushNotification;
 use IntegrationTester;

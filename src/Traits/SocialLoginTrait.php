@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Canvas\Traits;
 
 use Baka\Auth\Auth;
-use Canvas\Http\Exception\UnprocessableEntityException;
+use Baka\Http\Exception\UnprocessableEntityException;
 use Canvas\Models\Sources;
 use Canvas\Models\UserLinkedSources;
 use Canvas\Models\Users;

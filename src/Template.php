@@ -31,14 +31,14 @@ class Template
         $view = $di->getView();
         $filesystem = $di->get('filesystem', ['local']);
 
-        //get the teamplate
+        //get the template
         $template = EmailTemplates::getByName($name);
         $file = $template->name . '.volt';
 
         //write file
         $filesystem->put('/view/' . $file, $template->template);
 
-        //rendre and return content
+        //render and return content
         return $view->render($template->name, $params);
     }
 }

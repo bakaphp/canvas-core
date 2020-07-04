@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Canvas\Models;
 
-use Canvas\Http\Exception\InternalServerErrorException;
+use Baka\Http\Exception\InternalServerErrorException;
 use Phalcon\Di;
 
 class UserCompanyAppsActivities extends AbstractModel

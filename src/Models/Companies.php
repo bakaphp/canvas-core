@@ -7,7 +7,7 @@ use Baka\Blameable\Blameable;
 use Baka\Blameable\BlameableTrait;
 use Baka\Contracts\Database\HashTableTrait;
 use Baka\Contracts\EventsManager\EventManagerAwareTrait;
-use Canvas\Http\Exception\InternalServerErrorException;
+use Baka\Http\Exception\InternalServerErrorException;
 use Canvas\Traits\FileSystemModelTrait;
 use Canvas\Traits\UsersAssociatedTrait;
 use Carbon\Carbon;

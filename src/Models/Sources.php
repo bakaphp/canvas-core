@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Canvas\Models;
 
 use Baka\ASDecoder;
-use Canvas\Http\Exception\InternalServerErrorException;
+use Baka\Http\Exception\InternalServerErrorException;
 
 /**
  * Class Resources.

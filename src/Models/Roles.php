@@ -4,8 +4,8 @@ declare(strict_types=1);
 namespace Canvas\Models;
 
 use Baka\Database\Exception\ModelNotFoundException;
-use Canvas\Http\Exception\InternalServerErrorException;
-use Canvas\Http\Exception\UnprocessableEntityException;
+use Baka\Http\Exception\InternalServerErrorException;
+use Baka\Http\Exception\UnprocessableEntityException;
 use Phalcon\Acl\Role as AclRole;
 use Phalcon\Di;
 use Phalcon\Validation;

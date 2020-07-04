@@ -8,7 +8,7 @@ use Baka\Auth\UsersController as BakaUsersController;
 use Baka\Validation as CanvasValidation;
 use Canvas\Contracts\Controllers\ProcessOutputMapperTrait;
 use Canvas\Dto\User as UserDto;
-use Canvas\Http\Exception\InternalServerErrorException;
+use Baka\Http\Exception\InternalServerErrorException;
 use Canvas\Mapper\UserMapper;
 use Canvas\Models\Users;
 use Canvas\Models\UsersAssociatedApps;

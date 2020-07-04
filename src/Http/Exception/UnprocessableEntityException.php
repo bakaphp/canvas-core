@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Canvas\Http\Exception;
+namespace Canvas\Acl\Http\Exception;
 
 use Canvas\Http\Response;
-use Canvas\Exception\HttpException;
+use Baka\Exception\HttpException;
 
 class UnprocessableEntityException extends HttpException
 {

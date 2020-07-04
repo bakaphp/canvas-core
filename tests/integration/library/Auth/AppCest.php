@@ -3,7 +3,7 @@
 namespace Gewaer\Tests\integration\library\Jobs;
 
 use Canvas\Auth\App;
-use Canvas\Hashing\Password;
+use Baka\Hashing\Password;
 use Canvas\Models\Apps;
 use Canvas\Models\Companies;
 use Canvas\Models\Users;

@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Canvas\Models;
 
-use Canvas\Http\Exception\UnprocessableEntityException;
+use Baka\Http\Exception\UnprocessableEntityException;
 use Phalcon\Di;
 
 class EmailTemplates extends AbstractModel

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Canvas\Http\Exception;
 
 use Canvas\Http\Response;
-use Canvas\Exception\HttpException;
+use Baka\Exception\HttpException;
 
 /**
  * Critical error from the app , will send alerts

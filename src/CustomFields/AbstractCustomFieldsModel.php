@@ -65,16 +65,4 @@ abstract class AbstractCustomFieldsModel extends AbstractModel
 
         return $listOfCustomFields;
     }
-
-    /**
-    * Before create.
-    *
-    * @return void
-    */
-    public function beforeCreate()
-    {
-        $this->created_at = date('Y-m-d H:i:s');
-        $this->updated_at = null;
-        $this->is_deleted = 0;
-    }
 }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Canvas\Api\Controllers;
 
-use Canvas\Http\Exception\InternalServerErrorException;
+use Baka\Http\Exception\InternalServerErrorException;
 use Exception;
 use PDOException;
 use Phalcon\Http\Response;
@@ -74,8 +74,6 @@ class IndexController extends BaseController
         } catch (Exception $e) {
             $this->log->error("RabbitMQ isn't working. {$e->getMessage()}", $e->getTrace());
             $response['errors']['RabbitMQ'] = "RabbitMQ isn't working.";
-        } finally {
-            $this->queue->close();
         }
 
         //Try to connect to db
@@ -93,6 +91,6 @@ class IndexController extends BaseController
             return $this->response(['OK']);
         }
 
-        throw new InternalServerErrorException(json_encode($response));
+        throw InternalServerErrorException::create('Internal Server Error', $response);
     }
 }

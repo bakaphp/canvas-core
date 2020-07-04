@@ -1,55 +1,37 @@
 <?php
 
-declare (strict_types = 1);
+declare(strict_types=1);
 
 namespace Canvas\Notifications;
 
+use Baka\Contracts\Auth\UserInterface;
+use Baka\Contracts\Notifications\NotificationInterface;
 use Baka\Mail\Message;
-use Canvas\Contracts\Auth\UserInterface;
-use Canvas\Contracts\Notifications\NotificationInterface;
 use Canvas\Models\AbstractModel;
 use Canvas\Models\Notifications;
 use Canvas\Models\NotificationType;
 use Canvas\Models\Users;
-use Canvas\Queue\Queue;
+use Baka\Queue\Queue;
 use Phalcon\Di;
 use Phalcon\Mvc\Model;
+use Phalcon\Mvc\ModelInterface;
 use Phalcon\Traits\EventManagerAwareTrait;
 
 class Notification implements NotificationInterface
 {
     use EventManagerAwareTrait;
 
-    /**
-     *
-     * @var Users
-     */
-    protected $toUser = null;
-
-    /**
-     *
-     * @var Users
-     */
-    protected $fromUser = null;
+    protected ?UserInterface $toUser = null;
+    protected ?UserInterface $fromUser = null;
+    protected ?NotificationType $type = null;
+    protected ?ModelInterface $entity = null;
 
     /**
      * Send this notification to the queue?
      *
      * @var boolean
      */
-    protected $useQueue = false;
-
-    /**
-     *
-     * @var NotificationType
-     */
-    protected $type = null;
-
-    /**
-     *
-     * @var AbstractModel
-     */
-    protected $entity = null;
+    protected bool $useQueue = false;
 
     /**
      *
@@ -78,7 +60,7 @@ class Notification implements NotificationInterface
      *
      * @return void
      */
-    public function setType(NotificationType $type): void
+    public function setType(NotificationType $type) : void
     {
         $this->type = $type;
     }
@@ -88,7 +70,7 @@ class Notification implements NotificationInterface
      *
      * @return string
      */
-    public function message(): string
+    public function message() : string
     {
         return $this->type->template ?: '';
     }
@@ -100,7 +82,7 @@ class Notification implements NotificationInterface
      *
      * @return Message
      */
-    protected function toMail(): ?Message
+    protected function toMail() : ?Message
     {
         return null;
     }
@@ -110,7 +92,7 @@ class Notification implements NotificationInterface
      *
      * @return void
      */
-    protected function toPushNotification(): ?PushNotification
+    protected function toPushNotification() : ?PushNotification
     {
         return null;
     }
@@ -120,7 +102,7 @@ class Notification implements NotificationInterface
      *
      * @return void
      */
-    protected function toRealtime(): ?PusherNotification
+    protected function toRealtime() : ?PusherNotification
     {
         return null;
     }
@@ -132,7 +114,7 @@ class Notification implements NotificationInterface
      *
      * @return void
      */
-    public function setTo(UserInterface $user): void
+    public function setTo(UserInterface $user) : void
     {
         $this->toUser = $user;
     }
@@ -144,7 +126,7 @@ class Notification implements NotificationInterface
      *
      * @return void
      */
-    public function setFrom(UserInterface $user): void
+    public function setFrom(UserInterface $user) : void
     {
         $this->fromUser = $user;
     }
@@ -154,7 +136,7 @@ class Notification implements NotificationInterface
      *
      * @return Users
      */
-    public function getTo(): ?UserInterface
+    public function getTo() : ?UserInterface
     {
         return $this->toUser;
     }
@@ -164,7 +146,7 @@ class Notification implements NotificationInterface
      *
      * @return User
      */
-    public function getFrom(): ?UserInterface
+    public function getFrom() : ?UserInterface
     {
         return $this->fromUser;
     }
@@ -174,7 +156,7 @@ class Notification implements NotificationInterface
      *
      * @return void
      */
-    public function disableQueue(): void
+    public function disableQueue() : void
     {
         $this->useQueue = false;
     }
@@ -187,9 +169,9 @@ class Notification implements NotificationInterface
      *
      * @return boolean
      */
-    public function process(): bool
+    public function process() : bool
     {
-        //if the user didnt provide the type get it based on the class name
+        //if the user didn't provide the type get it based on the class name
         if (is_null($this->type)) {
             $this->setType(NotificationType::getByKey(static::class));
         } elseif (is_string($this->type)) {
@@ -198,7 +180,7 @@ class Notification implements NotificationInterface
         }
 
         if (Di::getDefault()->has('mail')) {
-            $this->mail = Di::getDefault()->getMail();
+            $this->mail = Di::getDefault()->get('mail');
         }
 
         if ($this->useQueue) {
@@ -216,7 +198,7 @@ class Notification implements NotificationInterface
      *
      * @return boolean
      */
-    protected function sendToQueue(): bool
+    protected function sendToQueue() : bool
     {
         $notificationData = [
             'from' => $this->fromUser,
@@ -234,7 +216,7 @@ class Notification implements NotificationInterface
      *
      * @return boolean
      */
-    public function trigger(): bool
+    public function trigger() : bool
     {
         $content = $this->message();
         $app = Di::getDefault()->getApp();
@@ -268,7 +250,7 @@ class Notification implements NotificationInterface
         }
 
         /**
-         * @todo send to push ontification
+         * @todo send to push notification
          */
 
         if ($this->type->with_realtime) {
