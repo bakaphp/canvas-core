@@ -8,10 +8,6 @@ use Canvas\Models\AbstractModel;
 use Baka\Contracts\CustomFields\CustomFieldsTrait;
 use PDO;
 
-/**
- * Custom Fields Abstract Class.
- * @property \Phalcon\Di $di
- */
 abstract class AbstractCustomFieldsModel extends AbstractModel
 {
     use CustomFieldsTrait;
@@ -29,7 +25,7 @@ abstract class AbstractCustomFieldsModel extends AbstractModel
             return ;
         }
 
-        //We does it only find names in plural? We need to fix this or make a workaroun
+        //We does it only find names in plural? We need to fix this or make a workaround
         if (!$models = CustomFieldsModules::findFirstByName($this->getSource())) {
             return;
         }
