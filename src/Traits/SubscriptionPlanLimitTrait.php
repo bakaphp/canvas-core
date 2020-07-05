@@ -6,7 +6,7 @@ namespace Canvas\Traits;
 
 use function Baka\getShortClassName;
 use Canvas\Exception\SubscriptionPlanLimitException;
-use Canvas\Http\Exception\InternalServerErrorException;
+use Baka\Http\Exception\InternalServerErrorException;
 use Canvas\Models\Subscription;
 use Canvas\Models\UserCompanyAppsActivities;
 use Phalcon\Di;

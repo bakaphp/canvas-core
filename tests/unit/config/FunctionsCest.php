@@ -4,6 +4,7 @@ namespace Canvas\Tests\unit\config;
 
 use function Baka\appPath;
 use function Baka\appUrl;
+use function Baka\basePath;
 use function Baka\envValue;
 use function Baka\isJson;
 use function Baka\paymentGatewayIsActive;

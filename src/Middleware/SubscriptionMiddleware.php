@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Canvas\Middleware;
 
 use Phalcon\Mvc\Micro;
-use Canvas\Http\Exception\UnauthorizedException;
+use Baka\Http\Exception\UnauthorizedException;
 use Canvas\Models\Subscription;
 
 /**

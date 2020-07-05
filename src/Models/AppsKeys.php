@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Canvas\Models;
 
-use Canvas\Http\Exception\UnauthorizedException;
+use Baka\Http\Exception\UnauthorizedException;
 
 class AppsKeys extends AbstractModel
 {

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Canvas\Models;
 
 use Baka\Contracts\Database\HashTableTrait;
-use Canvas\Http\Exception\NotFoundException;
+use Baka\Http\Exception\NotFoundException;
 use Exception;
 use Phalcon\Di;
 
@@ -22,7 +22,7 @@ class FileSystem extends AbstractModel
     public string $name;
     public string $path;
     public string $url;
-    public int $size;
+    public string $size;
     public string $file_type;
 
     /**

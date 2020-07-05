@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Canvas\Middleware;
 
-use Canvas\Http\Exception\InternalServerErrorException;
-use Canvas\Http\Exception\UnauthorizedException;
+use Baka\Http\Exception\InternalServerErrorException;
+use Baka\Http\Exception\UnauthorizedException;
 use Phalcon\Mvc\Micro;
 
 /**

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Canvas\Models;
 
-use Canvas\Http\Exception\NotFoundException;
+use Baka\Http\Exception\NotFoundException;
 use Phalcon\Di;
 
 class AccessList extends AbstractModel

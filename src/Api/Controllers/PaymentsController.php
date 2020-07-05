@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Canvas\Api\Controllers;
 
-use Canvas\Http\Exception\NotFoundException;
+use Baka\Http\Exception\NotFoundException;
 use Baka\Contracts\Cashier\StripeWebhookHandlersTrait;
 use Phalcon\Http\Response;
 use Canvas\Models\Users;

@@ -2,9 +2,9 @@
 
 namespace Canvas\Cli\Tasks;
 
-use Canvas\Contracts\Queue\QueueableJobInterface;
+use Baka\Contracts\Queue\QueueableJobInterface;
 use Canvas\Models\Users;
-use Canvas\Queue\Queue;
+use Baka\Queue\Queue;
 use Phalcon\Cli\Task as PhTask;
 use Phalcon\Mvc\Model;
 use Throwable;

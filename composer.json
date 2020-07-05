@@ -9,7 +9,7 @@
     "require": {
         "php": ">=7.4",
         "ext-phalcon": ">=4",
-        "baka/baka": "^0.6",
+        "baka/baka": "0.6.x-dev",
         "dariuszp/cli-progress-bar": "^1.0",
         "elasticsearch/elasticsearch": "^7.5",
         "firebase/php-jwt": "^5.0",
@@ -21,7 +21,6 @@
         "league/fractal": "^0.17.0",
         "mark-gerarts/auto-mapper-plus": "2.0.0-alpha1",
         "monolog/monolog": "^2.1",
-        "namshi/notificator": " 1.0.*",
         "nesbot/carbon": "^2.3",
         "odan/phinx-migrations-generator": "^5",
         "phalcon/ide-stubs": "^3.3",
@@ -65,19 +64,13 @@
     "autoload": {
         "psr-4": {
             "Canvas\\": "src/"
-        },
-        "files": [
-            "src/Core/functions.php"
-        ]
+        }
     },
     "autoload-dev": {
         "psr-4": {
             "Canvas\\": "src/",
             "Canvas\\Tests\\": "tests/"
-        },
-        "files": [
-            "src/Core/functions.php"
-        ]
+        }
     },
     "config": {
         "preferred-install": "dist",

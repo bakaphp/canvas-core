@@ -3,7 +3,7 @@
 namespace Canvas\Models;
 
 use Baka\Cashier\Subscription as BakaSubscription;
-use Canvas\Http\Exception\InternalServerErrorException;
+use Baka\Http\Exception\InternalServerErrorException;
 use Carbon\Carbon;
 use Phalcon\Db\RawValue;
 use Phalcon\Di;

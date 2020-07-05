@@ -1,4 +1,4 @@
-u<?php
+<?php
 
 use Phalcon\Security\Random;
 use Phinx\Seed\AbstractSeed;
@@ -8,11 +8,10 @@ class InitGewaer extends AbstractSeed
     public function run()
     {
         $random = new Random();
-        //add default languages
         $data = [
             [
                 'name' => 'Default',
-                'key' => 'mQsVRvorhqBJOijxkC4MB4hHFVcVTJia',
+                'key' => 'ac53fedf-f873-4b96-973a-2368690652b5',
                 'is_public' => 1,
                 'description' => 'Gewaer Ecosystem',
                 'created_at' => date('Y-m-d H:i:s'),

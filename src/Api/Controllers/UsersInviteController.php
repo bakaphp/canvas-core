@@ -7,7 +7,7 @@ namespace Canvas\Api\Controllers;
 use Baka\Http\Exception\NotFoundException;
 use Baka\Validation as CanvasValidation;
 use Canvas\Auth\Auth;
-use Canvas\Http\Exception\UnprocessableEntityException;
+use Baka\Http\Exception\UnprocessableEntityException;
 use Canvas\Models\Roles;
 use Canvas\Models\Users;
 use Canvas\Models\UsersInvite;

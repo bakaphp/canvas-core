@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Canvas\Models;
 
 use Baka\Database\SystemModules as BakaSystemModules;
-use Canvas\Http\Exception\InternalServerErrorException;
+use Baka\Http\Exception\InternalServerErrorException;
 use Phalcon\Di;
 use Phalcon\Mvc\ModelInterface;
 

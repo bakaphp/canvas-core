@@ -6,7 +6,7 @@ namespace Canvas\Api\Controllers;
 
 use function Baka\isJson;
 use Baka\Validation;
-use Canvas\Http\Exception\UnprocessableEntityException;
+use Baka\Http\Exception\UnprocessableEntityException;
 use Canvas\Models\UserWebhooks;
 use Canvas\Webhooks;
 use Phalcon\Http\Response;
