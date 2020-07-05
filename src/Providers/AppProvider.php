@@ -20,8 +20,9 @@ class AppProvider implements ServiceProviderInterface
         $container->setShared(
             'app',
             function () use ($config) {
-                $request = new Request();
-                $appKey = $request->hasHeader('KanvasKey') ? $request->getHeader('KanvasKey') : $config->app->id;
+                //$request = new Request();
+                //$appKey = $request->hasHeader('KanvasKey') ? $request->getHeader('KanvasKey') : $config->app->id;
+                $appKey = $config->app->id;
                 $app = Apps::findFirstByKey($appKey);
                 if (!$app) {
                     throw new InternalServerErrorException('No App configure with this key ' . $appKey);
