@@ -17,7 +17,7 @@ return [
     ],
     'app' => [
         //GEWAER is a multi entity app ecosystem so we need what is the current api ID for this api
-        'id' => envValue('GEWAER_APP_ID', 1),
+        'id' => envValue('GEWAER_APP_ID', 'ac53fedf-f873-4b96-973a-2368690652b5'),
         'frontEndUrl' => envValue('FRONTEND_URL'),
         'version' => envValue('VERSION', time()),
         'timezone' => envValue('APP_TIMEZONE', 'UTC'),
