@@ -21,7 +21,6 @@
         "league/fractal": "^0.17.0",
         "mark-gerarts/auto-mapper-plus": "2.0.0-alpha1",
         "monolog/monolog": "^2.1",
-        "namshi/notificator": " 1.0.*",
         "nesbot/carbon": "^2.3",
         "odan/phinx-migrations-generator": "^5",
         "phalcon/ide-stubs": "^3.3",
