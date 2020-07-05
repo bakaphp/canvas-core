@@ -6,7 +6,7 @@ use Phalcon\Loader;
 
 // Register the auto loader
 //require '/baka/src/functions.php';
-require dirname(__DIR__) . DIRECTORY_SEPARATOR . '/vendor/baka/src/functions.php';
+require dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor/baka/src/functions.php';
 
 $loader = new Loader();
 $namespaces = [
