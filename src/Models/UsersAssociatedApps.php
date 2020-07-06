@@ -3,7 +3,9 @@ declare(strict_types=1);
 
 namespace Canvas\Models;
 
-class UsersAssociatedApps extends AbstractModel
+use Baka\Contracts\Auth\UserInterface;
+
+class UsersAssociatedApps extends AbstractModel implements UserInterface
 {
     public int $users_id;
     public int $apps_id;
