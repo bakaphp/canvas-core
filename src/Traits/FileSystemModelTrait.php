@@ -66,7 +66,7 @@ trait FileSystemModelTrait
      *
      * @return boolean
      */
-    public function update($data = null, $whiteList = null) : bool
+    public function updateOrFail($data = null, $whiteList = null) : bool
     {
         //associate uploaded files
         if (isset($data['files'])) {
@@ -83,7 +83,7 @@ trait FileSystemModelTrait
             }
         }
 
-        return parent::update($data, $whiteList);
+        return parent::updateOrFail($data, $whiteList);
     }
 
     /**
@@ -112,7 +112,7 @@ trait FileSystemModelTrait
      *
      * @return boolean
      */
-    public function save($data = null, $whiteList = null) : bool
+    public function saveOrFail($data = null, $whiteList = null) : bool
     {
         //associate uploaded files
         if (isset($data['files'])) {
@@ -121,7 +121,7 @@ trait FileSystemModelTrait
             }
         }
 
-        return parent::save($data, $whiteList);
+        return parent::saveOrFail($data, $whiteList);
     }
 
     /**
