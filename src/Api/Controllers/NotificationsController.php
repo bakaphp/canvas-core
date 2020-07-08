@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Canvas\Api\Controllers;
 
-use Canvas\Models\Notifications;
+use Canvas\Contracts\Controllers\ProcessOutputMapperTrait;
 use Canvas\Dto\Notification as NotificationDto;
 use Canvas\Mapper\NotificationMapper;
-use Canvas\Contracts\Controllers\ProcessOutputMapperTrait;
+use Canvas\Models\Notifications;
 use Phalcon\Http\Response;
 
 /**
@@ -59,7 +59,7 @@ class NotificationsController extends BaseController
      *
      * @return Response
      */
-    public function cleanAll(): Response
+    public function cleanAll() : Response
     {
         Notifications::markAsRead($this->userData);
 
@@ -67,9 +67,38 @@ class NotificationsController extends BaseController
     }
 
     /**
+     * Bulk delete notifications of a user.
+     *
+     * @return Response
+     */
+    public function delete() : Response
+    {
+        $request = $this->request->getPostData();
+
+        foreach ($request['ids'] as $notificationId) {
+            $notification = Notifications::findFirst([
+                'conditions' => 'id = ?0 and companies_id  = ?1 and apps_id = ?2 and users_id = ?3 and is_deleted = 0',
+                'bind' => [
+                    $notificationId,
+                    $this->userData->currentCompanyId(),
+                    $this->app->getId(),
+                    $this->userData->getId()
+                ]
+            ]);
+
+            if ($notification) {
+                $notification->is_deleted = 1;
+                $notification->update();
+            }
+        }
+        return $this->response('Notifications deleted');
+    }
+
+    /**
      * Overwrite processOutput.
      *
      * @param mixed $results
+     *
      * @return mixed
      */
     protected function processOutput($results)
