@@ -77,8 +77,13 @@ class NotificationsController extends BaseController
 
         foreach ($request['ids'] as $notificationId) {
             $notification = Notifications::findFirst([
-                'conditions' => 'id = ?0 and is_deleted = 0',
-                'bind' => [$notificationId]
+                'conditions' => 'id = ?0 and companies_id  = ?1 and apps_id = ?2 and users_id = ?3 and is_deleted = 0',
+                'bind' => [
+                    $notificationId,
+                    $this->userData->currentCompanyId(),
+                    $this->app->getId(),
+                    $this->userData->getId()
+                ]
             ]);
 
             if ($notification) {
