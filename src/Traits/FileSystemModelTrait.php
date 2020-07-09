@@ -134,9 +134,11 @@ trait FileSystemModelTrait
         $systemModule = SystemModules::getSystemModuleByModelName(self::class);
 
         if ($files = FileSystemEntities::getAllByEntityId($this->getId(), $systemModule)) {
-            $files->update([], function ($file) {
-                $file->softDelete();
-            });
+            $files->filter(
+                function ($file) {
+                    $file->softDelete();
+                }
+            );
         }
 
         return true;
@@ -166,7 +168,7 @@ trait FileSystemModelTrait
     }
 
     /**
-     * Given the array of files we will attch this files to the files.
+     * Given the array of files we will attach this files to the files.
      * [
      *  'file' => $file,
      *  'file_name' => 'dfadfa'
@@ -361,7 +363,7 @@ trait FileSystemModelTrait
                 ->useCustomMapper($fileMapper);
 
             /**
-             * @todo create a mapper for entity so we dont have to look for the relationship?
+             * @todo create a mapper for entity so we don't have to look for the relationship?
              */
             return $this->di->getMapper()->map($fileEntity, Files::class);
         }
