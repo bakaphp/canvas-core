@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Canvas\Traits;
 
-use Canvas\Models\Users;
 use Baka\Auth\Models\Sessions;
-use Canvas\Exception\NotFoundException;
+use Canvas\Auth\Auth;
+use Canvas\Models\Users;
 
 /**
  * Trait ResponseTrait.
@@ -24,14 +24,16 @@ trait AuthTrait
 {
     /**
      * Login user.
+     *
      * @param string
+     *
      * @return array
      */
-    private function loginUsers(string $email, string $password): array
+    private function loginUsers(string $email, string $password) : array
     {
         $userIp = !defined('API_TESTS') ? $this->request->getClientAddress() : '127.0.0.1';
 
-        $userData = Users::login($email, $password, 1, 0, $userIp);
+        $userData = Auth::login($email, $password, 1, 0, $userIp);
         $token = $userData->getToken();
 
         //start session
@@ -48,10 +50,12 @@ trait AuthTrait
 
     /**
      * User Login Social.
+     *
      * @param string
+     *
      * @return array
      */
-    private function loginSocial(Users $user): array
+    private function loginSocial(Users $user) : array
     {
         $userIp = !defined('API_TESTS') ? $this->request->getClientAddress() : '127.0.0.1';
 
@@ -76,10 +80,12 @@ trait AuthTrait
 
     /**
      * Set user into Di by id.
+     *
      * @param int $usersId
+     *
      * @return void
      */
-    private function setUserDataById(int $usersId): void
+    private function setUserDataById(int $usersId) : void
     {
         $hostUser = Users::findFirstOrFail([
             'conditions' => 'id = ?0 and status = 1 and is_deleted = 0',

@@ -8,77 +8,16 @@ use Stripe\Token as StripeToken;
 
 class PaymentMethodsCreds extends AbstractModel
 {
-    /**
-     *
-     * @var integer
-     */
-    public $id;
 
-    /**
-     *
-     * @var integer
-     */
-    public $users_id;
+    public int $users_id;
+    public int $companies_id;
+    public int $apps_id;
+    public int $payment_methods_id;
+    public string $payment_ending_numbers;
+    public string $expiration_date;
+    public ?string $zip_code = null;
 
-    /**
-     *
-     * @var integer
-     */
-    public $companies_id;
 
-    /**
-     *
-     * @var integer
-     */
-    public $apps_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $payment_methods_id;
-
-    /**
-     *
-     * @var string
-     */
-    public $payment_ending_numbers;
-
-    /**
-     *
-     * @var string
-     */
-    public $payment_methods_brand;
-
-    /**
-     *
-     * @var string
-     */
-    public $expiration_date;
-
-    /**
-     *
-     * @var string
-     */
-    public $zip_code;
-
-    /**
-     *
-     * @var string
-     */
-    public $created_at;
-
-    /**
-     *
-     * @var string
-     */
-    public $updated_at;
-
-    /**
-     *
-     * @var integer
-     */
-    public $is_deleted;
 
     /**
      * Initialize method for model.
@@ -86,16 +25,6 @@ class PaymentMethodsCreds extends AbstractModel
     public function initialize()
     {
         $this->setSource('payment_methods_creds');
-    }
-
-    /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource() : string
-    {
-        return 'payment_methods_creds';
     }
 
     /**

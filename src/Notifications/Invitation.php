@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Canvas\Notifications;
 
-use Canvas\Contracts\Notifications\NotificationInterface;
+use Baka\Contracts\Notifications\NotificationInterface;
 use Baka\Mail\Message;
 use Phalcon\Di;
 use Canvas\Models\Users;

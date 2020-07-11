@@ -5,26 +5,16 @@ declare(strict_types=1);
 namespace Canvas\Api\Controllers;
 
 use Baka\Auth\UsersController as BakaUsersController;
+use Baka\Validation as CanvasValidation;
 use Canvas\Contracts\Controllers\ProcessOutputMapperTrait;
 use Canvas\Dto\User as UserDto;
-use Canvas\Http\Exception\InternalServerErrorException;
+use Baka\Http\Exception\InternalServerErrorException;
 use Canvas\Mapper\UserMapper;
 use Canvas\Models\Users;
 use Canvas\Models\UsersAssociatedApps;
-use Canvas\Validation as CanvasValidation;
 use Phalcon\Http\Response;
 use Phalcon\Validation\Validator\PresenceOf;
 
-/**
- * Class UsersController.
- *
- * @package Canvas\Api\Controllers
- *
- * @property Users $userData
- * @property Request $request
- * @property Config $config
- * @property Apps $app
- */
 class UsersController extends BakaUsersController
 {
     use ProcessOutputMapperTrait;
@@ -52,7 +42,8 @@ class UsersController extends BakaUsersController
         'family',
         'cell_phone_number',
         'country_id',
-        'location'
+        'location',
+        'user_active'
     ];
 
     /*
@@ -78,7 +69,8 @@ class UsersController extends BakaUsersController
         'default_company_branch',
         'cell_phone_number',
         'country_id',
-        'location'
+        'location',
+        'user_active'
     ];
 
     /**
@@ -131,9 +123,6 @@ class UsersController extends BakaUsersController
             'id = ?0 AND is_deleted = 0',
             'bind' => [$id],
         ]);
-
-        //get the results and append its relationships
-        $user = $this->appendRelationshipsToResult($this->request, $user);
 
         return $this->response($this->processOutput($user));
     }
@@ -189,6 +178,7 @@ class UsersController extends BakaUsersController
         }
 
         //update
+
         $user->updateOrFail($request, $this->updateFields);
         return $this->response($this->processOutput($user));
     }

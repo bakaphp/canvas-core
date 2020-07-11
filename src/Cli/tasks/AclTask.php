@@ -35,7 +35,7 @@ class AclTask extends PhTask
         $this->acl->addRole('Default.Agents');
         $this->acl->addRole('Default.Users');
 
-        $this->acl->addResource('Default.Users', ['test-create', 'test-update', 'read', 'list', 'create', 'update', 'delete']);
+        $this->acl->addComponent('Default.Users', ['test-create', 'test-update', 'read', 'list', 'create', 'update', 'delete']);
         $this->acl->allow('Admins', 'Default.Users', ['read', 'list', 'create', 'update', 'delete']);
     }
 
@@ -47,20 +47,20 @@ class AclTask extends PhTask
     public function crmAction()
     {
         $this->acl->addRole('CRM.Users');
-        $this->acl->addResource('CRM.Users', ['read', 'list', 'create', 'update', 'delete']);
+        $this->acl->addComponent('CRM.Users', ['read', 'list', 'create', 'update', 'delete']);
         $this->acl->allow('Users', 'CRM.Users', ['read', 'list', 'create']);
         $this->acl->deny('Users', 'CRM.Users', ['update', 'delete']);
 
         //Apps Settings
-        $this->acl->addResource('CRM.AppsSettings', ['read', 'list', 'create', 'update', 'delete']);
+        $this->acl->addComponent('CRM.AppsSettings', ['read', 'list', 'create', 'update', 'delete']);
         $this->acl->allow('Users', 'CRM.AppsSettings', ['read', 'list', 'create', 'update', 'delete']);
 
         //Companies Settings
-        $this->acl->addResource('CRM.CompaniesSettings', ['read', 'list', 'create', 'update', 'delete']);
+        $this->acl->addComponent('CRM.CompaniesSettings', ['read', 'list', 'create', 'update', 'delete']);
         $this->acl->allow('Users', 'CRM.CompaniesSettings', ['read', 'list', 'create', 'update', 'delete']);
 
         //Apps plans
-        $this->acl->addResource('CRM.Apps-plans', ['read', 'list', 'create', 'update', 'delete']);
+        $this->acl->addComponent('CRM.Apps-plans', ['read', 'list', 'create', 'update', 'delete']);
         $this->acl->allow('Users', 'CRM.Apps-plans', ['read', 'list', 'create', 'update', 'delete']);
     }
 
@@ -69,9 +69,9 @@ class AclTask extends PhTask
      *
      * @return void
      */
-    public function kanvas(): void
+    public function kanvas() : void
     {
-        $this->acl->addResource(
+        $this->acl->addComponent(
             'Default.SettingsMenu',
             [
                 'company-settings',
@@ -91,7 +91,7 @@ class AclTask extends PhTask
         ];
 
         foreach ($defaultResources as $resource) {
-            $this->acl->addResource(
+            $this->acl->addComponent(
                 $resource,
                 [
                     'read',

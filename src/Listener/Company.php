@@ -4,15 +4,16 @@ declare(strict_types=1);
 
 namespace Canvas\Listener;
 
-use Phalcon\Events\Event;
-use Canvas\Models\Users;
-use Canvas\Models\Companies;
-use Canvas\Models\CompaniesBranches;
 use Baka\Auth\Models\UserCompanyApps;
 use Canvas\Models\AppsPlans;
-use Canvas\Models\CompaniesGroups;
+use Canvas\Models\Companies;
 use Canvas\Models\CompaniesAssociations;
+use Canvas\Models\CompaniesBranches;
+use Canvas\Models\CompaniesGroups;
+use Canvas\Models\Roles;
+use Canvas\Models\Users;
 use Phalcon\Di;
+use Phalcon\Events\Event;
 
 class Company
 {
@@ -21,10 +22,11 @@ class Company
      *
      * @param Event $event
      * @param Users $user
-     * @param boolean $isFirstSignup
+     * @param bool $isFirstSignup
+     *
      * @return void
      */
-    public function afterSignup(Event $event, Companies $company): void
+    public function afterSignup(Event $event, Companies $company) : void
     {
         //setup the user notification setting
         $company->set('notifications', $company->user->email);
@@ -65,7 +67,7 @@ class Company
         }
 
         //if the app is subscription based, create a free trial for this company
-        if ($app->subscriptioBased()) {
+        if ($app->subscriptionBased()) {
             $company->set(
                 Companies::PAYMENT_GATEWAY_CUSTOMER_KEY,
                 $company->startFreeTrial()
@@ -98,8 +100,11 @@ class Company
          * Let's associate companies and companies_groups.
          */
         $companiesAssoc = new CompaniesAssociations();
-        $companiesAssoc->companies_id = $company->id;
-        $companiesAssoc->companies_groups_id = $companiesGroup->id;
+        $companiesAssoc->companies_id = $company->getId();
+        $companiesAssoc->companies_groups_id = $companiesGroup->getId();
         $companiesAssoc->saveOrFail();
+
+        //assign role
+        $company->user->assignRole(Roles::findFirstOrFail($company->user->role_id)->name);
     }
 }

@@ -4,19 +4,21 @@ declare(strict_types=1);
 
 namespace Canvas\Providers;
 
-use function Canvas\Core\envValue;
+use Baka\Constants\Flags;
+use function Baka\envValue;
+use Phalcon\Cache\AdapterFactory;
+use Phalcon\Di\DiInterface;
 use Phalcon\Di\ServiceProviderInterface;
-use Phalcon\DiInterface;
 use Phalcon\Mvc\Model\Metadata\Memory as MemoryMetaDataAdapter;
 use Phalcon\Mvc\Model\MetaData\Redis;
-use Canvas\Constants\Flags;
+use Phalcon\Storage\SerializerFactory;
 
 class ModelsMetadataProvider implements ServiceProviderInterface
 {
     /**
      * @param DiInterface $container
      */
-    public function register(DiInterface $container)
+    public function register(DiInterface $container) : void
     {
         $config = $container->getShared('config');
         $app = envValue('GEWAER_APP_ID', 1);
@@ -28,16 +30,15 @@ class ModelsMetadataProvider implements ServiceProviderInterface
                     return new MemoryMetaDataAdapter();
                 }
 
-                return new Redis(
-                    [
-                        'host' => envValue('REDIS_HOST', '127.0.0.1'),
-                        'port' => (int) envValue('REDIS_PORT', 6379),
-                        'prefix' => $app,
-                        'persistent' => 0,
-                        "statsKey"   => "_PHCM_MM",
-                        'lifetime' => 172800,
-                    ]
-                );
+                //Connect to redis
+                $cache = $config->get('cache')->toArray();
+                $options = $cache['metadata']['prod']['options'];
+                $options['prefix'] = $app;
+
+                $serializerFactory = new SerializerFactory();
+                $adapterFactory = new AdapterFactory($serializerFactory);
+
+                return new Redis($adapterFactory, $options);
             }
         );
     }

@@ -2,7 +2,7 @@
 
 namespace Canvas\Tests\unit\library\Dto;
 
-use Canvas\Hashing\Password;
+use Baka\Hashing\Password;
 use UnitTester;
 
 class PasswordCest

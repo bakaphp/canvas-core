@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Canvas\Mapper;
 
 use AutoMapperPlus\CustomMapper\CustomMapper;
-use function Canvas\Core\isJson;
+use function Baka\isJson;
 use Phalcon\Di;
 use Phalcon\Mvc\Model\Resultset;
 

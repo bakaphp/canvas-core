@@ -6,10 +6,13 @@ namespace Canvas\Api\Controllers;
 
 use Baka\Auth\Models\Sessions;
 use Baka\Auth\Models\Users as BakaUsers;
+use Baka\Validation as CanvasValidation;
+use Baka\Validations\PasswordValidation;
+use Canvas\Auth\Auth;
 use Canvas\Auth\Factory;
 use Canvas\Exception\ModelException;
-use Canvas\Http\Exception\InternalServerErrorException;
-use Canvas\Http\Exception\NotFoundException;
+use Baka\Http\Exception\InternalServerErrorException;
+use Baka\Http\Exception\NotFoundException;
 use Canvas\Models\Sources;
 use Canvas\Models\UserLinkedSources;
 use Canvas\Models\Users;
@@ -20,8 +23,6 @@ use Canvas\Notifications\UpdateEmail;
 use Canvas\Traits\AuthTrait;
 use Canvas\Traits\SocialLoginTrait;
 use Canvas\Traits\TokenTrait;
-use Canvas\Validation as CanvasValidation;
-use Canvas\Validations\PasswordValidation;
 use Exception;
 use Phalcon\Http\Response;
 use Phalcon\Validation\Validator\Confirmation;
@@ -168,7 +169,7 @@ class AuthController extends \Baka\Auth\AuthController
         try {
             $this->db->begin();
 
-            $user->signUp();
+            $user = Auth::signUp($validation->getValues());
 
             $this->db->commit();
         } catch (Exception $e) {
@@ -190,7 +191,7 @@ class AuthController extends \Baka\Auth\AuthController
             'id' => $user->getId(),
         ];
 
-        $user->password = null;
+        $user->password = '';
         $user->notify(new Signup($user));
 
         return $this->response([
@@ -203,8 +204,10 @@ class AuthController extends \Baka\Auth\AuthController
      * Refresh user auth.
      *
      * @return Response
-     *
+<<<<<<< HEAD
+     * @todo Validate access_token and refresh token, session's user email and re-login
      * @todo Validate acces_token and refresh token, session's user email and relogin
+>>>>>>> 6db85dbc4b743f7ee0e434bac1c35c3108557eb5
      */
     public function refresh() : Response
     {
@@ -333,7 +336,9 @@ class AuthController extends \Baka\Auth\AuthController
             $request['email'] = $appleUserInfo->email;
         }
 
-        return $this->response($this->providerLogin($source, $request['social_id'], $request));
+        return $this->response(
+            $this->providerLogin($source, $request['social_id'], $request)
+        );
     }
 
     /**

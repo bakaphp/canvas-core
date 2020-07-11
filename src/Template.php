@@ -15,7 +15,7 @@ use Phalcon\Di;
 class Template
 {
     /**
-     * Given the email tempalte name and its params
+     * Given the email template name and its params
      *  - create the files
      *  - render it with the variables
      *  - return the content string for use to use anywhere.
@@ -31,14 +31,14 @@ class Template
         $view = $di->getView();
         $filesystem = $di->get('filesystem', ['local']);
 
-        //get the teamplate
+        //get the template
         $template = EmailTemplates::getByName($name);
         $file = $template->name . '.volt';
 
         //write file
         $filesystem->put('/view/' . $file, $template->template);
 
-        //rendre and return content
+        //render and return content
         return $view->render($template->name, $params);
     }
 }

@@ -7,47 +7,10 @@ use Phalcon\Di;
 
 class UserCompanyApps extends \Baka\Auth\Models\UserCompanyApps
 {
-    /**
-     *
-     * @var integer
-     */
-    public $companies_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $apps_id;
-
-    /**
-     *
-     * @var string
-     */
-    public $stripe_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $subscriptions_id;
-
-    /**
-     *
-     * @var string
-     */
-    public $created_at;
-
-    /**
-     *
-     * @var string
-     */
-    public $updated_at;
-
-    /**
-     *
-     * @var integer
-     */
-    public $is_deleted;
+    public int $companies_id;
+    public int $apps_id;
+    public string $stripe_id;
+    public int $subscriptions_id;
 
     /**
      * Initialize method for model.
@@ -74,21 +37,11 @@ class UserCompanyApps extends \Baka\Auth\Models\UserCompanyApps
     }
 
     /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource() : string
-    {
-        return 'user_company_apps';
-    }
-
-    /**
-     * Get the current company app
+     * Get the current company app.
      *
      * @return void
      */
-    public static function getCurrentApp(): UserCompanyApps
+    public static function getCurrentApp() : UserCompanyApps
     {
         return self::findFirst([
             'conditions' => 'companies_id = ?0 and apps_id = ?1',

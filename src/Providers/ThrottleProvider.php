@@ -7,8 +7,8 @@ namespace Canvas\Providers;
 use Canvas\Http\Request;
 use Canvas\Http\SwooleRequest;
 use Phalcon\Di\ServiceProviderInterface;
-use Phalcon\DiInterface;
-use function Canvas\Core\isSwooleServer;
+use Phalcon\Di\DiInterface;
+use function Baka\isSwooleServer;
 use OakLabs\PhalconThrottler\RedisThrottler;
 
 class ThrottleProvider implements ServiceProviderInterface
@@ -16,7 +16,7 @@ class ThrottleProvider implements ServiceProviderInterface
     /**
      * @param DiInterface $container
      */
-    public function register(DiInterface $container)
+    public function register(DiInterface $container) : void
     {
         $config = $container->getShared('config');
 

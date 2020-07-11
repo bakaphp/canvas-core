@@ -2,8 +2,8 @@
 
 namespace Canvas\Cli\Jobs;
 
-use Canvas\Contracts\Queue\QueueableJobInterface;
-use Canvas\Jobs\Job;
+use Baka\Contracts\Queue\QueueableJobInterface;
+use Baka\Jobs\Job;
 use Canvas\Notifications\PusherNotification;
 use Phalcon\Di;
 

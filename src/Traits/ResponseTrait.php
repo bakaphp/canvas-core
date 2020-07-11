@@ -6,7 +6,7 @@ namespace Canvas\Traits;
 
 use Canvas\Http\Response;
 use Phalcon\Mvc\Micro;
-use function Canvas\Core\isSwooleServer;
+use function Baka\isSwooleServer;
 
 /**
  * Trait ResponseTrait

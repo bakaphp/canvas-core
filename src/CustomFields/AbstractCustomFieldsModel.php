@@ -5,13 +5,9 @@ namespace Canvas\CustomFields;
 
 use Canvas\Models\CustomFieldsModules;
 use Canvas\Models\AbstractModel;
-use Baka\Database\Contracts\CustomFields\CustomFieldsTrait;
+use Baka\Contracts\CustomFields\CustomFieldsTrait;
 use PDO;
 
-/**
- * Custom Fields Abstract Class.
- * @property \Phalcon\Di $di
- */
 abstract class AbstractCustomFieldsModel extends AbstractModel
 {
     use CustomFieldsTrait;
@@ -29,7 +25,7 @@ abstract class AbstractCustomFieldsModel extends AbstractModel
             return ;
         }
 
-        //We does it only find names in plural? We need to fix this or make a workaroun
+        //We does it only find names in plural? We need to fix this or make a workaround
         if (!$models = CustomFieldsModules::findFirstByName($this->getSource())) {
             return;
         }
@@ -64,17 +60,5 @@ abstract class AbstractCustomFieldsModel extends AbstractModel
         }
 
         return $listOfCustomFields;
-    }
-
-    /**
-    * Before create.
-    *
-    * @return void
-    */
-    public function beforeCreate()
-    {
-        $this->created_at = date('Y-m-d H:i:s');
-        $this->updated_at = null;
-        $this->is_deleted = 0;
     }
 }

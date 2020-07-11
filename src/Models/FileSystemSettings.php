@@ -5,41 +5,9 @@ namespace Canvas\Models;
 
 class FileSystemSettings extends AbstractModel
 {
-    /**
-     *
-     * @var integer
-     */
-    public $filesystem_id;
-
-    /**
-     *
-     * @var string
-     */
-    public $name;
-
-    /**
-     *
-     * @var string
-     */
-    public $value;
-
-    /**
-     *
-     * @var string
-     */
-    public $created_at;
-
-    /**
-     *
-     * @var string
-     */
-    public $updated_at;
-
-    /**
-     *
-     * @var integer
-     */
-    public $is_deleted;
+    public int $filesystem_id;
+    public string $name;
+    public ?string $value = null;
 
     /**
      * Initialize method for model.
@@ -54,15 +22,5 @@ class FileSystemSettings extends AbstractModel
             'id',
             ['alias' => 'file']
         );
-    }
-
-    /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource() : string
-    {
-        return 'filesystem_settings';
     }
 }

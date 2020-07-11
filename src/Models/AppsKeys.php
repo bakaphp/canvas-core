@@ -3,63 +3,15 @@ declare(strict_types=1);
 
 namespace Canvas\Models;
 
-use Canvas\Http\Exception\UnauthorizedException;
+use Baka\Http\Exception\UnauthorizedException;
 
-/**
- * Class CompanyBranches.
- *
- * @package Canvas\Models
- *
- */
 class AppsKeys extends AbstractModel
 {
-    /**
-     *
-     * @var integer
-     */
-    public $client_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $client_secret_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $apps_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $users_id;
-
-    /**
-     *
-     * @var string
-     */
-    public $last_used_date;
-
-    /**
-     *
-     * @var string
-     */
-    public $created_at;
-
-    /**
-     *
-     * @var string
-     */
-    public $updated_at;
-
-    /**
-     *
-     * @var integer
-     */
-    public $is_deleted;
+    public string $client_id;
+    public string $client_secret_id;
+    public int $apps_id;
+    public int $users_id;
+    public ?string $last_used_date = null;
 
     /**
      * Initialize method for model.
@@ -81,16 +33,6 @@ class AppsKeys extends AbstractModel
             'id',
             ['alias' => 'apps']
         );
-    }
-
-    /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource() : string
-    {
-        return 'apps_keys';
     }
 
     /**

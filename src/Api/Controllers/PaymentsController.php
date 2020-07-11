@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Canvas\Api\Controllers;
 
-use Canvas\Http\Exception\NotFoundException;
-use Phalcon\Cashier\Traits\StripeWebhookHandlersTrait;
+use Baka\Http\Exception\NotFoundException;
+use Baka\Contracts\Cashier\StripeWebhookHandlersTrait;
 use Phalcon\Http\Response;
 use Canvas\Models\Users;
 use Canvas\Models\Subscription;
@@ -31,13 +31,13 @@ class PaymentsController extends BaseController
     use StripeWebhookHandlersTrait;
 
     /**
-     * Handle stripe webhoook calls.
+     * Handle stripe webhook calls.
      *
      * @return Response
      */
     public function handleWebhook(): Response
     {
-        //we cant processs if we dont find the stripe header
+        //we cant process's if we don't find the stripe header
         if (!$this->request->hasHeader('Stripe-Signature')) {
             throw new NotFoundException('Route not found for this call');
         }
@@ -222,7 +222,7 @@ class PaymentsController extends BaseController
      */
     public function updateSubscriptionPaymentStatus(Users $user, array $payload): void
     {
-        $chargeDate = date('Y-m-d H:i:s', $payload['data']['object']['created']);
+        $chargeDate = date('Y-m-d H:i:s', (int) $payload['data']['object']['created']);
 
         //Fetch current user subscription
         $subscription = Subscription::getByDefaultCompany($user);

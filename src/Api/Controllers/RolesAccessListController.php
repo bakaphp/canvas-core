@@ -4,33 +4,17 @@ declare(strict_types=1);
 
 namespace Canvas\Api\Controllers;
 
+use Baka\Database\Exception\ModelNotFoundException;
+use function Baka\getShortClassName;
+use Baka\Validation as CanvasValidation;
+use Baka\Http\Exception\NotFoundException;
 use Canvas\Models\AccessList;
-use Phalcon\Http\Response;
-use Phalcon\Acl\Role;
-use Phalcon\Validation;
-use Phalcon\Validation\Validator\PresenceOf;
-use Canvas\Models\Apps;
-use Canvas\Exception\NotFoundHttpException;
-use Canvas\Exception\ServerErrorHttpException;
 use Canvas\Models\Roles;
-use Baka\Http\QueryParser;
-use Canvas\Http\Exception\NotFoundException;
-use Canvas\Validation as CanvasValidation;
+use Phalcon\Acl\Role;
+use Phalcon\Http\Response;
+use Phalcon\Validation\Validator\PresenceOf;
 
-/**
- * Class RolesController.
- *
- * @package Canvas\Api\Controllers
- *
- * @property Users $userData
- * @property Request $request
- * @property Config $config
- * @property \Canvas\Acl\Manager  $acl
- * @property \Baka\Mail\Message $mail
- * @property Apps $app
- *
- */
-class RolesAccesListController extends BaseController
+class RolesAccessListController extends BaseController
 {
     /*
      * fields we accept to create
@@ -55,18 +39,22 @@ class RolesAccesListController extends BaseController
     {
         $this->model = new AccessList();
 
-        //get the list of roes for the systema + my company
+        //get the list of roes for the systems + my company
         $this->additionalSearchFields = [
             ['is_deleted', ':', '0'],
             ['apps_id', ':', '0|' . $this->app->getId()],
         ];
+
+        $this->customConditions = "
+            AND access_list.roles_id in (SELECT id from roles WHERE companies_id = {$this->userData->currentCompanyId()} AND apps_id in (0, {$this->app->getId()}))
+        ";
     }
 
     /**
      * Add a new item.
      *
      * @method POST
-     * @url /v1/roles-acceslist
+     * @url /v1/roles-accesslist
      *
      * @return Response
      */
@@ -91,7 +79,7 @@ class RolesAccesListController extends BaseController
         $this->acl->addRole(new Role($request['roles']['name'], $request['roles']['description']), $scope);
 
         /**
-         * we always deny permision, by default the canvas set allow to all
+         * we always deny permission, by default the canvas set allow to all
          * so we only have to take away permissions.
          */
         foreach ($request['access'] as $access) {
@@ -102,34 +90,39 @@ class RolesAccesListController extends BaseController
     }
 
     /**
-     * get item.
+     * Get the element by Id
+     * with the current search params user specified in the constructed.
      *
      * @param mixed $id
      *
-     * @method GET
-     * @url /v1/roles-acceslist/{id}
-     *
-     * @return Response
+     * @return ModelInterface|array $results
      */
-    public function getById($id): Response
+    protected function getRecordById($id)
     {
-        //find the info
-        $record = $this->model->findFirst([
-            'roles_id = ?0 AND is_deleted = 0 AND apps_id in (?1, ?2)',
-            'bind' => [$id, $this->app->getId(), Apps::CANVAS_DEFAULT_APP_ID],
-        ]);
+        $this->additionalSearchFields[] = [
+            'roles_id', ':', $id
+        ];
+
+        $processedRequest = $this->processRequest($this->request);
+        $records = $this->getRecords($processedRequest);
 
         //get the results and append its relationships
-        $result = $this->appendRelationshipsToResult($this->request, $record);
+        $results = $records['results'];
 
-        return $this->response($this->processOutput($result));
+        if (empty($results) || !isset($results[0])) {
+            throw new ModelNotFoundException(
+                getShortClassName($this->model) . ' Record not found'
+            );
+        }
+
+        return $results[0];
     }
 
     /**
      * Update a new Entry.
      *
      * @method PUT
-     * @url /v1/roles-acceslist/{id}
+     * @url /v1/roles-accesslist/{id}
      *
      * @return Response
      */
@@ -156,10 +149,10 @@ class RolesAccesListController extends BaseController
         $role->updateOrFail();
 
         //clean previous records
-        $role->accesList->delete();
+        $role->accessList->delete();
 
         /**
-         * we always deny permision, by default the canvas set allow to all
+         * we always deny permission, by default the canvas set allow to all
          * so we only have to take away permissions.
          */
         foreach ($request['access'] as $access) {
@@ -173,6 +166,7 @@ class RolesAccesListController extends BaseController
      * Copy a existen.
      *
      * @param int $id
+     *
      * @return Response
      */
     public function copy($id) : Response
@@ -188,7 +182,7 @@ class RolesAccesListController extends BaseController
      * delete a new Entry.
      *
      * @method DELETE
-     * @url /v1/roles-acceslist/{id}
+     * @url /v1/roles-accesslist/{id}
      *
      * @return Response
      */

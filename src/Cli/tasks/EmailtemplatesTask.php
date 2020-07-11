@@ -2,16 +2,9 @@
 
 namespace Canvas\Cli\Tasks;
 
-use Phalcon\Cli\Task as PhTask;
 use Canvas\Models\EmailTemplates;
+use Phalcon\Cli\Task as PhTask;
 
-/**
- * Class AclTask.
- *
- * @package Canvas\Cli\Tasks;
- *
- * @property \Canvas\Acl\Manager $acl
- */
 class EmailtemplatesTask extends PhTask
 {
     /**
@@ -26,6 +19,7 @@ class EmailtemplatesTask extends PhTask
 
     /**
      * Insert default email template.
+     *
      * @return void
      */
     public function insertUserNotificationTemplate()

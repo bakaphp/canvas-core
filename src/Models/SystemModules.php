@@ -3,90 +3,13 @@ declare(strict_types=1);
 
 namespace Canvas\Models;
 
+use Baka\Database\SystemModules as BakaSystemModules;
+use Baka\Http\Exception\InternalServerErrorException;
 use Phalcon\Di;
-use Canvas\Http\Exception\InternalServerErrorException;
 use Phalcon\Mvc\ModelInterface;
 
-class SystemModules extends AbstractModel
+class SystemModules extends BakaSystemModules
 {
-    /**
-     *
-     * @var integer
-     */
-    public $id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $name;
-
-    /**
-     *
-     * @var integer
-     */
-    public $slug;
-
-    /**
-     *
-     * @var string
-     */
-    public $model_name;
-
-    /**
-     *
-     * @var integer
-     */
-    public $apps_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $parents_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $menu_order;
-
-    /**
-     *
-     * @var integer
-     */
-    public $use_elastic;
-
-    /**
-     *
-     * @var string
-     */
-    public $browse_fields;
-
-    /**
-     *
-     * @var integer
-     */
-    public $show;
-
-    /**
-     *
-     * @var string
-     */
-    public $created_at;
-
-    /**
-     *
-     * @var string
-     */
-    public $updated_at;
-
-    /**
-     *
-     * @var integer
-     */
-    public $is_deleted;
-
     /**
      * Initialize method for model.
      */
@@ -129,23 +52,15 @@ class SystemModules extends AbstractModel
     }
 
     /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource(): string
-    {
-        return 'system_modules';
-    }
-
-    /**
      * Get System Module by its model_name.
      *
      * @deprecated v2
+     *
      * @param string $model_name
+     *
      * @return ModelInterface
      */
-    public static function getSystemModuleByModelName(string $modelName): ModelInterface
+    public static function getSystemModuleByModelName(string $modelName) : ModelInterface
     {
         $module = SystemModules::findFirst([
             'conditions' => 'model_name = ?0 and apps_id = ?1',
@@ -166,9 +81,10 @@ class SystemModules extends AbstractModel
      * Get System Module by its model_name.
      *
      * @param string $model_name
+     *
      * @return ModelInterface
      */
-    public static function getByModelName(string $modelName): ModelInterface
+    public static function getByModelName(string $modelName) : ModelInterface
     {
         return self::getSystemModuleByModelName($modelName);
     }
@@ -177,9 +93,10 @@ class SystemModules extends AbstractModel
      * Get System Module by Name.
      *
      * @param string $name
+     *
      * @return ModelInterface
      */
-    public static function getByName(string $name): ModelInterface
+    public static function getByName(string $name) : ModelInterface
     {
         return self::findFirstOrFail([
             'conditions' => 'name = ?0 and apps_id = ?1',
@@ -194,9 +111,10 @@ class SystemModules extends AbstractModel
      * Get System Module by id.
      *
      * @param int $id
+     *
      * @return ModelInterface
      */
-    public static function getById($id): ModelInterface
+    public static function getById($id) : ModelInterface
     {
         $module = SystemModules::findFirstOrFail([
             'conditions' => 'id = ?0 and apps_id = ?1',
@@ -213,9 +131,10 @@ class SystemModules extends AbstractModel
      * Get System Module by id.
      *
      * @param int $id
+     *
      * @return ModelInterface
      */
-    public static function getBySlug(string $slug): ModelInterface
+    public static function getBySlug(string $slug) : ModelInterface
     {
         $module = SystemModules::findFirstOrFail([
             'conditions' => 'slug = ?0 and apps_id = ?1',
@@ -233,7 +152,7 @@ class SystemModules extends AbstractModel
      *
      * @return bool
      */
-    public function useElastic(): bool
+    public function useElastic() : bool
     {
         return (bool) $this->use_elastic;
     }

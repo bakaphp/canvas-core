@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Canvas\Providers;
 
-use function Canvas\Core\envValue;
+use function Baka\envValue;
 
 use Canvas\Constants\Flags;
 use Phalcon\Cache\Backend\Memory;
 use Phalcon\Cache\Backend\Redis;
 use Phalcon\Cache\Frontend\Data;
 use Phalcon\Cache\Frontend\None;
-use Phalcon\DiInterface;
+use Phalcon\Di\DiInterface;
 use Phalcon\Di\ServiceProviderInterface;
 
 class ModelsCacheProvider implements ServiceProviderInterface
@@ -19,7 +19,7 @@ class ModelsCacheProvider implements ServiceProviderInterface
     /**
      * @param DiInterface $container
      */
-    public function register(DiInterface $container)
+    public function register(DiInterface $container) : void
     {
         $config = $container->get('config');
 

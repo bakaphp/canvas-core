@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Canvas\Api\Controllers;
 
+use Baka\Contracts\Http\Api\CrudCustomFieldsBehaviorTrait;
+use Baka\Http\Exception\UnauthorizedException;
 use Canvas\Models\Companies;
 use Phalcon\Http\Response;
-use Baka\Http\Contracts\Api\CrudCustomFieldsBehaviorTrait;
-use Canvas\Http\Exception\UnauthorizedException;
 
 /**
  * Class CompaniesController.
@@ -82,9 +82,10 @@ class CompaniesController extends BaseController
      * url /v1/controller
      *
      * @param mixed $id
+     *
      * @return \Phalcon\Http\Response
      */
-    public function index(): Response
+    public function index() : Response
     {
         $results = $this->processIndex();
         return $this->response($this->processOutput($results));
@@ -99,14 +100,15 @@ class CompaniesController extends BaseController
      * @param mixed $id
      *
      * @return \Phalcon\Http\Response
+     *
      * @throws \Exception
      */
-    public function edit($id): Response
+    public function edit($id) : Response
     {
         $company = $this->model->findFirstOrFail($id);
 
         if (!$company->userAssociatedToCompany($this->userData) && !$this->userData->hasRole('Default.Admins')) {
-            throw new UnauthorizedException(_('You dont have permission to update this company info'));
+            throw new UnauthorizedException(_('You don\'t have permission to update this company info'));
         }
 
         //process the input
@@ -124,13 +126,14 @@ class CompaniesController extends BaseController
      * @param mixed $id
      *
      * @return \Phalcon\Http\Response
+     *
      * @throws \Exception
      */
-    public function delete($id): Response
+    public function delete($id) : Response
     {
         $company = $this->model->findFirstOrFail($id);
         if (!$company->userAssociatedToCompany($this->userData) && !$this->userData->hasRole('Default.Admins')) {
-            throw new UnauthorizedException(_('You dont have permission to delete this company'));
+            throw new UnauthorizedException(_('You don\'t have permission to delete this company'));
         }
 
         $company->is_deleted = 1;
@@ -143,6 +146,7 @@ class CompaniesController extends BaseController
      * Format output.
      *
      * @param mixed $results
+     *
      * @return mixed
      */
     protected function processOutput($results)
@@ -152,8 +156,8 @@ class CompaniesController extends BaseController
          */
         if (array_key_exists('branch', $results)) {
             /**
-            * Format branches as an array of branches even if there is only one branch per company.
-            */
+             * Format branches as an array of branches even if there is only one branch per company.
+             */
             foreach ($results as $key => $value) {
                 /*   if (is_object($value['branch'])) {
                       $results[$key]['branch'] = [$value['branch']];

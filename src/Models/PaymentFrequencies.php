@@ -5,35 +5,7 @@ namespace Canvas\Models;
 
 class PaymentFrequencies extends AbstractModel
 {
-    /**
-     *
-     * @var integer
-     */
-    public $id;
-
-    /**
-     *
-     * @var string
-     */
-    public $name;
-
-    /**
-     *
-     * @var integer
-     */
-    public $is_deleted;
-
-    /**
-     *
-     * @var string
-     */
-    public $created_at;
-
-    /**
-     *
-     * @var string
-     */
-    public $updated_at;
+    public string $name;
 
     /**
      * Initialize method for model.
@@ -48,15 +20,5 @@ class PaymentFrequencies extends AbstractModel
             'payment_frequencies_id',
             ['alias' => 'plans']
         );
-    }
-
-    /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource(): string
-    {
-        return 'payment_frequencies';
     }
 }

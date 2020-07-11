@@ -6,7 +6,7 @@ namespace Canvas\Middleware;
 
 use Baka\Auth\Models\Sessions;
 use Canvas\Constants\Flags;
-use Canvas\Http\Exception\UnauthorizedException;
+use Baka\Http\Exception\UnauthorizedException;
 use Canvas\Models\Apps;
 use Canvas\Models\AppsKeys;
 use Canvas\Models\Users;

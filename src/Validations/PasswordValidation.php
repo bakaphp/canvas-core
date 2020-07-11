@@ -1,14 +1,14 @@
 <?php
 declare(strict_types=1);
 
-namespace Canvas\Validations;
+namespace Baka\Validations;
 
 use Phalcon\Validation;
 use Phalcon\Validation\Validator\PresenceOf;
 use Phalcon\Validation\Validator\Confirmation;
 use Phalcon\Validation\Validator\StringLength;
 use Exception;
-use Canvas\Validation as CanvasValidation;
+use Baka\Validation as CanvasValidation;
 
 class PasswordValidation
 {

@@ -21,7 +21,7 @@ class SubscriptionLimitCest
     public function getModelKey(IntegrationTester $I)
     {
 
-        $classKey = $this->getSubcriptionPlanLimitModelKey();
+        $classKey = $this->getSubscriptionPlanLimitModelKey();
 
         $I->assertTrue($classKey == 'subscriptionlimitcest_total');
     }

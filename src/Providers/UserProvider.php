@@ -2,11 +2,11 @@
 
 namespace Canvas\Providers;
 
-use Phalcon\Di\ServiceProviderInterface;
+use Canvas\Models\Users;
 use Phalcon\Di\DiInterface;
-use Phalcon\Registry;
+use Phalcon\Di\ServiceProviderInterface;
 
-class RegistryProvider implements ServiceProviderInterface
+class UserProvider implements ServiceProviderInterface
 {
     /**
      * @param DiInterface $container
@@ -14,9 +14,9 @@ class RegistryProvider implements ServiceProviderInterface
     public function register(DiInterface $container) : void
     {
         $container->setShared(
-            'registry',
+            'userProvider',
             function () {
-                return new Registry();
+                return new Users();
             }
         );
     }

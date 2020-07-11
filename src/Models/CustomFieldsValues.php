@@ -5,53 +5,10 @@ namespace Canvas\Models;
 
 class CustomFieldsValues extends AbstractModel
 {
-    /**
-     *
-     * @var integer
-     */
-    public $id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $custom_fields_id;
-
-    /**
-     *
-     * @var string
-     */
-    public $label;
-
-    /**
-     *
-     * @var string
-     */
-    public $value;
-
-    /**
-     *
-     * @var integer
-     */
-    public $is_default;
-
-    /**
-     *
-     * @var integer
-     */
-    public $is_deleted;
-
-    /**
-     *
-     * @var string
-     */
-    public $created_at;
-
-    /**
-     *
-     * @var string
-     */
-    public $updated_at;
+    public int $custom_fields_id;
+    public string $label;
+    public ?string $value = null;
+    public int $is_default = 0;
 
     /**
      * Initialize method for model.
@@ -66,15 +23,5 @@ class CustomFieldsValues extends AbstractModel
             'id',
             ['alias' => 'field']
         );
-    }
-
-    /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource(): string
-    {
-        return 'custom_fields_values';
     }
 }

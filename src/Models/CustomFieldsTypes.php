@@ -5,47 +5,9 @@ namespace Canvas\Models;
 
 class CustomFieldsTypes extends AbstractModel
 {
-    /**
-     *
-     * @var integer
-     */
-    public $id;
-
-    /**
-     *
-     * @var string
-     */
-    public $name;
-
-    /**
-     *
-     * @var string
-     */
+    public string $name;
     public $description;
-
-    /**
-     *
-     * @var string
-     */
-    public $icon;
-
-    /**
-     *
-     * @var integer
-     */
-    public $is_deleted;
-
-    /**
-     *
-     * @var string
-     */
-    public $created_at;
-
-    /**
-     *
-     * @var string
-     */
-    public $updated_at;
+    public ?string $icon = null;
 
     /**
      * Initialize method for model.
@@ -60,15 +22,5 @@ class CustomFieldsTypes extends AbstractModel
             'custom_fields_types_id',
             ['alias' => 'typesSetting']
         );
-    }
-
-    /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource(): string
-    {
-        return 'custom_fields_types';
     }
 }

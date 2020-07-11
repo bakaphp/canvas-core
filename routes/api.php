@@ -1,8 +1,8 @@
 <?php
 
+use function Baka\envValue;
 use Baka\Router\Route;
 use Baka\Router\RouteGroup;
-use function Canvas\Core\envValue;
 
 $publicRoutes = [
     Route::get('/')->controller('IndexController'),
@@ -34,7 +34,8 @@ $privateRoutes = [
     Route::crud('/companies-branches')->controller('CompaniesBranchesController'),
     Route::crud('/apps-plans')->controller('AppsPlansController'),
     Route::post('/apps-plans/{id}/reactivate')->controller('AppsPlansController')->action('reactivateSubscription'),
-    Route::crud('/roles-acceslist')->controller('RolesAccesListController'),
+    Route::crud('/roles-acceslist')->controller('RolesAccessListController'),
+    Route::crud('/roles-accesslist')->controller('RolesAccessListController'),
     Route::crud('/permissions-resources')->controller('PermissionsResourcesController'),
     Route::crud('/permissions-resources-access')->controller('PermissionsResourcesAccessController'),
     Route::crud('/users-invite')->controller('UsersInviteController'),
@@ -54,7 +55,8 @@ $privateRoutes = [
     Route::crud('/filesystem-entity')->controller('FilesystemEntitiesController'),
     Route::put('/auth/logout')->controller('AuthController')->action('logout'),
     Route::post('/users/invite')->controller('UsersInviteController')->action('insertInvite'),
-    Route::post('/roles-acceslist/{id}/copy')->controller('RolesAccesListController')->action('copy'),
+    Route::post('/roles-acceslist/{id}/copy')->controller('RolesAccessListController')->action('copy'),
+    Route::post('/roles-accesslist/{id}/copy')->controller('RolesAccessListController')->action('copy'),
     Route::get('/custom-fields-modules/{id}/fields')->controller('CustomFieldsModulesController')->action('customFieldsByModulesId'),
     Route::put('/apps-plans/{id}/method')->controller('AppsPlansController')->action('updatePaymentMethod'),
     Route::get('/apps-plans/{id}/method')->controller('PaymentMethodsCredsController')->action('getCurrentPaymentMethodsCreds'),

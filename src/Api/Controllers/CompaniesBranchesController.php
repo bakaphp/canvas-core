@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Canvas\Api\Controllers;
 
 use Phalcon\Http\Response;
-use Canvas\Http\Exception\UnprocessableEntityException;
+use Baka\Http\Exception\UnprocessableEntityException;
 use Canvas\Models\CompaniesBranches;
 
 /**

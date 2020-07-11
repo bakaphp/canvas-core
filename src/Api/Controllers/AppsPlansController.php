@@ -9,14 +9,14 @@ use Stripe\Token as StripeToken;
 use Phalcon\Http\Response;
 use Stripe\Customer as StripeCustomer;
 use Phalcon\Validation\Validator\PresenceOf;
-use Canvas\Http\Exception\NotFoundException;
-use Canvas\Http\Exception\UnauthorizedException;
-use Canvas\Http\Exception\UnprocessableEntityException;
+use Baka\Http\Exception\NotFoundException;
+use Baka\Http\Exception\UnauthorizedException;
+use Baka\Http\Exception\UnprocessableEntityException;
 use Canvas\Models\Subscription as CanvasSubscription;
 use Phalcon\Cashier\Subscription;
 use Canvas\Models\UserCompanyApps;
-use function Canvas\Core\paymentGatewayIsActive;
-use Canvas\Validation as CanvasValidation;
+use function Baka\paymentGatewayIsActive;
+use Baka\Validation as CanvasValidation;
 use Canvas\Models\PaymentMethodsCreds;
 
 /**

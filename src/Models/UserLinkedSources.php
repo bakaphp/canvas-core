@@ -3,44 +3,10 @@ declare(strict_types=1);
 
 namespace Canvas\Models;
 
-class UserLinkedSources extends \Baka\Auth\Models\UserLinkedSources
+use Baka\Auth\Models\UserLinkedSources as BakaUserLinkedSources;
+
+class UserLinkedSources extends BakaUserLinkedSources
 {
-    /**
-     *
-     * @var integer
-     */
-    public $source_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $users_id;
-
-    /**
-     *
-     * @var string
-     */
-    public $source_users_id;
-
-    /**
-     *
-     * @var string
-     */
-    public $source_users_id_text;
-
-    /**
-     *
-     * @var string
-     */
-    public $source_username;
-
-    /**
-     *
-     * @var integer
-     */
-    public $is_deleted;
-
     /**
      * Initialize method for model.
      */
@@ -53,21 +19,13 @@ class UserLinkedSources extends \Baka\Auth\Models\UserLinkedSources
     }
 
     /**
-     * Returns table name mapped in the model.
+     * Get all user linked sources by user's id.
      *
-     * @return string
-     */
-    public function getSource(): string
-    {
-        return 'user_linked_sources';
-    }
-
-    /**
-     * Get all user linked sources by user's id
      * @param int $usersId
+     *
      * @return array
      */
-    public static function getMobileUserLinkedSources(int $usersId): array
+    public static function getMobileUserLinkedSources(int $usersId) : array
     {
         $userDevicesArray = [
             2 => [],
@@ -90,6 +48,5 @@ class UserLinkedSources extends \Baka\Auth\Models\UserLinkedSources
         }
 
         return $userDevicesArray;
-
     }
 }

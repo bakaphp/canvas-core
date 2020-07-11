@@ -3,7 +3,7 @@
 namespace Canvas\Providers;
 
 use Phalcon\Di\ServiceProviderInterface;
-use Phalcon\DiInterface;
+use Phalcon\Di\DiInterface;
 use Canvas\Listener\Subscription;
 use Canvas\EventsManager;
 use Canvas\Listener\User;
@@ -34,7 +34,7 @@ class EventsManagerProvider implements ServiceProviderInterface
     /**
      * @param DiInterface $container
      */
-    public function register(DiInterface $container)
+    public function register(DiInterface $container) : void
     {
         $container->setShared(
             'events',
