@@ -6,15 +6,17 @@ namespace Canvas\Models;
 use Baka\Contracts\Database\HashTableTrait;
 use Baka\Database\Apps as BakaApps;
 use Canvas\Traits\UsersAssociatedTrait;
+use Canvas\Models\AppsSettings;
 
 class Apps extends BakaApps
 {
-    public string $key;
+    public ?string $key = null;
     public ?string $url = null;
     public int $default_apps_plan_id;
-    public int $is_actived;
+    public ?int $is_actived = null;
     public int $ecosystem_auth;
     public int $payments_active;
+    public array $settings = [];
 
     /**
      * Ecosystem default app.
@@ -69,6 +71,28 @@ class Apps extends BakaApps
             'apps_id',
             ['alias' => 'settingsApp']
         );
+    }
+
+    /**
+     * After Create function
+     * 
+     * @return void
+     */
+    public function afterCreate(): void
+    {
+        foreach ($this->settings as $key => $value) {
+            $appSetting = new AppsSettings();
+            $appSetting->apps_id = $this->getId();
+            $appSetting->name = $key;
+            $appSetting->value = $value;
+            $appSetting->saveOrFail();
+        }
+
+    }
+
+    public function setSettings(array $settings): void
+    {
+        $this->settings = $settings;
     }
 
     /**
