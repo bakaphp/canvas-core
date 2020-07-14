@@ -81,7 +81,11 @@ class Apps extends BakaApps
     public function afterCreate(): void
     {
         foreach ($this->settings as $key => $value) {
-            $this->createSetting($key,$value);
+            $appSetting = new AppsSettings();
+            $appSetting->apps_id = $this->getId();
+            $appSetting->name = $key;
+            $appSetting->value = $value;
+            $appSetting->saveOrFail();
         }
 
     }
