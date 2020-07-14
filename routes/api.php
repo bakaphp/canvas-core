@@ -46,7 +46,7 @@ $privateRoutes = [
     Route::crud('/custom-fields-types')->controller('CustomFieldsTypesController'),
     Route::crud('/custom-fields-values')->controller('CustomFieldsValuesController'),
     Route::crud('/menus')->controller('MenusController'),
-    Route::crud('/menu/{menusId}/links')->controller('MenusLinksController'),
+    Route::crud('/menus/{menusId}/links')->controller('MenusLinksController'),
 
     Route::get('/timezones')->controller('TimeZonesController'),
     Route::post('/notifications-read-all')->controller('NotificationsController')->action('cleanAll'),
