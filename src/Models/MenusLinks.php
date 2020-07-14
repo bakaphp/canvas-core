@@ -111,11 +111,12 @@ class MenusLinks extends AbstractModel
     }
 
     /**
-     * Check whether or not the menuslink is a parent
+     * Check whether or not the menuslink is a parent.
+     *
      * @return bool
      */
-    public function isParent(): bool
+    public function isParent() : bool
     {
-        return $this->parent_id == 0
+        return $this->parent_id == 0;
     }
 }
