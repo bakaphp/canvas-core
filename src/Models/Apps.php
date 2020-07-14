@@ -7,6 +7,8 @@ use Baka\Contracts\Database\HashTableTrait;
 use Baka\Database\Apps as BakaApps;
 use Canvas\Traits\UsersAssociatedTrait;
 use Canvas\Models\AppsSettings;
+use Phalcon\Security\Random;
+use Phalcon\Di;
 
 class Apps extends BakaApps
 {
@@ -74,6 +76,21 @@ class Apps extends BakaApps
     }
 
     /**
+     * Before Create function
+     * 
+     * @return void
+     */
+    public function beforeCreate(): void
+    { 
+        $random = new Random();
+        parent::beforeCreate();
+
+        $this->key = $random->uuid();
+        $this->is_actived = 1;
+
+    }
+
+    /**
      * After Create function
      * 
      * @return void
@@ -81,15 +98,16 @@ class Apps extends BakaApps
     public function afterCreate(): void
     {
         foreach ($this->settings as $key => $value) {
-            $appSetting = new AppsSettings();
-            $appSetting->apps_id = $this->getId();
-            $appSetting->name = $key;
-            $appSetting->value = $value;
-            $appSetting->saveOrFail();
+            $this->set($key,$value);
         }
-
     }
 
+    /**
+     * Sets Apps settings
+     * 
+     * @param array $settings
+     * @return void
+     */
     public function setSettings(array $settings): void
     {
         $this->settings = $settings;

@@ -9,7 +9,6 @@ use Canvas\Models\Apps;
 use Phalcon\Http\RequestInterface;
 use Phalcon\Http\Response;
 use Phalcon\Mvc\ModelInterface;
-use Phalcon\Security\Random;
 
 /**
  * Class LanguagesController.
@@ -50,10 +49,7 @@ class AppsController extends BaseController
      */
     public function onConstruct()
     {
-        $random = new Random();
         $this->model = new Apps();
-        $this->model->key = $random->uuid();
-        $this->model->is_actived = 1;
         $this->additionalSearchFields = [
             ['is_deleted', ':', '0'],
             ['id', ':', implode('|', $this->userData->getAssociatedApps())],
