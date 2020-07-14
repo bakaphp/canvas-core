@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Canvas\Api\Controllers;
 
 use Baka\Contracts\Http\Api\CrudBehaviorTrait;
+use function Baka\isJson;
 use Canvas\Models\Apps;
 use Phalcon\Http\RequestInterface;
 use Phalcon\Http\Response;
@@ -68,7 +69,7 @@ class AppsController extends BaseController
         //process the input
         $request = $this->processInput($request->getPostData());
 
-        if (array_key_exists('settings', $request)) {
+        if (array_key_exists('settings', $request) && isJson($request['settings'])) {
             $this->model->setSettings(json_decode($request['settings'], true));
         }
 
