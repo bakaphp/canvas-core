@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Canvas\Api\Controllers;
 
-use Canvas\Models\Menus;
-use Canvas\Mapper\MenusMapper;
-use Canvas\Dto\Menus as MenusDto;
 use Canvas\Contracts\Controllers\ProcessOutputMapperTrait;
+use Canvas\Dto\Menus as MenusDto;
+use Canvas\Mapper\MenusMapper;
+use Canvas\Models\Menus;
 
 /**
  * Class LanguagesController.
@@ -47,7 +47,7 @@ class MenusController extends BaseController
     public function onConstruct()
     {
         $this->model = new Menus();
-        $this->model-> apps_id = $this->app->getId();
+        $this->model->apps_id = $this->app->getId();
         $this->model->companies_id = $this->userData->currentCompanyId();
         $this->dto = MenusDto::class;
         $this->dtoMapper = new MenusMapper();
