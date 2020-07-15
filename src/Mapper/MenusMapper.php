@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Canvas\Mapper;
 
 use AutoMapperPlus\CustomMapper\CustomMapper;
-use function Canvas\Core\isJson;
-use Phalcon\Mvc\Model\Resultset;
 use Canvas\Models\MenusLinks;
 
 class MenusMapper extends CustomMapper
@@ -26,25 +24,21 @@ class MenusMapper extends CustomMapper
         $menusDto->slug = $menus->slug;
 
         foreach ($menus->getLinks() as $link) {
-
-            if($link->isParent())
-            {
+            if ($link->isParent()) {
                 $childLinks = MenusLinks::find([
                     'conditions' => 'parent_id = ?0 and is_deleted = 0',
                     'bind' => [$link->getId()]
                 ]);
-    
-                if(sizeof($childLinks) != 0){
+
+                if (sizeof($childLinks) != 0) {
                     $childLinksArray = [];
                     $childLinksArray['title'] = $link->title;
                     $childLinksArray['links'] = $childLinks;
                     $menusDto->sidebar[] = $childLinksArray;
-                }
-                else {
+                } else {
                     $menusDto->sidebar[] = $link;
                 }
-
-            }else if($link->menus_id != 0) {
+            } elseif ($link->menus_id != 0 && $link->isParent()) {
                 $menusDto->sidebar[] = $link;
             }
         }
