@@ -6,15 +6,19 @@ namespace Canvas\Models;
 use Baka\Contracts\Database\HashTableTrait;
 use Baka\Database\Apps as BakaApps;
 use Canvas\Traits\UsersAssociatedTrait;
+use Canvas\Models\AppsSettings;
+use Phalcon\Security\Random;
+use Phalcon\Di;
 
 class Apps extends BakaApps
 {
-    public string $key;
+    public ?string $key = null;
     public ?string $url = null;
     public int $default_apps_plan_id;
-    public int $is_actived;
+    public ?int $is_actived = null;
     public int $ecosystem_auth;
     public int $payments_active;
+    public array $settings = [];
 
     /**
      * Ecosystem default app.
@@ -69,6 +73,44 @@ class Apps extends BakaApps
             'apps_id',
             ['alias' => 'settingsApp']
         );
+    }
+
+    /**
+     * Before Create function
+     * 
+     * @return void
+     */
+    public function beforeCreate(): void
+    { 
+        $random = new Random();
+        parent::beforeCreate();
+
+        $this->key = $random->uuid();
+        $this->is_actived = 1;
+
+    }
+
+    /**
+     * After Create function
+     * 
+     * @return void
+     */
+    public function afterCreate(): void
+    {
+        foreach ($this->settings as $key => $value) {
+            $this->set($key,$value);
+        }
+    }
+
+    /**
+     * Sets Apps settings
+     * 
+     * @param array $settings
+     * @return void
+     */
+    public function setSettings(array $settings): void
+    {
+        $this->settings = $settings;
     }
 
     /**
