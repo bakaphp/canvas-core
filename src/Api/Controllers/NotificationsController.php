@@ -71,7 +71,7 @@ class NotificationsController extends BaseController
      *
      * @return Response
      */
-    public function delete() : Response
+    public function delete($id) : Response
     {
         $request = $this->request->getPostData();
 
