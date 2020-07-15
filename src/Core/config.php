@@ -1,8 +1,8 @@
 <?php
 
+use Canvas\Constants\Flags;
 use function Canvas\Core\appPath;
 use function Canvas\Core\envValue;
-use Canvas\Constants\Flags;
 
 return [
     'application' => [ //@todo migration to app
@@ -137,6 +137,7 @@ return [
         'payload' => [
             'exp' => envValue('APP_JWT_SESSION_EXPIRATION', 1440),
             'iss' => 'phalcon-jwt-auth',
+            'refresh_exp' => envValue('APP_JWT_REFRESH_EXPIRATION', 1440)
         ],
     ],
     'pusher' => [
