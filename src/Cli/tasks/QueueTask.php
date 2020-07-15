@@ -177,19 +177,12 @@ class QueueTask extends PhTask
              */
             go(function () use ($job, $msg) {
                 //instance notification and pass the entity
-                try {
-                    $result = $job['job']->handle();
+                $result = $job['job']->handle();
 
-                    $this->log->info(
-                        "Job ({$job['class']}) ran for {$job['userData']->getEmail()} - Process ID " . $msg->delivery_info['consumer_tag'],
-                        [$result]
-                    );
-                } catch (Throwable $e) {
-                    $this->log->info(
-                        $e->getMessage(),
-                        [$e->getTraceAsString()]
-                    );
-                }
+                $this->log->info(
+                    "Job ({$job['class']}) ran for {$job['userData']->getEmail()} - Process ID " . $msg->delivery_info['consumer_tag'],
+                    [$result]
+                );
             });
         };
 

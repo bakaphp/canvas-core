@@ -30,6 +30,7 @@ $privateRoutes = [
     Route::crud('/currencies'),
     Route::crud('/apps'),
     Route::crud('/notifications'),
+    Route::post('/notifications/bulk/delete')->controller('NotificationsController')->action('delete'),
     Route::crud('/system-modules')->controller('SystemModulesController'),
     Route::crud('/companies-branches')->controller('CompaniesBranchesController'),
     Route::crud('/apps-plans')->controller('AppsPlansController'),

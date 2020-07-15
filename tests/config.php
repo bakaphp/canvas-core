@@ -133,6 +133,7 @@ return [
         'payload' => [
             'exp' => envValue('APP_JWT_SESSION_EXPIRATION', 1440),
             'iss' => 'phalcon-jwt-auth',
+            'refresh_exp' => envValue('APP_JWT_REFRESH_EXPIRATION', 1440)
         ],
     ],
     'pusher' => [
@@ -146,7 +147,7 @@ return [
         'secret' => getenv('STRIPE_SECRET'),
         'public' => getenv('STRIPE_PUBLIC'),
     ],
-    'throttle'=>[
+    'throttle' => [
         'bucketSize' => getenv('THROTTLE_BUCKET_SIZE'),
         'refillTime' => getenv('THROTTLE_REFILL_TIME'),
         'refillAmount' => getenv('THROTTLE_REFILL_AMOUNT'),
