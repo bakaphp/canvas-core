@@ -23,7 +23,6 @@
         "dmkit/phalcon-jwt-auth": "dev-master",
         "duncan3dc/fork-helper": "^2.2.0",
         "firebase/php-jwt": "^5.0",
-        "hybridauth/hybridauth": "dev-master",
         "lcobucci/jwt": "^3.2",
         "league/flysystem": "^1.0",
         "league/flysystem-aws-s3-v3": "^1.0",
