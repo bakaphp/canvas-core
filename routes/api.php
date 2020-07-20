@@ -46,6 +46,7 @@ $privateRoutes = [
     Route::crud('/custom-fields-types')->controller('CustomFieldsTypesController'),
     Route::crud('/custom-fields-values')->controller('CustomFieldsValuesController'),
     Route::crud('/menus')->controller('MenusController'),
+    Route::get('/menus/{slug}')->controller('MenusController')->action('getBySlug'),
     Route::crud('/menus/{menusId}/links')->controller('MenusLinksController'),
 
     Route::get('/timezones')->controller('TimeZonesController'),
