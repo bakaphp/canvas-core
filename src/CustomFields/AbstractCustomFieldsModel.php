@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace Canvas\CustomFields;
 
-use Canvas\Models\CustomFieldsModules;
-use Canvas\Models\AbstractModel;
 use Baka\Contracts\CustomFields\CustomFieldsTrait;
+use Canvas\Models\AbstractModel;
+use Canvas\Models\CustomFieldsModules;
 use PDO;
 
 abstract class AbstractCustomFieldsModel extends AbstractModel
@@ -16,6 +16,7 @@ abstract class AbstractCustomFieldsModel extends AbstractModel
      * Get all custom fields of the given object.
      *
      * @param  array  $fields
+     *
      * @return array
      */
     public function getAllCustomFields(array $fields = [])
