@@ -181,21 +181,6 @@ class AddAppCustomFields extends Phinx\Migration\AbstractMigration
             ])
             ->save();
 
-        $this->table('user_roles', [
-            'id' => false,
-            'primary_key' => ['users_id', 'apps_id', 'companies_id'],
-            'engine' => 'InnoDB',
-            'encoding' => 'utf8mb4',
-            'collation' => 'utf8mb4_unicode_ci',
-            'comment' => '',
-            'row_format' => 'DYNAMIC',
-        ])
-            ->addIndex(['users_id', 'apps_id', 'companies_id'], [
-                'name' => 'user_roles_UN',
-                'unique' => true,
-            ])
-            ->save();
-
         $this->table('payment_methods', [
             'id' => false,
             'primary_key' => ['id'],
