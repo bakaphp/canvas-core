@@ -4,15 +4,13 @@ declare(strict_types=1);
 
 namespace Canvas\Providers;
 
+use Baka\Constants\Flags;
 use function Baka\envValue;
-
-use Canvas\Constants\Flags;
-use Phalcon\Cache\Backend\Memory;
-use Phalcon\Cache\Backend\Redis;
-use Phalcon\Cache\Frontend\Data;
-use Phalcon\Cache\Frontend\None;
+use Phalcon\Cache;
+use Phalcon\Cache\AdapterFactory;
 use Phalcon\Di\DiInterface;
 use Phalcon\Di\ServiceProviderInterface;
+use Phalcon\Storage\SerializerFactory;
 
 class ModelsCacheProvider implements ServiceProviderInterface
 {
@@ -21,30 +19,29 @@ class ModelsCacheProvider implements ServiceProviderInterface
      */
     public function register(DiInterface $container) : void
     {
-        $config = $container->get('config');
+        $config = $container->getShared('config');
+        $app = envValue('GEWAER_APP_ID', 1);
 
         $container->setShared(
             'modelsCache',
-            function () use ($config) {
-                if (strtolower($config->app->env) != Flags::PRODUCTION) {
-                    $frontCache = new None();
-                    $cache = new Memory($frontCache);
-                } else {
-                    $frontCache = new Data([
-                        'lifetime' => envValue('MODELS_CACHE_LIFETIME', 86400),
-                    ]);
+            function () use ($config, $app) {
+                $type = 'redis';
+                $cache = $config->get('cache')->toArray();
+                $options = $cache['metadata']['prod']['options'];
 
-                    $cache = new Redis(
-                        $frontCache,
-                        [
-                            'host' => envValue('REDIS_HOST', '127.0.0.1'),
-                            'port' => envValue('REDIS_PORT', 6379),
-                            'prefix' => 'modelsCache',
-                        ]
-                    );
+                if (strtolower($config->app->env) != Flags::PRODUCTION) {
+                    $type = 'memory';
+                    $options = $cache['metadata']['dev']['options'];
                 }
 
-                return $cache;
+                $serializerFactory = new SerializerFactory();
+                $adapterFactory = new AdapterFactory($serializerFactory);
+
+                $options['prefix'] = $app;
+
+                $adapter = $adapterFactory->newInstance($type, $options);
+
+                return new Cache($adapter);
             }
         );
     }
