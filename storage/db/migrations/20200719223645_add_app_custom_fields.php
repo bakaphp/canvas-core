@@ -45,18 +45,7 @@ class AddAppCustomFields extends Phinx\Migration\AbstractMigration
             'comment' => '',
             'row_format' => 'DYNAMIC',
         ])
-            ->addIndex(['apps_id'], [
-                'name' => 'apps_id',
-                'unique' => false,
-            ])
-            ->addIndex(['name'], [
-                'name' => 'name',
-                'unique' => false,
-            ])
-            ->addIndex(['model_name'], [
-                'name' => 'model_name',
-                'unique' => false,
-            ])
+
             ->addIndex(['apps_id', 'name', 'model_name'], [
                 'name' => 'apps_id_name_model_name',
                 'unique' => false,
