@@ -37,46 +37,6 @@ class AddAppCustomFields extends Phinx\Migration\AbstractMigration
             ])
             ->save();
 
-        $this->table('countries', [
-            'id' => false,
-            'primary_key' => ['id'],
-            'engine' => 'InnoDB',
-            'encoding' => 'utf8mb4',
-            'collation' => 'utf8mb4_unicode_ci',
-            'comment' => '',
-            'row_format' => 'DYNAMIC',
-        ])
-            ->addColumn('code', 'string', [
-                'null' => false,
-                'limit' => 128,
-                'collation' => 'utf8mb4_unicode_ci',
-                'encoding' => 'utf8mb4',
-                'after' => 'name',
-            ])
-            ->changeColumn('flag', 'string', [
-                'null' => true,
-                'default' => null,
-                'limit' => 128,
-                'collation' => 'utf8mb4_unicode_ci',
-                'encoding' => 'utf8mb4',
-                'after' => 'code',
-            ])
-            ->changeColumn('created_at', 'datetime', [
-                'null' => false,
-                'after' => 'flag',
-            ])
-            ->changeColumn('updated_at', 'datetime', [
-                'null' => true,
-                'default' => null,
-                'after' => 'created_at',
-            ])
-            ->changeColumn('is_deleted', 'integer', [
-                'null' => false,
-                'default' => '0',
-                'limit' => '3',
-                'after' => 'updated_at',
-            ])
-            ->save();
         $this->table('apps_custom_fields', [
             'id' => false,
             'primary_key' => ['id'],
