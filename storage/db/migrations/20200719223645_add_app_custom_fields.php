@@ -36,29 +36,7 @@ class AddAppCustomFields extends Phinx\Migration\AbstractMigration
                 'unique' => false,
             ])
             ->save();
-        $this->table('custom_fields_modules', [
-            'id' => false,
-            'primary_key' => ['id'],
-            'engine' => 'InnoDB',
-            'encoding' => 'utf8mb4',
-            'collation' => 'utf8mb4_unicode_ci',
-            'comment' => '',
-            'row_format' => 'DYNAMIC',
-        ])
 
-            ->addIndex(['apps_id', 'name', 'model_name'], [
-                'name' => 'apps_id_name_model_name',
-                'unique' => false,
-            ])
-            ->addIndex(['apps_id', 'name', 'model_name', 'is_deleted'], [
-                'name' => 'apps_id_name_model_name_is_deleted',
-                'unique' => false,
-            ])
-            ->addIndex(['apps_id', 'model_name', 'is_deleted'], [
-                'name' => 'apps_id_model_name_is_deleted',
-                'unique' => false,
-            ])
-            ->save();
         $this->table('countries', [
             'id' => false,
             'primary_key' => ['id'],
