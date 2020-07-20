@@ -165,24 +165,6 @@ class AddAppCustomFields extends Phinx\Migration\AbstractMigration
             ])
             ->create();
 
-        $this->table('custom_fields_values', [
-            'id' => false,
-            'primary_key' => ['id'],
-            'engine' => 'InnoDB',
-            'encoding' => 'utf8mb4',
-            'collation' => 'utf8mb4_unicode_ci',
-            'comment' => '',
-            'row_format' => 'DYNAMIC',
-        ])
-            ->addIndex(['custom_fields_id'], [
-                'name' => 'custom_fields_id_entity_id_custom_fields_modules_id',
-                'unique' => false,
-            ])
-            ->addIndex(['custom_fields_id', 'is_default'], [
-                'name' => 'custom_fields_id_entity_id_custom_fields_modules_id_is_default',
-                'unique' => false,
-            ])
-            ->save();
 
         $this->table('resources', [
             'id' => false,
