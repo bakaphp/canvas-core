@@ -26,15 +26,17 @@ class ModelsCacheProvider implements ServiceProviderInterface
             'modelsCache',
             function () use ($config, $app) {
                 $type = 'redis';
+                $cache = $config->get('cache')->toArray();
+                $options = $cache['metadata']['prod']['options'];
+                
                 if (strtolower($config->app->env) != Flags::PRODUCTION) {
                     $type = 'memory';
+                    $options = $cache['metadata']['dev']['options'];
                 }
 
                 $serializerFactory = new SerializerFactory();
                 $adapterFactory = new AdapterFactory($serializerFactory);
 
-                $cache = $config->get('cache')->toArray();
-                $options = $cache['metadata']['prod']['options'];
                 $options['prefix'] = $app;
 
                 $adapter = $adapterFactory->newInstance($type, $options);
