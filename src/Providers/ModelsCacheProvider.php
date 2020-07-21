@@ -27,17 +27,32 @@ class ModelsCacheProvider implements ServiceProviderInterface
             function () use ($config, $app) {
                 
                 $type = 'redis';
+<<<<<<< HEAD
+                if (strtolower($config->app->env) != Flags::PRODUCTION) {
+                    $type = 'memory';
+=======
                 $cache = $config->get('cache')->toArray();
                 $options = $cache['metadata']['prod']['options'];
 
                 if (strtolower($config->app->env) != Flags::PRODUCTION) {
                     $type = 'memory';
                     $options = $cache['metadata']['dev']['options'];
+>>>>>>> 68a046b8acb7a29f78a51afa18548a879e0832dd
                 }
 
                 $serializerFactory = new SerializerFactory();
                 $adapterFactory = new AdapterFactory($serializerFactory);
 
+<<<<<<< HEAD
+                $options = [
+                    'defaultSerializer' => 'php',
+                    'lifetime' => 7200
+                ];
+
+                $cache = $config->get('cache')->toArray();
+                $options = $cache['metadata']['prod']['options'];
+=======
+>>>>>>> 68a046b8acb7a29f78a51afa18548a879e0832dd
                 $options['prefix'] = $app;
 
                 $adapter = $adapterFactory->newInstance($type, $options);
