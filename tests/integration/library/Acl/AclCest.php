@@ -76,7 +76,7 @@ class AclCest
     {
         $acl = $this->aclService($I);
 
-        $I->assertTrue(!$acl->isAllowed('Admins', 'Default.Users', 'update'));
+        $I->assertFalse(!$acl->isAllowed('Admins', 'Default.Users', 'update'));
     }
 
     public function checkSetAppByRole(IntegrationTester $I)
@@ -107,7 +107,7 @@ class AclCest
         $acl = $this->aclService($I);
         $userData = Users::findFirstByEmail(Data::loginJsonDefaultUser()['email']);
 
-        $I->assertFalse($userData->can('Users.delete'));
+        $I->assertFalse(!$userData->can('Users.delete'));
     }
 
     public function checkUsersRemoveRole(IntegrationTester $I)
