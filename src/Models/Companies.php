@@ -301,8 +301,6 @@ class Companies extends AbstractModel
      */
     public function afterCreate()
     {
-        parent::afterCreate();
-
         $this->fire('company:afterSignup', $this);
     }
 
