@@ -29,7 +29,7 @@ class Subscription extends BakaSubscription
     public int $user_id;
     public int $companies_id;
     public int $apps_id;
-    public string $name;
+    public ?string $name = null;
     public string $stripe_id;
     public string $stripe_plan;
     public int $quantity;

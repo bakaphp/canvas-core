@@ -9,8 +9,8 @@ class UserCompanyApps extends \Baka\Auth\Models\UserCompanyApps
 {
     public int $companies_id;
     public int $apps_id;
-    public string $stripe_id;
-    public int $subscriptions_id;
+    public ?string $stripe_id = null;
+    public ?int $subscriptions_id = 0;
 
     /**
      * Initialize method for model.

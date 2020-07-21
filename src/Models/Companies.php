@@ -16,7 +16,7 @@ use Phalcon\Di;
 use Phalcon\Validation;
 use Phalcon\Validation\Validator\PresenceOf;
 
-class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
+class Companies extends AbstractModel
 {
     use HashTableTrait;
     use UsersAssociatedTrait;
@@ -301,8 +301,6 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
      */
     public function afterCreate()
     {
-        parent::afterCreate();
-
         $this->fire('company:afterSignup', $this);
     }
 

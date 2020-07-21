@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Canvas\Models;
 
+use Baka\Contracts\CustomFields\CustomFieldsTrait;
 use Baka\Database\SystemModules as BakaSystemModules;
 use Baka\Http\Exception\InternalServerErrorException;
 use Phalcon\Di;
@@ -10,6 +11,8 @@ use Phalcon\Mvc\ModelInterface;
 
 class SystemModules extends BakaSystemModules
 {
+    use CustomFieldsTrait;
+    
     /**
      * Initialize method for model.
      */
