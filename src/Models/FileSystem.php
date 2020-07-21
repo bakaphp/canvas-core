@@ -9,7 +9,6 @@ use Baka\Http\Exception\NotFoundException;
 use Exception;
 use Phalcon\Di;
 
-
 class FileSystem extends AbstractModel
 {
     use HashTableTrait;

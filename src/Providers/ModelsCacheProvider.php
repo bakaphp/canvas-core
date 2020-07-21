@@ -25,6 +25,7 @@ class ModelsCacheProvider implements ServiceProviderInterface
         $container->setShared(
             'modelsCache',
             function () use ($config, $app) {
+                
                 $type = 'redis';
                 $cache = $config->get('cache')->toArray();
                 $options = $cache['metadata']['prod']['options'];

@@ -22,6 +22,7 @@ use Canvas\Providers\FileSystemProvider;
 use Canvas\Providers\EventsManagerProvider;
 use Canvas\Providers\MapperProvider;
 use Canvas\Providers\ElasticProvider;
+use Canvas\Providers\ModelsCacheProvider;
 use Canvas\Providers\RegistryProvider;
 
 return [
@@ -43,5 +44,6 @@ return [
     EventsManagerProvider::class,
     MapperProvider::class,
     ElasticProvider::class,
-    RegistryProvider::class
+    RegistryProvider::class,
+    ModelsCacheProvider::class
 ];
