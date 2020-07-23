@@ -1,7 +1,7 @@
 <?php
 
-use Phinx\Migration\AbstractMigration;
 use Phinx\Db\Adapter\MysqlAdapter;
+use Phinx\Migration\AbstractMigration;
 
 class AclUpdateStructureAgain extends AbstractMigration
 {

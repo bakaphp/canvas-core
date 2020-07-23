@@ -49,6 +49,24 @@ class MenusLinks extends AbstractModel
 
     /**
      *
+     * @var string
+     */
+    public $icon_url;
+
+    /**
+     *
+     * @var string
+     */
+    public $icon_class;
+
+    /**
+     *
+     * @var string
+     */
+    public $route;
+
+    /**
+     *
      * @var integer
      */
     public $is_published;
