@@ -9,7 +9,7 @@ use Baka\Auth\Models\Sources;
 use Phalcon\Http\Response;
 use Phalcon\Validation\Validator\PresenceOf;
 use Baka\Validation as CanvasValidation;
-use Baka\ASDecoder;
+use Baka\Social\Apple\ASDecoder;
 
 use Baka\Http\Exception\InternalServerErrorException;
 
