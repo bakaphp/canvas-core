@@ -3,8 +3,9 @@ declare(strict_types=1);
 
 namespace Canvas\Models;
 
-use Canvas\Traits\UsersAssociatedTrait;
 use Baka\Database\Contracts\HashTableTrait;
+use Canvas\Traits\UsersAssociatedTrait;
+use Phalcon\Security\Random;
 
 class Apps extends \Baka\Database\Apps
 {
@@ -80,6 +81,7 @@ class Apps extends \Baka\Database\Apps
 
     /**
      * Ecosystem default app.
+     *
      * @var string
      */
     const CANVAS_DEFAULT_APP_ID = 1;
@@ -133,12 +135,51 @@ class Apps extends \Baka\Database\Apps
     }
 
     /**
+     * Before Create function.
+     *
+     * @return void
+     */
+    public function beforeCreate() : void
+    {
+        $random = new Random();
+        parent::beforeCreate();
+
+        $this->key = $random->uuid();
+        $this->is_actived = 1;
+    }
+
+    /**
+     * After Create function.
+     *
+     * @return void
+     */
+    public function afterCreate() : void
+    {
+        foreach ($this->settings as $key => $value) {
+            $this->set($key, $value);
+        }
+    }
+
+    /**
+     * Sets Apps settings.
+     *
+     * @param array $settings
+     *
+     * @return void
+     */
+    public function setSettings(array $settings) : void
+    {
+        $this->settings = $settings;
+    }
+
+    /**
      * You can only get 2 variations or default in DB or the api app.
      *
      * @param string $name
+     *
      * @return Apps
      */
-    public static function getACLApp(string $name): Apps
+    public static function getACLApp(string $name) : Apps
     {
         if (trim($name) == self::CANVAS_DEFAULT_APP_NAME) {
             $app = self::findFirst(1);
@@ -154,7 +195,7 @@ class Apps extends \Baka\Database\Apps
      *
      * @return boolean
      */
-    public function isActive(): bool
+    public function isActive() : bool
     {
         return (bool) $this->is_actived;
     }
@@ -175,7 +216,7 @@ class Apps extends \Baka\Database\Apps
      *
      * @return boolean
      */
-    public function ecosystemAuth(): bool
+    public function ecosystemAuth() : bool
     {
         return (bool) $this->ecosystem_auth;
     }
@@ -185,7 +226,7 @@ class Apps extends \Baka\Database\Apps
      *
      * @return boolean
      */
-    public function subscriptioBased(): bool
+    public function subscriptioBased() : bool
     {
         return (bool) $this->payments_active;
     }
