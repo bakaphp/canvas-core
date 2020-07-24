@@ -39,6 +39,7 @@ $privateRoutes = [
     Route::crud('/permissions-resources')->controller('PermissionsResourcesController'),
     Route::crud('/permissions-resources-access')->controller('PermissionsResourcesAccessController'),
     Route::crud('/users-invite')->controller('UsersInviteController'),
+    Route::post('/users-invite/{id}/resend')->controller('UsersInviteController')->action('resendInvite'),
     Route::crud('/devices')->controller('UserLinkedSourcesController'),
     Route::crud('/languages'),
     Route::crud('/webhooks'),

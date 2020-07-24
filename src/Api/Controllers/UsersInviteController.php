@@ -4,22 +4,23 @@ declare(strict_types=1);
 
 namespace Canvas\Api\Controllers;
 
-use Canvas\Models\UsersInvite;
-use Canvas\Models\Users;
+use Canvas\Exception\NotFoundHttpException;
+use Canvas\Http\Exception\UnprocessableEntityException;
 use Canvas\Models\Roles;
+use Canvas\Models\Users;
+use Canvas\Models\UsersInvite;
+use Canvas\Notifications\Invitation;
+use Canvas\Traits\AuthTrait;
+use Canvas\Validation as CanvasValidation;
+use Exception;
+use Phalcon\Http\Response;
 use Phalcon\Security\Random;
 use Phalcon\Validation\Validator\PresenceOf;
 use Phalcon\Validation\Validator\StringLength;
-use Canvas\Exception\NotFoundHttpException;
-use Phalcon\Http\Response;
-use Exception;
-use Canvas\Http\Exception\UnprocessableEntityException;
-use Canvas\Traits\AuthTrait;
-use Canvas\Notifications\Invitation;
-use Canvas\Validation as CanvasValidation;
 
 /**
  * Class LanguagesController.
+ *
  * @property Users $userData
  * @property Request $request
  * @property Config $config
@@ -29,6 +30,7 @@ use Canvas\Validation as CanvasValidation;
  * @property Payload $payload
  * @property Exp $exp
  * @property JWT $jwt
+ *
  * @package Canvas\Api\Controllers
  *
  */
@@ -83,10 +85,12 @@ class UsersInviteController extends BaseController
 
     /**
      * Get users invite by hash.
+     *
      * @param string $hash
+     *
      * @return Response
      */
-    public function getByHash(string $hash):Response
+    public function getByHash(string $hash) : Response
     {
         $userInvite = $this->model::findFirst([
             'conditions' => 'invite_hash =  ?0 and is_deleted = 0',
@@ -102,9 +106,10 @@ class UsersInviteController extends BaseController
 
     /**
      * Sets up invitation information for a would be user.
+     *
      * @return Response
      */
-    public function insertInvite(): Response
+    public function insertInvite() : Response
     {
         $request = $this->request->getPostData();
         $random = new Random();
@@ -143,10 +148,30 @@ class UsersInviteController extends BaseController
     }
 
     /**
-     * Add invited user to our system.
+     * Resends invite email.
+     *
+     * @param int $id
+     *
      * @return Response
      */
-    public function processUserInvite(string $hash): Response
+    public function resendInvite(int $id) : Response
+    {
+        $userInvite = UsersInvite::findFirstOrFail($id);
+
+        $tempUser = new Users();
+        $tempUser->id = 0;
+        $tempUser->email = $userInvite->email;
+        $tempUser->notify(new Invitation($userInvite));
+
+        return $this->response($userInvite);
+    }
+
+    /**
+     * Add invited user to our system.
+     *
+     * @return Response
+     */
+    public function processUserInvite(string $hash) : Response
     {
         $request = $this->request->getPostData();
         $request['password'] = ltrim(trim($request['password']));
