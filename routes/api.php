@@ -39,6 +39,7 @@ $privateRoutes = [
     Route::crud('/permissions-resources')->controller('PermissionsResourcesController'),
     Route::crud('/permissions-resources-access')->controller('PermissionsResourcesAccessController'),
     Route::crud('/users-invite')->controller('UsersInviteController'),
+    Route::post('/users-invite/{id}/resend')->controller('UsersInviteController')->action('resendInvite'),
     Route::crud('/devices')->controller('UserLinkedSourcesController'),
     Route::crud('/languages'),
     Route::crud('/webhooks'),
@@ -46,6 +47,7 @@ $privateRoutes = [
     Route::crud('/custom-fields-types')->controller('CustomFieldsTypesController'),
     Route::crud('/custom-fields-values')->controller('CustomFieldsValuesController'),
     Route::crud('/menus')->controller('MenusController'),
+    Route::get('/menus/{slug}')->controller('MenusController')->action('getBySlug'),
     Route::crud('/menus/{menusId}/links')->controller('MenusLinksController'),
 
     Route::get('/timezones')->controller('TimeZonesController'),

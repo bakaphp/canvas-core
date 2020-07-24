@@ -33,10 +33,19 @@ class MenusMapper extends CustomMapper
                 if (sizeof($childLinks) != 0) {
                     $childLinksArray = [];
                     $childLinksArray['title'] = $link->title;
-                    $childLinksArray['links'] = $childLinks;
+                    $childLinksArray['links'] = [];
+
+                    foreach ($childLinks as $childLink) {
+                        $childArray = $this->convertObjectToArray($childLink);
+                        $childArray['slug'] = $childLink->getModules()->slug;
+                        $childLinksArray['links'][] = $childArray;
+                    }
+
                     $menusDto->sidebar[] = $childLinksArray;
                 } else {
-                    $menusDto->sidebar[] = $link;
+                    $linkArray = $this->convertObjectToArray($link);
+                    $linkArray['slug'] = $link->getModules()->slug;
+                    $menusDto->sidebar[] = $linkArray;
                 }
             } elseif ($link->menus_id != 0 && $link->isParent()) {
                 $menusDto->sidebar[] = $link;
@@ -48,5 +57,22 @@ class MenusMapper extends CustomMapper
         $menusDto->is_deleted = $menus->is_deleted;
 
         return $menusDto;
+    }
+
+    /**
+     * Convert object to array.
+     *
+     * @param object $object
+     *
+     * @return array
+     */
+    private function convertObjectToArray(object $object) : array
+    {
+        $array = [];
+        foreach ($object as $key => $value) {
+            $array[$key] = $value;
+        }
+
+        return $array;
     }
 }
