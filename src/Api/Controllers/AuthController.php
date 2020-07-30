@@ -6,13 +6,13 @@ namespace Canvas\Api\Controllers;
 
 use Baka\Auth\Models\Sessions;
 use Baka\Auth\Models\Users as BakaUsers;
+use Baka\Http\Exception\InternalServerErrorException;
+use Baka\Http\Exception\NotFoundException;
 use Baka\Validation as CanvasValidation;
 use Baka\Validations\PasswordValidation;
 use Canvas\Auth\Auth;
 use Canvas\Auth\Factory;
 use Canvas\Exception\ModelException;
-use Baka\Http\Exception\InternalServerErrorException;
-use Baka\Http\Exception\NotFoundException;
 use Canvas\Models\Sources;
 use Canvas\Models\UserLinkedSources;
 use Canvas\Models\Users;
@@ -204,10 +204,9 @@ class AuthController extends \Baka\Auth\AuthController
      * Refresh user auth.
      *
      * @return Response
-<<<<<<< HEAD
+     *
      * @todo Validate access_token and refresh token, session's user email and re-login
-     * @todo Validate acces_token and refresh token, session's user email and relogin
->>>>>>> 6db85dbc4b743f7ee0e434bac1c35c3108557eb5
+     * @todo Validate access_token and refresh token, session's user email and relogin
      */
     public function refresh() : Response
     {
