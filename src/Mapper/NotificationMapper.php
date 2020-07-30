@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Canvas\Mapper;
 
 use AutoMapperPlus\CustomMapper\CustomMapper;
+use Baka\Contracts\Mapper\RelationshipTrait;
+use Canvas\Models\Notifications;
 use Canvas\Models\SystemModules;
 use Exception;
 use ReflectionClass;
@@ -13,6 +15,8 @@ use ReflectionClass;
 // directly.
 class NotificationMapper extends CustomMapper
 {
+    use RelationshipTrait;
+
     /**
      * @param Canvas\Models\Notification $notification
      * @param Canvas\Dto\notificationDto $notificationDto
@@ -21,6 +25,10 @@ class NotificationMapper extends CustomMapper
      */
     public function mapToObject($notification, $notificationDto, array $context = [])
     {
+        if (is_array($notification)) {
+            $notification = Notifications::getByIdOrFail($notification['id']);
+        }
+
         $notificationDto->id = $notification->getId();
         $notificationDto->type = $notification->type->name;
         /**
@@ -57,6 +65,8 @@ class NotificationMapper extends CustomMapper
         } catch (Exception $e) {
             $notificationDto->entity['type'] = null;
         }
+
+        $this->getRelationships($notification, $notificationDto, $context);
 
         return $notificationDto;
     }

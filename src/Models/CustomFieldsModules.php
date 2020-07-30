@@ -3,10 +3,10 @@ declare(strict_types=1);
 
 namespace Canvas\Models;
 
-class CustomFieldsModules extends AbstractModel
+use Baka\Database\CustomFields\CustomFieldsModules as BakaCustomFieldsModules;
+
+class CustomFieldsModules extends BakaCustomFieldsModules
 {
-    public int $apps_id;
-    public string $name;
 
     /**
      * Initialize method for model.

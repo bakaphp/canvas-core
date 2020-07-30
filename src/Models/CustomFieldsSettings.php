@@ -3,7 +3,9 @@ declare(strict_types=1);
 
 namespace Canvas\Models;
 
-class CustomFieldsSettings extends AbstractModel
+use Baka\Database\CustomFields\CustomFieldsSettings as BakaCustomFieldsSettings;
+
+class CustomFieldsSettings extends BakaCustomFieldsSettings
 {
     public int $custom_fields_id;
     public string $name;

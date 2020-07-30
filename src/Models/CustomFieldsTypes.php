@@ -3,11 +3,10 @@ declare(strict_types=1);
 
 namespace Canvas\Models;
 
-class CustomFieldsTypes extends AbstractModel
+use Baka\Database\CustomFields\FieldsType;
+
+class CustomFieldsTypes extends FieldsType
 {
-    public string $name;
-    public $description;
-    public ?string $icon = null;
 
     /**
      * Initialize method for model.
