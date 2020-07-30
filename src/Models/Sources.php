@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Canvas\Models;
 
-use Baka\ASDecoder;
+use Baka\Social\Apple\ASDecoder;
 use Baka\Http\Exception\InternalServerErrorException;
 
 /**
