@@ -7,9 +7,9 @@ use Phalcon\Di;
 
 class Notifications extends AbstractModel
 {
-    public int $from_users_id;
-    public int $users_id;
-    public int $companies_id;
+    public ?int $from_users_id = 0;
+    public ?int $users_id = 0;
+    public ?int $companies_id = 0;
     public int $apps_id;
     public int $system_modules_id;
     public int $notification_type_id;
