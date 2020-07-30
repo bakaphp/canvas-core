@@ -10,9 +10,9 @@ class Notifications extends AbstractModel
     public ?int $from_users_id = 0;
     public ?int $users_id = 0;
     public ?int $companies_id = 0;
-    public int $apps_id;
-    public int $system_modules_id;
-    public int $notification_type_id;
+    public ?int $apps_id = 0;
+    public ?int $system_modules_id = 0;
+    public ?int $notification_type_id = 0;
     public int $entity_id;
     public string $content;
     public int $read;
