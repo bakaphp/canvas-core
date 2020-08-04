@@ -108,9 +108,6 @@ jobs:
       - name: Phinx Migrate Kanvas Seed
         run: vendor/bin/phinx seed:run -c phinx-kanvas.php
 
-      - name: Phinx Seed:run
-        run: vendor/bin/phinx seed:run
-
       - name: CLI Setup
         run: php cli/cli.php setup
 
