@@ -111,7 +111,3 @@ jobs:
       - name: Run all test suites
         if: success()
         run: vendor/bin/codecept run
-
-      # - name: Run unit test suites
-      #   if: success()
-      #   run: vendor/bin/codecept run unit
