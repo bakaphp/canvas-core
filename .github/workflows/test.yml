@@ -108,12 +108,6 @@ jobs:
       - name: Phinx Migrate Kanvas Seed
         run: vendor/bin/phinx seed:run -c phinx-kanvas.php
 
-      - name: CLI Setup
-        run: php cli/cli.php setup
-
-      - name: CLI Acl
-        run: php cli/cli.php acl crm
-
       - name: Run integration test suites
         if: success()
         run: vendor/bin/codecept run integration
