@@ -100,13 +100,13 @@ jobs:
         run: cp storage/ci/.env.example .env
 
       - name: Setup Phinx
-        run: cp storage/ci/phinx-core.php.prod phinx-kanvas.php
+        run: cp storage/ci/phinx.php.example phinx.php
         
       - name: Phinx Migrate Kanvas
-        run: vendor/bin/phinx migrate -e development -c phinx-kanvas.php
+        run: vendor/bin/phinx migrate -e development
         
       - name: Phinx Migrate Kanvas Seed
-        run: vendor/bin/phinx seed:run -c phinx-kanvas.php
+        run: vendor/bin/phinx seed:run
 
       - name: Run integration test suites
         if: success()
