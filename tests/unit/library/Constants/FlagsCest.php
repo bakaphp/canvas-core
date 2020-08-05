@@ -2,12 +2,12 @@
 
 namespace Canvas\Tests\unit\library\Constants;
 
-use CliTester;
 use Canvas\Constants\Flags;
+use UnitTester;
 
 class FlagsCest
 {
-    public function checkConstants(CliTester $I)
+    public function checkConstants(UnitTester $I)
     {
         $I->assertEquals(1, Flags::ACTIVE);
         $I->assertEquals(2, Flags::INACTIVE);
