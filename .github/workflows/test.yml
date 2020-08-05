@@ -108,10 +108,10 @@ jobs:
       - name: Phinx Migrate Kanvas Seed
         run: vendor/bin/phinx seed:run
 
-      - name: Run integration test suites
+      - name: Run all test suites
         if: success()
-        run: vendor/bin/codecept run integration
+        run: vendor/bin/codecept run
 
-      - name: Run unit test suites
-        if: success()
-        run: vendor/bin/codecept run unit
+      # - name: Run unit test suites
+      #   if: success()
+      #   run: vendor/bin/codecept run unit
