@@ -38,7 +38,7 @@ class Notification
      *
      * @var int
      */
-    public $users_photo;
+    public $users_avatar;
 
     /**
      *
