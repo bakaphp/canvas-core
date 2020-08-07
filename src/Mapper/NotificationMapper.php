@@ -37,6 +37,7 @@ class NotificationMapper extends CustomMapper
         $notificationDto->title = 'Notification Title';
         $notificationDto->icon = $notification->type->icon_url;
         $notificationDto->users_id = $notification->users_id;
+        $notificationDto->users_photo = $notification->user->photo ? $notification->user->photo->url : null;
         $notificationDto->from_users_id = $notification->from_users_id;
         $notificationDto->companies_id = $notification->companies_id;
         $notificationDto->apps_id = $notification->apps_id;

@@ -38,6 +38,12 @@ class Notification
      *
      * @var int
      */
+    public $users_photo;
+
+    /**
+     *
+     * @var int
+     */
     public $from_users_id;
 
     /**
