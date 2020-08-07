@@ -3,8 +3,8 @@
 namespace Canvas\Cli\Tasks;
 
 use Baka\Contracts\Queue\QueueableJobInterface;
-use Canvas\Models\Users;
 use Baka\Queue\Queue;
+use Canvas\Models\Users;
 use Phalcon\Cli\Task as PhTask;
 use Phalcon\Mvc\Model;
 use Throwable;
@@ -161,25 +161,32 @@ class QueueTask extends PhTask
                 return;
             }
 
-            /**
-             * swoole coroutine.
-             */
-            go(function () use ($job, $msg) {
-                //instance notification and pass the entity
-                try {
-                    $result = $job['job']->handle();
+            try {
+                /**
+                 * swoole coroutine.
+                 */
+                go(function () use ($job, $msg) {
+                    //instance notification and pass the entity
+                    try {
+                        $result = $job['job']->handle();
 
-                    $this->log->info(
-                        "Job ({$job['class']}) ran for {$job['userData']->getEmail()} - Process ID " . $msg->delivery_info['consumer_tag'],
-                        [$result]
-                    );
-                } catch (Throwable $e) {
-                    $this->log->info(
-                        $e->getMessage(),
-                        [$e->getTraceAsString()]
-                    );
-                }
-            });
+                        $this->log->info(
+                            "Job ({$job['class']}) ran for {$job['userData']->getEmail()} - Process ID " . $msg->delivery_info['consumer_tag'],
+                            [$result]
+                        );
+                    } catch (Throwable $e) {
+                        $this->log->info(
+                            $e->getMessage(),
+                            [$e->getTraceAsString()]
+                        );
+                    }
+                });
+            } catch (Throwable $e) {
+                $this->log->info(
+                    $e->getMessage(),
+                    [$e->getTraceAsString()]
+                );
+            }
         };
 
         Queue::process($queue, $callback);
