@@ -76,7 +76,8 @@ $privateRoutes = [
     Route::crud('/companies-settings')->controller('CompaniesSettingsController'),
     Route::crud('/users-associated-companies')->controller('UsersAssociatedCompaniesController'),
     Route::crud('/users-companies-apps')->controller('UserCompanyAppsController'),
-    Route::crud('/companies-associations')->controller('CompaniesAssociationsController')
+    Route::crud('/companies-associations')->controller('CompaniesAssociationsController'),
+    Route::crud('/custom-forms')->controller('SystemModulesFormsController')
 ];
 
 $privateSubscriptionRoutes = [
