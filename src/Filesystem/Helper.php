@@ -61,7 +61,8 @@ class Helper extends FilesystemHelper
         $fileSystem->saveOrFail();
 
         //set the unique name we generate
-        $fileSystem->set('unique_name', Text::reduceSlashes(DIRECTORY_SEPARATOR . $uploadFileNameWithPath));
+        $uniqueName = (bool) $di->get('app')->get('unique_name_separator') ? DIRECTORY_SEPARATOR . $uploadFileNameWithPath : $uploadFileNameWithPath;
+        $fileSystem->set('unique_name', Text::reduceSlashes($uniqueName));
 
         return $fileSystem;
     }

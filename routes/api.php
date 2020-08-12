@@ -77,6 +77,7 @@ $privateRoutes = [
     Route::crud('/users-associated-companies')->controller('UsersAssociatedCompaniesController'),
     Route::crud('/users-companies-apps')->controller('UserCompanyAppsController'),
     Route::crud('/companies-associations')->controller('CompaniesAssociationsController'),
+    Route::crud('/custom-forms')->controller('SystemModulesFormsController'),
     Route::crud('/menus')->controller('MenusController'),
     Route::get('/menus/{slug}')->controller('MenusController')->action('getBySlug'),
     Route::crud('/menus/{menusId}/links')->controller('MenusLinksController'),
