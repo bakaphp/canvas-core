@@ -5,12 +5,9 @@ namespace Canvas\Models;
 
 class Menus extends AbstractModel
 {
-    public int $apps_id;
-
-    public int $companies_id;
-
+    public int $apps_id = 0;
+    public int $companies_id = 0;
     public string $name;
-
     public string $slug;
 
     /**

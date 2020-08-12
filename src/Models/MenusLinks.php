@@ -5,24 +5,15 @@ namespace Canvas\Models;
 
 class MenusLinks extends AbstractModel
 {
-    public int $menus_id;
-
+    public int $menus_id = 0;
     public int $parent_id = 0;
-
-    public ?int $system_modules_id;
-
-    public ?string $url;
-
-    public ?string $title;
-
-    public ?string $position;
-
-    public ?string $icon_url;
-
-    public ?string $icon_class;
-
-    public ?string $route;
-
+    public ?int $system_modules_id = null;
+    public ?string $url = null;
+    public ?string $title = null;
+    public ?string $position = null;
+    public ?string $icon_url = null;
+    public ?string $icon_class = null;
+    public ?string $route = null;
     public int $is_published = 0;
 
     /**
