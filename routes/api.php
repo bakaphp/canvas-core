@@ -81,6 +81,7 @@ $privateRoutes = [
     Route::crud('/menus')->controller('MenusController'),
     Route::get('/menus/{slug}')->controller('MenusController')->action('getBySlug'),
     Route::crud('/menus/{menusId}/links')->controller('MenusLinksController'),
+    Route::crud('/menus-links')->controller('MenusLinksController'),
 ];
 
 $privateSubscriptionRoutes = [
