@@ -21,6 +21,9 @@ class MenusLinksController extends BaseController
      */
     protected $createFields = [
         'menus_id',
+        'parent_id',
+        'system_modules_id',
+        'url',
         'title',
         'position',
         'is_published',
@@ -33,6 +36,9 @@ class MenusLinksController extends BaseController
      */
     protected $updateFields = [
         'menus_id',
+        'parent_id',
+        'system_modules_id',
+        'url',
         'title',
         'position',
         'is_published',
