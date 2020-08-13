@@ -80,7 +80,11 @@ $privateRoutes = [
     Route::crud('/custom-forms')->controller('SystemModulesFormsController'),
     Route::crud('/menus')->controller('MenusController'),
     Route::get('/menus/{slug}')->controller('MenusController')->action('getBySlug'),
-    Route::crud('/menus/{menusId}/links')->controller('MenusLinksController'),
+    Route::post('/menus/{menusId}/links')->controller('MenusLinksController')->action('create'),
+    Route::get('/menus/{menusId}/links')->controller('MenusLinksController')->action('index'),
+    Route::get('/menus/{menusId}/links/{id}')->controller('MenusLinksController')->action('getById'),
+    Route::put('/menus/{menusId}/links/{id}')->controller('MenusLinksController')->action('edit'),
+    Route::delete('/menus/{menusId}/links/{id}')->controller('MenusLinksController')->action('delete'),
     Route::crud('/menus-links')->controller('MenusLinksController'),
 ];
 
