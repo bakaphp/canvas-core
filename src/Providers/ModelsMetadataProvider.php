@@ -33,7 +33,13 @@ class ModelsMetadataProvider implements ServiceProviderInterface
                 //Connect to redis
                 $cache = $config->get('cache')->toArray();
                 $options = $cache['metadata']['prod']['options'];
-                $options['prefix'] = $app;
+                $options = [
+                    'host' => $options['host'],
+                    'port' => $options['port'],
+                    'index' => $options['index'],
+                    'lifetime' => $options['lifetime'],
+                    'prefix' => $options['prefix'],
+                ];
 
                 $serializerFactory = new SerializerFactory();
                 $adapterFactory = new AdapterFactory($serializerFactory);

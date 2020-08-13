@@ -4,8 +4,6 @@ namespace Canvas\Contracts\CustomFields;
 
 use Baka\Auth\UserProvider;
 use Baka\Contracts\CustomFields\CustomFieldsTrait as CustomFieldsCustomFieldsTrait;
-
-use Baka\Database\Model;
 use Canvas\CustomFields\CustomFields;
 use Canvas\Models\AppsCustomFields;
 use Canvas\Models\CustomFieldsModules;
@@ -158,5 +156,4 @@ trait CustomFieldsTrait
 
         return $customField;
     }
-
 }
