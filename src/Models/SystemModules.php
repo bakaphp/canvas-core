@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Canvas\Models;
@@ -12,7 +13,7 @@ use Phalcon\Mvc\ModelInterface;
 class SystemModules extends BakaSystemModules
 {
     use CustomFieldsTrait;
-    
+
     /**
      * Initialize method for model.
      */
@@ -69,7 +70,7 @@ class SystemModules extends BakaSystemModules
             'conditions' => 'model_name = ?0 and apps_id = ?1',
             'bind' => [
                 $modelName,
-                Di::getDefault()->getApp()->getId()
+                Di::getDefault()->get('app')->getId()
             ]
         ]);
 
@@ -105,7 +106,7 @@ class SystemModules extends BakaSystemModules
             'conditions' => 'name = ?0 and apps_id = ?1',
             'bind' => [
                 $name,
-                Di::getDefault()->getApp()->getId()
+                Di::getDefault()->get('app')->getId()
             ]
         ]);
     }
@@ -123,7 +124,7 @@ class SystemModules extends BakaSystemModules
             'conditions' => 'id = ?0 and apps_id = ?1',
             'bind' => [
                 $id,
-                Di::getDefault()->getApp()->getId()
+                Di::getDefault()->get('app')->getId()
             ]
         ]);
 
@@ -143,7 +144,7 @@ class SystemModules extends BakaSystemModules
             'conditions' => 'slug = ?0 and apps_id = ?1',
             'bind' => [
                 $slug,
-                Di::getDefault()->getApp()->getId()
+                Di::getDefault()->get('app')->getId()
             ]
         ]);
 
