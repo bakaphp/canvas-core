@@ -36,7 +36,7 @@ class MenusMapper extends CustomMapper
 
                     foreach ($childLinks as $childLink) {
                         $childArray = $this->convertObjectToArray($childLink);
-                        $childArray['slug'] = $childLink->getModules()->slug;
+                        $childArray['slug'] = $childLink->getModules() ?? $childLink->getModules()->slug;
                         $childLinksArray['links'][] = $childArray;
                     }
 
