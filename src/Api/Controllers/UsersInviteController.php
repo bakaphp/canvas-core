@@ -32,7 +32,7 @@ class UsersInviteController extends BaseController
         'invite_hash',
         'companies_id',
         'role_id',
-        'app_id',
+        'apps_id',
         'email'
     ];
 
@@ -45,7 +45,7 @@ class UsersInviteController extends BaseController
         'invite_hash',
         'companies_id',
         'role_id',
-        'app_id',
+        'apps_id',
         'email'
     ];
 
@@ -59,6 +59,7 @@ class UsersInviteController extends BaseController
         $this->model = new UsersInvite();
         $additionalFields = [
             ['is_deleted', ':', '0'],
+            ['apps_id', ':', $this->app->getId()]
         ];
 
         if ($this->di->has('userData')) {
@@ -113,7 +114,7 @@ class UsersInviteController extends BaseController
         $userInvite = $this->model;
         $userInvite->companies_id = $this->userData->getDefaultCompany()->getId();
         $userInvite->users_id = $this->userData->getId();
-        $userInvite->app_id = $this->app->getId();
+        $userInvite->apps_id = $this->app->getId();
         $userInvite->role_id = (int) Roles::existsById((int)$request['role_id'])->id;
         $userInvite->email = $request['email'];
         $userInvite->invite_hash = $random->base58();

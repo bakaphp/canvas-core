@@ -67,7 +67,8 @@ class Resources extends AbstractModel
                 $resourceName,
                 Di::getDefault()->getApp()->getId(),
                 Apps::CANVAS_DEFAULT_APP_ID
-            ]
+            ],
+            'order' => 'id desc'
         ]);
 
         if (!is_object($resource)) {

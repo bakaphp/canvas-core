@@ -15,7 +15,7 @@ class UsersInvite extends AbstractModel
     public int $users_id;
     public int $companies_id;
     public int $role_id;
-    public int $app_id;
+    public int $apps_id;
     public string $email;
 
     /**
@@ -82,11 +82,13 @@ class UsersInvite extends AbstractModel
      */
     public static function isValid(string $email, int $roleId = 1) : bool
     {
-        $userData = Di::getDefault()->getUserData();
+        $userData = Di::getDefault()->get('userData');
+        $app = Di::getDefault()->get('app');
+
         //check inviste
         $invitedUser = self::findFirst([
-            'conditions' => 'email = ?0 and companies_id = ?1 and role_id = ?2 and is_deleted = 0',
-            'bind' => [$email, $userData->currentCompanyId(), $roleId]
+            'conditions' => 'email = ?0 and companies_id = ?1 and role_id = ?2 and apps_id = ?3 and is_deleted = 0',
+            'bind' => [$email, $userData->currentCompanyId(), $roleId, $app->getId()]
         ]);
 
         if (is_object($invitedUser)) {
