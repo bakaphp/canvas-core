@@ -41,7 +41,9 @@
         "sentry/sentry": "^2.4",
         "sly/notification-pusher": "2.x",
         "vlucas/phpdotenv": "^2.4",
-        "bakaphp/php-apple-signin": "^2.0"
+        "bakaphp/php-apple-signin": "^2.0",
+        "facebook/graph-sdk": "5.7.0",
+        "google/apiclient": "v2.7.0"
     },
     "require-dev": {
         "codeception/verify": "*",
