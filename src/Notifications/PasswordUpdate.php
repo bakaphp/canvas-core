@@ -6,7 +6,9 @@ namespace Canvas\Notifications;
 
 use Baka\Contracts\Notifications\NotificationInterface;
 use Baka\Mail\Message;
+use Canvas\Template;
 use Phalcon\Di;
+use Throwable;
 
 class PasswordUpdate extends Notification implements NotificationInterface
 {
@@ -18,12 +20,26 @@ class PasswordUpdate extends Notification implements NotificationInterface
      *
      * @return string
      */
-    public function message(): string
+    public function message() : string
     {
-        $app = Di::getDefault()->getApp();
+        $app = Di::getDefault()->get('app');
 
-        return "Hi {$this->fromUser->firstname} {$this->fromUser->lastname}, your password for {$app->name} was updated <br /><br />
-                Thanks ";
+        try {
+            $message = Template::generate(
+                'users-password-update',
+                [
+                    'entity' => $this->entity->toArray(),
+                    'app' => $app,
+                    'fromUser' => $this->fromUser,
+                    'toUser' => $this->toUser,
+                ]
+            );
+        } catch (Throwable $e) {
+            $message = "Hi {$this->fromUser->firstname} {$this->fromUser->lastname}, your password for {$app->name} was updated <br /><br />
+            Thanks ";
+        }
+
+        return $message;
     }
 
     /**
@@ -31,9 +47,9 @@ class PasswordUpdate extends Notification implements NotificationInterface
      *
      * @return Message|null
      */
-    public function toMail(): ?Message
+    public function toMail() : ?Message
     {
-        $app = Di::getDefault()->getApp();
+        $app = Di::getDefault()->get('app');
 
         return $this->mail->to($this->fromUser->getEmail())
             ->subject($app->name . ' - Password Updated')
