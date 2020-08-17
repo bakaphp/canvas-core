@@ -6,6 +6,9 @@ namespace Canvas\Models;
 
 use Baka\ASDecoder;
 use Canvas\Http\Exception\InternalServerErrorException;
+use Exception;
+use Facebook\Exception\ResponseException;
+use Facebook\Exception\SDKException;
 use Facebook\Facebook;
 use Google_Client;
 use Throwable;
@@ -115,41 +118,42 @@ class Sources extends AbstractModel
      */
     public function validation(string $email, string $token) : bool
     {
-        switch ($this->title) {
-            case 'google':
-                try {
-                    $client = new Google_Client([
-                        'client_id' => getenv('GOOGLE_CLIENT_ID')
-                    ]);
-                    $payload = $client->verifyIdToken($token);
-                    if ($payload) {
-                        $userid = $payload['sub'];
-                        return $payload['email'] === $email;
-                    } else {
-                        return false;
-                    }
-                } catch (Throwable $e) {
-                    return false;
-                }
+        try {
+            switch ($this->title) {
+                case 'google':
+                        $client = new Google_Client([
+                            'client_id' => getenv('GOOGLE_CLIENT_ID')
+                        ]);
+                        $payload = $client->verifyIdToken($token);
+                        if ($payload) {
+                            $userid = $payload['sub'];
+                            return $payload['email'] === $email;
+                        } else {
+                            throw new Exception('Invalid user');
+                        }
+                    break;
+                case 'facebook':
+
+                        $fb = new Facebook([
+                            'app_id' => getenv('FACEBOOK_APP_ID'),
+                            'app_secret' => getenv('FACEBOOK_APP_SECRET'),
+                            'default_graph_version' => 'v8.0',
+                            // . . .
+                        ]);
+                        $response = $fb->get('/me', $token);
+                        $user = $response->getGraphUser();
+                        if ($user) {
+                            return true;
+                        }
+                        throw new Exception('Invalid user');
                 break;
-            case 'facebook':
-                try {
-                    $fb = new Facebook([
-                        'app_id' => getenv('FACEBOOK_APP_ID'),
-                        'app_secret' => getenv('FACEBOOK_APP_SECRET'),
-                        'default_graph_version' => 'v8.0',
-                        // . . .
-                    ]);
-                    $response = $fb->get('/me', $token);
-                    $user = $response->getGraphUser();
-                    if ($user) {
-                        return true;
-                    }
-                    return false;
-                } catch (Exception $e) {
-                    return false;
-                }
-            break;
+            }
+        } catch (SDKException $e) {
+            throw new Exception($e->getMessage());
+        } catch (ResponseException $e) {
+            throw new Exception($e->getMessage());
+        } catch (Throwable $e) {
+            throw new Exception($e->getMessage());
         }
     }
 }
