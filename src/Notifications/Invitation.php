@@ -6,8 +6,10 @@ namespace Canvas\Notifications;
 
 use Baka\Contracts\Notifications\NotificationInterface;
 use Baka\Mail\Message;
-use Phalcon\Di;
 use Canvas\Models\Users;
+use Canvas\Template;
+use Phalcon\Di;
+use Throwable;
 
 class Invitation extends Notification implements NotificationInterface
 {
@@ -18,9 +20,9 @@ class Invitation extends Notification implements NotificationInterface
      *
      * @return string
      */
-    public function message(): string
+    public function message() : string
     {
-        $app = Di::getDefault()->getApp();
+        $app = Di::getDefault()->get('app');
 
         $userExists = Users::findFirst([
             'conditions' => 'email = ?0 and is_deleted = 0',
@@ -33,8 +35,23 @@ class Invitation extends Notification implements NotificationInterface
             $invitationUrl = $app->url . '/users/link/' . $this->entity->invite_hash;
         }
 
-        return "Hi {$this->entity->email} you have been invite to the app {$app->name} to create you account please <a href='{$invitationUrl}'>click here</a> <br /><br />
-                Thanks {$this->fromUser->firstname} {$this->fromUser->lastname} ( {$this->fromUser->getDefaultCompany()->name} ) ";
+        try {
+            $message = Template::generate(
+                'users-invite',
+                [
+                    'entity' => $this->entity->toArray(),
+                    'app' => $app,
+                    'invitationUrl' => $invitationUrl,
+                    'fromUser' => $this->fromUser,
+                    'toUser' => $this->toUser,
+                ]
+            );
+        } catch (Throwable $e) {
+            $message = "Hi {$this->entity->email} you have been invite to the app {$app->name} to create you account please <a href='{$invitationUrl}'>click here</a> <br /><br />
+                    Thanks {$this->fromUser->firstname} {$this->fromUser->lastname} ( {$this->fromUser->getDefaultCompany()->name} ) ";
+        }
+
+        return $message;
     }
 
     /**
@@ -42,7 +59,7 @@ class Invitation extends Notification implements NotificationInterface
      *
      * @return Message|null
      */
-    public function toMail(): ?Message
+    public function toMail() : ?Message
     {
         return $this->mail->to($this->toUser->getEmail())
             ->subject('You have been invited!')
