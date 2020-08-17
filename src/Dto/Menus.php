@@ -4,57 +4,12 @@ namespace Canvas\Dto;
 
 class Menus
 {
-    /**
-     *
-     * @var integer
-     */
-    public $id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $apps_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $companies_id;
-
-    /**
-     *
-     * @var string
-     */
-    public $name;
-
-    /**
-     *
-     * @var string
-     */
-    public $slug;
-
-    /**
-     *
-     * @var array
-     */
-    public $sidebar = [];
-
-    /**
-     *
-     * @var string
-     */
-    public $created_at;
-
-    /**
-     *
-     * @var string
-     */
-    public $updated_at;
-
-    /**
-     *
-     * @var integer
-     */
-    public $is_deleted;
+    public int $id;
+    public int $apps_id;
+    public string $name;
+    public string $slug;
+    public array $sidebar = [];
+    public string $created_at;
+    public ?string $updated_at = null;
+    public int $is_deleted = 0;
 }

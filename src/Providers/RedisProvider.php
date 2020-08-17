@@ -19,7 +19,6 @@ class RedisProvider implements ServiceProviderInterface
         $container->setShared(
             'redis',
             function (bool $prefix = true) use ($app) {
-                
                 $redis = new Redis();
                 $redis->connect(envValue('REDIS_HOST', '127.0.0.1'), (int) envValue('REDIS_PORT', 6379));
                 if ($prefix) {
@@ -40,7 +39,6 @@ class RedisProvider implements ServiceProviderInterface
         $container->setShared(
             'redisUnSerialize',
             function (bool $prefix = true) use ($app) {
-                
                 $redis = new Redis();
                 $redis->connect(envValue('REDIS_HOST', '127.0.0.1'), (int) envValue('REDIS_PORT', 6379));
                 if ($prefix) {

@@ -56,7 +56,6 @@ class MenusController extends BaseController
         $this->additionalSearchFields = [
             ['is_deleted', ':', '0'],
             ['apps_id', ':', $this->app->getId()],
-            ['companies_id', ':', $this->userData->currentCompanyId()],
         ];
     }
 
@@ -73,8 +72,8 @@ class MenusController extends BaseController
     {
         //find the info
         $record = Menus::findFirstOrFail([
-            'conditions' => 'slug = ?0 and apps_id = ?1 and companies_id = ?2 and is_deleted = 0',
-            'bind' => [$slug, $this->app->getId(), $this->userData->currentCompanyId()]
+            'conditions' => 'slug = ?0 and apps_id = ?1 and is_deleted = 0',
+            'bind' => [$slug, $this->app->getId()]
         ]);
 
         //get the results and append its relationships

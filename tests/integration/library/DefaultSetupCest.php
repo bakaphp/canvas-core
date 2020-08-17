@@ -190,7 +190,7 @@ class DefaultSetupCest
         $userInvite = new UsersInvite();
         $userInvite->companies_id = $I->grabFromDi('userData')->getDefaultCompany()->getId();
         $userInvite->users_id = $I->grabFromDi('userData')->getId();
-        $userInvite->app_id = $this->app->getId();
+        $userInvite->apps_id = $this->app->getId();
         $userInvite->role_id = Roles::existsById(1)->id;
         $userInvite->email = $this->usersInviteEmail;
         $userInvite->invite_hash = $this->random->base58();

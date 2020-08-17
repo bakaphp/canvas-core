@@ -19,7 +19,6 @@ class MenusMapper extends CustomMapper
     {
         $menusDto->id = $menus->getId();
         $menusDto->apps_id = $menus->apps_id;
-        $menusDto->companies_id = $menus->companies_id;
         $menusDto->name = $menus->name;
         $menusDto->slug = $menus->slug;
 
@@ -37,7 +36,7 @@ class MenusMapper extends CustomMapper
 
                     foreach ($childLinks as $childLink) {
                         $childArray = $this->convertObjectToArray($childLink);
-                        $childArray['slug'] = $childLink->getModules()->slug;
+                        $childArray['slug'] = $childLink->getModules() ?? $childLink->getModules()->slug;
                         $childLinksArray['links'][] = $childArray;
                     }
 
