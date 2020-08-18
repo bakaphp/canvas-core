@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace Canvas\Middleware;
 
 use Baka\Auth\Models\Sessions;
-use Canvas\Constants\Flags;
+use Baka\Auth\UserProvider;
 use Baka\Http\Exception\UnauthorizedException;
+use Canvas\Constants\Flags;
 use Canvas\Models\Apps;
 use Canvas\Models\AppsKeys;
 use Canvas\Models\Users;
@@ -73,15 +74,16 @@ class AuthenticationMiddleware extends TokenBase
             'userData',
             function () use ($config, $token, $request) {
                 $session = new Sessions();
+                $userData = UserProvider::get();
 
                 //all is empty and is dev, ok take use the first user
                 if (empty($token->getClaim('sessionId')) && strtolower($config->app->env) == Flags::DEVELOPMENT) {
-                    return Users::findFirst(1);
+                    return $userData::findFirst(1);
                 }
 
                 if (!empty($token->getClaim('sessionId'))) {
                     //user
-                    if (!$user = Users::getByEmail($token->getClaim('email'))) {
+                    if (!$user = $userData::getByEmail($token->getClaim('email'))) {
                         throw new UnauthorizedException('User not found');
                     }
 
