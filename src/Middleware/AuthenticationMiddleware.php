@@ -78,12 +78,12 @@ class AuthenticationMiddleware extends TokenBase
 
                 //all is empty and is dev, ok take use the first user
                 if (empty($token->getClaim('sessionId')) && strtolower($config->app->env) == Flags::DEVELOPMENT) {
-                    return $userData::findFirst(1);
+                    return $userData->findFirst(1);
                 }
 
                 if (!empty($token->getClaim('sessionId'))) {
                     //user
-                    if (!$user = $userData::getByEmail($token->getClaim('email'))) {
+                    if (!$user = $userData->getByEmail($token->getClaim('email'))) {
                         throw new UnauthorizedException('User not found');
                     }
 
