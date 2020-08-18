@@ -7,10 +7,6 @@ namespace Canvas\Models;
 use Baka\ASDecoder;
 use Canvas\Http\Exception\InternalServerErrorException;
 use Exception;
-use Facebook\Exception\ResponseException;
-use Facebook\Exception\SDKException;
-use Facebook\Facebook;
-use Google_Client;
 use Throwable;
 
 /**
@@ -118,40 +114,29 @@ class Sources extends AbstractModel
      */
     public function validation(string $email, string $token) : bool
     {
+        $di = DI::getDefault();
         try {
             switch ($this->title) {
                 case 'google':
-                        $client = new Google_Client([
-                            'client_id' => getenv('GOOGLE_CLIENT_ID')
-                        ]);
+                        $client = $di->getGoogle();
                         $payload = $client->verifyIdToken($token);
                         if ($payload) {
                             $userid = $payload['sub'];
                             return $payload['email'] === $email;
                         } else {
-                            throw new Exception('Invalid user');
+                            throw new Exception('Invalid user on google validation, payload or email incorrect');
                         }
                     break;
                 case 'facebook':
-
-                        $fb = new Facebook([
-                            'app_id' => getenv('FACEBOOK_APP_ID'),
-                            'app_secret' => getenv('FACEBOOK_APP_SECRET'),
-                            'default_graph_version' => 'v8.0',
-                            // . . .
-                        ]);
+                        $fb = $di->getFacebook();
                         $response = $fb->get('/me', $token);
                         $user = $response->getGraphUser();
                         if ($user) {
                             return true;
                         }
-                        throw new Exception('Invalid user');
+                        throw new Exception('Invalid user on facebook validation');
                 break;
             }
-        } catch (SDKException $e) {
-            throw new Exception($e->getMessage());
-        } catch (ResponseException $e) {
-            throw new Exception($e->getMessage());
         } catch (Throwable $e) {
             throw new Exception($e->getMessage());
         }
