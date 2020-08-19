@@ -34,6 +34,7 @@ class RolesController extends BaseController
         //get the list of roes for the systems + my company
         $this->additionalSearchFields = [
             ['is_deleted', ':', '0'],
+            ['apps_id', ':', Apps::CANVAS_DEFAULT_APP_ID . '|' . $this->acl->getApp()->getId()],
             ['companies_id', ':', '1|' . $this->userData->currentCompanyId()],
         ];
     }
