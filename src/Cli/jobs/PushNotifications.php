@@ -78,8 +78,11 @@ class PushNotifications extends Job implements QueueableJobInterface
             'contents' => [
                 'en' => $this->message
             ],
-            'data' => $this->params
         ];
+        
+        if(!empty($this->params)){
+            $pushBody['data'] = $this->params;
+        }
 
         /**
          * @todo change to use some constante , ID dont tell you what device it is
@@ -95,12 +98,17 @@ class PushNotifications extends Job implements QueueableJobInterface
         }
 
         try {
-            $this->oneSignal(
+            $response = $this->oneSignal(
                 $config->pushNotifications->appId,
                 $config->pushNotifications->authKey,
                 $config->pushNotifications->userAuthKey
             )->notifications->add(
                 $pushBody
+            );
+            
+            Di::getDefault()->get('log')->info(
+                'Push notification Sent via OneSignal - ',
+                [$response]
             );
         } catch (Exception $e) {
             if (Di::getDefault()->has('log')) {
