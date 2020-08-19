@@ -77,7 +77,7 @@ class PushNotifications extends Job implements QueueableJobInterface
         $pushBody = [
             'contents' => [
                 'en' => $this->message
-            ],
+            ]
         ];
         
         if(!empty($this->params)){
@@ -106,10 +106,12 @@ class PushNotifications extends Job implements QueueableJobInterface
                 $pushBody
             );
             
-            Di::getDefault()->get('log')->info(
-                'Push notification Sent via OneSignal - ',
-                [$response]
-            );
+            if (Di::getDefault()->has('log')) {
+                Di::getDefault()->get('log')->info(
+                    'Push notification Sent via OneSignal - ',
+                    [$response]
+                );
+            }
         } catch (Exception $e) {
             if (Di::getDefault()->has('log')) {
                 Di::getDefault()->get('log')->error(
