@@ -108,7 +108,7 @@ class PushNotifications extends Job implements QueueableJobInterface
             
             if (Di::getDefault()->has('log')) {
                 Di::getDefault()->get('log')->info(
-                    'Push notification Sent via OneSignal - ',
+                    'Sending Push Notification to UserId: '. $this->users->getId() .' - ',
                     [$response]
                 );
             }
