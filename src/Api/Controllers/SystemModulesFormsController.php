@@ -60,8 +60,8 @@ class SystemModulesFormsController extends BaseController
     public function getBySlug(string $slug) : Response
     {
         return $this->response(SystemModulesForms::findFirstOrFail([
-            'conditions' => 'slug = ?0 and apps_id = ?1 and companies_id = ?2 and is_deleted = 0',
-            'bind' => [$slug, $this->app->getId(),$this->userData->currentCompanyId()]
+            'conditions' => 'slug = :slug: and apps_id = :apps_id: and companies_id = :companies_id: and is_deleted = 0',
+            'bind' => ['slug' => $slug, 'apps_id' => $this->app->getId(), 'companies_id' => $this->userData->currentCompanyId()]
         ]));
     }
 }
