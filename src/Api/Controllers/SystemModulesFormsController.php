@@ -61,7 +61,11 @@ class SystemModulesFormsController extends BaseController
     {
         return $this->response(SystemModulesForms::findFirstOrFail([
             'conditions' => 'slug = :slug: and apps_id = :apps_id: and companies_id = :companies_id: and is_deleted = 0',
-            'bind' => ['slug' => $slug, 'apps_id' => $this->app->getId(), 'companies_id' => $this->userData->currentCompanyId()]
+            'bind' => [
+                'slug' => $slug,
+                'apps_id' => $this->app->getId(),
+                'companies_id' => $this->userData->currentCompanyId()
+            ]
         ]));
     }
 }
