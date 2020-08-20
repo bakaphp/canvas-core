@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Canvas\Api\Controllers;
 
 use Canvas\Models\SystemModulesForms;
+use Phalcon\Http\Response;
 
 class SystemModulesFormsController extends BaseController
 {
@@ -45,5 +46,22 @@ class SystemModulesFormsController extends BaseController
             ['companies_id', ':', $this->userData->currentCompanyId()],
             ['apps_id', ':', $this->app->getId()],
         ];
+    }
+
+    /**
+     * Get the record by its slug.
+     *
+     * @param string $slug
+     *
+     * @throws Exception
+     *
+     * @return Response
+     */
+    public function getBySlug(string $slug) : Response
+    {
+        return $this->response(SystemModulesForms::findFirstOrFail([
+            'conditions' => 'slug = ?0 and apps_id = ?1 and companies_id = ?2 and is_deleted = 0',
+            'bind' => [$slug, $this->app->getId(),$this->userData->currentCompanyId()]
+        ]));
     }
 }
