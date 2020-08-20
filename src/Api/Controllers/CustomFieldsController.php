@@ -117,4 +117,20 @@ class CustomFieldsController extends BaseController
         }
         return $record;
     }
+
+    /**
+     * Deletes a custom field and all its values
+     *
+     * @param int $id
+     *
+     * @return Response
+     */
+    public function delete(int $id) : Response
+    {
+        $customField = $this->model::findFirstOrFail($id);
+        $customField->removeValues();
+        $customField->delete();
+
+        return $this->response('Custom Field deleted');
+    }
 }
