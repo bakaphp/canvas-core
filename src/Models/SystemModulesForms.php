@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace Canvas\Models;
 
 use Phalcon\Di;
+use Baka\Validation as CanvasValidation;
+use Phalcon\Validation\Validator\Uniqueness;
 
 class SystemModulesForms extends AbstractModel
 {
@@ -54,5 +56,24 @@ class SystemModulesForms extends AbstractModel
         $this->apps_id = Di::getDefault()->getApp()->getId();
         parent::beforeCreate();
     }
+
+    /**
+     * Validations and business logic.
+     */
+    public function validation()
+    {
+        $validator = new CanvasValidation();
+
+        $validator->add(
+            'slug',
+            new Uniqueness([
+                'field' => 'slug',
+                'message' => _('A slug with the same value already exists'),
+            ])
+        );
+
+        return $this->validate($validator);
+    }
+
 
 }
