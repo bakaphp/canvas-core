@@ -128,7 +128,14 @@ class CustomFieldsController extends BaseController
      */
     public function delete(int $id) : Response
     {
-        $customField = $this->model::findFirstOrFail($id);
+        $customField = $this->model::findFirstOrFail([
+            "conditions" => "id = :id: and apps_id = :apps_id: and companies_id = :companies_id: and is_deleted = 0",
+            "bind" => [
+                "id" => $id, 
+                "apps_id" => $this->app->getId(), 
+                "companies_id" => $this->userData->currentCompanyId()
+            ]
+        ]);
         $customField->removeValues();
         $customField->delete();
 
