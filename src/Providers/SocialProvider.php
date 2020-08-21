@@ -16,16 +16,14 @@ class SocialProvider implements ServiceProviderInterface
      */
     public function register(DiInterface $container)
     {
-        $app = envValue('GEWAER_APP_ID', 1);
-
         $container->setShared(
             'facebook',
             function (bool $prefix = true) use ($app) {
                 //Connect to redis
 
                 $fb = new Facebook([
-                    'app_id' => getenv('FACEBOOK_APP_ID'),
-                    'app_secret' => getenv('FACEBOOK_APP_SECRET'),
+                    'app_id' => envValue('FACEBOOK_APP_ID'),
+                    'app_secret' => envValue('FACEBOOK_APP_SECRET'),
                     'default_graph_version' => 'v8.0',
                     // . . .
                 ]);
@@ -38,7 +36,7 @@ class SocialProvider implements ServiceProviderInterface
             function (bool $prefix = true) use ($app) {
                 //Connect to redis
                 $client = new Google_Client([
-                    'client_id' => getenv('GOOGLE_CLIENT_ID')
+                    'client_id' => envValue('GOOGLE_CLIENT_ID')
                 ]);
                 return $client;
             }

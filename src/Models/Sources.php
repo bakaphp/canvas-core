@@ -138,7 +138,7 @@ class Sources extends AbstractModel
                 break;
             }
         } catch (Throwable $e) {
-            throw new Exception($e->getMessage());
+            throw $e;
         }
     }
 }
