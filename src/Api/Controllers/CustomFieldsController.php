@@ -10,6 +10,7 @@ use Phalcon\Http\Request;
 use Canvas\Dto\CustomFields as CustomFieldsDto;
 use Canvas\Mapper\CustomFieldsMapper;
 use Canvas\Contracts\Controllers\ProcessOutputMapperTrait;
+use Phalcon\Http\Response;
 
 
 class CustomFieldsController extends BaseController
