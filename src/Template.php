@@ -28,7 +28,7 @@ class Template
     public static function generate(string $name, array $params) : string
     {
         $di = Di::getDefault();
-        $view = $di->getView();
+        $view = $di->get('view');
         $filesystem = $di->get('filesystem', ['local']);
 
         //get the template
