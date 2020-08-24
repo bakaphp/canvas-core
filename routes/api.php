@@ -87,6 +87,9 @@ $privateRoutes = [
     Route::put('/menus/{menusId}/links/{id}')->controller('MenusLinksController')->action('edit'),
     Route::delete('/menus/{menusId}/links/{id}')->controller('MenusLinksController')->action('delete'),
     Route::crud('/menus-links')->controller('MenusLinksController'),
+    Route::post('/payments/apple')->controller('PaymentsController')->action('createApplePayIntent'),
+    Route::get('/payments/{intentId}/confirm')->controller('PaymentsController')->action('confirmApplePayment'),
+
 ];
 
 $privateSubscriptionRoutes = [
