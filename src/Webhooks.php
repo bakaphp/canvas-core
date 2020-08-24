@@ -82,8 +82,8 @@ class Webhooks
      */
     public static function process(string $module, array $data, string $action, array $headers = []) : array
     {
-        $appId = Di::getDefault()->getApp()->getId();
-        $company = Di::getDefault()->getUserData()->getDefaultCompany();
+        $appId = Di::getDefault()->get('app')->getId();
+        $company = Di::getDefault()->get('userData')->getDefaultCompany();
 
         $systemModule = SystemModules::getByName($module);
 

@@ -18,9 +18,9 @@ class Helper extends FilesystemHelper
     /**
      * Given a file create it in the filesystem.
      *
-     * @param File $file
+     * @param \Phalcon\Http\Request\File $file
      *
-     * @return bool
+     * @return FileSystem
      */
     public static function upload(FileInterface $file) : FileSystem
     {
@@ -71,7 +71,7 @@ class Helper extends FilesystemHelper
      * Given a image set its dimension.
      *
      * @param File $file
-     * @param FileSystem $fileSystem
+     * @param \Canvas\Models\FileSystem $fileSystem
      *
      * @return void
      */
