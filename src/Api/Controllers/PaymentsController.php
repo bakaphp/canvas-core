@@ -215,47 +215,6 @@ class PaymentsController extends BaseController
     }
 
     /**
-     * Create a new Apple Pay Intent
-     *
-     * @return Response
-     */
-    public function createPaymentIntent(): Response
-    {
-        $request = $this->request->getPostData();
-
-        $stripe = new \Stripe\StripeClient(getenv('STRIPE_SECRET'));
-
-        $intent = $stripe->paymentIntents->create([
-            'amount' => $request['amount'],
-            'currency' => 'usd',
-            'receipt_email' => $this->userData->email,
-            'customer' => $this->userData->stripe_id,
-            'payment_method_types' => ['card'],
-            'setup_future_usage' => 'on_session'
-        ]);
-        
-        return $this->response($intent->id);
-    }
-
-    /**
-     * Confirm Apple Pay Payment
-     *
-     * @param string $intentId
-     * @return Response
-     */
-    public function confirmPaymentIntent(string $intentId): Response
-    {
-        $stripe = new \Stripe\StripeClient(getenv('STRIPE_SECRET'));
-
-        $response = $stripe->paymentIntents->confirm(
-            $intentId,
-            ['payment_method' => 'pm_card_visa']
-        );
-
-        return $this->response($response);
-    }
-
-    /**
      * Updates subscription payment status depending on charge event.
      * @param $user
      * @param $payload
