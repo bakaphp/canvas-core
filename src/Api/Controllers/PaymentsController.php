@@ -219,7 +219,7 @@ class PaymentsController extends BaseController
      *
      * @return Response
      */
-    public function createApplePayIntent(): Response
+    public function createPaymentIntent(): Response
     {
         $request = $this->request->getPostData();
 
@@ -243,7 +243,7 @@ class PaymentsController extends BaseController
      * @param string $intentId
      * @return Response
      */
-    public function confirmApplePayment(string $intentId): Response
+    public function confirmPaymentIntent(string $intentId): Response
     {
         $stripe = new \Stripe\StripeClient(getenv('STRIPE_SECRET'));
 
@@ -251,10 +251,6 @@ class PaymentsController extends BaseController
             $intentId,
             ['payment_method' => 'pm_card_visa']
         );
-
-        $response = json_decode(json_encode($response), true);
-
-        $this->updateSubscriptionPaymentStatus($this->userData, $response);
 
         return $this->response($response);
     }
