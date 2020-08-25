@@ -13,5 +13,4 @@ class UnprocessableEntityHttpException extends HttpException
 {
     protected $httpCode = Response::NOT_ACCEPTABLE;
     protected $httpMessage = 'Not Acceptable';
-    protected $data;
 }

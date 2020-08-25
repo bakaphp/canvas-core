@@ -13,5 +13,4 @@ class NotFoundException extends HttpException
 {
     protected $httpCode = Response::NOT_FOUND;
     protected $httpMessage = 'Not Found';
-    protected $data;
 }
