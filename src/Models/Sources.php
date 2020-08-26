@@ -4,14 +4,12 @@ declare(strict_types=1);
 
 namespace Canvas\Models;
 
-use Phalcon\Di;
-use Canvas\Exception\ModelException;
 use Baka\ASDecoder;
 use Canvas\Http\Exception\InternalServerErrorException;
-
+use Exception;
 
 /**
- * Class Resources
+ * Class Resources.
  *
  * @package Canvas\Models
  *
@@ -21,7 +19,7 @@ class Sources extends AbstractModel
 {
     /**
      *
-     * @var integer
+     * @var int
      */
     public $id;
 
@@ -39,7 +37,7 @@ class Sources extends AbstractModel
 
     /**
      *
-     * @var integer
+     * @var int
      */
     public $language_id;
 
@@ -57,7 +55,7 @@ class Sources extends AbstractModel
 
     /**
      *
-     * @var integer
+     * @var int
      */
     public $is_deleted;
 
@@ -74,25 +72,27 @@ class Sources extends AbstractModel
      *
      * @return string
      */
-    public function getSource(): string
+    public function getSource() : string
     {
         return 'sources';
     }
 
     /**
-     * Verify if source is Apple
+     * Verify if source is Apple.
      */
-    public function isApple(): bool
+    public function isApple() : bool
     {
         return $this->title == 'apple';
     }
 
     /**
      * Validate Apple User.
+     *
      * @param string $identityToken
+     *
      * @return object
      */
-    public function validateAppleUser(string $identityToken): object
+    public function validateAppleUser(string $identityToken) : object
     {
         $appleUserInfo = ASDecoder::getAppleSignInPayload($identityToken);
 
@@ -101,5 +101,39 @@ class Sources extends AbstractModel
         }
 
         return $appleUserInfo;
+    }
+
+    /**
+     * validation.
+     *
+     * @param  string $email
+     * @param  string $token
+     *
+     * @return bool
+     */
+    public function validation(string $email, string $token) : bool
+    {
+        $di = DI::getDefault();
+        switch ($this->title) {
+                case 'google':
+                        $client = $di->getGoogle();
+                        $payload = $client->verifyIdToken($token);
+                        if ($payload) {
+                            $userid = $payload['sub'];
+                            return $payload['email'] === $email;
+                        } else {
+                            throw new Exception('Invalid user on google validation, payload or email incorrect');
+                        }
+                    break;
+                case 'facebook':
+                        $fb = $di->getFacebook();
+                        $response = $fb->get('/me', $token);
+                        $user = $response->getGraphUser();
+                        if ($user) {
+                            return true;
+                        }
+                        throw new Exception('Invalid user on facebook validation');
+                break;
+        }
     }
 }
