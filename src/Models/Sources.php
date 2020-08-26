@@ -7,7 +7,6 @@ namespace Canvas\Models;
 use Baka\ASDecoder;
 use Canvas\Http\Exception\InternalServerErrorException;
 use Exception;
-use Throwable;
 
 /**
  * Class Resources.
@@ -115,8 +114,7 @@ class Sources extends AbstractModel
     public function validation(string $email, string $token) : bool
     {
         $di = DI::getDefault();
-        try {
-            switch ($this->title) {
+        switch ($this->title) {
                 case 'google':
                         $client = $di->getGoogle();
                         $payload = $client->verifyIdToken($token);
@@ -136,9 +134,6 @@ class Sources extends AbstractModel
                         }
                         throw new Exception('Invalid user on facebook validation');
                 break;
-            }
-        } catch (Throwable $e) {
-            throw $e;
         }
     }
 }
