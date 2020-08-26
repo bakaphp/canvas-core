@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Canvas\Api\Controllers;
 
 use Canvas\Models\Roles;
+use Canvas\Models\Apps;
 
 class RolesController extends BaseController
 {
