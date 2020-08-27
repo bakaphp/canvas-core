@@ -18,6 +18,7 @@ $publicRoutes = [
     Route::post('/users/social')->controller('AuthController')->action('loginBySocial'),
     Route::get('/countries')->controller('CountriesController')->action('index'),
     Route::get('/countries/{id}')->controller('CountriesController')->action('getById'),
+    Route::get('/timezones')->controller('TimeZonesController'),
 ];
 
 $privateRoutes = [
@@ -45,8 +46,6 @@ $privateRoutes = [
     Route::crud('/filesystem'),
     Route::crud('/custom-fields-types')->controller('CustomFieldsTypesController'),
     Route::crud('/custom-fields-values')->controller('CustomFieldsValuesController'),
-
-    Route::get('/timezones')->controller('TimeZonesController'),
     Route::post('/notifications-read-all')->controller('NotificationsController')->action('cleanAll'),
     Route::post('/users/{id}/devices')->controller('UserLinkedSourcesController')->action('devices'),
     Route::delete('/users/{id}/devices/{deviceId}')->controller('UserLinkedSourcesController')->action('detachDevice'),
