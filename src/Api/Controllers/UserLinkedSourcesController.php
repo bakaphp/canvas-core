@@ -78,11 +78,13 @@ class UserLinkedSourcesController extends BaseController
         $validation->add('deviceId', new PresenceOf(['message' => _('device ID is required.')]));
         $msg = null;
 
+        $request = $this->request->getPostData();
+        
         //validate this form for password
-        $validation->validate($this->request->getPost());
-
-        $app = $this->request->getPost('app', 'string');
-        $deviceId = $this->request->getPost('deviceId', 'string');
+        $validation->validate($request);
+        
+        $app = $request['app']; //$this->request->getPost('app', 'string');
+        $deviceId = $request['deviceId']; //$this->request->getPost('deviceId', 'string');
 
         //get the app source
         if ($source = Sources::getByTitle($app)) {
