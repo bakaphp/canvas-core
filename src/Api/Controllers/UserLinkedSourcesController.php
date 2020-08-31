@@ -79,7 +79,6 @@ class UserLinkedSourcesController extends BaseController
         $msg = null;
 
         $request = $this->request->getPostData();
-        
         //validate this form for password
         $validation->validate($request);
         
