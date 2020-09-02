@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace Canvas\Mapper;
 
 use AutoMapperPlus\CustomMapper\CustomMapper;
+use Baka\Contracts\Auth\UserInterface;
+use Baka\Contracts\Database\ModelInterface;
 use Baka\Contracts\Mapper\RelationshipTrait;
+use function Baka\getShortClassName;
 use Canvas\Models\Notifications;
 use Canvas\Models\SystemModules;
 use Exception;
-use ReflectionClass;
 
 // You can either extend the CustomMapper, or just implement the MapperInterface
 // directly.
@@ -48,21 +50,16 @@ class NotificationMapper extends CustomMapper
         $notificationDto->read = $notification->read;
         $notificationDto->created_at = $notification->created_at;
         $notificationDto->updated_at = $notification->updated_at;
-        $notificationDto->from = [
-            'user_id' => $notification->from->getId(),
-            'displayname' => $notification->from->displayname,
-            'avatar' => $notification->from->getPhoto() ? $notification->from->getPhoto()->url : null,
-        ];
+        $notificationDto->from = $this->fromFormatting($notification->from);
 
         try {
             $systemModule = SystemModules::getById($notification->system_modules_id);
             $systemModuleEntity = new $systemModule->model_name;
             $entity = [];
             if ($entity = $systemModuleEntity::findFirst($notification->entity_id)) {
-                $notificationDto->entity = $entity->toArray();
+                $notificationDto->entity = $this->cleanUpEntity($entity);
             }
-            $reflect = new ReflectionClass($systemModuleEntity);
-            $notificationDto->entity['type'] = $reflect->getShortName();
+            $notificationDto->entity['type'] = getShortClassName($entity);
         } catch (Exception $e) {
             $notificationDto->entity['type'] = null;
         }
@@ -70,5 +67,33 @@ class NotificationMapper extends CustomMapper
         $this->getRelationships($notification, $notificationDto, $context);
 
         return $notificationDto;
+    }
+
+    /**
+     * Given entity , cleanup any properties that will affect json formatting.
+     *
+     * @param ModelInterface $entity
+     *
+     * @return array
+     */
+    protected function cleanUpEntity(ModelInterface $entity) : array
+    {
+        return $entity->toArray();
+    }
+
+    /**
+     * Allow user to update from properties.
+     *
+     * @param UserInterface $user
+     *
+     * @return array
+     */
+    protected function fromFormatting(UserInterface $user) : array
+    {
+        return [
+            'user_id' => $user->getId(),
+            'displayname' => $user->displayname,
+            'avatar' => $user->getPhoto() ? $notification->from->getPhoto()->url : null,
+        ];
     }
 }
