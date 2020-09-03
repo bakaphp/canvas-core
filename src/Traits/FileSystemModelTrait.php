@@ -64,7 +64,7 @@ trait FileSystemModelTrait
      * @param array data
      * @param array whiteList
      *
-     * @return boolean
+     * @return bool
      */
     public function updateOrFail($data = null, $whiteList = null) : bool
     {
@@ -79,7 +79,9 @@ trait FileSystemModelTrait
 
                 $this->uploadedFiles = $data['files'];
             } else {
-                $this->deleteFiles();
+                if ((bool) $this->di->get('app')->get('delete_images_on_empty_files_field')) {
+                    $this->deleteFiles();
+                }
             }
         }
 
@@ -110,7 +112,7 @@ trait FileSystemModelTrait
      * @param array data
      * @param array whiteList
      *
-     * @return boolean
+     * @return bool
      */
     public function saveOrFail($data = null, $whiteList = null) : bool
     {
@@ -393,7 +395,7 @@ trait FileSystemModelTrait
     protected function searchCriteriaForFilesByName(string $fieldName) : array
     {
         $systemModule = SystemModules::getSystemModuleByModelName(self::class);
-        $appPublicImages = (bool) $this->di->getApp()->get('public_images');
+        $appPublicImages = (bool) $this->di->get('app')->get('public_images');
 
         $bindParams = [
             'system_module_id' => $systemModule->getId(),
@@ -429,7 +431,7 @@ trait FileSystemModelTrait
     public function getAttachmentByNameAndAttributes(string $fieldName, string $key, string $value)
     {
         $systemModule = SystemModules::getSystemModuleByModelName(self::class);
-        $appPublicImages = (bool) $this->di->getApp()->get('public_images');
+        $appPublicImages = (bool) $this->di->get('app')->get('public_images');
 
         $bindParams = [
             'system_module_id' => $systemModule->getId(),
@@ -475,7 +477,7 @@ trait FileSystemModelTrait
     public function getAttachments(string $fileType = null) : ResultsetInterface
     {
         $systemModule = SystemModules::getSystemModuleByModelName(self::class);
-        $appPublicImages = (bool) $this->di->getApp()->get('public_images');
+        $appPublicImages = (bool) $this->di->get('app')->get('public_images');
 
         $bindParams = [
             'system_module_id' => $systemModule->getId(),

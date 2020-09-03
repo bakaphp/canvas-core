@@ -7,11 +7,11 @@ namespace Canvas\Notifications;
 use Baka\Contracts\Auth\UserInterface;
 use Baka\Contracts\Notifications\NotificationInterface;
 use Baka\Mail\Message;
+use Baka\Queue\Queue;
 use Canvas\Models\AbstractModel;
 use Canvas\Models\Notifications;
 use Canvas\Models\NotificationType;
 use Canvas\Models\Users;
-use Baka\Queue\Queue;
 use Phalcon\Di;
 use Phalcon\Mvc\Model;
 use Phalcon\Mvc\ModelInterface;
@@ -29,7 +29,7 @@ class Notification implements NotificationInterface
     /**
      * Send this notification to the queue?
      *
-     * @var boolean
+     * @var bool
      */
     protected bool $useQueue = false;
 
@@ -120,7 +120,7 @@ class Notification implements NotificationInterface
     }
 
     /**
-     * Set the user from who the notification if comming from.
+     * Set the user from who the notification if coming from.
      *
      * @param User $user
      *
@@ -142,7 +142,7 @@ class Notification implements NotificationInterface
     }
 
     /**
-     * get the user from who the notification if comming from.
+     * get the user from who the notification if coming from.
      *
      * @return User
      */
@@ -165,9 +165,9 @@ class Notification implements NotificationInterface
      * Process the notification
      *  - handle the db
      *  - trigger the notification
-     *  - knows if we have to send it to queu.
+     *  - knows if we have to send it to queue.
      *
-     * @return boolean
+     * @return bool
      */
     public function process() : bool
     {
@@ -196,7 +196,7 @@ class Notification implements NotificationInterface
     /**
      * Send to our internal Notification queue.
      *
-     * @return boolean
+     * @return bool
      */
     public function sendToQueue() : bool
     {
@@ -214,7 +214,7 @@ class Notification implements NotificationInterface
     /**
      * Send the noficiatino to the places the user defined.
      *
-     * @return boolean
+     * @return bool
      */
     public function trigger() : bool
     {
