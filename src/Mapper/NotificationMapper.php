@@ -93,7 +93,7 @@ class NotificationMapper extends CustomMapper
         return [
             'user_id' => $user->getId(),
             'displayname' => $user->displayname,
-            'avatar' => $user->getPhoto() ? $notification->from->getPhoto()->url : null,
+            'avatar' => $user->getPhoto() ? $user->getPhoto()->url : null,
         ];
     }
 }
