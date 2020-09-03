@@ -79,7 +79,9 @@ trait FileSystemModelTrait
 
                 $this->uploadedFiles = $data['files'];
             } else {
-                $this->deleteFiles();
+                if ((bool) $this->di->get('app')->get('delete_images_on_empty_files_field')) {
+                    $this->deleteFiles();
+                }
             }
         }
 
