@@ -73,7 +73,8 @@ trait FileSystemModelTrait
             if (!empty($data['files'])) {
                 /**
                  * @todo for now lets delete them all and updated them
-                 * look for a better solution later, this can since we are not using transactions
+                 * look for a better solution later , this can cause issues
+                 * since we are not using transactions
                  */
                 $this->deleteFiles();
 
