@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Canvas\Models;
 
-use Baka\Social\Apple\ASDecoder;
 use Baka\Http\Exception\InternalServerErrorException;
+use Baka\Social\Apple\ASDecoder;
 
 /**
  * Class Resources.
@@ -20,6 +20,10 @@ class Sources extends AbstractModel
     public string $url;
     public ?int $language_id = null;
 
+    const APPLE = 'apple';
+    const FACEBOOK = 'facebook';
+    const GOOGLE = 'google';
+
     /**
      * Initialize method for model.
      */
@@ -33,7 +37,7 @@ class Sources extends AbstractModel
      */
     public function isApple() : bool
     {
-        return $this->title == 'apple';
+        return $this->title == self::APPLE;
     }
 
     /**
