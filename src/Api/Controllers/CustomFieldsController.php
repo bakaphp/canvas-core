@@ -10,6 +10,7 @@ use Phalcon\Http\Request;
 use Canvas\Dto\CustomFields as CustomFieldsDto;
 use Canvas\Mapper\CustomFieldsMapper;
 use Canvas\Contracts\Controllers\ProcessOutputMapperTrait;
+use Phalcon\Http\Response;
 
 
 class CustomFieldsController extends BaseController
@@ -116,5 +117,28 @@ class CustomFieldsController extends BaseController
             $record->addValues($request['values']);
         }
         return $record;
+    }
+
+    /**
+     * Deletes a custom field and all its values
+     *
+     * @param int $id
+     *
+     * @return Response
+     */
+    public function delete(int $id) : Response
+    {
+        $customField = $this->model::findFirstOrFail([
+            "conditions" => "id = :id: and apps_id = :apps_id: and companies_id = :companies_id: and is_deleted = 0",
+            "bind" => [
+                "id" => $id, 
+                "apps_id" => $this->app->getId(), 
+                "companies_id" => $this->userData->currentCompanyId()
+            ]
+        ]);
+        $customField->removeValues();
+        $customField->delete();
+
+        return $this->response('Custom Field deleted');
     }
 }

@@ -82,4 +82,25 @@ class CustomFields extends BakaCustomFields
 
         return true;
     }
+
+    /**
+     * Remove all the values of a custom field
+     *
+     * @param array $values
+     *
+     * @return bool
+     */
+    public function removeValues() : bool
+    {
+        $customFieldsValues = CustomFieldsValues::findOrFail([
+            "conditions" => 'custom_fields_id = :custom_fields_id:',
+            "bind" => ['custom_fields_id' => $this->getId()]
+        ]);
+
+        foreach ($customFieldsValues as $customFieldsValue) {
+            $customFieldsValue->delete();
+        }
+
+        return true;
+    }
 }

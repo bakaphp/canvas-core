@@ -79,7 +79,7 @@ class Apps extends Job implements QueueableJobInterface
         Di::getDefault()->getAcl()->addRole($appName .'.Agents');
         Di::getDefault()->getAcl()->addRole($appName .'.Users');
 
-        Di::getDefault()->getAcl()->addResource($appName .'.Users', ['read', 'list', 'create', 'update', 'delete']);
+        Di::getDefault()->getAcl()->addComponent($appName .'.Users', ['read', 'list', 'create', 'update', 'delete']);
         Di::getDefault()->getAcl()->allow('Admins', $appName .'.Users', ['read', 'list', 'create', 'update', 'delete']);
 
         return true;
