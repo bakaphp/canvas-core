@@ -20,7 +20,9 @@ class Sources extends AbstractModel
     public string $url;
     public ?int $language_id = null;
 
-    public const APPLE = 'apple';
+    const APPLE = 'apple';
+    const FACEBOOK = 'facebook';
+    const GOOGLE = 'google';
 
     /**
      * Initialize method for model.
