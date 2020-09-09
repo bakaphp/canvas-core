@@ -275,4 +275,22 @@ class PaymentsController extends BaseController
             $this->log->error("Subscription not found\n");
         }
     }
+
+    /**
+     * Update subscription payment status via Mobile Payments
+     *
+     * @return Response
+     */
+    public function updateSubscriptionStatusMobilePayments(): Response
+    {
+        $request = $this->request->getPostData();
+        $receipt = $this->validateReceipt($request['receipt-data']);
+
+        if (gettype($receipt) == 'string') {
+            throw new Throwable($receipt);
+        }
+
+        $this->updateSubscriptionPaymentStatus($this->userData, $this->parseReceiptData($receipt, $request['source']));
+        return $this->response($receipt);
+    }
 }
