@@ -12,6 +12,8 @@ use Canvas\Models\Subscription;
 use Canvas\Models\CompaniesSettings;
 use Canvas\Template;
 use Phalcon\Di;
+use ReceiptValidator\iTunes\Validator as iTunesValidator;
+use Kanvas\Packages\MobilePayments\Contracts\ReceiptValidatorTrait;
 
 /**
  * Class PaymentsController.
@@ -25,6 +27,11 @@ use Phalcon\Di;
  */
 class PaymentsController extends BaseController
 {
+    /**
+     * Receipt Validator Trait.
+     */
+    use ReceiptValidatorTrait;
+
     /**
      * Stripe Webhook Handlers.
      */
@@ -222,13 +229,22 @@ class PaymentsController extends BaseController
      */
     public function updateSubscriptionPaymentStatus(Users $user, array $payload): void
     {
-        $chargeDate = date('Y-m-d H:i:s', (int) $payload['data']['object']['created']);
+        // Identify if payload comes from mobile payments
+        if ($payload['is_mobile']) {
+            $chargeDate = $payload['receipt_creation_date'];
+            $paidStatus = $payload['paid_status'];
+            $subscriptionStatus = $payload['subscription_status'];
+        } else {
+            $chargeDate = date('Y-m-d H:i:s', (int) $payload['data']['object']['created']);
+            $paidStatus = $payload['data']['object']['paid'];
+            $subscriptionStatus = $payload['data']['object']['status'];
+        }
 
         //Fetch current user subscription
         $subscription = Subscription::getByDefaultCompany($user);
 
         if (is_object($subscription)) {
-            $subscription->paid = $payload['data']['object']['paid'] ? 1 : 0;
+            $subscription->paid = $paidStatus ?? 0;
             $subscription->charge_date = $chargeDate;
 
             $subscription->validateByGracePeriod();
@@ -239,12 +255,12 @@ class PaymentsController extends BaseController
             }
 
             //Paid status is false if plan has been canceled
-            if ($payload['data']['object']['status'] == 'canceled') {
+            if ($subscriptionStatus == 'canceled') {
                 $subscription->paid = 0;
                 $subscription->charge_date = null;
             }
 
-            if ($subscription->update()) {
+            if ($subscription->updateOrFail()) {
                 //Update companies setting
                 $paidSetting = CompaniesSettings::findFirst([
                     'conditions' => "companies_id = ?0 and name = 'paid' and is_deleted = 0",
@@ -252,9 +268,9 @@ class PaymentsController extends BaseController
                 ]);
 
                 $paidSetting->value = (string) $subscription->paid;
-                $paidSetting->update();
+                $paidSetting->updateOrFail();
             }
-            $this->log->info("User with id: {$user->id} charged status was {$payload['data']['object']['paid']} \n");
+            $this->log->info("User with id: {$user->id} charged status was {$paidStatus} \n");
         } else {
             $this->log->error("Subscription not found\n");
         }
