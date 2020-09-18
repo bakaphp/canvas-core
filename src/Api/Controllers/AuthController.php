@@ -419,4 +419,20 @@ class AuthController extends \Baka\Auth\AuthController
     {
         return ;
     }
+
+    /**
+     * Validate auth token life status
+     *
+     * @return Response
+     */
+    public function isTokenAlive(): Response
+    {
+        $request = $this->request->getPostData();
+        $validation = new CanvasValidation();
+        $validation->add('access_token', new PresenceOf(['message' => _('access_token is required.')]));
+        $validation->validate($request);
+        $accessToken = $this->getToken($request['access_token']);
+
+        return $this->response(time() != $accessToken->getClaim('exp') ? true:false);
+    }
 }

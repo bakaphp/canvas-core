@@ -8,6 +8,7 @@ $publicRoutes = [
     Route::get('/')->controller('IndexController'),
     Route::post('/auth')->controller('AuthController')->action('login'),
     Route::post('/refresh-token')->controller('AuthController')->action('refresh'),
+    Route::post('/auth/validate')->controller('AuthController')->action('isTokenAlive'),
     Route::post('/users')->controller('AuthController')->action('signup'),
     Route::post('/auth/forgot')->controller('AuthController')->action('recover'),
     Route::post('/auth/reset/{key}')->controller('AuthController')->action('reset'),
