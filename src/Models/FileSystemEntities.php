@@ -208,26 +208,33 @@ class FileSystemEntities extends AbstractModel
      * @param integer $id
      * @return FileSystemEntities[]
      */
-    public static function getAllByEntityId(int $id)
+    public static function getAllByEntityId(int $id, ?SystemModules $systemModule = null)
     {
-        $app = Di::getDefault()->getApp();
+        $app = Di::getDefault()->get('app');
 
-        $addCompanySql = null;
+        $addSql = null;
 
         $bind = [
             'id' => $id,
             'apps_id' => $app->getId(),
         ];
 
-        if (!(bool) Di::getDefault()->getApp()->get('public_images')) {
-            $companyId = Di::getDefault()->getUserData()->currentCompanyId();
-            $addCompanySql = 'AND companies_id = :companies_id:';
+        if (!(bool) Di::getDefault()->get('app')->get('public_images')) {
+            $companyId = Di::getDefault()->get('userData')->currentCompanyId();
+            $addSql = 'AND companies_id = :companies_id:';
             $bind['companies_id'] = $companyId;
         }
 
+        if ($systemModule instanceof SystemModules) {
+            $addSql .= ' AND system_modules_id = :system_modules_id:';
+            $bind['system_modules_id'] = $systemModule->getId();
+        }
+
         $files = self::find([
-            'conditions' => 'entity_id = :id: ' . $addCompanySql . ' AND  is_deleted = 0 AND 
-                                filesystem_id in (SELECT s.id from \Canvas\Models\FileSystem s WHERE s.apps_id = :apps_id: AND s.is_deleted = 0)',
+            'conditions' => 'entity_id = :id: ' . $addSql . ' AND  is_deleted = 0 
+                            AND filesystem_id in (
+                                SELECT s.id from \Canvas\Models\FileSystem s WHERE s.apps_id = :apps_id: AND s.is_deleted = 0
+                            )',
             'bind' => $bind
         ]);
 
