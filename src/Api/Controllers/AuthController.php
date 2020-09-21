@@ -29,6 +29,7 @@ use Phalcon\Validation\Validator\Confirmation;
 use Phalcon\Validation\Validator\Email as EmailValidator;
 use Phalcon\Validation\Validator\PresenceOf;
 use Phalcon\Validation\Validator\StringLength;
+use Baka\Http\Exception\UnauthorizedException;
 
 /**
  * Class AuthController.
@@ -433,6 +434,10 @@ class AuthController extends \Baka\Auth\AuthController
         $validation->validate($request);
         $accessToken = $this->getToken($request['access_token']);
 
-        return $this->response(time() != $accessToken->getClaim('exp') ? true:false);
+        if (time() > $accessToken->getClaim('exp')) {
+            throw new UnauthorizedException('Token has expired');
+        }
+
+        return $this->response(true);
     }
 }
