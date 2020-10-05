@@ -42,21 +42,20 @@ class LoggerProvider implements ServiceProviderInterface
                 $handler = new StreamHandler($logFile, Logger::DEBUG);
                 $handler->setFormatter($formatter);
 
+                $logger->pushHandler($handler);
+
                 //only run logs in production
                 if ($config->app->production && (bool) envValue('SENTRY_PROJECT', 1)) {
-                    //sentry logger
-                    $client = ClientBuilder::create([
-                        'dsn' => 'https://' . getenv('SENTRY_PROJECT_SECRET') . '@sentry.io/' . getenv('SENTRY_PROJECT_ID')
-                    ])->getClient();
+                    // sentry logger
+                    $client = \Sentry\init([
+                        'dsn' => 'https://' . getenv('SENTRY_PROJECT_SECRET') . '.ingest.sentry.io/' . getenv('SENTRY_PROJECT_ID')
+                    ]);
 
-                    $hub = Hub::setCurrent(new Hub($client));
-
+                    $hub = new Hub($client);
                     $handlerSentry = new SentryHandler($hub, Logger::ERROR);
                     $handlerSentry->setFormatter(new LineFormatter("%message% %context% %extra%\n"));
                     $logger->pushHandler($handlerSentry);
                 }
-
-                $logger->pushHandler($handler);
 
                 return $logger;
             }
