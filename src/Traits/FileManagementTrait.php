@@ -140,7 +140,7 @@ trait FileManagementTrait
          * look for a scalable way
          */
         $uploadConfig = [
-            'maxSize' => '100M',
+            'maxSize' => '500M',
             'messageSize' => ':field exceeds the max filesize (:max)',
             'allowedTypes' => [
                 'image/jpeg',
