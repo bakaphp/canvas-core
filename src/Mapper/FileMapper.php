@@ -41,6 +41,7 @@ class FileMapper extends CustomMapper
         $fileDto->url = $fileEntity->file->url;
         $fileDto->size = $fileEntity->file->size;
         $fileDto->file_type = $fileEntity->file->file_type;
+        $fileDto->created_at = $fileEntity->created_at;
         $fileDto->attributes = $fileEntity->file->getAllSettings();
 
         return $fileDto;
