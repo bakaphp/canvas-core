@@ -118,21 +118,20 @@ trait CustomFieldsTrait
         $cacheKey = Slug::generate(get_class($this) . '-' . $appsId . '-' . $name);
         $lifetime = 604800;
 
-        $customFieldModules = CustomFieldsModules::findFirstOrCreate([
-            'conditions' => 'model_name = :model_name: AND apps_id = :apps_id:',
-            'bind' => [
-                'model_name' => get_class($this),
-                'apps_id' => $appsId
-            ],
-            'cache' => [
-                'lifetime' => $lifetime,
-                'key' => $cacheKey
-            ]], [
+        $customFieldModules = CustomFieldsModules::findFirstOrCreate(
+            [
+                'conditions' => 'model_name = :model_name: AND apps_id = :apps_id:',
+                'bind' => [
+                    'model_name' => get_class($this),
+                    'apps_id' => $appsId
+                ]],
+            [
                 'model_name' => get_class($this),
                 'companies_id' => $companiesId,
                 'name' => get_class($this),
                 'apps_id' => $appsId
-            ]);
+            ]
+        );
 
         $customField = CustomFields::findFirstOrCreate([
             'conditions' => 'apps_id = :apps_id: AND name = :name: AND custom_fields_modules_id = :custom_fields_modules_id:',
@@ -140,19 +139,16 @@ trait CustomFieldsTrait
                 'apps_id' => $appsId,
                 'name' => $name,
                 'custom_fields_modules_id' => $customFieldModules->getId(),
-            ],
-            'cache' => [
-                'lifetime' => $lifetime,
-                'key' => $cacheKey . $customFieldModules->getId()
-            ]], [
-                'users_id' => $di->has('userData') ? UserProvider::get()->getId() : 0,
-                'companies_id' => $companiesId,
-                'apps_id' => $appsId,
-                'name' => $name,
-                'label' => $name,
-                'custom_fields_modules_id' => $customFieldModules->getId(),
-                'fields_type_id' => $textField,
-            ]);
+            ]
+        ], [
+            'users_id' => $di->has('userData') ? UserProvider::get()->getId() : 0,
+            'companies_id' => $companiesId,
+            'apps_id' => $appsId,
+            'name' => $name,
+            'label' => $name,
+            'custom_fields_modules_id' => $customFieldModules->getId(),
+            'fields_type_id' => $textField,
+        ]);
 
         return $customField;
     }
