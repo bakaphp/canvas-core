@@ -134,7 +134,7 @@ trait FileSystemModelTrait
      */
     public function deleteFiles() : bool
     {
-        $systemModule = SystemModules::getSystemModuleByModelName(self::class);
+        $systemModule = SystemModules::getByModelName(self::class);
 
         if ($files = FileSystemEntities::getAllByEntityId($this->getId(), $systemModule)) {
             $files->filter(

@@ -167,7 +167,7 @@ class Manager extends AbstractAdapter
      * @param  int   $scope
      * @param  string                   $accessInherits
      *
-     * @return boolean
+     * @return bool
      *
      * @throws \Phalcon\Acl\Exception
      */
@@ -214,7 +214,7 @@ class Manager extends AbstractAdapter
      *
      * @param  string  $roleName
      *
-     * @return boolean
+     * @return bool
      */
     public function isRole($roleName) : bool
     {
@@ -226,7 +226,7 @@ class Manager extends AbstractAdapter
      *
      * @param  string  $resourceName
      *
-     * @return boolean
+     * @return bool
      */
     public function isComponent($resourceName) : bool
     {
@@ -310,7 +310,7 @@ class Manager extends AbstractAdapter
      * @param  \Phalcon\Acl\Component|string $resource
      * @param  array|string                 $accessList
      *
-     * @return boolean
+     * @return bool
      */
     public function addComponent($resource, $accessList = null) : bool
     {
@@ -342,7 +342,7 @@ class Manager extends AbstractAdapter
      * @param  string       $resourceName
      * @param  array|string $accessList
      *
-     * @return boolean
+     * @return bool
      *
      * @throws \Phalcon\Acl\Exception
      */
@@ -458,7 +458,7 @@ class Manager extends AbstractAdapter
      * @param  array|string $access
      * @param  mixed $func
      *
-     * @return boolean
+     * @return bool
      */
     public function deny($roleName, $resourceName, $access, $func = null) : void
     {
@@ -567,7 +567,7 @@ class Manager extends AbstractAdapter
      * @param  string  $accessName
      * @param  int $action
      *
-     * @return boolean
+     * @return bool
      *
      * @throws \Phalcon\Acl\Exception
      */

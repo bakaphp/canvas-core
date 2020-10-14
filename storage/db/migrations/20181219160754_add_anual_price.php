@@ -1,14 +1,14 @@
 <?php
 
-use Phinx\Migration\AbstractMigration;
 use Phinx\Db\Adapter\MysqlAdapter;
+use Phinx\Migration\AbstractMigration;
 
 class AddAnualPrice extends AbstractMigration
 {
     public function change()
     {
         $table = $this->table('apps_plans');
-        $table->addColumn('pricing_anual', 'decimal', ['null' => true, 'precision' => 10, 'scale' => 2, 'after' => 'pricing'])->save();
+        $table->addColumn('pricing_annual', 'decimal', ['null' => true, 'precision' => 10, 'scale' => 2, 'after' => 'pricing'])->save();
         $table->save();
 
         $table = $this->table('apps_settings', ['id' => false, 'primary_key' => ['apps_id', 'name'], 'engine' => 'InnoDB', 'encoding' => 'utf8mb4', 'collation' => 'utf8mb4_unicode_ci', 'row_format' => 'Dynamic']);
