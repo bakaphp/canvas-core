@@ -402,7 +402,7 @@ class Setup
      *
      * @return array
      */
-    public function MenusLinkData() : array
+    public function menusLinkData() : array
     {
         return [
             [
