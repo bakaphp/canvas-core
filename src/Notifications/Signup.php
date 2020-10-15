@@ -6,10 +6,8 @@ namespace Canvas\Notifications;
 
 use Baka\Contracts\Notifications\NotificationInterface;
 use Baka\Mail\Message;
-use Canvas\Models\EmailTemplates;
-use Phalcon\Di;
-use Canvas\Models\Users;
 use Canvas\Template;
+use Phalcon\Di;
 
 class Signup extends Notification implements NotificationInterface
 {
@@ -20,9 +18,17 @@ class Signup extends Notification implements NotificationInterface
      *
      * @return string
      */
-    public function message(): string
+    public function message() : string
     {
-        return Template::generate('users-registration', $this->entity->toArray());
+        $app = Di::getDefault()->get('app');
+
+        return Template::generate(
+            'users-registration',
+            [
+                'entity' => $this->entity->toArray(),
+                'app' => $app
+            ]
+        );
     }
 
     /**
@@ -30,7 +36,7 @@ class Signup extends Notification implements NotificationInterface
      *
      * @return Message|null
      */
-    public function toMail(): ?Message
+    public function toMail() : ?Message
     {
         $app = Di::getDefault()->getApp();
 

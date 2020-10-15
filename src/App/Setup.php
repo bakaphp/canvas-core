@@ -58,7 +58,7 @@ class Setup
     /**
      * Set the system modules.
      *
-     * @return void
+     * @return self
      */
     public function systemModules() : self
     {
