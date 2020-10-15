@@ -29,26 +29,30 @@ class Setup
     /**
      * Set default settings.
      */
-    public function setSettings() : void
+    public function settings() : self
     {
         if (!$this->app->hasSettings()) {
-            foreach ($this->defaultSettings() as $key => $value) {
+            foreach ($this->SettingsData() as $key => $value) {
                 $this->app->set($value['name'], $value['value']);
             }
         }
+
+        return $this;
     }
 
     /**
      * Set default plans.
      */
-    public function setDefaultPlans() : void
+    public function plans() : self
     {
-        foreach ($this->defaultPlans() as $plan) {
+        foreach ($this->plansData() as $plan) {
             $appPlans = new AppsPlans();
             $appPlans->assign($plan);
             $appPlans->apps_id = $this->app->getId();
             $appPlans->saveOrFail();
         }
+
+        return $this;
     }
 
     /**
@@ -56,14 +60,16 @@ class Setup
      *
      * @return void
      */
-    public function setSystemModules() : void
+    public function systemModules() : self
     {
-        foreach ($this->defaultSystemModules() as $module) {
+        foreach ($this->systemModulesData() as $module) {
             $systemModule = new SystemModules();
             $systemModule->assign($module);
             $systemModule->apps_id = $this->app->getId();
             $systemModule->saveOrFail();
         }
+
+        return $this;
     }
 
     /**
@@ -71,7 +77,7 @@ class Setup
      *
      * @return array
      */
-    public function defaultSettings() : array
+    public function SettingsData() : array
     {
         return [
             [
@@ -137,7 +143,7 @@ class Setup
      *
      * @return array
      */
-    public function defaultPlans() : array
+    public function plansData() : array
     {
         return [
             [
@@ -174,7 +180,7 @@ class Setup
      *
      * @return void
      */
-    public function setDefaultAcl() : void
+    public function acl() : self
     {
         $acl = Di::getDefault()->get('acl');
         $acl->setApp($this->app);
@@ -258,6 +264,8 @@ class Setup
                 'companies-manager',
             ]
         );
+
+        return $this;
     }
 
     /**
@@ -265,7 +273,7 @@ class Setup
      *
      * @return array
      */
-    public function defaultSystemModules() : array
+    public function systemModulesData() : array
     {
         return [
             [

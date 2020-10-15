@@ -44,10 +44,11 @@ class Apps extends Job implements QueueableJobInterface
          * -.
          */
 
-        $this->setup->setSettings();
-        $this->setup->setDefaultPlans();
-        $this->setup->setDefaultAcl();
-        $this->setup->setSystemModules();
+        $this->setup
+            ->settings()
+            ->plans()
+            ->acl()
+            ->systemModules();
 
         return true;
     }

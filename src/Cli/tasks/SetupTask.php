@@ -2,7 +2,6 @@
 
 namespace Canvas\Cli\Tasks;
 
-use Canvas\App\Setup;
 use Canvas\Models\Apps;
 use Phalcon\Cli\Task as PhTask;
 
@@ -42,14 +41,6 @@ class SetupTask extends PhTask
         $app->payments_active = 1;
         $app->is_public = 1;
         $app->saveOrFail();
-
-        if ($app) {
-            $setup = new Setup($app);
-            $setup->setSettings();
-            $setup->setDefaultPlans();
-            $setup->setDefaultAcl();
-            $setup->setSystemModules();
-        }
 
         echo 'App Create ' . $app->name . PHP_EOL;
     }
