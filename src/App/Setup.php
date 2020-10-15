@@ -9,6 +9,9 @@ use Canvas\Models\AppsPlans;
 use Canvas\Models\Companies;
 use Canvas\Models\Roles;
 use Canvas\Models\SystemModules;
+use Canvas\Models\EmailTemplates;
+use Canvas\Models\Menus;
+use Canvas\Models\MenusLinks;
 use Canvas\Models\Users;
 use Phalcon\Di;
 
@@ -67,6 +70,48 @@ class Setup
             $systemModule->assign($module);
             $systemModule->apps_id = $this->app->getId();
             $systemModule->saveOrFail();
+        }
+
+        return $this;
+    }
+
+     /**
+     * Set the email templates.
+     *
+     * @return self
+     */
+    public function emailTemplates() : self
+    {
+        foreach ($this->emailTemplatesData() as $template) {
+            $emailTemplate = new EmailTemplates();
+            $emailTemplate->assign($template);
+            $emailTemplate->apps_id = $this->app->getId();
+            $emailTemplate->saveOrFail();
+        }
+
+        return $this;
+    }
+
+     /**
+     * Set the default menus.
+     *
+     * @return self
+     */
+    public function defaultMenus() : self
+    {
+        //Create a new Menu with current app id
+        $menu = new Menus();
+        $menu->apps_id = $this->app->getId();
+        $menu->name = "main";
+        $menu->slug = "main";
+        $menu->saveOrFail();
+
+        //Create default menu links
+        foreach ($this->MenusLinkData() as $link) {
+            $menusLink = new MenusLinks();
+            $menusLink->assign($link);
+            $menusLink->menus_id = (int)$menu->id;
+            $menusLink->saveOrFail();
         }
 
         return $this;
@@ -315,6 +360,87 @@ class Setup
                 'mobile_component_type' => null,
                 'mobile_navigation_type' => null,
                 'mobile_tab_index' => '0'
+            ],
+        ];
+    }
+
+    /**
+     * Default email templates
+     *
+     * @return array
+     */
+    public function emailTemplatesData() : array
+    {
+        return [
+            [
+                'users_id' => 1,
+                'companies_id' => 0,
+                'apps_id' => 0,
+                'name' => 'users-invite',
+                'template' => 'Hi {{entity[\'email\']} you have been invite to the app {{app.name}} to create you account please <a href=\'{{invitationUrl}}\'>click here</a> <br /><br />\r\n \n\n Thanks {{fromUser.firstname}} {{fromUser.lastname}} ( {{fromUser.getDefaultCompany().name}} )',
+                'created_at' => date('Y-m-d H:i:s'),
+            ], [
+                'users_id' => 1,
+                'companies_id' => 0,
+                'apps_id' => 0,
+                'name' => 'users-registration',
+                'template' => '\r\nHi {{entity[\'displayname\']} Welcome to the new app {{app.name}}\r\n<br /><br />>\r\nLet us know if you need any help\r\n\r\nThanks',
+                'created_at' => date('Y-m-d H:i:s'),
+            ], [
+                'users_id' => 1,
+                'companies_id' => 0,
+                'apps_id' => 0,
+                'name' => 'users-reset-password',
+                'template' => 'Hi {{fromUser.firstname}} {{fromUser.lastname}}, click the following link to reset your password: <a href=\'{{resetPasswordUrl}}\'>Reset Password</a> <br /><br />\r\nThanks ',
+                'created_at' => date('Y-m-d H:i:s'),
+            ],
+        ];
+    }
+
+    /**
+     * Default email templates
+     *
+     * @return array
+     */
+    public function MenusLinkData() : array
+    {
+        return [
+            [
+                'menus_id' => 1,
+                'parent_id' => 0,
+                'system_modules_id' => 0,
+                'url' => "/",
+                'title' => 'Overview',
+                'position' => 0,
+                'icon_url' => null,
+                'icon_class' => null,
+                'route' => null,
+                'is_published' => 1,
+                'created_at' => date('Y-m-d H:i:s'),
+            ], [
+                'menus_id' => 1,
+                'parent_id' => 0,
+                'system_modules_id' => 1,
+                'url' => "/companies",
+                'title' => 'Companies',
+                'position' => 0,
+                'icon_url' => null,
+                'icon_class' => null,
+                'route' => null,
+                'is_published' => 1,
+                'created_at' => date('Y-m-d H:i:s'),
+            ], [
+                'menus_id' => 1,
+                'parent_id' => 0,
+                'system_modules_id' => 2,
+                'url' => "/users",
+                'title' => 'Users',
+                'position' => 0,
+                'icon_url' => null,
+                'icon_class' => null,
+                'route' => null,
+                'is_published' => 1,
+                'created_at' => date('Y-m-d H:i:s'),
             ],
         ];
     }

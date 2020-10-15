@@ -48,7 +48,9 @@ class Apps extends Job implements QueueableJobInterface
             ->settings()
             ->plans()
             ->acl()
-            ->systemModules();
+            ->systemModules()
+            ->emailTemplates()
+            ->defaultMenus();
 
         return true;
     }
