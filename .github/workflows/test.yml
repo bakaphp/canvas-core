@@ -107,6 +107,9 @@ jobs:
         
       - name: Phinx Migrate Kanvas Seed
         run: vendor/bin/phinx seed:run
+      
+      - name: CLI Setup
+        run: php cli/cli.php setup
 
       - name: Run all test suites
         if: success()
