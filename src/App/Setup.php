@@ -19,6 +19,8 @@ class Setup
 {
     protected Apps $app;
 
+    protected $systemModulesIds = [];
+
     /**
      * Construct.
      *
@@ -70,16 +72,18 @@ class Setup
             $systemModule->assign($module);
             $systemModule->apps_id = $this->app->getId();
             $systemModule->saveOrFail();
+
+            $this->systemModulesIds[$systemModule->name] = $systemModule->id;
         }
 
         return $this;
     }
 
-     /**
-     * Set the email templates.
-     *
-     * @return self
-     */
+    /**
+    * Set the email templates.
+    *
+    * @return self
+    */
     public function emailTemplates() : self
     {
         foreach ($this->emailTemplatesData() as $template) {
@@ -92,11 +96,11 @@ class Setup
         return $this;
     }
 
-     /**
-     * Set the default menus.
-     *
-     * @return self
-     */
+    /**
+    * Set the default menus.
+    *
+    * @return self
+    */
     public function defaultMenus() : self
     {
         //Create a new Menu with current app id
@@ -111,6 +115,7 @@ class Setup
             $menusLink = new MenusLinks();
             $menusLink->assign($link);
             $menusLink->menus_id = (int)$menu->id;
+            $menusLink->system_modules_id = array_key_exists($menusLink->title, $this->systemModulesIds) ? (int)$this->systemModulesIds[$menusLink->title] : 0;
             $menusLink->saveOrFail();
         }
 
