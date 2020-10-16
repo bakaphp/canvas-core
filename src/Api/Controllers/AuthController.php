@@ -323,7 +323,6 @@ class AuthController extends \Baka\Auth\AuthController
     public function loginBySocial() : Response
     {
         $request = $this->request->getPostData();
-
         $source = Sources::findFirstOrFail([
             'title = ?0 and is_deleted = 0',
             'bind' => [$request['provider']]
@@ -333,6 +332,8 @@ class AuthController extends \Baka\Auth\AuthController
             $appleUserInfo = $source->validateAppleUser($request['social_id']);
             $request['social_id'] = $appleUserInfo->sub;
             $request['email'] = $appleUserInfo->email;
+        } else {
+            $source->validation($request['email'], $request['social_id']);
         }
 
         return $this->response(

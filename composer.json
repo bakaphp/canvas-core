@@ -50,7 +50,9 @@
         "symfony/finder": "^4.4",
         "symfony/process": "^4.4",
         "symfony/yaml": "3.4",
-        "vlucas/phpdotenv": "^4.1"
+        "vlucas/phpdotenv": "^4.1",
+        "facebook/graph-sdk": "5.7.0",
+        "google/apiclient": "v2.7.0"
     },
     "require-dev": {
         "codeception/codeception": "^4.1",
