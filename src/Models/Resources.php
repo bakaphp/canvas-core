@@ -38,15 +38,16 @@ class Resources extends AbstractModel
      *
      * @param string $resourceName
      *
-     * @return boolean
+     * @return bool
      */
-    public static function isResource(string $resourceName) : bool
+    public static function isResource(string $resourceName, ?Apps $app = null) : bool
     {
+        $app = !is_null($app) ? $app : Di::getDefault()->get('app');
         return (bool) self::count([
             'conditions' => 'name = ?0 AND apps_id in (?1, ?2)',
             'bind' => [
                 $resourceName,
-                Di::getDefault()->getApp()->getId(),
+                $app->getId(),
                 Apps::CANVAS_DEFAULT_APP_ID
             ]
         ]);
@@ -59,13 +60,15 @@ class Resources extends AbstractModel
      *
      * @return Resources
      */
-    public static function getByName(string $resourceName) : Resources
+    public static function getByName(string $resourceName, ?Apps $app = null) : Resources
     {
+        $app = !is_null($app) ? $app : Di::getDefault()->get('app');
+
         $resource = self::findFirst([
             'conditions' => 'name = ?0 AND apps_id in (?1, ?2)',
             'bind' => [
                 $resourceName,
-                Di::getDefault()->getApp()->getId(),
+                $app->getId(),
                 Apps::CANVAS_DEFAULT_APP_ID
             ],
             'order' => 'id desc'

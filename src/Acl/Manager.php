@@ -348,11 +348,11 @@ class Manager extends AbstractAdapter
      */
     public function addComponentAccess($resourceName, $accessList) : bool
     {
-        if (!ResourcesDB::isResource($resourceName)) {
+        if (!ResourcesDB::isResource($resourceName, $this->getApp())) {
             throw new Exception("Resource '{$resourceName}' does not exist in ACL");
         }
 
-        $resource = ResourcesDB::getByName($resourceName);
+        $resource = ResourcesDB::getByName($resourceName, $this->getApp());
 
         if (!is_array($accessList)) {
             $accessList = [$accessList];
