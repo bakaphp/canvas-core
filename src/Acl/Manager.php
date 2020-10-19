@@ -123,12 +123,12 @@ class Manager extends AbstractAdapter
     /**
      * Get the current App.
      *
-     * @return void
+     * @return Apps
      */
     public function getApp() : Apps
     {
         if (!is_object($this->app)) {
-            $this->app = Di::getDefault()->getApp();
+            $this->app = Di::getDefault()->get('app');
         }
 
         return $this->app;

@@ -42,7 +42,7 @@ class Resources extends AbstractModel
      */
     public static function isResource(string $resourceName, ?Apps $app = null) : bool
     {
-        $app = !is_null($app) ? $app : Di::getDefault()->get('app');
+        $app = !is_null($app) ? $app : Di::getDefault()->get('acl')->getApp();
         return (bool) self::count([
             'conditions' => 'name = ?0 AND apps_id in (?1, ?2)',
             'bind' => [
@@ -62,7 +62,7 @@ class Resources extends AbstractModel
      */
     public static function getByName(string $resourceName, ?Apps $app = null) : Resources
     {
-        $app = !is_null($app) ? $app : Di::getDefault()->get('app');
+        $app = !is_null($app) ? $app : Di::getDefault()->get('acl')->getApp();
 
         $resource = self::findFirst([
             'conditions' => 'name = ?0 AND apps_id in (?1, ?2)',
