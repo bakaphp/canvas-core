@@ -78,7 +78,7 @@ class Roles extends AbstractModel
             'name',
             new StringLength([
                 'max' => 32,
-                'messageMinimum' => _('Role Name. Maxium 32 characters.'),
+                'messageMinimum' => _('Role Name. Maximum 32 characters.'),
             ])
         );
 
@@ -103,14 +103,14 @@ class Roles extends AbstractModel
      */
     public static function exist(AclRole $role) : int
     {
-        $companyId = Di::getDefault()->getAcl()->getCompany()->getId();
+        $companyId = Di::getDefault()->get('acl')->getCompany()->getId();
 
         return self::count([
             'conditions' => 'name = ?0 AND companies_id = ?1 AND apps_id = ?2',
             'bind' => [
                 $role->getName(),
                 $companyId,
-                Di::getDefault()->getAcl()->getApp()->getId()
+                Di::getDefault()->get('acl')->getApp()->getId()
             ]
         ]);
     }
@@ -122,17 +122,17 @@ class Roles extends AbstractModel
      *
      * @param string $roleName
      *
-     * @return boolean
+     * @return bool
      */
     public static function isRole(string $roleName) : bool
     {
-        $companyId = Di::getDefault()->getAcl()->getCompany()->getId();
+        $companyId = Di::getDefault()->get('acl')->getCompany()->getId();
 
         return (bool) self::count([
             'conditions' => 'name = ?0 AND apps_id in (?1, ?3) AND companies_id in (?2, ?3)',
             'bind' => [
                 $roleName,
-                Di::getDefault()->getAcl()->getApp()->getId(),
+                Di::getDefault()->get('acl')->getApp()->getId(),
                 $companyId,
                 Apps::CANVAS_DEFAULT_APP_ID
             ]
@@ -148,13 +148,13 @@ class Roles extends AbstractModel
      */
     public static function getByName(string $name) : Roles
     {
-        $companyId = Di::getDefault()->getAcl()->getCompany()->getId();
+        $companyId = Di::getDefault()->get('acl')->getCompany()->getId();
 
         $role = self::findFirst([
             'conditions' => 'name = ?0 AND apps_id in (?1, ?3) AND companies_id in (?2, ?3) AND is_deleted = 0',
             'bind' => [
                 $name,
-                Di::getDefault()->getAcl()->getApp()->getId(),
+                Di::getDefault()->get('acl')->getApp()->getId(),
                 $companyId,
                 Apps::CANVAS_DEFAULT_APP_ID
             ],
@@ -163,7 +163,7 @@ class Roles extends AbstractModel
 
         if (!is_object($role)) {
             throw new UnprocessableEntityException(
-                _('Roles ' . $name . ' not found on this app ' . Di::getDefault()->getAcl()->getApp()->getId() . ' AND Company ' . Di::getDefault()->getUserData()->currentCompanyId())
+                _('Roles ' . $name . ' not found on this app ' . Di::getDefault()->get('acl')->getApp()->getId() . ' AND Company ' . Di::getDefault()->getUserData()->currentCompanyId())
             );
         }
 
@@ -179,7 +179,7 @@ class Roles extends AbstractModel
      */
     public static function getById(int $id) : Roles
     {
-        $companyId = Di::getDefault()->getAcl()->getCompany()->getId();
+        $companyId = Di::getDefault()->get('acl')->getCompany()->getId();
 
         return self::findFirstOrFail([
             'conditions' => 'id = ?0 AND companies_id in (?1, ?2) AND apps_id in (?3, ?4) AND is_deleted = 0',
@@ -187,7 +187,7 @@ class Roles extends AbstractModel
                 $id,
                 $companyId,
                 self::DEFAULT_ACL_COMPANY_ID,
-                Di::getDefault()->getAcl()->getApp()->getId(),
+                Di::getDefault()->get('acl')->getApp()->getId(),
                 Apps::CANVAS_DEFAULT_APP_ID
             ],
             'order' => 'apps_id DESC'
@@ -267,7 +267,7 @@ class Roles extends AbstractModel
      * @param string $roleName
      * @param string $roleToInherit
      *
-     * @return boolean
+     * @return bool
      */
     public static function addInherit(string $roleName, string $roleToInherit)
     {

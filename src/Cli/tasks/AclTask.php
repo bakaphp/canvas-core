@@ -81,6 +81,7 @@ class AclTask extends PhTask
         );
 
         $defaultResources = [
+            'Default.SettingsMenu',
             'Default.CompanyBranches',
             'Default.CompanyUsers',
             'Default.CompanyRoles',

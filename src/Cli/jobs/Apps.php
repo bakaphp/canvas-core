@@ -4,83 +4,54 @@ namespace Canvas\Cli\Jobs;
 
 use Baka\Contracts\Queue\QueueableJobInterface;
 use Baka\Jobs\Job;
-use Phalcon\Di;
+use Canvas\App\Setup;
 use Canvas\Models\Apps as CanvasApps;
-use Phalcon\Security\Random;
 
 class Apps extends Job implements QueueableJobInterface
 {
-    /**
-     * Realtime channel
-     *
-     * @var string
-     */
-    protected $appName;
+    protected CanvasApps $app;
+    protected Setup $setup;
 
     /**
-     * Realtime event
-     *
-     * @var string
-     */
-    protected $appDescription;
-
-    /**
-     * Realtime params
-     *
-     * @var array
-     */
-    protected $params;
-
-    /**
-     * Constructor setup info for Pusher
+     * Constructor setup info for Pusher.
      *
      * @param string $channel
      * @param string $event
      * @param array $params
      */
-    public function __construct(string $appName, string $appDescription, array $params)
+    public function __construct(CanvasApps $app)
     {
-        $this->appName = $appName;
-        $this->appDescription = $appDescription;
-        $this->params = $params;
+        $this->app = $app;
+        $this->setup = new Setup($this->app);
     }
 
     /**
-     * Handle the pusher request
+     * Handle the pusher request.
+     *
      * @todo New Apps can't be created, the system does not take into account the creation of other apps apart from the default. Need to change this
+     *
      * @return void
      */
     public function handle()
     {
-        $random = new Random();
-        $appDescription = $this->appDescription;
-
-        $app = new CanvasApps();
-        $app->name = $this->appName;
-        $app->description = $appDescription;
-        $app->key = $random->uuid();
-        $app->is_public = 1;
-        $app->default_apps_plan_id = 1;
-        $app->created_at = date('Y-m-d H:i:s');
-        $app->is_deleted = 0;
-        $app->payments_active = 0;
-
-        if (!$app->save()) {
-            Di::getDefault()->getLog()->error('App could not be created');
-            return false;
-        }
-
         /**
-         * @todo Only works for default app
+         * - apps plans
+         * - settings
+         * - roles
+         * - email template
+         * - menus
+         * - system modules
+         * - email templates
+         * - default menus
          */
-        Di::getDefault()->getAcl()->setApp($app);
 
-        Di::getDefault()->getAcl()->addRole($appName .'.Admins');
-        Di::getDefault()->getAcl()->addRole($appName .'.Agents');
-        Di::getDefault()->getAcl()->addRole($appName .'.Users');
-
-        Di::getDefault()->getAcl()->addComponent($appName .'.Users', ['read', 'list', 'create', 'update', 'delete']);
-        Di::getDefault()->getAcl()->allow('Admins', $appName .'.Users', ['read', 'list', 'create', 'update', 'delete']);
+        $this->setup
+            ->settings()
+            ->plans()
+            ->acl()
+            ->systemModules()
+            ->emailTemplates()
+            ->defaultMenus();
 
         return true;
     }

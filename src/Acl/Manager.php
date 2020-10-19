@@ -123,12 +123,12 @@ class Manager extends AbstractAdapter
     /**
      * Get the current App.
      *
-     * @return void
+     * @return Apps
      */
     public function getApp() : Apps
     {
         if (!is_object($this->app)) {
-            $this->app = Di::getDefault()->getApp();
+            $this->app = Di::getDefault()->get('app');
         }
 
         return $this->app;
@@ -167,7 +167,7 @@ class Manager extends AbstractAdapter
      * @param  int   $scope
      * @param  string                   $accessInherits
      *
-     * @return boolean
+     * @return bool
      *
      * @throws \Phalcon\Acl\Exception
      */
@@ -214,7 +214,7 @@ class Manager extends AbstractAdapter
      *
      * @param  string  $roleName
      *
-     * @return boolean
+     * @return bool
      */
     public function isRole($roleName) : bool
     {
@@ -226,7 +226,7 @@ class Manager extends AbstractAdapter
      *
      * @param  string  $resourceName
      *
-     * @return boolean
+     * @return bool
      */
     public function isComponent($resourceName) : bool
     {
@@ -251,7 +251,7 @@ class Manager extends AbstractAdapter
      *
      * @param string $resource
      *
-     * @return void
+     * @return string
      */
     protected function setAppByResource(string $resource) : string
     {
@@ -275,7 +275,7 @@ class Manager extends AbstractAdapter
      *
      * @param string $resource
      *
-     * @return void
+     * @return string
      */
     protected function setAppByRole(string $role) : string
     {
@@ -310,7 +310,7 @@ class Manager extends AbstractAdapter
      * @param  \Phalcon\Acl\Component|string $resource
      * @param  array|string                 $accessList
      *
-     * @return boolean
+     * @return bool
      */
     public function addComponent($resource, $accessList = null) : bool
     {
@@ -321,7 +321,7 @@ class Manager extends AbstractAdapter
             $resource = new Component($resource);
         }
 
-        if (!ResourcesDB::isResource($resource->getName())) {
+        if (!ResourcesDB::isResource($resource->getName(), $this->getApp())) {
             $resourceDB = new ResourcesDB();
             $resourceDB->name = $resource->getName();
             $resourceDB->description = $resource->getDescription();
@@ -342,17 +342,17 @@ class Manager extends AbstractAdapter
      * @param  string       $resourceName
      * @param  array|string $accessList
      *
-     * @return boolean
+     * @return bool
      *
      * @throws \Phalcon\Acl\Exception
      */
     public function addComponentAccess($resourceName, $accessList) : bool
     {
-        if (!ResourcesDB::isResource($resourceName)) {
+        if (!ResourcesDB::isResource($resourceName, $this->getApp())) {
             throw new Exception("Resource '{$resourceName}' does not exist in ACL");
         }
 
-        $resource = ResourcesDB::getByName($resourceName);
+        $resource = ResourcesDB::getByName($resourceName, $this->getApp());
 
         if (!is_array($accessList)) {
             $accessList = [$accessList];
@@ -458,7 +458,7 @@ class Manager extends AbstractAdapter
      * @param  array|string $access
      * @param  mixed $func
      *
-     * @return boolean
+     * @return bool
      */
     public function deny($roleName, $resourceName, $access, $func = null) : void
     {
@@ -567,7 +567,7 @@ class Manager extends AbstractAdapter
      * @param  string  $accessName
      * @param  int $action
      *
-     * @return boolean
+     * @return bool
      *
      * @throws \Phalcon\Acl\Exception
      */
@@ -579,7 +579,7 @@ class Manager extends AbstractAdapter
          * Check if the access is valid in the resource unless wildcard.
          */
         if ($resourceName !== '*' && $accessName !== '*') {
-            $resource = ResourcesDB::getByName($resourceName);
+            $resource = ResourcesDB::getByName($resourceName, $this->getApp());
 
             if (!ResourcesAccesses::exist($resource, $accessName)) {
                 throw new Exception(

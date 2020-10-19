@@ -9,17 +9,19 @@ use Phalcon\Di;
 class AppsPlans extends AbstractModel
 {
     use HashTableTrait;
-    
+
     public int $apps_id;
     public string $name;
     public string $description;
     public string $stripe_id;
     public string $stripe_plan;
+    public ?string $payment_interval = null;
     public float $pricing;
-    public int $currency_id;
-    public int $free_trial_dates;
-    public int $is_default;
-    public int $payment_frequencies_id;
+    public float $pricing_annual;
+    public int $currency_id = 1;
+    public int $free_trial_dates = 14;
+    public int $is_default = 0;
+    public int $payment_frequencies_id = 1;
 
     /**
      * Initialize method for model.
