@@ -579,7 +579,7 @@ class Manager extends AbstractAdapter
          * Check if the access is valid in the resource unless wildcard.
          */
         if ($resourceName !== '*' && $accessName !== '*') {
-            $resource = ResourcesDB::getByName($resourceName);
+            $resource = ResourcesDB::getByName($resourceName, $this->getApp());
 
             if (!ResourcesAccesses::exist($resource, $accessName)) {
                 throw new Exception(
