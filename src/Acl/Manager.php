@@ -251,7 +251,7 @@ class Manager extends AbstractAdapter
      *
      * @param string $resource
      *
-     * @return void
+     * @return string
      */
     protected function setAppByResource(string $resource) : string
     {
@@ -275,7 +275,7 @@ class Manager extends AbstractAdapter
      *
      * @param string $resource
      *
-     * @return void
+     * @return string
      */
     protected function setAppByRole(string $role) : string
     {
