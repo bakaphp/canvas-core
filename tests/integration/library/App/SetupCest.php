@@ -8,6 +8,9 @@ use Canvas\Models\AppsPlans;
 use Canvas\Models\SystemModules;
 use Canvas\Models\Menus;
 use Canvas\Models\MenusLinks;
+use Canvas\Models\Roles;
+use Canvas\Models\Resources;
+use Canvas\Models\AccessList;
 use Exception;
 use IntegrationTester;
 use Page\Data;
@@ -85,7 +88,30 @@ class SetupCest
     {
         $setup = new Setup($this->app);
         $setup->acl();
-        $I->assertTrue($setup->acl() instanceof Setup);
+
+        //Check number of roles
+        $roles = Roles::findOrFail([
+            "conditions" => "apps_id = :apps_id: and is_deleted = 0",
+            "bind" => ["apps_id" => $this->app->getId()]
+        ]);
+
+        $I->assertTrue(count($roles) == 2);
+
+        //Check number of resources
+        $resources = Resources::findOrFail([
+            "conditions" => "apps_id = :apps_id: and is_deleted = 0",
+            "bind" => ["apps_id" => $this->app->getId()]
+        ]);
+
+        $I->assertTrue(count($resources) == 7);
+
+        //Check Access List privileges
+        $accessList = AccessList::findOrFail([
+            "conditions" => "apps_id = :apps_id: and is_deleted = 0",
+            "bind" => ["apps_id" => $this->app->getId()]
+        ]);
+
+        $I->assertTrue(count($accessList) == 54);
     }
 
     /**
