@@ -44,11 +44,10 @@ class Resources extends AbstractModel
     {
         $app = !is_null($app) ? $app : Di::getDefault()->get('acl')->getApp();
         return (bool) self::count([
-            'conditions' => 'name = ?0 AND apps_id in (?1, ?2)',
+            'conditions' => 'name = ?0 AND apps_id = ?1',
             'bind' => [
                 $resourceName,
-                $app->getId(),
-                Apps::CANVAS_DEFAULT_APP_ID
+                $app->getId()
             ]
         ]);
     }

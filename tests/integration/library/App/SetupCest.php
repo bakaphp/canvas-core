@@ -103,7 +103,7 @@ class SetupCest
             "bind" => ["apps_id" => $this->app->getId()]
         ]);
 
-        $I->assertTrue(count($resources) == 7);
+        $I->assertTrue(count($resources) == 9);
 
         //Check Access List privileges
         $accessList = AccessList::findOrFail([

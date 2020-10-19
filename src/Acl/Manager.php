@@ -321,7 +321,7 @@ class Manager extends AbstractAdapter
             $resource = new Component($resource);
         }
 
-        if (!ResourcesDB::isResource($resource->getName())) {
+        if (!ResourcesDB::isResource($resource->getName(), $this->getApp())) {
             $resourceDB = new ResourcesDB();
             $resourceDB->name = $resource->getName();
             $resourceDB->description = $resource->getDescription();
