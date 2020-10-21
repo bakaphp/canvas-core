@@ -6,15 +6,9 @@ namespace Canvas\Models;
 
 use Baka\Http\Exception\InternalServerErrorException;
 use Baka\Social\Apple\ASDecoder;
+use Baka\Auth\Models\Sources as BakaSource;
 
-/**
- * Class Resources.
- *
- * @package Canvas\Models
- *
- * @property \Phalcon\Di $di
- */
-class Sources extends AbstractModel
+class Sources extends BakaSource
 {
     public string $title;
     public string $url;
