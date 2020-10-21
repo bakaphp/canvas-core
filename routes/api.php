@@ -86,6 +86,7 @@ $privateRoutes = [
     Route::put('/menus/{menusId}/links/{id}')->controller('MenusLinksController')->action('edit'),
     Route::delete('/menus/{menusId}/links/{id}')->controller('MenusLinksController')->action('delete'),
     Route::crud('/menus-links')->controller('MenusLinksController'),
+    Route::put('/users/{usersId}/activate')->controller('UsersAssociatedAppsController')->action('changeUserActiveStatus'),
 ];
 
 $privateSubscriptionRoutes = [
@@ -110,7 +111,7 @@ $publicRoutesGroup = RouteGroup::from($publicRoutes)
 
 $privateRoutesGroup = RouteGroup::from($privateRoutes)
                 ->defaultNamespace('Canvas\Api\Controllers')
-                ->addMiddlewares('auth.jwt@before', 'auth.acl@before')
+                ->addMiddlewares('auth.jwt@before', 'auth.acl@before', 'auth.activeStatus@before')
                 ->defaultPrefix(envValue('API_VERSION', '/v1'));
 
 $subscriptionPrivateRoutes = RouteGroup::from($privateSubscriptionRoutes)

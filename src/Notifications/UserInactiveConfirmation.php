@@ -10,7 +10,7 @@ use Canvas\Template;
 use Phalcon\Di;
 use Throwable;
 
-class UserInactive extends Notification implements NotificationInterface
+class UserInactiveConfirmation extends Notification implements NotificationInterface
 {
     protected $type = Notification::APPS;
     //protected $useQueue = true;
