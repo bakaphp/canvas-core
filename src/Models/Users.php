@@ -25,6 +25,7 @@ use Phalcon\Validation\Validator\Email;
 use Phalcon\Validation\Validator\PresenceOf;
 use Phalcon\Validation\Validator\Uniqueness;
 use ReflectionClass;
+use Canvas\Notifications\UserInactive;
 
 class Users extends BakUser implements UserInterface
 {
@@ -436,7 +437,15 @@ class Users extends BakUser implements UserInterface
     public function afterSave()
     {
         $this->associateFileSystem();
-        //$this->updatePermissionRoles();
+        
+        if (!$this->user_active) {
+            $parentUser = self::findFirstOrFail($this->getCurrentCompany()->users_id);
+            $userInactive = new UserInactive($parentUser);
+            $userInactive->setFrom($parentUser);
+            $userInactive->setTo($this);
+
+            $this->notify($userInactive);
+        }
     }
 
     /**
