@@ -7,6 +7,7 @@ namespace Canvas\Api\Controllers;
 use Canvas\Models\UsersAssociatedApps;
 use Phalcon\Di;
 use Phalcon\Http\Response;
+use Canvas\Models\UserRoles;
 
 /**
  * Class RolesController.
@@ -56,6 +57,9 @@ class UsersAssociatedAppsController extends BaseController
      */
     public function changeUserActiveStatus(int $usersId): Response
     {
+        //Verify is current user is admin
+        UserRoles::isAdmin();
+
         $userAssociatedApp = $this->model->findFirstOrFail([
             "conditions" => "apps_id = :apps_id: and users_id = :users_id: and companies_id = :companies_id: and is_deleted = 0",
             "bind" => [

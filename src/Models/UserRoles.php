@@ -5,6 +5,8 @@ namespace Canvas\Models;
 
 use Phalcon\Validation;
 use Phalcon\Validation\Validator\Uniqueness;
+use Phalcon\Di;
+use Baka\Http\Exception\UnauthorizedException;
 
 class UserRoles extends AbstractModel
 {
@@ -66,5 +68,19 @@ class UserRoles extends AbstractModel
         );
 
         return $this->validate($validator);
+    }
+
+    /**
+     * Check whether a role is an Admin or not
+     *
+     * @return bool
+     */
+    public static function isAdmin(): bool
+    {
+        if (Di::getDefault()->getUserData()->getUserRole()->getRoles()->name != "Admins") {
+            throw new UnauthorizedException("Current user does not have Admins role");
+        }
+
+        return true;
     }
 }
