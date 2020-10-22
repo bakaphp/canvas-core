@@ -56,7 +56,7 @@ class UsersAssociatedAppsController extends BaseController
      */
     public function changeUserActiveStatus(int $usersId): Response
     {
-        $userAssociatedApp = $this->model::findFirstOrFail([
+        $userAssociatedApp = $this->model->findFirstOrFail([
             "conditions" => "apps_id = :apps_id: and users_id = :users_id: and companies_id = :companies_id: and is_deleted = 0",
             "bind" => [
                 "apps_id" => Di::getDefault()->getApp()->getId(),

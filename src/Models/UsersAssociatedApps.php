@@ -86,9 +86,9 @@ class UsersAssociatedApps extends AbstractModel implements UserInterface
         return self::findFirstOrFail([
             "conditions" => "apps_id = :apps_id: and users_id = :users_id: and companies_id = :companies_id: and is_deleted = 0",
             "bind" => [
-                "apps_id" => 1,
+                "apps_id" => Di::getDefault()->getApp()->getId(),
                 "users_id" => $userId,
-                "companies_id" => 3
+                "companies_id" => Di::getDefault()->getUserData()->getCurrentCompany()->getId()
             ]
         ]);
     }
