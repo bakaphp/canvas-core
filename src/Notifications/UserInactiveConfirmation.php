@@ -51,7 +51,7 @@ class UserInactiveConfirmation extends Notification implements NotificationInter
     {
         $app = Di::getDefault()->get('app');
 
-        return $this->mail->to("rwhite@mctekk.com")
+        return $this->mail->to($this->fromUser->getEmail())
             ->subject($app->name . ' - User has been deactivated')
             ->content($this->message());
     }
