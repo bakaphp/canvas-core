@@ -436,7 +436,6 @@ class Users extends BakUser implements UserInterface
     public function afterSave()
     {
         $this->associateFileSystem();
-        //$this->updatePermissionRoles();
     }
 
     /**

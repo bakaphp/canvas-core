@@ -7,13 +7,14 @@ namespace Canvas\Middleware;
 use Phalcon\Mvc\Micro;
 use Baka\Http\Exception\UnauthorizedException;
 use Canvas\Models\Subscription;
+use Canvas\Models\UsersAssociatedApps;
 
 /**
  * Class AuthenticationMiddleware.
  *
  * @package Niden\Middleware
  */
-class SubscriptionMiddleware extends TokenBase
+class ActiveStatusMiddleware extends TokenBase
 {
     /**
      * Call me.
@@ -27,8 +28,10 @@ class SubscriptionMiddleware extends TokenBase
         if ($api->getDI()->has('userData')) {
             $user = $api->getDI()->getUserData();
 
-            if (!Subscription::getByDefaultCompany($user)->paid()) {
-                throw new UnauthorizedException('Subscription expired, Verify Payment');
+            $userAssociatedApp = UsersAssociatedApps::getByUserId($user->getId());
+
+            if (!$userAssociatedApp->validateIsActive()) {
+                throw new UnauthorizedException("Current user is not active for this app's company");
             }
         }
 

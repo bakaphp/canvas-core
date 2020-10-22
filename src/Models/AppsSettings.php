@@ -12,7 +12,7 @@ class AppsSettings extends AbstractModel
     /**
      * Default number of settings for an app.
      */
-    const APP_DEFAULT_SETTINGS_NUMBER = 18;
+    const APP_DEFAULT_SETTINGS_NUMBER = 19;
 
     /**
      * Sub based app key word.

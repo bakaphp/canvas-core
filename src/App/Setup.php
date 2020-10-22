@@ -184,6 +184,9 @@ class Setup
             ], [
                 'name' => 'public_images',
                 'value' => '0',
+            ], [
+                'name' => 'default_feeds_comments',
+                'value' => '3',
             ]
         ];
     }

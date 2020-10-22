@@ -360,7 +360,10 @@ class AuthController extends \Baka\Auth\AuthController
         $recoverUser = Users::getByEmail($email);
         $recoverUser->generateForgotHash();
 
-        $recoverUser->notify(new ResetPassword($recoverUser));
+        $resetPassword = new ResetPassword($recoverUser);
+        $resetPassword->setFrom($recoverUser);
+
+        $recoverUser->notify($resetPassword);
 
         return $this->response(_('Check your email to recover your password'));
     }
@@ -398,7 +401,10 @@ class AuthController extends \Baka\Auth\AuthController
         $session = new Sessions();
         $session->end($userData);
 
-        $userData->notify(new PasswordUpdate($userData));
+        $passwordUpdate = new PasswordUpdate($recoverUser);
+        $passwordUpdate->setFrom($userData);
+
+        $userData->notify($passwordUpdate);
 
         return $this->response(_('Password Updated'));
     }
