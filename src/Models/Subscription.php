@@ -151,6 +151,10 @@ class Subscription extends BakaSubscription
      */
     public function paid() : bool
     {
+        if (!Di::getDefault()->getApp()->subscriptionBased()) {
+            return true;
+        }
+
         return (bool) $this->paid;
     }
 
