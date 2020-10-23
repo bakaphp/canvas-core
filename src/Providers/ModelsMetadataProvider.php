@@ -36,7 +36,6 @@ class ModelsMetadataProvider implements ServiceProviderInterface
                 $options = [
                     'host' => $options['host'],
                     'port' => (int) $options['port'],
-                    'index' => (int) $options['index'],
                     'lifetime' => (int) $options['lifetime'],
                     'prefix' => $options['prefix'],
                 ];
