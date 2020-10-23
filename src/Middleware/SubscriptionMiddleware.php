@@ -24,10 +24,11 @@ class SubscriptionMiddleware extends TokenBase
      */
     public function call(Micro $api)
     {
-        if ($api->getDI()->has('userData')) {
+        if ($api->getDI()->has('userData') && $api->getDI()->has('app')) {
             $user = $api->getDI()->getUserData();
+            $app = $api->getDI()->getApp();
 
-            if (!Subscription::getByDefaultCompany($user)->paid()) {
+            if (!Subscription::getByDefaultCompany($user)->paid() && $app->subscriptionBased()) {
                 throw new UnauthorizedException('Subscription expired, Verify Payment');
             }
         }
