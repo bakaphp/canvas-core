@@ -12,10 +12,21 @@ class ClearcacheTask extends PhTask
     /**
      * Clears the data cache from the application.
      */
-    public function mainAction()
+    public function mainAction() : void
     {
         $this->clearFileCache();
-        $this->clearMemCached();
+        $this->clearModelRedisCache();
+    }
+
+    /**
+     * Clear all data from the application
+     *
+     * @return void
+     */
+    public function allAction() :  void
+    {
+        $this->mainAction();
+        $this->clearRedisCache();
     }
 
     /**
@@ -23,7 +34,7 @@ class ClearcacheTask extends PhTask
      */
     protected function clearFileCache() : void
     {
-        echo 'Clearing Cache folders' . PHP_EOL;
+        echo PHP_EOL.'Clearing Cache folders' . PHP_EOL;
 
         $fileList = [];
         $whitelist = ['.', '..', '.gitignore'];
@@ -49,24 +60,45 @@ class ClearcacheTask extends PhTask
             unlink($file);
         }
 
-        echo PHP_EOL . 'Cleared Cache folders' . PHP_EOL;
+        echo  'Cleared Cache folders' . PHP_EOL;
     }
 
     /**
      * Clears memcached data cache.
      */
-    protected function clearMemCached() : void
+    protected function clearRedisCache() : void
     {
-        echo 'Clearing data cache' . PHP_EOL;
+        echo PHP_EOL.'Clearing data cache' . PHP_EOL;
 
-        $keys = $this->di->get('redis', [false])->keys('*' . $this->config->app->id . '*');
-
+        $keys = $this->di->get('redis', [true])->keys('*');
         echo sprintf('Found %s keys', count($keys)) . PHP_EOL;
         foreach ($keys as $key) {
             $this->redis->del($key);
         }
 
-        echo  PHP_EOL . 'Cleared data cache' . PHP_EOL;
+        echo   'Cleared data cache' . PHP_EOL;
+    }
+
+    /**
+     * Clear all model schema cache
+     *
+     * @return void
+     */
+    protected function clearModelRedisCache() : void
+    {
+        echo PHP_EOL.'Clearing Model data cache' . PHP_EOL;
+
+        $cache = $this->di->get('config')->get('cache')->toArray();
+        $options = $cache['metadata']['prod']['options'];
+
+        $keys = $this->di->get('redisUnSerialize', [false])->keys($options['prefix'].'*');
+
+        echo sprintf('Found %s Models keys', count($keys)) . PHP_EOL;
+        foreach ($keys as $key) {
+            $this->redisUnSerialize->del($key);
+        }
+
+        echo  'Cleared Model schema cache' . PHP_EOL;
     }
 
     /**
