@@ -2,24 +2,31 @@
 
 namespace Canvas\Cli\Tasks;
 
+use Baka\TestCase\Phinx;
+use Canvas\App\Setup;
 use Canvas\Models\Apps;
 use Phalcon\Cli\Task as PhTask;
 
 class SetupTask extends PhTask
 {
     /**
-     * Create the default roles of the system.
+     * Start a fresh kanvas ecosystem.
      *
      * @return void
      */
-    public function mainAction()
+    public function startAction()
     {
-        $acl = new AclTask();
-        $emailTemplates = new EmailtemplatesTask();
+        echo 'Starting a Kanvas Ecosystem Fresh Setup' . PHP_EOL;
+        echo 'Initializing migration' . PHP_EOL;
+        Phinx::migrate();
+        echo 'Processing Seeds' . PHP_EOL;
+        Phinx::seed();
 
-        $acl->setupDefaultRoles();
-        $acl->kanvas();
-        $emailTemplates->insertUserNotificationTemplate();
+        echo 'Setting up App ACL' . PHP_EOL;
+        $setup = new Setup($this->app);
+        $setup->acl();
+
+        echo 'Finish with Kanvas Setup' . PHP_EOL;
     }
 
     /**
@@ -29,7 +36,7 @@ class SetupTask extends PhTask
      *
      * @return void
      */
-    public function appAction(string $name)
+    public function newAppAction(string $name)
     {
         $app = new Apps();
         $app->name = $name;

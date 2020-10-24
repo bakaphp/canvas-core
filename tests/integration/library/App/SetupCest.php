@@ -2,20 +2,17 @@
 
 namespace Gewaer\Tests\integration\library\Jobs;
 
-use Canvas\Models\Apps;
-use Canvas\Models\AppsSettings;
-use Canvas\Models\AppsPlans;
-use Canvas\Models\SystemModules;
-use Canvas\Models\Menus;
-use Canvas\Models\MenusLinks;
-use Canvas\Models\Roles;
-use Canvas\Models\Resources;
-use Canvas\Models\AccessList;
-use Exception;
-use IntegrationTester;
-use Page\Data;
-use Phalcon\Security\Random;
 use Canvas\App\Setup;
+use Canvas\Models\AccessList;
+use Canvas\Models\Apps;
+use Canvas\Models\AppsPlans;
+use Canvas\Models\AppsSettings;
+use Canvas\Models\Menus;
+use Canvas\Models\Resources;
+use Canvas\Models\Roles;
+use Canvas\Models\SystemModules;
+use IntegrationTester;
+use Phalcon\Security\Random;
 
 class SetupCest
 {
@@ -30,10 +27,11 @@ class SetupCest
     {
         $random = new Random();
         $app = new Apps();
-        $app->name = 'TestApp-' . $random->base58();
+        $name = 'TestApp-' . $random->base58();
+        $app->name = $name;
         $app->description = $name;
         $app->ecosystem_auth = 1;
-        $app->url = '';
+        $app->url = 'http://' . strtolower($name) . '.com';
         $app->default_apps_plan_id = 1;
         $app->is_actived = 1;
         $app->payments_active = 1;
@@ -44,7 +42,7 @@ class SetupCest
     }
 
     /**
-     * Create default settings for new app
+     * Create default settings for new app.
      *
      * @param IntegrationTester $I
      *
@@ -59,7 +57,7 @@ class SetupCest
     }
 
     /**
-     * Create default app plans for new app
+     * Create default app plans for new app.
      *
      * @param IntegrationTester $I
      *
@@ -70,8 +68,8 @@ class SetupCest
         $setup = new Setup($this->app);
         $setup->plans();
         $appPlans = AppsPlans::findOrFail([
-            "conditions" => "apps_id = :apps_id: and is_deleted = 0",
-            "bind" => ["apps_id" => $this->app->getId()]
+            'conditions' => 'apps_id = :apps_id: and is_deleted = 0',
+            'bind' => ['apps_id' => $this->app->getId()]
         ]);
 
         $I->assertTrue(count($appPlans) == 2);
@@ -91,24 +89,24 @@ class SetupCest
 
         //Check number of roles
         $roles = Roles::findOrFail([
-            "conditions" => "apps_id = :apps_id: and is_deleted = 0",
-            "bind" => ["apps_id" => $this->app->getId()]
+            'conditions' => 'apps_id = :apps_id: and is_deleted = 0',
+            'bind' => ['apps_id' => $this->app->getId()]
         ]);
 
         $I->assertTrue(count($roles) == 2);
 
         //Check number of resources
         $resources = Resources::findOrFail([
-            "conditions" => "apps_id = :apps_id: and is_deleted = 0",
-            "bind" => ["apps_id" => $this->app->getId()]
+            'conditions' => 'apps_id = :apps_id: and is_deleted = 0',
+            'bind' => ['apps_id' => $this->app->getId()]
         ]);
 
         $I->assertTrue(count($resources) == 9);
 
         //Check Access List privileges
         $accessList = AccessList::findOrFail([
-            "conditions" => "apps_id = :apps_id: and is_deleted = 0",
-            "bind" => ["apps_id" => $this->app->getId()]
+            'conditions' => 'apps_id = :apps_id: and is_deleted = 0',
+            'bind' => ['apps_id' => $this->app->getId()]
         ]);
 
         $I->assertTrue(count($accessList) == 54);
@@ -126,10 +124,10 @@ class SetupCest
         $setup = new Setup($this->app);
         $setup->systemModules();
         $systemModules = SystemModules::findOrFail([
-            "conditions" => "apps_id = :apps_id: and is_deleted = 0",
-            "bind" => ["apps_id" => $this->app->getId()]
+            'conditions' => 'apps_id = :apps_id: and is_deleted = 0',
+            'bind' => ['apps_id' => $this->app->getId()]
         ]);
-        
+
         $I->assertTrue(count($systemModules) == 3);
     }
 
@@ -145,15 +143,15 @@ class SetupCest
         $setup = new Setup($this->app);
         $setup->emailTemplates();
         $emailTemplates = SystemModules::findOrFail([
-            "conditions" => "apps_id = :apps_id: and is_deleted = 0",
-            "bind" => ["apps_id" => $this->app->getId()]
+            'conditions' => 'apps_id = :apps_id: and is_deleted = 0',
+            'bind' => ['apps_id' => $this->app->getId()]
         ]);
-        
+
         $I->assertTrue(count($emailTemplates) == 3);
     }
 
     /**
-     * Create default sidebar menus for new app
+     * Create default sidebar menus for new app.
      *
      * @param IntegrationTester $I
      *
@@ -165,8 +163,8 @@ class SetupCest
         $setup->defaultMenus();
 
         $menu = Menus::findFirstOrFail([
-            "conditions" => "apps_id = :apps_id: and is_deleted = 0",
-            "bind" => ["apps_id" => $this->app->getId()]
+            'conditions' => 'apps_id = :apps_id: and is_deleted = 0',
+            'bind' => ['apps_id' => $this->app->getId()]
         ]);
 
         $I->assertTrue(count($menu->getLinks()) == 3);
