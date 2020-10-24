@@ -2,10 +2,12 @@
 
 namespace Canvas\Cli\Tasks;
 
-use Baka\TestCase\Phinx;
+use function Baka\appPath;
 use Canvas\App\Setup;
 use Canvas\Models\Apps;
 use Phalcon\Cli\Task as PhTask;
+use Phinx\Console\PhinxApplication;
+use Phinx\Wrapper\TextWrapper;
 
 class SetupTask extends PhTask
 {
@@ -18,9 +20,18 @@ class SetupTask extends PhTask
     {
         echo 'Starting a Kanvas Ecosystem Fresh Setup' . PHP_EOL;
         echo 'Initializing migration' . PHP_EOL;
-        Phinx::migrate();
+
+        $phinxApp = new PhinxApplication();
+        $phinxTextWrapper = new TextWrapper($phinxApp);
+        $configFile = 'phinx-kanvas.php';
+        $parser = 'php';
+
+        $phinxTextWrapper->setOption('configuration', appPath($configFile));
+        $phinxTextWrapper->setOption('parser', $parser);
+
+        $phinxTextWrapper->getMigrate();
         echo 'Processing Seeds' . PHP_EOL;
-        Phinx::seed();
+        $phinxTextWrapper->getSeed();
 
         echo 'Setting up App ACL' . PHP_EOL;
         $setup = new Setup($this->app);
