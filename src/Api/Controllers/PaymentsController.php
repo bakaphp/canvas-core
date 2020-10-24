@@ -4,16 +4,14 @@ declare(strict_types=1);
 
 namespace Canvas\Api\Controllers;
 
-use Baka\Http\Exception\NotFoundException;
 use Baka\Contracts\Cashier\StripeWebhookHandlersTrait;
-use Phalcon\Http\Response;
-use Canvas\Models\Users;
-use Canvas\Models\Subscription;
+use Baka\Http\Exception\NotFoundException;
 use Canvas\Models\CompaniesSettings;
+use Canvas\Models\Subscription;
+use Canvas\Models\Users;
 use Canvas\Template;
 use Phalcon\Di;
-use ReceiptValidator\iTunes\Validator as iTunesValidator;
-use Kanvas\Packages\MobilePayments\Contracts\ReceiptValidatorTrait;
+use Phalcon\Http\Response;
 
 /**
  * Class PaymentsController.
@@ -21,17 +19,13 @@ use Kanvas\Packages\MobilePayments\Contracts\ReceiptValidatorTrait;
  * Class to handle payment webhook from our cashier library
  *
  * @package Canvas\Api\Controllers
+ *
  * @property Log $log
  * @property App $app
  *
  */
 class PaymentsController extends BaseController
 {
-    /**
-     * Receipt Validator Trait.
-     */
-    use ReceiptValidatorTrait;
-
     /**
      * Stripe Webhook Handlers.
      */
@@ -42,7 +36,7 @@ class PaymentsController extends BaseController
      *
      * @return Response
      */
-    public function handleWebhook(): Response
+    public function handleWebhook() : Response
     {
         //we cant process's if we don't find the stripe header
         if (!$this->request->hasHeader('Stripe-Signature')) {
@@ -67,9 +61,10 @@ class PaymentsController extends BaseController
      * Handle customer subscription updated.
      *
      * @param  array $payload
+     *
      * @return Response
      */
-    protected function handleCustomerSubscriptionUpdated(array $payload, string $method): Response
+    protected function handleCustomerSubscriptionUpdated(array $payload, string $method) : Response
     {
         $user = Users::findFirstByStripeId($payload['data']['object']['customer']);
         if ($user) {
@@ -83,9 +78,10 @@ class PaymentsController extends BaseController
      * Handle customer subscription cancellation.
      *
      * @param  array $payload
+     *
      * @return Response
      */
-    protected function handleCustomerSubscriptionDeleted(array $payload, string $method): Response
+    protected function handleCustomerSubscriptionDeleted(array $payload, string $method) : Response
     {
         $user = Users::findFirstByStripeId($payload['data']['object']['customer']);
         if ($user) {
@@ -100,9 +96,10 @@ class PaymentsController extends BaseController
      * Handle customer subscription free trial ending.
      *
      * @param  array $payload
+     *
      * @return Response
      */
-    protected function handleCustomerSubscriptionTrialwillend(array $payload, string $method): Response
+    protected function handleCustomerSubscriptionTrialwillend(array $payload, string $method) : Response
     {
         $user = Users::findFirstByStripeId($payload['data']['object']['customer']);
         if ($user) {
@@ -117,9 +114,10 @@ class PaymentsController extends BaseController
      * Handle sucessfull payment.
      *
      * @param array $payload
+     *
      * @return Response
      */
-    protected function handleChargeSucceeded(array $payload, string $method): Response
+    protected function handleChargeSucceeded(array $payload, string $method) : Response
     {
         $user = Users::findFirstByStripeId($payload['data']['object']['customer']);
         if ($user) {
@@ -134,6 +132,7 @@ class PaymentsController extends BaseController
      * Handle bad payment.
      *
      * @param array $payload
+     *
      * @return Response
      */
     protected function handleChargeFailed(array $payload, string $method) : Response
@@ -151,6 +150,7 @@ class PaymentsController extends BaseController
      * Handle pending payments.
      *
      * @param array $payload
+     *
      * @return Response
      */
     protected function handleChargePending(array $payload, string $method) : Response
@@ -165,12 +165,14 @@ class PaymentsController extends BaseController
 
     /**
      * Send webhook related emails to user.
+     *
      * @param Users $user
      * @param array $payload
      * @param string $method
+     *
      * @return void
      */
-    protected function sendWebhookResponseEmail(Users $user, array $payload, string $method): void
+    protected function sendWebhookResponseEmail(Users $user, array $payload, string $method) : void
     {
         $templateName = '';
         $title = null;
@@ -223,11 +225,13 @@ class PaymentsController extends BaseController
 
     /**
      * Updates subscription payment status depending on charge event.
+     *
      * @param $user
      * @param $payload
+     *
      * @return void
      */
-    public function updateSubscriptionPaymentStatus(Users $user, array $payload): void
+    public function updateSubscriptionPaymentStatus(Users $user, array $payload) : void
     {
         // Identify if payload comes from mobile payments
         if ($payload['is_mobile']) {
@@ -274,23 +278,5 @@ class PaymentsController extends BaseController
         } else {
             $this->log->error("Subscription not found\n");
         }
-    }
-
-    /**
-     * Update subscription payment status via Mobile Payments
-     *
-     * @return Response
-     */
-    public function updateSubscriptionStatusMobilePayments(): Response
-    {
-        $request = $this->request->getPostData();
-        $receipt = $this->validateReceipt($request['receipt-data']);
-
-        if (gettype($receipt) == 'string') {
-            throw new Throwable($receipt);
-        }
-
-        $this->updateSubscriptionPaymentStatus($this->userData, $this->parseReceiptData($receipt, $request['source']));
-        return $this->response($receipt);
     }
 }
