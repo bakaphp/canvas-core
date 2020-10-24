@@ -42,7 +42,7 @@ class Apps extends Job implements QueueableJobInterface
          * - menus
          * - system modules
          * - email templates
-         * - default menus
+         * - default menus.
          */
 
         $this->setup

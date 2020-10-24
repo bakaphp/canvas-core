@@ -13,17 +13,6 @@ use Canvas\Template;
 use Phalcon\Di;
 use Phalcon\Http\Response;
 
-/**
- * Class PaymentsController.
- *
- * Class to handle payment webhook from our cashier library
- *
- * @package Canvas\Api\Controllers
- *
- * @property Log $log
- * @property App $app
- *
- */
 class PaymentsController extends BaseController
 {
     /**
