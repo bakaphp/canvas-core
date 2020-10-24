@@ -5,12 +5,11 @@ use Dotenv\Dotenv;
 use Phalcon\Loader;
 
 // Register the auto loader
-require '/baka/src/functions.php';
-//require dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor/baka/baka/src/functions.php';
+//require '/baka/src/functions.php';
+require dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor/baka/baka/src/functions.php';
 
 $loader = new Loader();
 $namespaces = [
-    'Baka' => '/baka/src',
     'Canvas' => appPath('/src'),
     'Canvas\Cli\Tasks' => appPath('/cli/tasks'),
     'Canvas\Tests' => appPath('/tests'),
