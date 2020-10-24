@@ -27,10 +27,11 @@ class SetupCest
     {
         $random = new Random();
         $app = new Apps();
-        $app->name = 'TestApp-' . $random->base58();
+        $name = 'TestApp-' . $random->base58();
+        $app->name = $name;
         $app->description = $name;
         $app->ecosystem_auth = 1;
-        $app->url = '';
+        $app->url = 'http://' . strtolower($name) . '.com';
         $app->default_apps_plan_id = 1;
         $app->is_actived = 1;
         $app->payments_active = 1;
