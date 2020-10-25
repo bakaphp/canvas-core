@@ -16,7 +16,6 @@ class Apps extends BakaApps
 
     public ?string $key = null;
     public ?string $url = null;
-    public ?string $description = null;
     public ?int $is_actived = 1;
     public int $ecosystem_auth = 0;
     public int $default_apps_plan_id = 0;
@@ -191,6 +190,10 @@ class Apps extends BakaApps
             'conditions' => 'domain = :domain: AND domain_based = 1',
             'bind' => [
                 'domain' => $domain
+            ],
+            'cache' => [
+                'key' => 'app-by-domain-cache' . $domain,
+                'lifetime' => 432000, //1week
             ],
         ]);
     }
