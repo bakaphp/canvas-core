@@ -73,4 +73,20 @@ class AppsCest
         $app = Apps::getACLApp('Default');
         $I->assertTrue(is_bool($app->subscriptionBased()));
     }
+
+    public function getAppByDomain(IntegrationTester $I)
+    {
+        $app = Apps::findFirst(1);
+        $app->domain = 'localhost';
+        $app->domain_based = 1;
+        $app->update();
+
+        $I->assertTrue(Apps::getByDomainName('localhost') instanceof Apps);
+
+        //revert
+        $app = Apps::findFirst(1);
+        $app->domain = '';
+        $app->domain_based = 0;
+        $app->update();
+    }
 }
