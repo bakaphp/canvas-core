@@ -41,7 +41,6 @@ class Company
             $company->user->set(Companies::cacheKey(), $company->getId());
         }
 
-        $company->associate($company->user, $company);
         $app->associate($company->user, $company);
 
         /**
