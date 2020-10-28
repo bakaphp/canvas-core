@@ -56,9 +56,6 @@ class User
             $user->getDI()->getApp()->associate($user, $user->getDefaultCompany());
         }
 
-        //Create new company associated company
-        $user->getDefaultCompany()->associate($user, $user->getDefaultCompany());
-
         //Insert record into user_roles
         if (!$role = $user->getDI()->getApp()->get(Apps::APP_DEFAULT_ROLE_SETTING)) {
             $role = $user->getDI()->getApp()->name . '.' . Roles::getById((int) $user->roles_id)->name;
