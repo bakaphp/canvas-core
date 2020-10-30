@@ -148,6 +148,7 @@ class AuthController extends \Baka\Auth\AuthController
             'with' => 'verify_password',
         ]));
 
+
         $validation->setFilters('password', 'trim');
         $validation->setFilters('firstname', 'trim');
         $validation->setFilters('lastname', 'trim');
@@ -169,7 +170,7 @@ class AuthController extends \Baka\Auth\AuthController
         try {
             $this->db->begin();
 
-            $user = Auth::signUp($validation->getValues());
+            $user = Auth::signUp($user->toArray());
 
             $this->db->commit();
         } catch (Exception $e) {
