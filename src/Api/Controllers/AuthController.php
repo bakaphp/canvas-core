@@ -169,7 +169,7 @@ class AuthController extends \Baka\Auth\AuthController
         try {
             $this->db->begin();
 
-            $user = Auth::signUp($validation->getValues());
+            $user = Auth::signUp($user->toArray());
 
             $this->db->commit();
         } catch (Exception $e) {
