@@ -9,21 +9,20 @@ use Baka\Contracts\Auth\UserInterface;
 use Baka\Contracts\Database\ModelInterface;
 use Baka\Contracts\Mapper\RelationshipTrait;
 use function Baka\getShortClassName;
+use Canvas\Dto\Notification;
 use Canvas\Models\Notifications;
 use Canvas\Models\SystemModules;
 use Exception;
 
-// You can either extend the CustomMapper, or just implement the MapperInterface
-// directly.
 class NotificationMapper extends CustomMapper
 {
     use RelationshipTrait;
 
     /**
-     * @param Canvas\Models\Notification $notification
-     * @param Canvas\Dto\notificationDto $notificationDto
+     * @param Notifications $notification
+     * @param Notification $notificationDto
      *
-     * @return Files
+     * @return Notification
      */
     public function mapToObject($notification, $notificationDto, array $context = [])
     {
@@ -31,12 +30,37 @@ class NotificationMapper extends CustomMapper
             $notification = Notifications::getByIdOrFail($notification['id']);
         }
 
+        $notificationDto = $this->mapNotification($notification, $notificationDto);
+
+        try {
+            $systemModule = SystemModules::getById($notification->system_modules_id);
+            $systemModuleEntity = new $systemModule->model_name;
+            $entity = $systemModuleEntity::findFirstOrFail($notification->entity_id);
+            $notificationDto->entity = $this->cleanUpEntity($entity);
+            $notificationDto->entity['type'] = getShortClassName($entity);
+        } catch (Exception $e) {
+            $notificationDto->entity['type'] = null;
+        }
+
+        $this->getRelationships($notification, $notificationDto, $context);
+
+        return $notificationDto;
+    }
+
+    /**
+     * Convert notification to its DTO
+     * We have this function to allow user to overwrite the behavior of the notification.
+     *
+     * @param Notifications $notification
+     * @param Notification $notificationDto
+     *
+     * @return Notification
+     */
+    protected function mapNotification(Notifications $notification, Notification $notificationDto) : Notification
+    {
         $notificationDto->id = $notification->getId();
         $notificationDto->type = $notification->type->name;
-        /**
-         * @todo change this for a proper title
-         */
-        $notificationDto->title = 'Notification Title';
+        $notificationDto->title = $notification->type->name;
         $notificationDto->icon = $notification->type->icon_url;
         $notificationDto->users_id = $notification->users_id;
         $notificationDto->users_avatar = $notification->user->getPhoto() ? $notification->user->getPhoto()->url : null;
@@ -51,18 +75,6 @@ class NotificationMapper extends CustomMapper
         $notificationDto->created_at = $notification->created_at;
         $notificationDto->updated_at = $notification->updated_at;
         $notificationDto->from = $this->fromFormatting($notification->from);
-
-        try {
-            $systemModule = SystemModules::getById($notification->system_modules_id);
-            $systemModuleEntity = new $systemModule->model_name;
-            $entity = $systemModuleEntity::findFirstOrFail($notification->entity_id);
-            $notificationDto->entity = $this->cleanUpEntity($entity);
-            $notificationDto->entity['type'] = getShortClassName($entity);
-        } catch (Exception $e) {
-            $notificationDto->entity['type'] = null;
-        }
-
-        $this->getRelationships($notification, $notificationDto, $context);
 
         return $notificationDto;
     }
