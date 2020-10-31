@@ -4,10 +4,10 @@ namespace Canvas\Providers;
 
 use function Baka\envValue;
 use Baka\Http\Exception\InternalServerErrorException;
+use Canvas\Http\Request;
 use Canvas\Models\Apps;
 use Phalcon\Di\DiInterface;
 use Phalcon\Di\ServiceProviderInterface;
-use Phalcon\Http\Request;
 
 class AppProvider implements ServiceProviderInterface
 {
@@ -17,12 +17,11 @@ class AppProvider implements ServiceProviderInterface
     public function register(DiInterface $container) : void
     {
         $config = $container->getShared('config');
-        $request = $container->getShared('request');
+        $request = new Request();
 
         $container->setShared(
             'app',
             function () use ($config, $request) {
-                //$request = new Request();
                 //$appKey = $request->hasHeader('KanvasKey') ? $request->getHeader('KanvasKey') : $config->app->id;
 
                 $domainBasedApp = (bool) envValue('KANVAS_CORE_DOMAIN_BASED_APP', false);
