@@ -55,10 +55,8 @@ class NotificationMapper extends CustomMapper
         try {
             $systemModule = SystemModules::getById($notification->system_modules_id);
             $systemModuleEntity = new $systemModule->model_name;
-            $entity = [];
-            if ($entity = $systemModuleEntity::findFirst($notification->entity_id)) {
-                $notificationDto->entity = $this->cleanUpEntity($entity);
-            }
+            $entity = $systemModuleEntity::findFirstOrFail($notification->entity_id);
+            $notificationDto->entity = $this->cleanUpEntity($entity);
             $notificationDto->entity['type'] = getShortClassName($entity);
         } catch (Exception $e) {
             $notificationDto->entity['type'] = null;

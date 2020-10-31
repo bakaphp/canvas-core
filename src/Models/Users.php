@@ -5,14 +5,14 @@ namespace Canvas\Models;
 
 use Baka\Auth\Models\Users as BakUser;
 use Baka\Cashier\Billable;
+use Baka\Contracts\Auth\UserInterface;
 use Baka\Contracts\Database\HashTableTrait;
 use Baka\Contracts\EventsManager\EventManagerAwareTrait;
+use Baka\Contracts\Notifications\NotifiableTrait;
 use Baka\Hashing\Keys;
+use Baka\Hashing\Password;
 use Baka\Validations\PasswordValidation;
 use Canvas\Auth\App as AppAuth;
-use Baka\Contracts\Auth\UserInterface;
-use Baka\Contracts\Notifications\NotifiableTrait;
-use Baka\Hashing\Password;
 use Canvas\Traits\FileSystemModelTrait;
 use Canvas\Traits\PermissionsTrait;
 use Canvas\Traits\SubscriptionPlanLimitTrait;
@@ -47,7 +47,7 @@ class Users extends BakUser implements UserInterface
      * Provide the app plan id
      * if the user is signing up a new company.
      *
-     * @var integer
+     * @var int
      */
     public ?int $appPlanId = null;
 
@@ -61,7 +61,7 @@ class Users extends BakUser implements UserInterface
     /**
      * System Module Id.
      *
-     * @var integer
+     * @var int
      */
     public int $system_modules_id = 2;
 
@@ -278,7 +278,7 @@ class Users extends BakUser implements UserInterface
      * This only ocurred when signing up the first time, after that all users invites
      * come with a default_company id attached.
      *
-     * @return boolean
+     * @return bool
      */
     public function isFirstSignup() : bool
     {
@@ -365,7 +365,7 @@ class Users extends BakUser implements UserInterface
      * What the current company the users is logged in with
      * in this current session?
      *
-     * @return integer
+     * @return int
      */
     public function currentCompanyId() : int
     {
@@ -391,7 +391,7 @@ class Users extends BakUser implements UserInterface
      * What the current company brach the users is logged in with
      * in this current session?
      *
-     * @return integer
+     * @return int
      */
     public function currentCompanyBranchId() : int
     {
@@ -406,7 +406,7 @@ class Users extends BakUser implements UserInterface
      */
     public function afterCreate()
     {
-        //need to run it here, since we overwirte the default_company id and null this function objective
+        //need to run it here, since we overwrite the default_company id and null this function objective
         $isFirstSignup = $this->isFirstSignup();
 
         /**
@@ -551,7 +551,7 @@ class Users extends BakUser implements UserInterface
      *
      * @param string $newPassword
      *
-     * @return boolean
+     * @return bool
      */
     public function updatePassword(string $currentPassword, string $newPassword, string $verifyPassword) : bool
     {
@@ -694,7 +694,7 @@ class Users extends BakUser implements UserInterface
     /**
      * Verify if the user bellow to the current app.
      *
-     * @return boolean
+     * @return bool
      */
     public function inApp() : bool
     {
