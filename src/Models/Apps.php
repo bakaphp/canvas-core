@@ -16,10 +16,10 @@ class Apps extends BakaApps
 
     public ?string $key = null;
     public ?string $url = null;
-    public int $default_apps_plan_id;
     public ?int $is_actived = 1;
-    public int $ecosystem_auth;
-    public int $payments_active;
+    public int $ecosystem_auth = 0;
+    public int $default_apps_plan_id = 0;
+    public int $payments_active = 0;
     public int $is_public = 1;
     public array $settings = [];
 
@@ -175,5 +175,26 @@ class Apps extends BakaApps
     public function hasSettings() : bool
     {
         return (bool) $this->getSettingsApp()->count();
+    }
+
+    /**
+     * Get app by domain name.
+     *
+     * @param string $domain
+     *
+     * @return self
+     */
+    public static function getByDomainName(string $domain) : ?self
+    {
+        return self::findFirst([
+            'conditions' => 'domain = :domain: AND domain_based = 1',
+            'bind' => [
+                'domain' => $domain
+            ],
+            'cache' => [
+                'key' => 'app-by-domain-cache' . $domain,
+                'lifetime' => 432000, //1week
+            ],
+        ]);
     }
 }
