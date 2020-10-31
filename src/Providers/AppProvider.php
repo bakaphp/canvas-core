@@ -17,11 +17,11 @@ class AppProvider implements ServiceProviderInterface
     public function register(DiInterface $container) : void
     {
         $config = $container->getShared('config');
-        $request = new Request();
 
         $container->setShared(
             'app',
-            function () use ($config, $request) {
+            function () use ($config) {
+                $request = new Request();
                 //$appKey = $request->hasHeader('KanvasKey') ? $request->getHeader('KanvasKey') : $config->app->id;
 
                 $domainBasedApp = (bool) envValue('KANVAS_CORE_DOMAIN_BASED_APP', false);
