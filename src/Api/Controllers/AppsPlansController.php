@@ -13,6 +13,7 @@ use Baka\Http\Exception\NotFoundException;
 use Baka\Http\Exception\UnauthorizedException;
 use Baka\Http\Exception\UnprocessableEntityException;
 use Canvas\Models\Subscription as CanvasSubscription;
+use Canvas\Models\SubscriptionsHistory;
 use Phalcon\Cashier\Subscription;
 use Canvas\Models\UserCompanyApps;
 use function Baka\paymentGatewayIsActive;
@@ -86,12 +87,19 @@ class AppsPlansController extends BaseController
 
         $subscription = $this->userData->subscription($userSubscription->name);
 
+        SubscriptionsHistory::addRecord($subscription);
+        $this->db->commit();
+        die();
         if ($subscription->onTrial()) {
             $subscription->name = $appPlan->name;
             $subscription->stripe_plan = $appPlan->stripe_plan;
         } else {
             $subscription->swap($stripeId);
         }
+
+        //Create new history record for the edited subscription
+        SubscriptionsHistory::addRecord($subscription);
+
 
         //update company app
         $companyApp = UserCompanyApps::getCurrentApp();
@@ -117,7 +125,6 @@ class AppsPlansController extends BaseController
             }
         }
 
-        $this->db->commit();
 
         //return the new subscription plan
         return $this->response($appPlan);
