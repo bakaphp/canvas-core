@@ -43,12 +43,14 @@ class InitGewaer extends AbstractSeed
                 'name' => 'Canvas',
                 'users_id' => 1,
                 'system_modules_id' => 1,
+                'language' => "EN",
                 'created_at' => date('Y-m-d H:i:s'),
                 'is_deleted' => 0
             ], [
                 'name' => 'CRM',
                 'users_id' => 1,
                 'system_modules_id' => 1,
+                'language' => "EN",
                 'created_at' => date('Y-m-d H:i:s'),
                 'is_deleted' => 0
             ],
