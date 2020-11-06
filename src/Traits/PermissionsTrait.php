@@ -62,6 +62,42 @@ trait PermissionsTrait
     }
 
     /**
+     * Assigned a user this role
+     * Example: App.Role.
+     *
+     * @param int $id
+     *
+     * @return boolean
+     */
+    public function assignRoleById(int $id) : bool
+    {
+        $role = Roles::getById($id);
+
+        $userRole = UserRoles::findFirst([
+            'conditions' => 'users_id = ?0 and apps_id = ?1 and companies_id = ?2',
+            'bind' => [
+                $this->getId(),
+                $role->apps_id,
+                $this->currentCompanyId()
+            ]
+        ]);
+
+        if (!is_object($userRole)) {
+            $userRole = new UserRoles();
+            $userRole->users_id = $this->getId();
+            $userRole->roles_id = $role->getId();
+            $userRole->apps_id = $role->apps_id;
+            $userRole->companies_id = $this->currentCompanyId();
+        } else {
+            $userRole->roles_id = $role->getId();
+        }
+
+        $userRole->saveOrFail();
+
+        return true;
+    }
+
+    /**
      * Remove a role for the current user
      * Example: App.Role.
      *
