@@ -4,6 +4,7 @@ namespace Gewaer\Tests\integration\library\Acl;
 
 use Canvas\Acl\Manager as AclManager;
 use Canvas\Models\Users;
+use Canvas\Models\Roles;
 use Canvas\Providers\AclProvider;
 use Canvas\Providers\ConfigProvider;
 use Canvas\Providers\DatabaseProvider;
@@ -76,7 +77,7 @@ class AclCest
     {
         $acl = $this->aclService($I);
 
-        $I->assertFalse(!$acl->isAllowed('Admins', 'Default.Users', 'update'));
+        $I->assertFalse($acl->isAllowed('Admins', 'Default.Users', 'update'));
     }
 
     public function checkSetAppByRole(IntegrationTester $I)
@@ -94,6 +95,17 @@ class AclCest
         $I->assertTrue($userData->assignRole('Default.Admins'));
     }
 
+    public function checkUsersAssignRoleById(IntegrationTester $I)
+    {
+        $acl = $this->aclService($I);
+        $userData = Users::findFirstByEmail(Data::loginJsonDefaultUser()['email']);
+        $adminRole = Roles::findFirst(1);
+        $userRole = Roles::findFirst(2);
+
+        $I->assertTrue($userData->assignRoleById($userRole->getId()));
+        $I->assertTrue($userData->assignRoleById($adminRole->getId()));
+    }
+
     public function checkUsersHasPermission(IntegrationTester $I)
     {
         $acl = $this->aclService($I);
@@ -107,7 +119,7 @@ class AclCest
         $acl = $this->aclService($I);
         $userData = Users::findFirstByEmail(Data::loginJsonDefaultUser()['email']);
 
-        $I->assertFalse(!$userData->can('Users.delete'));
+        $I->assertFalse($userData->can('Users.delete'));
     }
 
     public function checkUsersRemoveRole(IntegrationTester $I)
