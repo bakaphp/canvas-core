@@ -4,6 +4,7 @@ namespace Gewaer\Tests\integration\library\Acl;
 
 use Canvas\Acl\Manager as AclManager;
 use Canvas\Models\Users;
+use Canvas\Models\Roles;
 use Canvas\Providers\AclProvider;
 use Canvas\Providers\ConfigProvider;
 use Canvas\Providers\DatabaseProvider;
@@ -92,6 +93,17 @@ class AclCest
         $userData = Users::findFirstByEmail(Data::loginJsonDefaultUser()['email']);
 
         $I->assertTrue($userData->assignRole('Default.Admins'));
+    }
+
+    public function checkUsersAssignRoleById(IntegrationTester $I)
+    {
+        $acl = $this->aclService($I);
+        $userData = Users::findFirstByEmail(Data::loginJsonDefaultUser()['email']);
+        $adminRole = Roles::findFirst(1);
+        $userRole = Roles::findFirst(2);
+
+        $I->assertTrue($userData->assignRoleById($userRole->getId()));
+        $I->assertTrue($userData->assignRoleById($adminRole->getId()));
     }
 
     public function checkUsersHasPermission(IntegrationTester $I)

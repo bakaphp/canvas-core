@@ -177,6 +177,10 @@ class UsersController extends BakaUsersController
             unset($request['default_company'], $request['default_company_branch']);
         }
 
+        if(isset($request['roles_id'])){
+            $user->assignRoleById((int)$request['roles_id']);
+        }
+
         //update
 
         $user->updateOrFail($request, $this->updateFields);
