@@ -86,12 +86,9 @@ trait PermissionsTrait
                 "companies_id" => $this->currentCompanyId()
         ]);
 
-
         $userRole->roles_id = $role->getId();
-
-        $userRole->saveOrFail();
-
-        return true;
+        
+        return $userRole->saveOrFail();
     }
 
     /**
