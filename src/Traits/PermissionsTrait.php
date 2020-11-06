@@ -74,11 +74,11 @@ trait PermissionsTrait
         $role = Roles::getById($id);
 
         $userRole = UserRoles::findFirstOrCreate([
-            'conditions' => 'users_id = ?0 and apps_id = ?1 and companies_id = ?2',
+            'conditions' => 'users_id = :users_id: and apps_id = :apps_id: and companies_id = :companies_id: and is_deleted = 0',
             'bind' => [
-                $this->getId(),
-                $role->apps_id,
-                $this->currentCompanyId()
+                "users_id" => $this->getId(),
+                "apps_id" => $role->apps_id,
+                "companies_id" => $this->currentCompanyId()
             ]],[
                 "users_id" => $this->getId(),
                 "roles_id" => $role->getId(),
