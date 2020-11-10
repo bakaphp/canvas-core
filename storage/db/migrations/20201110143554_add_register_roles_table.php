@@ -25,7 +25,6 @@ class AddRegisterRolesTable extends Phinx\Migration\AbstractMigration
             ])
             ->addColumn('uuid', 'string', [
                 'null' => false,
-                'default' => '\'\'',
                 'limit' => 128,
                 'collation' => 'utf8mb4_unicode_ci',
                 'encoding' => 'utf8mb4',
