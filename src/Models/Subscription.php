@@ -25,6 +25,7 @@ class Subscription extends BakaSubscription
 {
     const DEFAULT_GRACE_PERIOD_DAYS = 5;
 
+    public ?int $record_id = null;
     public ?int $apps_plans_id = null;
     public int $user_id;
     public int $companies_id;

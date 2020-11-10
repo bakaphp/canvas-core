@@ -86,10 +86,7 @@ class AppsPlansController extends BaseController
         $this->db->begin();
 
         $subscription = $this->userData->subscription($userSubscription->name);
-
-        SubscriptionsHistory::addRecord($subscription);
-        $this->db->commit();
-        die();
+    
         if ($subscription->onTrial()) {
             $subscription->name = $appPlan->name;
             $subscription->stripe_plan = $appPlan->stripe_plan;
@@ -125,6 +122,7 @@ class AppsPlansController extends BaseController
             }
         }
 
+        $this->db->commit();
 
         //return the new subscription plan
         return $this->response($appPlan);

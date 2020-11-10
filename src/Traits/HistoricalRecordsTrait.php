@@ -42,12 +42,9 @@ trait HistoricalRecordsTrait
             }
         }
 
-        // $newHistoricalRecord = new self($recordFieldsArray);
-        
-        $newHistoricalRecord->assign($recordFieldsArray, $whiteList);
-        // $newHistoricalRecord->saveOrFail();
-
-        print_r($newHistoricalRecord->toArray());
-        die();
+        $newHistoricalRecord = new self();
+        $newHistoricalRecord->assign($recordFieldsArray);
+        $newHistoricalRecord->saveOrFail();
+        reset($recordFieldsArray);
     }
 }
