@@ -358,7 +358,7 @@ class Users extends BakUser implements UserInterface
         }
 
         $role = Roles::getByName('Admins');
-        $this->roles_id = $role->getId();
+        $this->roles_id = $this->roles_id ?? $role->getId();
     }
 
     /**
