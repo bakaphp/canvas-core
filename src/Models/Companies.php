@@ -109,7 +109,7 @@ class Companies extends AbstractModel
             'Canvas\Models\UsersAssociatedApps',
             'companies_id',
             [
-                'alias' => 'app',
+                'alias' => 'UsersAssociatedByApps',
                 'params' => [
                     'conditions' => 'apps_id = ' . $this->di->getApp()->getId()
                 ]
@@ -123,6 +123,18 @@ class Companies extends AbstractModel
             [
                 'alias' => 'branch',
             ]
+        );
+
+        $this->hasOne(	
+            'id',	
+            'Canvas\Models\UserCompanyApps',	
+            'companies_id',	
+            [	
+                'alias' => 'app',	
+                'params' => [	
+                    'conditions' => 'apps_id = ' . $this->di->getApp()->getId()	
+                ]	
+            ]	
         );
 
         $this->hasOne(
