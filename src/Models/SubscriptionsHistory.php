@@ -24,26 +24,26 @@ class SubscriptionsHistory extends AbstractModel
      */
     use HistoricalRecordsTrait;
 
-    // public int $record_id;
-    // public ?int $apps_plans_id = null;
-    // public ?int $user_id = null;
-    // public ?int $companies_id = null;
-    // public ?int $apps_id = null;
-    // public ?string $name = null;
-    // public string $stripe_id = "";
-    // public string $stripe_plan = "";
-    // public int $quantity = 0;
-    // public ?int $payment_frequency_id = null;
-    // public ?string $trial_ends_at = null;
-    // public ?int $trial_ends_days = null;
-    // public int $is_freetrial = 0;
-    // public int $is_active = 0;
-    // public int $paid = 0;
-    // public ?string $charge_date = null;
-    // public ?string $ends_at = null;
-    // public ?string $grace_period_ends = null;
-    // public ?String $next_due_payment = null;
-    // public int $is_cancelled = 0;
+    public int $record_id;
+    public ?int $apps_plans_id = null;
+    public ?int $user_id = null;
+    public ?int $companies_id = null;
+    public ?int $apps_id = null;
+    public ?string $name = null;
+    public string $stripe_id = "";
+    public string $stripe_plan = "";
+    public int $quantity = 0;
+    public ?int $payment_frequency_id = null;
+    public ?string $trial_ends_at = null;
+    public ?int $trial_ends_days = null;
+    public int $is_freetrial = 0;
+    public int $is_active = 0;
+    public int $paid = 0;
+    public ?string $charge_date = null;
+    public ?string $ends_at = null;
+    public ?string $grace_period_ends = null;
+    public ?String $next_due_payment = null;
+    public int $is_cancelled = 0;
 
     /**
      * Initialize.
