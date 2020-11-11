@@ -94,10 +94,6 @@ class AppsPlansController extends BaseController
             $subscription->swap($stripeId);
         }
 
-        //Create new history record for the edited subscription
-        SubscriptionsHistory::addRecord($subscription);
-
-
         //update company app
         $companyApp = UserCompanyApps::getCurrentApp();
 
@@ -121,6 +117,9 @@ class AppsPlansController extends BaseController
                 throw new UnprocessableEntityException((string) current($subscription->getMessages()));
             }
         }
+
+        //Create new history record for the edited subscription
+        SubscriptionsHistory::addRecord($subscription);
 
         $this->db->commit();
 
