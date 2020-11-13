@@ -29,6 +29,7 @@ use Phalcon\Validation\Validator\Confirmation;
 use Phalcon\Validation\Validator\Email as EmailValidator;
 use Phalcon\Validation\Validator\PresenceOf;
 use Phalcon\Validation\Validator\StringLength;
+use Baka\Auth\UserProvider;
 
 /**
  * Class AuthController.
@@ -126,7 +127,7 @@ class AuthController extends \Baka\Auth\AuthController
      */
     public function signup() : Response
     {
-        $user = $this->userModel;
+        $user = UserProvider::get();
 
         $request = $this->request->getPostData();
 
@@ -169,7 +170,7 @@ class AuthController extends \Baka\Auth\AuthController
         try {
             $this->db->begin();
 
-            $user = Auth::signUp($user->toArray());
+            $user = Auth::signUp($user);
 
             $this->db->commit();
         } catch (Exception $e) {
