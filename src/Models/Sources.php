@@ -6,13 +6,16 @@ namespace Canvas\Models;
 
 use Baka\Http\Exception\InternalServerErrorException;
 use Baka\Social\Apple\ASDecoder;
-use Baka\Auth\Models\Sources as BakaSource;
+use Baka\Database\Model;
+use Baka\Http\Exception\NotFoundException;
 
-class Sources extends BakaSource
+class Sources extends Model
 {
     public string $title;
     public string $url;
     public ?int $language_id = null;
+    public int $pv_order;
+    public int $ep_order;
 
     const APPLE = 'apple';
     const FACEBOOK = 'facebook';
@@ -24,6 +27,8 @@ class Sources extends BakaSource
     public function initialize()
     {
         $this->setSource('sources');
+
+        $this->hasMany('id', 'Canvas\Models\UserLinkedSources', 'source_id', ['alias' => 'linkedSource']);
     }
 
     /**
@@ -50,5 +55,19 @@ class Sources extends BakaSource
         }
 
         return $appleUserInfo;
+    }
+
+    /**
+     * Get a source by its title.
+     */
+    public static function getByTitle(string $title) : Sources
+    {
+        $sourceData = self::findFirstByTitle($title);
+
+        if (!$sourceData) {
+            throw new NotFoundException(_('Importing site is not currently supported.'));
+        }
+
+        return $sourceData;
     }
 }

@@ -2,11 +2,13 @@
 
 namespace Canvas\Models;
 
-use Baka\Cashier\Subscription as BakaSubscription;
+use Baka\Database\Model;
 use Baka\Http\Exception\InternalServerErrorException;
 use Carbon\Carbon;
 use Phalcon\Db\RawValue;
 use Phalcon\Di;
+use Phalcon\Validation;
+use Phalcon\Validation\Validator\Uniqueness;
 
 /**
  * Trait Subscription.
@@ -21,10 +23,15 @@ use Phalcon\Di;
  * @property \Phalcon\Di $di
  *
  */
-class Subscription extends BakaSubscription
+class Subscription extends Model
 {
+    const FREE_TRIAL = 1;
+    const DEFAULT_APP = 1;
     const DEFAULT_GRACE_PERIOD_DAYS = 5;
 
+    public int $plans_id;
+    public int $users_id;
+    public int $company_id;
     public ?int $apps_plans_id = null;
     public int $user_id;
     public int $companies_id;
@@ -76,6 +83,54 @@ class Subscription extends BakaSubscription
             'id',
             ['alias' => 'appPlan']
         );
+    }
+
+    /**
+     * Model validation.
+     *
+     * @return void
+     */
+    public function validation()
+    {
+        $validator = new Validation();
+
+        // Unique values
+        $validator->add(
+            'company_id',
+            new Uniqueness([
+                'model' => $this,
+                'message' => _('This company already has an subscription.'),
+            ])
+        );
+
+        return $this->validate($validator);
+    }
+
+    /**
+     * Start a free trial to the system.
+     *
+     * @param  Companies $company
+     *
+     * @return Subscription
+     */
+    public static function startFreeTrial(Companies $company) : self
+    {
+        $subscription = new self();
+        $subscription->plans_id = self::FREE_TRIAL;
+        $subscription->users_id = $company->users_id;
+        $subscription->apps_id = self::DEFAULT_APP;
+        $subscription->stripe_id = '';
+        $subscription->company_id = $company->getId();
+        $subscription->stripe_plan = 'Free Trial';
+        $subscription->quantity = 1;
+        $subscription->trial_ends_at = date('Y-m-d H:i:s', strtotime('+30 days'));
+        $subscription->ends_at = date('Y-m-d H:i:s', strtotime('+30 days'));
+
+        if (!$subscription->save()) {
+            throw new Exception(current($subscription->getMessages()));
+        }
+
+        return $subscription;
     }
 
     /**

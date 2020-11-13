@@ -3,7 +3,9 @@ declare(strict_types=1);
 
 namespace Canvas\Models;
 
-class AppsRoles extends \Baka\Auth\Models\AppsRoles
+use Baka\Database\Model;
+
+class AppsRoles extends Model
 {
     public int $apps_id;
     public string $roles_name;

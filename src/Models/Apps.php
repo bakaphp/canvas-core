@@ -5,15 +5,17 @@ namespace Canvas\Models;
 
 use Baka\Contracts\Database\HashTableTrait;
 use Baka\Contracts\EventsManager\EventManagerAwareTrait;
-use Baka\Database\Apps as BakaApps;
+use Baka\Database\Model;
 use Canvas\Cli\Jobs\Apps as JobsApps;
 use Canvas\Traits\UsersAssociatedTrait;
 use Phalcon\Security\Random;
 
-class Apps extends BakaApps
+class Apps extends Model
 {
     use EventManagerAwareTrait;
 
+    public string $name;
+    public string $description;
     public ?string $key = null;
     public ?string $url = null;
     public ?int $is_actived = 1;
