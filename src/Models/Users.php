@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Canvas\Models;
 
 use Baka\Auth\Models\Users as BakUser;
-use Canvas\Cashier\Billable;
 use Baka\Contracts\Auth\UserInterface;
 use Baka\Contracts\Database\HashTableTrait;
 use Baka\Contracts\EventsManager\EventManagerAwareTrait;
@@ -29,7 +28,6 @@ use ReflectionClass;
 class Users extends BakUser implements UserInterface
 {
     use PermissionsTrait;
-    use Billable;
     use SubscriptionPlanLimitTrait;
     use FileSystemModelTrait;
     use HashTableTrait;
@@ -375,16 +373,26 @@ class Users extends BakUser implements UserInterface
 
     /**
      * Overwrite the user relationship.
-     * use Phalcon Registry to assure we mantian the same instance accross the request.
+     * use Phalcon Registry to assure we maintain the same instance across the request.
      */
     public function getDefaultCompany() : Companies
     {
         $registry = Di::getDefault()->getRegistry();
-        $key = 'company_' . Di::getDefault()->getApp()->getId() . '_' . $this->getId();
+        $key = 'company_' . Di::getDefault()->get('app')->getId() . '_' . $this->getId();
         if (!isset($registry[$key])) {
             $registry[$key] = Companies::findFirstOrFail($this->currentCompanyId());
         }
         return  $registry[$key];
+    }
+
+    /**
+     * Get the default company Group.
+     *
+     * @return CompaniesGroups
+     */
+    public function getDefaultCompanyGroup() : CompaniesGroups
+    {
+        return $this->getDefaultCompany()->getDefaultCompanyGroup();
     }
 
     /**

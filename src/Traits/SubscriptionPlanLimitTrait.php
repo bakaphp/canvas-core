@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Canvas\Traits;
 
 use function Baka\getShortClassName;
-use Canvas\Exception\SubscriptionPlanLimitException;
 use Baka\Http\Exception\InternalServerErrorException;
+use Canvas\Exception\SubscriptionPlanLimitException;
 use Canvas\Models\Subscription;
 use Canvas\Models\UserCompanyAppsActivities;
 use Phalcon\Di;
@@ -29,7 +29,7 @@ trait SubscriptionPlanLimitTrait
      *
      * @throws SubscriptionPlanLimitException
      *
-     * @return boolean
+     * @return bool
      */
     public function isAtLimit() : bool
     {
@@ -42,7 +42,7 @@ trait SubscriptionPlanLimitTrait
             return false;
         }
 
-        $subscription = Subscription::getActiveForThisApp();
+        $subscription = Subscription::getActiveSubscription();
         $appPlan = $subscription->appPlan;
 
         if (is_object($appPlan)) {
@@ -69,7 +69,7 @@ trait SubscriptionPlanLimitTrait
      *
      * @throws InternalServerErrorException
      *
-     * @return boolean
+     * @return bool
      */
     public function updateAppActivityLimit() : bool
     {

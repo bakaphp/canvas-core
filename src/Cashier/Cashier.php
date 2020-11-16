@@ -4,24 +4,35 @@ namespace Canvas\Cashier;
 
 use Exception;
 
-/**
- * @todo move the namespace to baka
- */
 class Cashier
 {
+    /**
+     * The Cashier library version.
+     *
+     * @var string
+     */
+    const VERSION = '12.5.0';
+
+    /**
+     * The Stripe API version.
+     *
+     * @var string
+     */
+    const STRIPE_VERSION = '2020-03-02';
+
     /**
      * The current currency.
      *
      * @var string
      */
-    protected static $currency = 'usd';
+    protected static string $currency = 'usd';
 
     /**
      * The current currency symbol.
      *
      * @var string
      */
-    protected static $currencySymbol = '$';
+    protected static string $currencySymbol = '$';
 
     /**
      * The custom currency formatter.
@@ -156,5 +167,20 @@ class Cashier
     {
         // search forward starting from end minus needle length characters
         return $needle === '' || (($temp = strlen($haystack) - strlen($needle)) >= 0 && strpos($haystack, $needle, $temp) !== false);
+    }
+
+    /**
+     * Get the default Stripe API options.
+     *
+     * @param  array  $options
+     *
+     * @return array
+     */
+    public static function stripeOptions(array $options = []) : array
+    {
+        return array_merge([
+            'api_key' => getenv('STRIPE_SECRET'),
+            'stripe_version' => static::STRIPE_VERSION,
+        ], $options);
     }
 }

@@ -3,100 +3,103 @@
 namespace Canvas\Cashier;
 
 use Canvas\Models\Apps;
-use Canvas\Models\Companies;
 use Canvas\Models\Subscription;
+use Canvas\Models\SubscriptionItems;
 use Carbon\Carbon;
-use Phalcon\Mvc\Model;
+use Carbon\CarbonInterface;
+use InvalidArgumentException;
+use Phalcon\Helper\Arr;
+use Phalcon\Mvc\ModelInterface;
+use Stripe\Subscription as StripeSubscription;
 
 class SubscriptionBuilder
 {
     /**
-     * The user model that is subscribing.
-     *
+     * Entity who is been assigned a subscription.
      */
-    protected $user;
+    protected ModelInterface $entity;
 
     /**
      * The name of the subscription.
-     *
-     * @var string
      */
-    protected $name;
+    protected string $name;
 
     /**
-     * The name of the plan being subscribed to.
-     *
-     * @var string
+     * The name of the plans being subscribed to.
      */
-    protected $plan;
+    protected string $plan;
+    protected array $plans = [];
 
     /**
      * The quantity of the subscription.
      *
      * @var int
      */
-    protected $quantity = 1;
+    protected int $quantity = 1;
 
     /**
-     * The number of trial days to apply to the subscription.
-     *
-     * @var int|null
+     * Date the free trial ends at.
      */
-    protected $trialDays;
+    protected ?CarbonInterface $trialEndsAt = null;
 
     /**
      * Indicates that the trial should end immediately.
-     *
-     * @var bool
      */
-    protected $skipTrial = false;
+    protected bool $skipTrial = false;
 
     /**
      * The coupon code being applied to the customer.
-     *
-     * @var string|null
      */
-    protected $coupon;
+    protected ?string $coupon = null;
 
     /**
      * The metadata to apply to the subscription.
-     *
-     * @var array|null
      */
-    protected $metadata;
+    protected array $metadata = [];
 
-    protected Companies $company;
+    protected Apps $apps;
 
     /**
-     * App.
+     * Create a new Subscription.
      *
-     * @var Apps
+     * @param ModelInterface $entity
+     * @param string $name
+     * @param string $plan
+     * @param Apps $apps
      */
-    protected $apps;
-
-    /**
-     * Active Subscription Id.
-     *
-     * @var string
-     */
-    protected $activeSubscriptionId;
-
-    /**
-     * Create a new subscription builder instance.
-     *
-     * @param  mixed  $user
-     * @param  string  $name
-     * @param  string  $plan
-     *
-     * @return void
-     */
-    public function __construct($user, $name, $plan, Companies $company, Apps $apps)
+    public function __construct(ModelInterface $entity, string $name, string $plan, Apps $apps)
     {
-        $this->user = $user;
+        $this->entity = $entity;
         $this->name = $name;
-        $this->plan = $plan;
-        $this->company = $company;
         $this->apps = $apps;
+        $this->plan = $plan;
+
+        $this->addPlan($this->plan);
+    }
+
+    /**
+     * Stripe has change plans to prices, we will continue to use plans name since it a best use
+     * to subscriptions.
+     *
+     * @param string $plan
+     * @param int $quantity
+     *
+     * @return self
+     */
+    public function addPlan(string $plan, int $quantity = 1) : self
+    {
+        $options = [
+            'price' => $plan,
+            'quantity' => $quantity,
+        ];
+
+        if ($taxRates = $this->getPlanTaxRatesForPayload($plan)) {
+            $options['tax_rates'] = $taxRates;
+        }
+
+        $this->plans[$plan] = $options;
+
+        return $this;
     }
 
     /**
@@ -106,23 +109,47 @@ class SubscriptionBuilder
      *
      * @return $this
      */
-    public function quantity($quantity)
+    public function quantity(int $quantity, ?string $plan = null)
     {
         $this->quantity = $quantity;
 
         return $this;
+
+        if (is_null($plan)) {
+            if (count($this->plans) > 1) {
+                throw new InvalidArgumentException('Plan is required when creating multi-plan subscriptions.');
+            }
+
+            $plan = Arr::first($this->plans)['price'];
+        }
+
+        return $this->addPlan($plan, $quantity);
     }
 
     /**
      * Specify the ending date of the trial.
      *
-     * @param  int  $trialDays
+     * @param  int $trialDays
      *
-     * @return $this
+     * @return self
      */
-    public function trialDays($trialDays)
+    public function trialDays(int $trialDays) : self
     {
-        $this->trialDays = $trialDays;
+        $this->trialEndsAt = Carbon::now()->addDays($trialDays);
+
+        return $this;
+    }
+
+    /**
+     * Specify the date.
+     *
+     * @param CarbonInterface $trialUntil
+     *
+     * @return self
+     */
+    public function trialUntil(CarbonInterface $trialUntil) : self
+    {
+        $this->trialEndsAt = $trialUntil;
 
         return $this;
     }
@@ -132,7 +159,7 @@ class SubscriptionBuilder
      *
      * @return $this
      */
-    public function skipTrial()
+    public function skipTrial() : self
     {
         $this->skipTrial = true;
 
@@ -146,7 +173,7 @@ class SubscriptionBuilder
      *
      * @return $this
      */
-    public function withCoupon($coupon)
+    public function withCoupon(string $coupon) : self
     {
         $this->coupon = $coupon;
 
@@ -160,7 +187,7 @@ class SubscriptionBuilder
      *
      * @return $this
      */
-    public function withMetadata($metadata)
+    public function withMetadata(array $metadata) : self
     {
         $this->metadata = $metadata;
 
@@ -172,77 +199,68 @@ class SubscriptionBuilder
      *
      * @param  array  $options
      *
-     * @return \Laravel\Cashier\Subscription
+     * @return Subscription
      */
-    public function add(array $options = [])
+    public function add(array $options = []) : Subscription
     {
-        return $this->create(null, $options);
+        return $this->create($options);
     }
 
     /**
      * Create a new Stripe subscription.
      *
-     * @param  string|null  $token
-     * @param  array  $options
+     * @param array $options
+     * @param array $customerOptions
      *
      * @return Subscription
      */
-    public function create($token = null, array $options = [])
+    public function create(array $options = [], array $customerOptions = []) : Subscription
     {
-        $customer = $this->getStripeCustomer($token, $options);
+        $customer = $this->entity->createOrGetStripeCustomerInfo($customerOptions);
 
-        $subscription = $customer->subscriptions->create($this->buildPayload());
+        $payload = array_merge(
+            [
+                'customer' => $customer->id
+            ],
+            $this->buildPayload(),
+            $options
+        );
+
+        $stripeSubscription = StripeSubscription::create(
+            $payload,
+            Cashier::stripeOptions()
+        );
 
         if ($this->skipTrial) {
             $trialEndsAt = null;
         } else {
-            $object = Carbon::now()->addDays($this->trialDays);
-            $trialEndsAt = $this->trialDays ? $object->toDateTimeString() : null;
+            $trialEndsAt = $this->trialEndsAt;
         }
 
-        $object = new Subscription();
-        $object->name = $this->name;
-        $object->stripe_id = $subscription->id;
-        $object->stripe_plan = $this->plan;
-        $object->quantity = $this->quantity;
-        $object->trial_ends_at = $trialEndsAt;
-        $object->companies_id = $this->company->getId();
-        $object->apps_id = $this->apps->getId();
+        $subscription = new Subscription();
+        $subscription->name = $this->name;
+        $subscription->stripe_id = $stripeSubscription->id;
+        $subscription->stripe_plan = $stripeSubscription->plan ? $stripeSubscription->plan->id : null;
+        $subscription->quantity = $stripeSubscription->quantity;
+        $subscription->trial_ends_at = $trialEndsAt->toDateTimeString();
+        $subscription->companies_groups_id = $this->entity->getId();
+        $subscription->apps_id = $this->apps->getId();
+        $subscription->apps_plans_id = $this->apps->getDefaultPlan()->getId();
+        $subscription->payment_frequency_id = $this->apps->getDefaultPlan()->payment_frequencies_id;
+        $subscription->is_freetrial = $trialEndsAt ? 1 : 0;
+        $subscription->is_active = 1;
+        $subscription->saveOFail();
 
-        //Need call it before save relationship
-        $this->user->subscriptions();
-        $this->user->subscriptions = $object;
-        $this->user->active_subscription_id = $subscription->id;
-
-        $this->user->saveOrFail();
-
-        return $this->user;
-    }
-
-    /**
-     * Get the Stripe customer instance for the current user and token.
-     *
-     * @param  string|null  $token
-     * @param  array  $options
-     *
-     * @return \Stripe\Customer
-     */
-    protected function getStripeCustomer($token = null, array $options = [])
-    {
-        if (!$this->user->stripe_id) {
-            $customer = $this->user->createAsStripeCustomer(
-                $token,
-                array_merge($options, array_filter(['coupon' => $this->coupon]))
-            );
-        } else {
-            $customer = $this->user->asStripeCustomer();
-
-            if ($token) {
-                $this->user->updateCard($token);
-            }
+        foreach ($stripeSubscription->items as $item) {
+            $subscriptionItem = new SubscriptionItems();
+            $subscriptionItem->subscription_id = $subscription->getId();
+            $subscriptionItem->stripe_id = $item->id;
+            $subscriptionItem->stripe_plan = $item->plan->id;
+            $subscriptionItem->quantity = $item->quantity;
+            $subscriptionItem->saveOrFail();
         }
 
-        return $customer;
+        return $subscription;
     }
 
     /**
@@ -250,11 +268,10 @@ class SubscriptionBuilder
      *
      * @return array
      */
-    protected function buildPayload()
+    protected function buildPayload() : array
     {
         return array_filter([
-            'plan' => $this->plan,
-            'quantity' => $this->quantity,
+            'items' => $this->plans,
             'coupon' => $this->coupon,
             'trial_end' => $this->getTrialEndForPayload(),
             'tax_percent' => $this->getTaxPercentageForPayload(),
@@ -265,7 +282,7 @@ class SubscriptionBuilder
     /**
      * Get the trial ending date for the Stripe payload.
      *
-     * @return int|null
+     * @return int|string|null
      */
     protected function getTrialEndForPayload()
     {
@@ -273,8 +290,8 @@ class SubscriptionBuilder
             return 'now';
         }
 
-        if ($this->trialDays) {
-            return Carbon::now()->addDays($this->trialDays)->getTimestamp();
+        if ($this->trialEndsAt) {
+            return $this->trialEndsAt->getTimestamp();
         }
     }
 
@@ -283,10 +300,36 @@ class SubscriptionBuilder
      *
      * @return int|null
      */
-    protected function getTaxPercentageForPayload()
+    protected function getTaxPercentageForPayload() : ?int
     {
-        if ($taxPercentage = $this->user->taxPercentage()) {
+        if ($taxPercentage = $this->entity->taxPercentage()) {
             return $taxPercentage;
+        }
+    }
+
+    /**
+     * Get the tax rates for the Stripe payload.
+     *
+     * @return array|null
+     */
+    protected function getTaxRatesForPayload() : ?array
+    {
+        if ($taxRates = $this->entity->taxRates()) {
+            return $taxRates;
+        }
+    }
+
+    /**
+     * Get the plan tax rates for the Stripe payload.
+     *
+     * @param  string  $plan
+     *
+     * @return array|null
+     */
+    protected function getPlanTaxRatesForPayload(string $plan) : ?array
+    {
+        if ($taxRates = $this->entity->planTaxRates()) {
+            return $taxRates[$plan] ?? null;
         }
     }
 }

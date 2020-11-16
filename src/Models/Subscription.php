@@ -8,27 +8,15 @@ use DateTimeInterface;
 use LogicException;
 use Phalcon\Db\RawValue;
 use Phalcon\Di;
+use Stripe\Subscription as StripeSubscription;
 
-/**
- * Trait Subscription.
- *
- * @package Canvas\Models
- *
- * @property Users $user
- * @property AppsPlans $appPlan
- * @property CompanyBranches $branches
- * @property Companies $company
- * @property UserCompanyApps $app
- * @property \Phalcon\Di $di
- *
- */
 class Subscription extends AbstractModel
 {
     const DEFAULT_GRACE_PERIOD_DAYS = 5;
 
     public ?int $apps_plans_id = null;
     public int $user_id;
-    public int $companies_id;
+    public int $companies_groups_id;
     public int $apps_id;
     public ?string $name = null;
     public string $stripe_id;
@@ -46,7 +34,6 @@ class Subscription extends AbstractModel
     public ?String $next_due_payment = null;
     public int $is_cancelled = 0;
 
-    
     /**
      * Indicates if the plan change should be prorated.
      */
@@ -69,10 +56,10 @@ class Subscription extends AbstractModel
         $this->belongsTo('user_id', 'Canvas\Models\Users', 'id', ['alias' => 'user']);
 
         $this->belongsTo(
-            'companies_id',
-            'Canvas\Models\Companies',
+            'companies_group_id',
+            'Canvas\Models\CompaniesGroups',
             'id',
-            ['alias' => 'company']
+            ['alias' => 'companyGroup']
         );
 
         $this->belongsTo(
@@ -91,16 +78,6 @@ class Subscription extends AbstractModel
     }
 
     /**
-     * Get the active subscription for this company app.
-     *
-     * @return Subscription
-     */
-    public static function getActiveForThisApp() : Subscription
-    {
-        return self::getByDefaultCompany(Di::getDefault()->get('userData'));
-    }
-
-    /**
      * Get subscription by user's default company;.
      *
      * @param Users $user
@@ -110,8 +87,11 @@ class Subscription extends AbstractModel
     public static function getByDefaultCompany(Users $user) : Subscription
     {
         $subscription = self::findFirst([
-            'conditions' => 'companies_id = ?0 and apps_id = ?1 and is_deleted  = 0',
-            'bind' => [$user->getDefaultCompany()->getId(), Di::getDefault()->get('app')->getId()]
+            'conditions' => 'companies_groups_id = ?0 and apps_id = ?1 and is_deleted  = 0',
+            'bind' => [
+                $user->getDefaultCompany()->getDefaultCompanyGroup->getId(),
+                Di::getDefault()->get('app')->getId()
+            ]
         ]);
 
         if (!$subscription) {
@@ -191,7 +171,7 @@ class Subscription extends AbstractModel
      *
      * @return bool
      */
-    public function onTrial()
+    public function onTrial() : bool
     {
         return (bool) $this->is_freetrial;
     }
@@ -201,12 +181,9 @@ class Subscription extends AbstractModel
      */
     public static function getActiveSubscription() : self
     {
-        $userSubscription = self::findFirstOrFail([
-            'conditions' => 'companies_id = ?0 and apps_id = ?1 and is_deleted  = 0',
-            'bind' => [Di::getDefault()->get('userData')->currentCompanyId(), Di::getDefault()->get('app')->getId()]
-        ]);
+        $companyGroup = Di::getDefault()->get('userData')->getDefaultCompanyGroup();
 
-        return Di::getDefault()->get('userData')->subscription($userSubscription->name);
+        return $companyGroup->subscription();
     }
 
     /**
@@ -224,14 +201,6 @@ class Subscription extends AbstractModel
         } else {
             $this->grace_period_ends = Carbon::now()->addDays(Subscription::DEFAULT_GRACE_PERIOD_DAYS)->toDateTimeString();
         }
-    }
-
-    /**
-     * Get the user that owns the subscription.
-     */
-    public function user()
-    {
-        return $this->user;
     }
 
     /**
@@ -406,8 +375,6 @@ class Subscription extends AbstractModel
 
         $subscription->save();
 
-        $this->user->invoice();
-
         $this->update([
             'stripe_plan' => $plan,
             'ends_at' => null,
@@ -523,11 +490,10 @@ class Subscription extends AbstractModel
     /**
      * Get the subscription as a Stripe subscription object.
      *
-     * @return \Stripe\Subscription
+     * @return Subscription
      */
-    public function asStripeSubscription()
+    public function asStripeSubscription() : StripeSubscription
     {
-        $user = $this->user();
-        return $user->asStripeCustomer()->subscriptions->retrieve($this->stripe_id);
+        return $this->companyGroup->getStripeCustomerInfo()->subscriptions->retrieve($this->stripe_id);
     }
 }

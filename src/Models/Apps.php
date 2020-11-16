@@ -56,6 +56,18 @@ class Apps extends BakaApps
             ['alias' => 'plan']
         );
 
+        $this->hasOne(
+            'id',
+            'Canvas\Models\AppsPlans',
+            'apps_id',
+            [
+                'alias' => 'defaultPlan',
+                'params' => [
+                    'conditions' => 'Canvas\Models\AppsPlans.is_default = 1',
+                ]
+            ]
+        );
+
         $this->hasMany(
             'id',
             'Canvas\Models\AppsPlans',
@@ -76,6 +88,16 @@ class Apps extends BakaApps
             'apps_id',
             ['alias' => 'settingsApp']
         );
+    }
+
+    /**
+     * Get the default Plan.
+     *
+     * @return AppsPlans
+     */
+    public function getDefaultPlan() : AppsPlans
+    {
+        return $this->defaultPlan;
     }
 
     /**
@@ -175,6 +197,16 @@ class Apps extends BakaApps
     public function hasSettings() : bool
     {
         return (bool) $this->getSettingsApp()->count();
+    }
+
+    /**
+     * Get th default app currency.
+     *
+     * @return string
+     */
+    public function defaultCurrency() : string
+    {
+        return $this->get('currency');
     }
 
     /**

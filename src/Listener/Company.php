@@ -80,21 +80,17 @@ class Company
         $companyApps->is_deleted = 0;
         $companyApps->saveOrFail();
 
-        $companiesGroup = CompaniesGroups::findFirst([
+        $companiesGroup = CompaniesGroups::findFirstOrCreate([
             'conditions' => 'apps_id = ?0 and users_id = ?1 and is_deleted = 0',
             'bind' => [
-                Di::getDefault()->getApp()->getId(),
-                Di::getDefault()->getUserData()->getId()
+                Di::getDefault()->get('app')->getId(),
+                Di::getDefault()->get('userData')->getId()
             ]
+        ], [
+            'name' => $company->name,
+            'apps_id' => Di::getDefault()->get('app')->getId(),
+            'users_id' => Di::getDefault()->get('userData')->getId(),
         ]);
-
-        if (!$companiesGroup) {
-            $companiesGroup = new CompaniesGroups();
-            $companiesGroup->name = $company->name;
-            $companiesGroup->apps_id = Di::getDefault()->getApp()->getId();
-            $companiesGroup->users_id = Di::getDefault()->getUserData()->getId();
-            $companiesGroup->saveOrFail();
-        }
 
         /**
          * Let's associate companies and companies_groups.

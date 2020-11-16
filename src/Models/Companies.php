@@ -57,6 +57,13 @@ class Companies extends AbstractModel
             ['alias' => 'user']
         );
 
+        $this->belongsTo(
+            'companies_group_id',
+            'Canvas\Models\CompaniesGroups',
+            'id',
+            ['alias' => 'companyGroup']
+        );
+
         $this->hasMany(
             'id',
             'Canvas\Models\CompaniesBranches',
@@ -172,6 +179,18 @@ class Companies extends AbstractModel
             ]
         );
 
+        $this->hasManyToMany(
+            'id',
+            'Canvas\Models\CompaniesAssociations',
+            'companies_id',
+            'companies_groups_id',
+            'Canvas\Models\CompaniesGroups',
+            'id',
+            [
+                'alias' => 'companyGroups',
+            ]
+        );
+
         $this->hasOne(
             'id',
             'Canvas\Models\Subscription',
@@ -221,6 +240,28 @@ class Companies extends AbstractModel
     }
 
     /**
+     * Get the default company group for this company on the current app
+     *
+     * @return CompaniesGroups
+     */
+    public function getDefaultCompanyGroup() : CompaniesGroups
+    {
+        $companyGroup = $this->getCompanyGroups([
+            'conditions' => 'Canvas\Models\CompaniesGroups.apps_id = :apps_id: AND is_default = 1',
+            'bind' => [
+                'apps_id' => Di::getDefault()->get('app')->getId()
+            ],
+            'limit' => 1
+        ]);
+
+        if (empty($companyGroup)) {
+            throw new InternalServerErrorException('No default Company Group Found');
+        }
+
+        return $companyGroup[0];
+    }
+
+    /**
      * Model validation.
      *
      * @return void
@@ -263,7 +304,7 @@ class Companies extends AbstractModel
      *
      * @param Users $user
      *
-     * @return boolean
+     * @return bool
      */
     public function userAssociatedToCompany(Users $user) : bool
     {
