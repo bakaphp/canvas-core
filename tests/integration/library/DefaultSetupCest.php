@@ -141,14 +141,14 @@ class DefaultSetupCest
      */
     public function signupTest(IntegrationTester $I)
     {
-        $user = [
-            'email' => $this->email,
-            'firstname' => $I->faker()->firstname,
-            'lastname' => $I->faker()->lastname,
-            'password' => $this->password,
-            'displayname' => $I->faker()->name,
-            'defaultCompanyName' => $I->faker()->company,
-        ];
+        UserProvider::set(new Users());
+
+        $user =  UserProvider::get();
+        $user->email = 'bakatest@kanvas.dev';
+        $user->password = 'nonenone';
+        $user->name = $this->faker->name;
+        $user->defaultCompanyName = $this->faker->name;
+        $user->displayname = $this->faker->firstname;
 
         $I->assertTrue(Auth::signUp($user) instanceof Users);
     }
