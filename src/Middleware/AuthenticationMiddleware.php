@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Canvas\Middleware;
 
-use Baka\Auth\Models\Sessions;
+use Canvas\Models\Sessions;
 use Baka\Auth\UserProvider;
 use Baka\Http\Exception\UnauthorizedException;
 use Canvas\Constants\Flags;

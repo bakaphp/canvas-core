@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Canvas\Api\Controllers;
 
-use Baka\Auth\Models\Sessions;
-use Baka\Auth\Models\Users as BakaUsers;
+use Canvas\Models\Sessions;
+use Canvas\Auth\Models\Users as BakaUsers;
 use Baka\Http\Exception\InternalServerErrorException;
 use Baka\Http\Exception\NotFoundException;
 use Baka\Validation as CanvasValidation;
