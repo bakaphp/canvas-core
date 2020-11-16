@@ -4,6 +4,7 @@ namespace Canvas\Models;
 
 use Baka\Database\Model;
 use Baka\Http\Exception\InternalServerErrorException;
+use Baka\Cashier\Subscription as BakaSubscription;
 use Carbon\Carbon;
 use Phalcon\Db\RawValue;
 use Phalcon\Di;
@@ -23,7 +24,7 @@ use Phalcon\Validation\Validator\Uniqueness;
  * @property \Phalcon\Di $di
  *
  */
-class Subscription extends Model
+class Subscription extends BakaSubscription
 {
     const FREE_TRIAL = 1;
     const DEFAULT_APP = 1;
@@ -31,7 +32,7 @@ class Subscription extends Model
 
     public int $plans_id;
     public int $users_id;
-    public int $company_id;
+    // public int $company_id;
     public ?int $apps_plans_id = null;
     public int $user_id;
     public int $companies_id;
@@ -96,7 +97,7 @@ class Subscription extends Model
 
         // Unique values
         $validator->add(
-            'company_id',
+            'companies_id',
             new Uniqueness([
                 'model' => $this,
                 'message' => _('This company already has an subscription.'),
