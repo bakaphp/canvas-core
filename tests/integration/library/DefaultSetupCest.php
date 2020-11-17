@@ -14,7 +14,7 @@ use Canvas\Models\UsersInvite;
 use Faker\Factory;
 use IntegrationTester;
 use Phalcon\Security\Random;
-use Canvas\Providers\UserProvider;
+use Baka\Auth\UserProvider;
 
 class DefaultSetupCest
 {
