@@ -15,8 +15,6 @@ class AppsRoles extends Model
      */
     public function initialize()
     {
-        parent::initialize();
-
         $this->setSource('apps_roles');
 
         $this->belongsTo(

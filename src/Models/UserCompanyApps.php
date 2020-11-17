@@ -19,8 +19,6 @@ class UserCompanyApps extends Model
      */
     public function initialize()
     {
-        parent::initialize();
-
         $this->belongsTo(
             'companies_id',
             'Canvas\Models\Companies',

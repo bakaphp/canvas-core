@@ -145,11 +145,12 @@ class DefaultSetupCest
         UserProvider::set(new Users());
 
         $user =  UserProvider::get();
-        $user->email = 'bakatest@kanvas.dev';
-        $user->password = 'nonenone';
-        $user->name = $this->faker->name;
-        $user->defaultCompanyName = $this->faker->name;
-        $user->displayname = $this->faker->firstname;
+        $user->firstname = $I->faker->firstname;
+        $user->lastname = $I->faker->lastname;
+        $user->email = $this->email;
+        $user->password = $this->password;
+        $user->defaultCompanyName = $I->faker->company;
+        $user->displayname = $I->faker->firstname;
 
         $I->assertTrue(Auth::signUp($user) instanceof Users);
     }
