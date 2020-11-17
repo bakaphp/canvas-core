@@ -87,27 +87,6 @@ class Subscription extends BakaSubscription
     }
 
     /**
-     * Model validation.
-     *
-     * @return void
-     */
-    public function validation()
-    {
-        $validator = new Validation();
-
-        // Unique values
-        $validator->add(
-            'companies_id',
-            new Uniqueness([
-                'model' => $this,
-                'message' => _('This company already has an subscription.'),
-            ])
-        );
-
-        return $this->validate($validator);
-    }
-
-    /**
      * Start a free trial to the system.
      *
      * @param  Companies $company
