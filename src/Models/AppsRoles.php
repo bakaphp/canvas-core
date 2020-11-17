@@ -23,5 +23,12 @@ class AppsRoles extends Model
             'id',
             ['alias' => 'app']
         );
+
+        $this->belongsTo(
+            'apps_id',
+            'Canvas\Auth\Models\Apps',
+            'id',
+            ['alias' => 'appAuth']
+        );
     }
 }
