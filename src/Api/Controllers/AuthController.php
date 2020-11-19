@@ -401,7 +401,7 @@ class AuthController extends \Baka\Auth\AuthController
         $session = new Sessions();
         $session->end($userData);
 
-        $passwordUpdate = new PasswordUpdate($recoverUser);
+        $passwordUpdate = new PasswordUpdate($userData);
         $passwordUpdate->setFrom($userData);
 
         $userData->notify($passwordUpdate);
