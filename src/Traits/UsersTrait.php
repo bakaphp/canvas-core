@@ -1,74 +1,21 @@
 <?php
 
-namespace Canvas\Auth;
+declare(strict_types=1);
+
+namespace Canvas\Traits;
 
 use Canvas\Auth\Models\Companies;
 use Canvas\Auth\Models\Users;
-use Baka\Contracts\Http\Api\CrudBehaviorTrait;
-use Baka\Http\Api\BaseController;
 use Exception;
 use Phalcon\Http\Response;
 
 /**
- * Base controller.
+ * Trait FractalTrait
  *
+ * @package Canvas\Traits
  */
-abstract class UsersController extends BaseController
+trait UsersTrait
 {
-    use CrudBehaviorTrait;
-    
-    /*
-     * fields we accept to create
-     *
-     * @var array
-     */
-    protected $createFields = [
-        'name',
-        'firstname',
-        'lastname',
-        'displayname',
-        'email',
-        'password',
-        'created_at',
-        'updated_at',
-        'default_company',
-        'family',
-        'sex',
-        'timezone'
-    ];
-
-    /*
-     * fields we accept to create
-     *
-     * @var array
-     */
-    protected $updateFields = [
-        'name',
-        'firstname',
-        'lastname',
-        'displayname',
-        'email',
-        'password',
-        'created_at',
-        'updated_at',
-        'default_company',
-        'sex',
-        'timezone'
-    ];
-
-    /**
-     * set objects.
-     *
-     * @return void
-     */
-    public function onConstruct()
-    {
-        $this->model = new Users();
-        $this->additionalSearchFields = [
-            ['id', ':', $this->userData->getId()],
-        ];
-    }
-
     /**
      * Get Uer.
      *

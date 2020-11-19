@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Canvas\Api\Controllers;
 
-use Canvas\Auth\UsersController as BakaUsersController;
 use Baka\Validation as CanvasValidation;
 use Canvas\Contracts\Controllers\ProcessOutputMapperTrait;
 use Canvas\Dto\User as UserDto;
@@ -14,10 +13,15 @@ use Canvas\Models\Users;
 use Canvas\Models\UsersAssociatedApps;
 use Phalcon\Http\Response;
 use Phalcon\Validation\Validator\PresenceOf;
+use Baka\Contracts\Http\Api\CrudBehaviorTrait;
+use Canvas\Traits\UsersTrait;
 
-class UsersController extends BakaUsersController
+class UsersController extends BaseController
 {
     use ProcessOutputMapperTrait;
+    use CrudBehaviorTrait;
+    use UsersTrait;
+    
     /*
      * fields we accept to create
      *

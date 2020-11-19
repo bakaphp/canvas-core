@@ -42,7 +42,7 @@ use Baka\Auth\UserProvider;
  * @property \Baka\Mail\Message $mail
  * @property Apps $app
  */
-class AuthController extends \Canvas\Auth\AuthController
+class AuthController
 {
     /**
      * Auth Trait.
