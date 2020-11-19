@@ -42,7 +42,7 @@ use Baka\Auth\UserProvider;
  * @property \Baka\Mail\Message $mail
  * @property Apps $app
  */
-class AuthController
+class AuthController extends BaseController
 {
     /**
      * Auth Trait.
@@ -408,22 +408,5 @@ class AuthController
         $userData->notify($passwordUpdate);
 
         return $this->response(_('Password Updated'));
-    }
-
-    /**
-     * Set the email config array we are going to be sending.
-     *
-     * @todo deprecated move to notifications
-     *
-     * @param string $emailAction
-     * @param Users  $user
-     *
-     * @deprecated version 1
-     *
-     * @return void
-     */
-    protected function sendEmail(BakaUsers $user, string $type) : void
-    {
-        return ;
     }
 }

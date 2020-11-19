@@ -176,7 +176,7 @@ class UsersInviteController extends BaseController
                 $this->db->begin();
 
                 //signup
-                $newUser = Auth::signUp($newUser->toArray());
+                $newUser = Auth::signUp($newUser);
 
                 $this->db->commit();
             } catch (Exception $e) {

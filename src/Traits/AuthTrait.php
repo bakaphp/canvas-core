@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Canvas\Traits;
 
-use Baka\Auth\Models\Sessions;
+use Canvas\Models\Sessions;
 use Canvas\Auth\Auth;
 use Canvas\Models\Users;
 
@@ -167,7 +167,6 @@ trait AuthTrait
         ];
 
         $user->password = null;
-        $this->sendEmail($user, 'signup');
 
         return $this->response([
             'user' => $user,
@@ -211,7 +210,6 @@ trait AuthTrait
             $recoverUser->update();
 
             $message = _('Please check your email inbox to complete the password recovery.');
-            $this->sendEmail($recoverUser, 'recover');
         } else {
             $message = _('There is no account registered with that email.');
         }
@@ -269,8 +267,6 @@ trait AuthTrait
                 $session = new Sessions();
                 $session->end($userData);
 
-                $this->sendEmail($userData, 'reset');
-
                 return $this->response(_('Congratulations! You\'ve successfully changed your password.'));
             } else {
                 throw new Exception(current($userData->getMessages()));
@@ -316,23 +312,6 @@ trait AuthTrait
         } else {
             throw new Exception(_('This Key doesn\'t exist'));
         }
-    }
-
-    /**
-     * Set the email config array we are going to be sending.
-     *
-     * @param string $emailAction
-     * @param Users  $user
-     */
-    protected function sendEmail(Users $user, string $type) : void
-    {
-        //send email for signup for this user
-       /*  $this->mail
-            ->to($user->getEmail())
-            ->subject('Welcome to Baka')
-            ->params(['name' => 'test'])
-            ->template('email.volt') //you can also use template() default template is email.volt
-            ->send(); */
     }
 
     /**

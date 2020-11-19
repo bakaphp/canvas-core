@@ -17,30 +17,6 @@ use Phalcon\Http\Response;
 trait UsersTrait
 {
     /**
-     * Get Uer.
-     *
-     * @param mixed $id
-     *
-     * @method GET
-     * @url /v1/users/{id}
-     *
-     * @return Phalcon\Http\Response
-     */
-    public function getById($id) : Response
-    {
-        //find the info
-        $user = $this->model->findFirstOrFail([
-            'id = ?0 AND is_deleted = 0',
-            'bind' => [$this->userData->getId()],
-        ]);
-
-        //get the results and append its relationships
-        $user = $this->appendRelationshipsToResult($this->request, $user);
-
-        return $this->response($this->processOutput($user));
-    }
-
-    /**
      * Update a User Info.
      *
      * @method PUT
@@ -76,37 +52,5 @@ trait UsersTrait
         //update
         $user->updateOrFail($request, $this->updateFields);
         return $this->response($this->processOutput($user));
-    }
-
-    /**
-     * Given the results we will proess the output
-     * we will check if a DTO transformer exist and if so we will send it over to change it.
-     *
-     * @param object|array $results
-     *
-     * @return void
-     */
-    protected function processOutput($results)
-    {
-        //remove the user password
-        if (is_object($results)) {
-            $results->password = null;
-        }
-        return $results;
-    }
-
-    /**
-     * Add a new user.
-     *
-     * @method POST
-     * @url /v1/users
-     * @overwrite
-     *
-     * @return Phalcon\Http\Response
-     */
-    public function create() : Response
-    {
-        throw new Exception('Route not found');
-        return $this->response('Route not found');
     }
 }

@@ -21,7 +21,7 @@ class UsersController extends BaseController
     use ProcessOutputMapperTrait;
     use CrudBehaviorTrait;
     use UsersTrait;
-    
+
     /*
      * fields we accept to create
      *
@@ -99,36 +99,6 @@ class UsersController extends BaseController
                 ['id', ':', implode('|', $this->userData->getDefaultCompany()->getAssociatedUsersByApp())],
             ];
         }
-    }
-
-    /**
-     * Get Uer.
-     *
-     * @param mixed $id
-     *
-     * @method GET
-     * @url /v1/users/{id}
-     *
-     * @return Response
-     */
-    public function getById($id) : Response
-    {
-        //none admin users can only edit themselves
-        if (!$this->userData->hasRole('Default.Admins') || (int) $id === 0) {
-            $id = $this->userData->getId();
-        }
-
-        $this->userData->can('SettingsMenu.company-settings');
-
-        /**
-         * @todo filter only by user from this app / company
-         */
-        $user = $this->model->findFirstOrFail([
-            'id = ?0 AND is_deleted = 0',
-            'bind' => [$id],
-        ]);
-
-        return $this->response($this->processOutput($user));
     }
 
     /**
@@ -247,5 +217,22 @@ class UsersController extends BaseController
         $userAssociatedToApp->user_active = $userAssociatedToApp->user_active ? 0 : 1;
         $userAssociatedToApp->updateOrFail();
         return $this->response($userAssociatedToApp);
+    }
+
+    /**
+     * Given the results we will proess the output
+     * we will check if a DTO transformer exist and if so we will send it over to change it.
+     *
+     * @param object|array $results
+     *
+     * @return void
+     */
+    protected function processOutput($results)
+    {
+        //remove the user password
+        if (is_object($results)) {
+            $results->password = null;
+        }
+        return $results;
     }
 }
