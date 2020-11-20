@@ -12,7 +12,7 @@ use Canvas\Models\Roles;
 use Canvas\Models\Users;
 use Canvas\Models\UsersInvite;
 use Canvas\Notifications\Invitation;
-use Canvas\Traits\AuthTrait;
+use Canvas\Contracts\AuthTrait;
 use Exception;
 use Phalcon\Http\Response;
 use Phalcon\Security\Random;

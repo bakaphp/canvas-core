@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Canvas\Traits;
+namespace Canvas\Contracts;
 
 use Canvas\Models\Sessions;
 use Canvas\Auth\Auth;
@@ -175,46 +175,32 @@ trait AuthTrait
     }
 
     /**
-     * Recover user information, by getting the email for the reset pass form.
-     *
-     * @method POST
-     * @url /v1/recover
+     * Send the user how filled out the form to the specify email
+     * a link to reset his password.
      *
      * @return Response
      */
     public function recover() : Response
     {
-        //if the user submited the form and passes the security check then we start checking
-        $email = $this->request->getPost('email', 'email');
+        $request = $this->request->getPostData();
 
-        $validation = new Validation();
+        $validation = new CanvasValidation();
         $validation->add('email', new PresenceOf(['message' => _('The email is required.')]));
-        $validation->add('email', new EmailValidator(['message' => _('The email is invalid.')]));
+        $validation->add('email', new EmailValidator(['message' => _('The email is not valid.')]));
 
-        $messages = $validation->validate($this->request->getPost());
-        if (count($messages)) {
-            foreach ($messages as $message) {
-                throw new Exception($message);
-            }
-        }
+        $validation->validate($request);
 
-        /**
-         * check if the user email exist
-         * if it does creat the user activation key to send
-         * send the user email.
-         *
-         * if it doesnt existe then send the erro msg
-         */
-        if ($recoverUser = Users::getByEmail($email)) {
-            $recoverUser->user_activation_forgot = $recoverUser->generateActivationKey();
-            $recoverUser->update();
+        $email = $validation->getValue('email');
 
-            $message = _('Please check your email inbox to complete the password recovery.');
-        } else {
-            $message = _('There is no account registered with that email.');
-        }
+        $recoverUser = Users::getByEmail($email);
+        $recoverUser->generateForgotHash();
 
-        return $this->response($message);
+        $resetPassword = new ResetPassword($recoverUser);
+        $resetPassword->setFrom($recoverUser);
+
+        $recoverUser->notify($resetPassword);
+
+        return $this->response(_('Check your email to recover your password'));
     }
 
     /**

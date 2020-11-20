@@ -17,16 +17,6 @@ class Companies extends Model
     public int $users_id;
 
     /**
-     * Initialize method for model.
-     */
-    public function initialize()
-    {
-        $this->setSource('companies');
-        $this->belongsTo('users_id', 'Baka\Auth\Models\Users', 'id', ['alias' => 'user']);
-        $this->hasMany('id', 'Baka\Auth\Models\CompanySettings', 'id', ['alias' => 'settings']);
-    }
-
-    /**
      * Model validation.
      *
      * @return void

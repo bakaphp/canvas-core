@@ -4,7 +4,7 @@ namespace Gewaer\Tests\integration\library\Models;
 
 use Gewaer\Models\Apps;
 use IntegrationTester;
-use Canvas\Traits\SubscriptionPlanLimitTrait;
+use Canvas\Contracts\SubscriptionPlanLimitTrait;
 use Gewaer\Models\Users;
 use Helper\Integration;
 
@@ -20,7 +20,6 @@ class SubscriptionLimitCest
      */
     public function getModelKey(IntegrationTester $I)
     {
-
         $classKey = $this->getSubscriptionPlanLimitModelKey();
 
         $I->assertTrue($classKey == 'subscriptionlimitcest_total');

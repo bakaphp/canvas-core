@@ -14,7 +14,7 @@ use Canvas\Models\UsersAssociatedApps;
 use Phalcon\Http\Response;
 use Phalcon\Validation\Validator\PresenceOf;
 use Baka\Contracts\Http\Api\CrudBehaviorTrait;
-use Canvas\Traits\UsersTrait;
+use Canvas\Contracts\UsersTrait;
 
 class UsersController extends BaseController
 {

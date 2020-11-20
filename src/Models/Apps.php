@@ -7,7 +7,7 @@ use Baka\Contracts\Database\HashTableTrait;
 use Baka\Contracts\EventsManager\EventManagerAwareTrait;
 use Baka\Database\Apps as BakaApps;
 use Canvas\Cli\Jobs\Apps as JobsApps;
-use Canvas\Traits\UsersAssociatedTrait;
+use Canvas\Contracts\UsersAssociatedTrait;
 use Phalcon\Security\Random;
 
 class Apps extends BakaApps

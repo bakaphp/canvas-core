@@ -20,9 +20,9 @@ use Canvas\Notifications\PasswordUpdate;
 use Canvas\Notifications\ResetPassword;
 use Canvas\Notifications\Signup;
 use Canvas\Notifications\UpdateEmail;
-use Canvas\Traits\AuthTrait;
-use Canvas\Traits\SocialLoginTrait;
-use Canvas\Traits\TokenTrait;
+use Canvas\Contracts\AuthTrait;
+use Canvas\Contracts\SocialLoginTrait;
+use Canvas\Contracts\TokenTrait;
 use Exception;
 use Phalcon\Http\Response;
 use Phalcon\Validation\Validator\Confirmation;
@@ -339,34 +339,6 @@ class AuthController extends BaseController
         return $this->response(
             $this->providerLogin($source, $request['social_id'], $request)
         );
-    }
-
-    /**
-     * Send the user how filled out the form to the specify email
-     * a link to reset his password.
-     *
-     * @return Response
-     */
-    public function recover() : Response
-    {
-        $request = $this->request->getPostData();
-
-        $validation = new CanvasValidation();
-        $validation->add('email', new EmailValidator(['message' => _('The email is not valid.')]));
-
-        $validation->validate($request);
-
-        $email = $validation->getValue('email');
-
-        $recoverUser = Users::getByEmail($email);
-        $recoverUser->generateForgotHash();
-
-        $resetPassword = new ResetPassword($recoverUser);
-        $resetPassword->setFrom($recoverUser);
-
-        $recoverUser->notify($resetPassword);
-
-        return $this->response(_('Check your email to recover your password'));
     }
 
     /**

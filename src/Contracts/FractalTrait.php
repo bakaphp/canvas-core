@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Canvas\Traits;
+namespace Canvas\Contracts;
 
 use League\Fractal\Manager;
 use League\Fractal\Serializer\JsonApiSerializer;
@@ -29,7 +29,8 @@ trait FractalTrait
      *
      * @return array
      */
-    protected function format(string $method, $results, string $transformer, string $resource, array $relationships = [], array $fields = []): array {
+    protected function format(string $method, $results, string $transformer, string $resource, array $relationships = [], array $fields = []): array
+    {
         $url = envValue('APP_URL', 'http://localhost');
         $manager = new Manager();
         $manager->setSerializer(new JsonApiSerializer($url));
