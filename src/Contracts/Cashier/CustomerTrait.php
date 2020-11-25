@@ -44,6 +44,22 @@ trait CustomerTrait
     }
 
     /**
+     * Get the email address used to create the customer in Stripe.
+     *
+     * @return string|null
+     */
+    public function stripeEmail() : string
+    {
+        if (property_exists($this, 'email')) {
+            return $this->email;
+        }
+
+        if (is_object($this->users)) {
+            return $this->users->getEmail();
+        }
+    }
+
+    /**
      * From the entity using this trait , create a stripe customer.
      *
      * @param array $options

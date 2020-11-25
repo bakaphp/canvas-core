@@ -5,12 +5,6 @@ namespace Canvas\Models;
 
 use Canvas\Cashier\Billable;
 
-/**
- * Class CompanyBranches.
- *
- * @package Canvas\Models
- *
- */
 class CompaniesGroups extends AbstractModel
 {
     use Billable;
@@ -54,6 +48,15 @@ class CompaniesGroups extends AbstractModel
                     'conditions' => 'apps_id = ' . $this->di->get('app')->getId() . ' AND is_deleted = 0',
                     'order' => 'id DESC'
                 ]
+            ]
+        );
+
+        $this->belongsTo(
+            'users_id',
+            Users::class,
+            'id',
+            [
+                'alias' => 'users'
             ]
         );
     }

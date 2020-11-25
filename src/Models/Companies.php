@@ -10,7 +10,6 @@ use Baka\Contracts\EventsManager\EventManagerAwareTrait;
 use Baka\Http\Exception\InternalServerErrorException;
 use Canvas\Traits\FileSystemModelTrait;
 use Canvas\Traits\UsersAssociatedTrait;
-use Carbon\Carbon;
 use Exception;
 use Phalcon\Di;
 use Phalcon\Validation;
@@ -240,7 +239,7 @@ class Companies extends AbstractModel
     }
 
     /**
-     * Get the default company group for this company on the current app
+     * Get the default company group for this company on the current app.
      *
      * @return CompaniesGroups
      */
@@ -373,36 +372,6 @@ class Companies extends AbstractModel
         }
 
         throw new Exception(_("User doesn't have an active company"));
-    }
-
-    /**
-     * Start a free trial for a new company.
-     *
-     * @return string //the customer id
-     */
-    public function startFreeTrial() : ?string
-    {
-        $defaultPlan = AppsPlans::getDefaultPlan();
-        $trialEndsAt = Carbon::now()->addDays($this->di->getApp()->plan->free_trial_dates);
-
-        //Lets create a new default subscription without payment method
-        $this->user->newSubscription($defaultPlan->name, $defaultPlan->stripe_id, $this, $this->di->getApp())
-                ->trialDays($defaultPlan->free_trial_dates)
-                ->create();
-
-        //ook for the subscription and update the missing info
-        $subscription = $this->subscription;
-        $subscription->apps_plans_id = $this->di->getApp()->default_apps_plan_id;
-        $subscription->trial_ends_days = $trialEndsAt->diffInDays(Carbon::now());
-        $subscription->is_freetrial = 1;
-        $subscription->is_active = 1;
-        $subscription->payment_frequency_id = 1;
-
-        if (!$subscription->save()) {
-            throw new InternalServerErrorException((string) 'Subscription for new company couldnt be created ' . current($this->getMessages()));
-        }
-
-        return $this->user->stripe_id;
     }
 
     /**

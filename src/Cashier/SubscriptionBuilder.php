@@ -109,7 +109,7 @@ class SubscriptionBuilder
      *
      * @return $this
      */
-    public function quantity(int $quantity, ?string $plan = null)
+    public function quantity(int $quantity, ?string $plan = null) : self
     {
         $this->quantity = $quantity;
 

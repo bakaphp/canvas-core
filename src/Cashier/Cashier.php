@@ -3,6 +3,7 @@
 namespace Canvas\Cashier;
 
 use Exception;
+use Phalcon\Text;
 
 class Cashier
 {
@@ -49,7 +50,7 @@ class Cashier
      *
      * @return void
      */
-    public static function useCurrency($currency, $symbol = null)
+    public static function useCurrency(string $currency, ?string $symbol = null) : void
     {
         static::$currency = $currency;
 
@@ -63,7 +64,7 @@ class Cashier
      *
      * @return string
      */
-    protected static function guessCurrencySymbol($currency)
+    protected static function guessCurrencySymbol(string $currency)
     {
         switch (strtolower($currency)) {
             case 'usd':
@@ -84,7 +85,7 @@ class Cashier
      *
      * @return string
      */
-    public static function usesCurrency()
+    public static function usesCurrency() : string
     {
         return static::$currency;
     }
@@ -96,7 +97,7 @@ class Cashier
      *
      * @return void
      */
-    public static function useCurrencySymbol($symbol)
+    public static function useCurrencySymbol(string $symbol) : void
     {
         static::$currencySymbol = $symbol;
     }
@@ -106,7 +107,7 @@ class Cashier
      *
      * @return string
      */
-    public static function usesCurrencySymbol()
+    public static function usesCurrencySymbol() : string
     {
         return static::$currencySymbol;
     }
@@ -118,7 +119,7 @@ class Cashier
      *
      * @return void
      */
-    public static function formatCurrencyUsing(callable $callback)
+    public static function formatCurrencyUsing(callable $callback) : void
     {
         static::$formatCurrencyUsing = $callback;
     }
@@ -130,7 +131,7 @@ class Cashier
      *
      * @return string
      */
-    public static function formatAmount($amount)
+    public static function formatAmount($amount) : string
     {
         if (static::$formatCurrencyUsing) {
             return call_user_func(static::$formatCurrencyUsing, $amount);
@@ -138,35 +139,11 @@ class Cashier
 
         $amount = number_format($amount / 100, 2);
 
-        if (static::startsWith($amount, '-')) {
+        if (Text::startsWith($amount, '-')) {
             return '-' . static::usesCurrencySymbol() . ltrim($amount, '-');
         }
 
         return static::usesCurrencySymbol() . $amount;
-    }
-
-    /**
-     * @param $haystack
-     * @param $needle
-     *
-     * @return bool
-     */
-    public static function startsWith($haystack, $needle)
-    {
-        // search backwards starting from haystack length characters from the end
-        return $needle === '' || strrpos($haystack, $needle, -strlen($haystack)) !== false;
-    }
-
-    /**
-     * @param $haystack
-     * @param $needle
-     *
-     * @return bool
-     */
-    public static function endsWith($haystack, $needle)
-    {
-        // search forward starting from end minus needle length characters
-        return $needle === '' || (($temp = strlen($haystack) - strlen($needle)) >= 0 && strpos($haystack, $needle, $temp) !== false);
     }
 
     /**

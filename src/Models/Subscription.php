@@ -375,7 +375,7 @@ class Subscription extends AbstractModel
 
         $subscription->save();
 
-        $this->update([
+        $this->updateOrFail([
             'stripe_plan' => $plan,
             'ends_at' => null,
         ]);
@@ -435,7 +435,7 @@ class Subscription extends AbstractModel
      */
     public function markAsCancelled()
     {
-        $this->update(['ends_at' => Carbon::now()->toDateTimeString()]);
+        $this->updateOrFail(['ends_at' => Carbon::now()->toDateTimeString()]);
     }
 
     /**
@@ -470,7 +470,7 @@ class Subscription extends AbstractModel
         // Finally, we will remove the ending timestamp from the user's record in the
         // local database to indicate that the subscription is active again and is
         // no longer "cancelled". Then we will save this record in the database.
-        $this->update(['ends_at' => null]);
+        $this->updateOrFail(['ends_at' => null]);
 
         return $this;
     }

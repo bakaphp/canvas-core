@@ -16,7 +16,7 @@ trait SubscriptionsTrait
      *
      * @return void
      */
-    public function newSubscription(string $name, string $plan)
+    public function newSubscription(string $name, string $plan) : SubscriptionBuilder
     {
         return new SubscriptionBuilder($this, $name, $plan, Di::getDefault()->get('app'));
     }

@@ -28,13 +28,7 @@ class Company
      */
     public function afterSignup(Event $event, Companies $company) : void
     {
-        //setup the user notification setting
-        $company->set('notifications', $company->user->email);
-        /**
-         * @todo removed , we have it on subscription
-         */
-        $company->set('paid', '1');
-        $app = $company->getDI()->getApp();
+        $app = Di::getDefault()->get('app');
 
         //now that we setup de company and associated with the user we need to setup this as its default company
         if (!$company->user->get(Companies::cacheKey())) {
@@ -66,16 +60,6 @@ class Company
             $companyApps->stripe_id = $plan->stripe_id;
         }
 
-        //if the app is subscription based, create a free trial for this company
-        if ($app->subscriptionBased()) {
-            $company->set(
-                Companies::PAYMENT_GATEWAY_CUSTOMER_KEY,
-                $company->startFreeTrial()
-            );
-
-            $companyApps->subscriptions_id = $company->subscription->getId();
-        }
-
         $companyApps->created_at = date('Y-m-d H:i:s');
         $companyApps->is_deleted = 0;
         $companyApps->saveOrFail();
@@ -92,6 +76,11 @@ class Company
             'users_id' => Di::getDefault()->get('userData')->getId(),
         ]);
 
+        //if the app is subscription based, create a free trial for this companyGroup and this app
+        if ($app->subscriptionBased()) {
+            $companiesGroup->startFreeTrial();
+        }
+
         /**
          * Let's associate companies and companies_groups.
          */
@@ -101,6 +90,6 @@ class Company
         $companiesAssoc->saveOrFail();
 
         //assign role
-        $company->user->assignRole(Roles::findFirstOrFail($company->user->role_id)->name);
+        $company->user->assignRole(Roles::DEFAULT);
     }
 }
