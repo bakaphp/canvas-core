@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Canvas\Listener;
 
 use Baka\Auth\Models\UserCompanyApps;
-use Canvas\Models\AppsPlans;
 use Canvas\Models\Companies;
 use Canvas\Models\CompaniesAssociations;
 use Canvas\Models\CompaniesBranches;
@@ -52,14 +51,6 @@ class Company
         $companyApps = new UserCompanyApps();
         $companyApps->companies_id = $company->getId();
         $companyApps->apps_id = $app->getId();
-        //$companyApps->subscriptions_id = 0;
-
-        //we need to assign this company to a plan
-        if (empty($company->appPlanId)) {
-            $plan = AppsPlans::getDefaultPlan();
-            $companyApps->stripe_id = $plan->stripe_id;
-        }
-
         $companyApps->created_at = date('Y-m-d H:i:s');
         $companyApps->is_deleted = 0;
         $companyApps->saveOrFail();
