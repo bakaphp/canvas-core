@@ -37,7 +37,22 @@ class InitGewaer extends AbstractSeed
         $table = $this->table('apps');
         $table->insert($data)->save();
 
-        //add default companies
+        //add default companies group
+        $data = [
+            [
+                'name' => 'Canvas',
+                'users_id' => 1,
+                'apps_id' => 1,
+                'is_default' => 1,
+                'created_at' => date('Y-m-d H:i:s'),
+                'is_deleted' => 0
+            ],
+        ];
+
+        $table = $this->table('companies_groups');
+        $table->insert($data)->save();
+
+        //companies
         $data = [
             [
                 'name' => 'Canvas',
@@ -57,6 +72,20 @@ class InitGewaer extends AbstractSeed
         ];
 
         $table = $this->table('companies');
+        $table->insert($data)->save();
+
+        //add default companies group
+        $data = [
+            [
+                'companies_groups_id' => 1,
+                'companies_id' => 1,
+                'is_default' => 1,
+                'created_at' => date('Y-m-d H:i:s'),
+                'is_deleted' => 0
+            ],
+        ];
+
+        $table = $this->table('companies_associations');
         $table->insert($data)->save();
 
         //add default companies

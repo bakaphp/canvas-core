@@ -4,6 +4,7 @@ namespace Canvas\Models;
 
 use Baka\Http\Exception\InternalServerErrorException;
 use Carbon\Carbon;
+use DateTime;
 use DateTimeInterface;
 use LogicException;
 use Phalcon\Db\RawValue;
@@ -53,7 +54,7 @@ class Subscription extends AbstractModel
     {
         $this->setSource('subscriptions');
 
-        $this->belongsTo('user_id', 'Canvas\Models\Users', 'id', ['alias' => 'user']);
+        $this->belongsTo('users_id', 'Canvas\Models\Users', 'id', ['alias' => 'user']);
 
         $this->belongsTo(
             'companies_group_id',
@@ -230,7 +231,7 @@ class Subscription extends AbstractModel
      */
     public function onGracePeriod()
     {
-        $endsAt = new \DateTime($this->ends_at);
+        $endsAt = new DateTime($this->ends_at);
 
         if (!is_null($endsAt)) {
             return Carbon::now()->lt(Carbon::instance($endsAt));
