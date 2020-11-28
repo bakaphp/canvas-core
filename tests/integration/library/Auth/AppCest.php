@@ -1,9 +1,9 @@
 <?php
 
-namespace Gewaer\Tests\integration\library\Jobs;
+namespace Gewaer\Tests\integration\library\Auth;
 
-use Canvas\Auth\App;
 use Baka\Hashing\Password;
+use Canvas\Auth\App;
 use Canvas\Models\Apps;
 use Canvas\Models\Companies;
 use Canvas\Models\Users;
@@ -116,7 +116,7 @@ class AppCest
      *
      * @param IntegrationTester $I
      *
-     * @return boolean
+     * @return bool
      */
     public function canLoginToSpecificApp(IntegrationTester $I)
     {

@@ -38,11 +38,8 @@ trait Billable
     {
         $defaultPlan = AppsPlans::getDefaultPlan();
 
-        return $this->newSubscription(
-            $defaultPlan->name,
-            $defaultPlan->stripe_id,
-        )
-        ->trialDays($defaultPlan->free_trial_dates)
-        ->create($options, $customerOptions);
+        return $this->newSubscription($defaultPlan)
+            ->trialDays($defaultPlan->free_trial_dates)
+            ->create($options, $customerOptions);
     }
 }

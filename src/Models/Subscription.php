@@ -57,7 +57,7 @@ class Subscription extends AbstractModel
         $this->belongsTo('users_id', 'Canvas\Models\Users', 'id', ['alias' => 'user']);
 
         $this->belongsTo(
-            'companies_group_id',
+            'companies_groups_id',
             'Canvas\Models\CompaniesGroups',
             'id',
             ['alias' => 'companyGroup']
@@ -75,6 +75,15 @@ class Subscription extends AbstractModel
             'Canvas\Models\AppsPlans',
             'id',
             ['alias' => 'appPlan']
+        );
+
+        $this->hasMany(
+            'id',
+            SubscriptionItems::class,
+            'subscription_id',
+            [
+                'alias' => 'plans'
+            ]
         );
     }
 
@@ -154,14 +163,14 @@ class Subscription extends AbstractModel
     /**
      * Given a not active subscription activate it.
      *
-     * @return void
+     * @return bool
      */
     public function activate() : bool
     {
         $this->is_active = 1;
         $this->paid = 1;
         //$this->grace_period_ends = new RawValue('NULL');
-        $this->ends_at = Carbon::now()->addDays(30)->toDateTimeString();
+        $this->ends_at = new rawValue('NULL');
         $this->next_due_payment = $this->ends_at;
         $this->is_cancelled = 0;
         return $this->update();
@@ -209,7 +218,7 @@ class Subscription extends AbstractModel
      *
      * @return bool
      */
-    public function valid()
+    public function valid() : bool
     {
         return $this->active() || $this->onTrial() || $this->onGracePeriod();
     }
@@ -219,9 +228,9 @@ class Subscription extends AbstractModel
      *
      * @return bool
      */
-    public function cancelled()
+    public function cancelled() : bool
     {
-        return !is_null($this->ends_at);
+        return !is_null($this->ends_at) && $this->is_cancelled;
     }
 
     /**
@@ -229,7 +238,7 @@ class Subscription extends AbstractModel
      *
      * @return bool
      */
-    public function onGracePeriod()
+    public function onGracePeriod() : bool
     {
         $endsAt = new DateTime($this->ends_at);
 
@@ -245,9 +254,9 @@ class Subscription extends AbstractModel
      *
      * @param  int  $count
      *
-     * @return $this
+     * @return self
      */
-    public function incrementQuantity($count = 1)
+    public function incrementQuantity($count = 1) : self
     {
         $this->updateQuantity($this->quantity + $count);
 
@@ -259,9 +268,9 @@ class Subscription extends AbstractModel
      *
      * @param  int  $count
      *
-     * @return $this
+     * @return self
      */
-    public function incrementAndInvoice($count = 1)
+    public function incrementAndInvoice($count = 1) : self
     {
         $this->incrementQuantity($count);
 
@@ -275,9 +284,9 @@ class Subscription extends AbstractModel
      *
      * @param  int  $count
      *
-     * @return $this
+     * @return self
      */
-    public function decrementQuantity($count = 1)
+    public function decrementQuantity($count = 1) : self
     {
         $this->updateQuantity(max(1, $this->quantity - $count));
 
@@ -288,11 +297,10 @@ class Subscription extends AbstractModel
      * Update the quantity of the subscription.
      *
      * @param  int  $quantity
-     * @param  \Stripe\Customer|null  $customer
      *
-     * @return $this
+     * @return self
      */
-    public function updateQuantity($quantity, $customer = null)
+    public function updateQuantity($quantity) : self
     {
         $subscription = $this->asStripeSubscription();
 
@@ -310,9 +318,9 @@ class Subscription extends AbstractModel
     /**
      * Indicate that the plan change should not be prorated.
      *
-     * @return $this
+     * @return self
      */
-    public function noProrate()
+    public function noProrate() : self
     {
         $this->prorate = false;
 
@@ -324,9 +332,9 @@ class Subscription extends AbstractModel
      *
      * @param  int|string  $date
      *
-     * @return $this
+     * @return self
      */
-    public function anchorBillingCycleOn($date = 'now')
+    public function anchorBillingCycleOn($date = 'now') : self
     {
         if ($date instanceof DateTimeInterface) {
             $date = $date->getTimestamp();
@@ -342,9 +350,9 @@ class Subscription extends AbstractModel
      *
      * @param  string  $plan
      *
-     * @return $this
+     * @return self
      */
-    public function swap($plan)
+    public function swap($plan) : self
     {
         $subscription = $this->asStripeSubscription();
 
@@ -387,9 +395,9 @@ class Subscription extends AbstractModel
     /**
      * Cancel the subscription at the end of the billing period.
      *
-     * @return $this
+     * @return self
      */
-    public function cancel()
+    public function cancel() : self
     {
         $subscription = $this->asStripeSubscription();
         $subscription->cancel_at_period_end = true;
@@ -403,9 +411,9 @@ class Subscription extends AbstractModel
     /**
      * Reactivate the subscription at the end of the billing period.
      *
-     * @return $this
+     * @return self
      */
-    public function reactivate()
+    public function reactivate() : self
     {
         $subscription = $this->asStripeSubscription();
         $subscription->cancel_at_period_end = false;
@@ -417,9 +425,9 @@ class Subscription extends AbstractModel
     /**
      * Cancel the subscription immediately.
      *
-     * @return $this
+     * @return self
      */
-    public function cancelNow()
+    public function cancelNow() : self
     {
         $subscription = $this->asStripeSubscription();
         $subscription->cancel();
@@ -434,19 +442,22 @@ class Subscription extends AbstractModel
      *
      * @return void
      */
-    public function markAsCancelled()
+    public function markAsCancelled() : void
     {
-        $this->updateOrFail(['ends_at' => Carbon::now()->toDateTimeString()]);
+        $this->ends_at = Carbon::now()->toDateTimeString();
+        $this->is_cancelled = 1;
+        $this->is_active = 0;
+        $this->updateOrFail();
     }
 
     /**
      * Resume the cancelled subscription.
      *
-     * @return $this
+     * @return self
      *
      * @throws \LogicException
      */
-    public function resume()
+    public function resume() : self
     {
         if (!$this->onGracePeriod()) {
             throw new LogicException('Unable to resume subscription that is not within grace period.');
@@ -481,7 +492,7 @@ class Subscription extends AbstractModel
      *
      * @return void
      */
-    public function syncTaxPercentage()
+    public function syncTaxPercentage() : void
     {
         $subscription = $this->asStripeSubscription();
         $subscription->tax_percent = $this->user->taxPercentage();
@@ -496,5 +507,22 @@ class Subscription extends AbstractModel
     public function asStripeSubscription() : StripeSubscription
     {
         return $this->companyGroup->getStripeCustomerInfo()->subscriptions->retrieve($this->stripe_id);
+    }
+
+    /**
+     * Determine if the subscription has this plan.
+     *
+     * @param AppsPlans $plan
+     *
+     * @return bool
+     */
+    public function hasPlan(AppsPlans $plan) : bool
+    {
+        return $this->countPlans([
+            'conditions' => 'stripe_plan = :stripe_plan:',
+            'bind' => [
+                'stripe_plan' => $plan->stripe_plan
+            ]
+        ]);
     }
 }

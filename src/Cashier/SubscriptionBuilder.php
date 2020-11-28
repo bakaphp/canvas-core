@@ -3,6 +3,7 @@
 namespace Canvas\Cashier;
 
 use Canvas\Models\Apps;
+use Canvas\Models\AppsPlans;
 use Canvas\Models\Subscription;
 use Canvas\Models\SubscriptionItems;
 use Carbon\Carbon;
@@ -67,12 +68,12 @@ class SubscriptionBuilder
      * @param string $plan
      * @param Apps $apps
      */
-    public function __construct(ModelInterface $entity, string $name, string $plan, Apps $apps)
+    public function __construct(ModelInterface $entity, AppsPlans $appPlan, Apps $apps)
     {
         $this->entity = $entity;
-        $this->name = $name;
+        $this->name = $appPlan->name;
         $this->apps = $apps;
-        $this->plan = $plan;
+        $this->plan = $appPlan->stripe_id;
 
         $this->addPlan($this->plan);
     }

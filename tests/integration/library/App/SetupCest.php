@@ -1,6 +1,6 @@
 <?php
 
-namespace Gewaer\Tests\integration\library\Jobs;
+namespace Gewaer\Tests\integration\library\App;
 
 use Canvas\App\Setup;
 use Canvas\Models\AccessList;

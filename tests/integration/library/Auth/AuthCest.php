@@ -1,11 +1,11 @@
 <?php
 
-namespace Gewaer\Tests\integration\library\Jobs;
+namespace Gewaer\Tests\integration\library\Auth;
 
+use Baka\Hashing\Password;
 use Canvas\Auth\App;
 use Canvas\Auth\Auth;
 use Canvas\Auth\Factory;
-use Baka\Hashing\Password;
 use Canvas\Models\Users;
 use Exception;
 use IntegrationTester;

@@ -3,6 +3,7 @@
 namespace Canvas\Contracts\Cashier;
 
 use Canvas\Cashier\SubscriptionBuilder;
+use Canvas\Models\AppsPlans;
 use Canvas\Models\Subscription;
 use Phalcon\Di;
 
@@ -16,9 +17,9 @@ trait SubscriptionsTrait
      *
      * @return void
      */
-    public function newSubscription(string $name, string $plan) : SubscriptionBuilder
+    public function newSubscription(AppsPlans $appPlan) : SubscriptionBuilder
     {
-        return new SubscriptionBuilder($this, $name, $plan, Di::getDefault()->get('app'));
+        return new SubscriptionBuilder($this, $appPlan, Di::getDefault()->get('app'));
     }
 
     /**
@@ -30,6 +31,36 @@ trait SubscriptionsTrait
     public function subscription() : Subscription
     {
         return $this->subscription;
+    }
+
+    /**
+     * Determine if the entity is subscribed.
+     *
+     * @return bool
+     */
+    public function subscribed() : bool
+    {
+        $subscription = $this->subscription();
+
+        if (!$subscription->valid()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Are you subscript to this plan?
+     *
+     * @param AppsPlans $appPlan
+     *
+     * @return bool
+     */
+    public function subscribedToPlan(AppsPlans $appPlan) : bool
+    {
+        $subscription = $this->subscription();
+
+        return $subscription->hasPlan($appPlan);
     }
 
     /**
