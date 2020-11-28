@@ -15,7 +15,7 @@ class Subscription extends AbstractModel
     const DEFAULT_GRACE_PERIOD_DAYS = 5;
 
     public ?int $apps_plans_id = null;
-    public int $user_id;
+    public int $users_id;
     public int $companies_groups_id;
     public int $apps_id;
     public ?string $name = null;

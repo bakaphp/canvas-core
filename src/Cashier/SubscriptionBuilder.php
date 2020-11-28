@@ -248,8 +248,9 @@ class SubscriptionBuilder
         $subscription->apps_plans_id = $this->apps->getDefaultPlan()->getId();
         $subscription->payment_frequency_id = $this->apps->getDefaultPlan()->payment_frequencies_id;
         $subscription->is_freetrial = $trialEndsAt ? 1 : 0;
+        $subscription->users_id = $this->entity->users_id;
         $subscription->is_active = 1;
-        $subscription->saveOFail();
+        $subscription->saveOrFail();
 
         foreach ($stripeSubscription->items as $item) {
             $subscriptionItem = new SubscriptionItems();
@@ -270,13 +271,21 @@ class SubscriptionBuilder
      */
     protected function buildPayload() : array
     {
-        return array_filter([
-            'items' => $this->plans,
+        $payload = array_filter([
+            'items' => array_values($this->plans),
             'coupon' => $this->coupon,
             'trial_end' => $this->getTrialEndForPayload(),
             'tax_percent' => $this->getTaxPercentageForPayload(),
             'metadata' => $this->metadata,
         ]);
+
+        if ($taxRates = $this->getTaxRatesForPayload()) {
+            $payload['default_tax_rates'] = $taxRates;
+        } elseif ($taxPercentage = $this->getTaxPercentageForPayload()) {
+            $payload['tax_percent'] = $taxPercentage;
+        }
+
+        return $payload;
     }
 
     /**
@@ -305,6 +314,8 @@ class SubscriptionBuilder
         if ($taxPercentage = $this->entity->taxPercentage()) {
             return $taxPercentage;
         }
+
+        return null;
     }
 
     /**
@@ -317,6 +328,7 @@ class SubscriptionBuilder
         if ($taxRates = $this->entity->taxRates()) {
             return $taxRates;
         }
+        return null;
     }
 
     /**
@@ -331,5 +343,7 @@ class SubscriptionBuilder
         if ($taxRates = $this->entity->planTaxRates()) {
             return $taxRates[$plan] ?? null;
         }
+
+        return null;
     }
 }

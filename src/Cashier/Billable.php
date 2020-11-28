@@ -7,6 +7,7 @@ use Canvas\Contracts\Cashier\PaymentMethodsTrait;
 use Canvas\Contracts\Cashier\PaymentsTrait;
 use Canvas\Contracts\Cashier\SubscriptionsTrait;
 use Canvas\Models\AppsPlans;
+use Canvas\Models\Subscription;
 use Phalcon\Di;
 
 trait Billable
@@ -33,7 +34,7 @@ trait Billable
      *
      * @return SubscriptionBuilder
      */
-    public function startFreeTrial() : SubscriptionBuilder
+    public function startFreeTrial(array $options = [], array $customerOptions = []) : Subscription
     {
         $defaultPlan = AppsPlans::getDefaultPlan();
 
@@ -42,6 +43,6 @@ trait Billable
             $defaultPlan->stripe_id,
         )
         ->trialDays($defaultPlan->free_trial_dates)
-        ->create();
+        ->create($options, $customerOptions);
     }
 }

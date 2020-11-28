@@ -218,15 +218,14 @@ class Apps extends BakaApps
      */
     public static function getByDomainName(string $domain) : ?self
     {
+        /**
+         * @todo add cache
+         */
         return self::findFirst([
             'conditions' => 'domain = :domain: AND domain_based = 1',
             'bind' => [
                 'domain' => $domain
-            ],
-            'cache' => [
-                'key' => 'app-by-domain-cache' . $domain,
-                'lifetime' => 432000, //1week
-            ],
+            ]
         ]);
     }
 }

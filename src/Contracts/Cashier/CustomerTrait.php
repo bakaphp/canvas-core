@@ -81,7 +81,7 @@ trait CustomerTrait
         // and allow us to retrieve users from Stripe later when we need to work.
         $customer = StripeCustomer::create(
             $options,
-            $this->stripeOptions()
+            Cashier::stripeOptions()
         );
 
         $this->stripe_id = $customer->id;
@@ -103,7 +103,7 @@ trait CustomerTrait
         return StripeCustomer::update(
             $this->stripe_id,
             $options,
-            $this->stripeOptions()
+            Cashier::stripeOptions()
         );
     }
 
@@ -116,7 +116,7 @@ trait CustomerTrait
     {
         $this->isCustomer();
 
-        return StripeCustomer::retrieve($this->stripe_id, $this->stripeOptions());
+        return StripeCustomer::retrieve($this->stripe_id, Cashier::stripeOptions());
     }
 
     /**
