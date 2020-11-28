@@ -59,6 +59,7 @@ class SubscriptionBuilder
     protected array $metadata = [];
 
     protected Apps $apps;
+    protected AppsPlans $appsPlan;
 
     /**
      * Create a new Subscription.
@@ -74,6 +75,7 @@ class SubscriptionBuilder
         $this->name = $appPlan->name;
         $this->apps = $apps;
         $this->plan = $appPlan->stripe_id;
+        $this->appsPlan = $appPlan;
 
         $this->addPlan($this->plan);
     }
@@ -246,7 +248,6 @@ class SubscriptionBuilder
         $subscription->trial_ends_at = $trialEndsAt->toDateTimeString();
         $subscription->companies_groups_id = $this->entity->getId();
         $subscription->apps_id = $this->apps->getId();
-        $subscription->apps_plans_id = $this->apps->getDefaultPlan()->getId();
         $subscription->payment_frequency_id = $this->apps->getDefaultPlan()->payment_frequencies_id;
         $subscription->is_freetrial = $trialEndsAt ? 1 : 0;
         $subscription->users_id = $this->entity->users_id;
@@ -256,6 +257,7 @@ class SubscriptionBuilder
         foreach ($stripeSubscription->items as $item) {
             $subscriptionItem = new SubscriptionItems();
             $subscriptionItem->subscription_id = $subscription->getId();
+            $subscriptionItem->apps_plans_id = $this->appsPlan->getId();
             $subscriptionItem->stripe_id = $item->id;
             $subscriptionItem->stripe_plan = $item->plan->id;
             $subscriptionItem->quantity = $item->quantity;

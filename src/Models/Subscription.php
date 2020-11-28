@@ -3,6 +3,7 @@
 namespace Canvas\Models;
 
 use Baka\Http\Exception\InternalServerErrorException;
+use Canvas\Cashier\Cashier;
 use Carbon\Carbon;
 use DateTime;
 use DateTimeInterface;
@@ -15,7 +16,6 @@ class Subscription extends AbstractModel
 {
     const DEFAULT_GRACE_PERIOD_DAYS = 5;
 
-    public ?int $apps_plans_id = null;
     public int $users_id;
     public int $companies_groups_id;
     public int $apps_id;
@@ -68,13 +68,6 @@ class Subscription extends AbstractModel
             'Canvas\Models\Apps',
             'id',
             ['alias' => 'app']
-        );
-
-        $this->belongsTo(
-            'apps_plans_id',
-            'Canvas\Models\AppsPlans',
-            'id',
-            ['alias' => 'appPlan']
         );
 
         $this->hasMany(
@@ -352,44 +345,63 @@ class Subscription extends AbstractModel
      *
      * @return self
      */
-    public function swap($plan) : self
+    public function swap(AppsPlans $plan) : self
     {
         $subscription = $this->asStripeSubscription();
 
-        $subscription->plan = $plan;
-
-        $subscription->prorate = $this->prorate;
-
-        $subscription->cancel_at_period_end = false;
-
-        if (!is_null($this->billingCycleAnchor)) {
-            $subscription->billingCycleAnchor = $this->billingCycleAnchor;
-        }
-
-        // If no specific trial end date has been set, the default behavior should be
-        // to maintain the current trial state, whether that is "active" or to run
-        // the swap out with the exact number of days left on this current plan.
-        if ($this->onTrial()) {
-            $subscription->trial_end = strtotime($this->trial_ends_at);
-        } else {
-            $subscription->trial_end = 'now';
-        }
-
-        // Again, if no explicit quantity was set, the default behaviors should be to
-        // maintain the current quantity onto the new plan. This is a sensible one
-        // that should be the expected behavior for most developers with Stripe.
-        if ($this->quantity) {
-            $subscription->quantity = $this->quantity;
-        }
-
-        $subscription->save();
+        $stripeSubscription = StripeSubscription::update(
+            $this->stripe_id,
+            $this->getSwapOptions($plan),
+            Cashier::stripeOptions()
+        );
 
         $this->updateOrFail([
-            'stripe_plan' => $plan,
+            'stripe_plan' => $stripeSubscription->plan ? $stripeSubscription->plan->id : null,
+            'quantity' => $stripeSubscription->quantity,
             'ends_at' => null,
         ]);
 
+        $this->plans->delete();
+        foreach ($stripeSubscription->items as $item) {
+            $subscriptionItem = new SubscriptionItems();
+            $subscriptionItem->subscription_id = $this->getId();
+            $subscriptionItem->apps_plans_id = $plan->getId();
+            $subscriptionItem->stripe_id = $item->id;
+            $subscriptionItem->stripe_plan = $item->plan->id;
+            $subscriptionItem->quantity = $item->quantity;
+            $subscriptionItem->saveOrFail();
+        }
+
         return $this;
+    }
+
+    public function addPlan(AppsPlans $plan)
+    {
+    }
+
+    /**
+     * Get the options array for a swap operation.
+     *
+     * @param AppsPlans $items
+     * @param array $options
+     *
+     * @return array
+     */
+    protected function getSwapOptions(AppsPlans $plan, array $options = []) : array
+    {
+        $payload = [
+            'items' => [
+                [
+                    'id' => $this->getPlans('apps_plans_id > 0')[0]->stripe_id,
+                    'price' => $plan->stripe_id,
+                ]
+            ],
+            'expand' => ['latest_invoice.payment_intent'],
+        ];
+
+        $payload = array_merge($payload, $options);
+
+        return $payload;
     }
 
     /**

@@ -46,9 +46,24 @@ class CashierCest
         $I->assertFalse($subscription->active());
         $I->assertTrue($subscription->cancelled());
         $I->assertFalse($subscription->onGracePeriod());
+    }
+
+    public function testSubscriptionSwap(IntegrationTester $I)
+    {
+        $defaultPlan = AppsPlans::getDefaultPlan();
+        $otherPlan = AppsPlans::findFirstOrFail('id != ' . $defaultPlan->getId() . ' and apps_id = ' . $defaultPlan->apps_id);
+
+        $companyGroup = CompaniesGroups::findFirst();
+
+        //Create Subscription
+        $companyGroup->newSubscription($defaultPlan)
+         ->trialDays($defaultPlan->free_trial_dates)
+         ->create();
+
+        $subscription = $companyGroup->subscription();
 
         // Update current plan
-        $subscription->swap('monthly-10-2');
+        $subscription->swap($otherPlan);
 
         $I->assertEquals('monthly-10-2', $subscription->stripe_plan);
     }

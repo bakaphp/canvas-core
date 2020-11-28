@@ -18,6 +18,20 @@ class SubscriptionItems extends AbstractModel
     {
         $this->setSource('subscription_items');
 
-        $this->belongsTo('subscription_id', 'Canvas\Models\Subscription', 'id', ['alias' => 'subscription']);
+        $this->belongsTo(
+            'subscription_id',
+            Subscription::class,
+            'id',
+            [
+                'alias' => 'subscription'
+            ]
+        );
+
+        $this->belongsTo(
+            'apps_plans_id',
+            AppsPlans::class,
+            'id',
+            ['alias' => 'appPlan']
+        );
     }
 }
