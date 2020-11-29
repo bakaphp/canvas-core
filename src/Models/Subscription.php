@@ -158,7 +158,7 @@ class Subscription extends AbstractModel
      *
      * @return bool
      */
-    public function activate() : bool
+    public function markAsActivate() : bool
     {
         $this->is_active = 1;
         $this->paid = 1;
@@ -237,9 +237,9 @@ class Subscription extends AbstractModel
 
         if (!is_null($endsAt)) {
             return Carbon::now()->lt(Carbon::instance($endsAt));
-        } else {
-            return false;
         }
+
+        return false;
     }
 
     /**
@@ -358,6 +358,7 @@ class Subscription extends AbstractModel
         $this->updateOrFail([
             'stripe_plan' => $stripeSubscription->plan ? $stripeSubscription->plan->id : null,
             'quantity' => $stripeSubscription->quantity,
+            'name' => $plan->name,
             'ends_at' => null,
         ]);
 
@@ -415,7 +416,18 @@ class Subscription extends AbstractModel
         $subscription->cancel_at_period_end = true;
         $subscription->save();
 
-        $this->markAsCancelled();
+        // If the user was on trial, we will set the grace period to end when the trial
+        // would have ended. Otherwise, we'll retrieve the end of the billing period
+        // period and make that the end of the grace period for this current user.
+        if ($this->onTrial()) {
+            $this->ends_at = $this->trial_ends_at;
+        } else {
+            $this->ends_at = Carbon::createFromTimestamp(
+                $subscription->current_period_end
+            );
+        }
+
+        //$this->markAsCancelled();
 
         return $this;
     }
@@ -467,7 +479,7 @@ class Subscription extends AbstractModel
      *
      * @return self
      *
-     * @throws \LogicException
+     * @throws LogicException
      */
     public function resume() : self
     {
@@ -479,17 +491,14 @@ class Subscription extends AbstractModel
 
         $subscription->cancel_at_period_end = false;
 
-        // To resume the subscription we need to set the plan parameter on the Stripe
-        // subscription object. This will force Stripe to resume this subscription
-        // where we left off. Then, we'll set the proper trial ending timestamp.
-        $subscription->plan = $this->stripe_plan;
-
         if ($this->onTrial()) {
             $subscription->trial_end = strtotime($this->trial_ends_at);
         } else {
             $subscription->trial_end = 'now';
         }
         $subscription->save();
+
+        $this->markAsActivate();
 
         // Finally, we will remove the ending timestamp from the user's record in the
         // local database to indicate that the subscription is active again and is

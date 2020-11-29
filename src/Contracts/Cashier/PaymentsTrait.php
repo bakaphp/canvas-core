@@ -5,6 +5,7 @@ namespace Canvas\Contracts\Cashier;
 use Canvas\Cashier\Cashier;
 use Phalcon\Di;
 use Stripe\PaymentIntent as StripePaymentIntent;
+use Stripe\PaymentMethod;
 use Stripe\Refund as StripeRefund;
 
 trait PaymentsTrait
@@ -13,12 +14,12 @@ trait PaymentsTrait
      * Single payment for a customer.
      *
      * @param int $amount
-     * @param string $paymentMethod
+     * @param PaymentMethod $paymentMethod
      * @param array $options
      *
      * @return StripePaymentIntent
      */
-    public function charge(int $amount, string $paymentMethod = 'card', array $options = []) : StripePaymentIntent
+    public function charge(int $amount, PaymentMethod $paymentMethod, array $options = []) : StripePaymentIntent
     {
         $options = array_merge([
             'confirmation_method' => 'automatic',

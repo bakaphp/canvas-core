@@ -2,15 +2,13 @@
 
 namespace Gewaer\Tests\integration\library\Jobs;
 
-use Canvas\Models\Apps;
 use Canvas\Models\AppsPlans;
-use Canvas\Models\Companies;
 use Canvas\Models\CompaniesGroups;
 use Canvas\Models\Subscription;
-use Canvas\Models\Users;
 use Carbon\Carbon;
+use Exception;
 use IntegrationTester;
-use Stripe\Token;
+use Stripe\StripeClient;
 
 class CashierCest
 {
@@ -43,9 +41,9 @@ class CashierCest
         $subscription = $companyGroup->subscription();
         $subscription->cancel();
 
-        $I->assertFalse($subscription->active());
-        $I->assertTrue($subscription->cancelled());
-        $I->assertFalse($subscription->onGracePeriod());
+        $I->assertTrue($subscription->active());
+        $I->assertFalse($subscription->cancelled());
+        $I->assertTrue($subscription->onGracePeriod());
     }
 
     public function testSubscriptionSwap(IntegrationTester $I)
@@ -63,28 +61,27 @@ class CashierCest
         $subscription = $companyGroup->subscription();
 
         // Update current plan
-        $subscription->swap($otherPlan);
+        $swap = $subscription->swap($otherPlan);
 
-        $I->assertEquals('monthly-10-2', $subscription->stripe_plan);
+        $I->assertEquals(
+            $otherPlan->stripe_plan,
+            $swap->stripe_plan
+        );
     }
 
     public function testCreatingSubscriptionWithTrial(IntegrationTester $I)
     {
-        $user = Users::findFirstOrFail([
-            'conditions' => 'stripe_id is null',
-            'order' => 'RAND()'
-        ]);
+        $defaultPlan = AppsPlans::getDefaultPlan();
+        $otherPlan = AppsPlans::findFirstOrFail('id != ' . $defaultPlan->getId() . ' and apps_id = ' . $defaultPlan->apps_id);
 
-        $company = Companies::findFirstOrFail([
-            'order' => 'RAND()',
-        ]);
-        $apps = Apps::findFirstOrFail(1);
+        $companyGroup = CompaniesGroups::findFirst();
 
-        // Create Subscription
-        $user->newSubscription('main', 'monthly-10-1', $company, $apps)
-            ->trialDays(7)->create($this->getTestToken());
+        //Create Subscription
+        $companyGroup->newSubscription($defaultPlan)
+        ->trialDays(7)
+        ->create();
 
-        $subscription = $user->subscription('main');
+        $subscription = $companyGroup->subscription();
 
         $I->assertTrue($subscription->active());
         $I->assertTrue($subscription->onTrial());
@@ -94,53 +91,127 @@ class CashierCest
         // Cancel Subscription
         $subscription->cancel();
 
-        $I->assertFalse($subscription->active());
+        $I->assertTrue($subscription->active());
         $I->assertFalse($subscription->onGracePeriod());
     }
 
-    public function testCreatingOneOffInvoices(IntegrationTester $I)
+    public function testCancelAndActiveSub(IntegrationTester $I)
     {
-        $user = Users::findFirstOrFail([
-            'conditions' => 'stripe_id is not null',
-            'order' => 'RAND()'
+        $defaultPlan = AppsPlans::getDefaultPlan();
+        $otherPlan = AppsPlans::findFirstOrFail('id != ' . $defaultPlan->getId() . ' and apps_id = ' . $defaultPlan->apps_id);
+
+        $companyGroup = CompaniesGroups::findFirst();
+
+        //Create Subscription
+        $companyGroup->newSubscription($defaultPlan)
+        ->trialDays(7)
+        ->create();
+
+        $subscription = $companyGroup->subscription();
+
+        // Cancel Subscription
+        $subscription->cancel();
+
+        //still active
+        $I->assertTrue($subscription->active());
+        $I->assertFalse($subscription->onGracePeriod());
+
+        $subscription->resume();
+
+        $I->assertTrue($subscription->active());
+        $I->assertTrue($subscription->onGracePeriod());
+    }
+
+    public function testCancelNowAndActiveSub(IntegrationTester $I)
+    {
+        $defaultPlan = AppsPlans::getDefaultPlan();
+        $otherPlan = AppsPlans::findFirstOrFail('id != ' . $defaultPlan->getId() . ' and apps_id = ' . $defaultPlan->apps_id);
+
+        $companyGroup = CompaniesGroups::findFirst();
+
+        //Create Subscription
+        $companyGroup->newSubscription($defaultPlan)
+        ->trialDays(7)
+        ->create();
+
+        $subscription = $companyGroup->subscription();
+
+        // Cancel Subscription
+        $subscription->cancelNow();
+
+        //still active
+        $I->assertFalse($subscription->active());
+        $I->assertFalse($subscription->onGracePeriod());
+
+        try {
+            $subscription->resume();
+        } catch (Exception $e) {
+            //cant reactive a subscription if it doesn't have exceeded it grace period
+            $I->assertFalse($subscription->active());
+            $I->assertFalse($subscription->onGracePeriod());
+        }
+    }
+
+    public function testCharge(IntegrationTester $I)
+    {
+        $companyGroup = CompaniesGroups::findFirst();
+
+        $customer = $companyGroup->createOrGetStripeCustomerInfo();
+
+        $stripe = new StripeClient(
+            getenv('STRIPE_SECRET')
+        );
+        $payment = $stripe->paymentMethods->create([
+            'type' => 'card',
+            'card' => [
+                'number' => '4242424242424242',
+                'exp_month' => 11,
+                'exp_year' => date('Y') + 1,
+                'cvc' => '314',
+            ],
         ]);
 
-        // Create Invoice
-        $user->createAsStripeCustomer($this->getTestToken());
-        $user->invoiceFor('Phalcon PHP Cashier', 1000);
+        $stripe->paymentMethods->attach(
+            $payment->id,
+            ['customer' => $customer->id]
+        );
 
-        // Invoice Tests
-        $invoice = $user->invoices()[0];
-        $I->assertEquals('$10.00', $invoice->total());
-        $I->assertEquals('Phalcon PHP Cashier', $invoice->invoiceItems()[0]->asStripeInvoiceItem()->description);
+        $charge = $companyGroup->charge(1000, $payment);
+
+        $I->assertTrue(!empty($charge->id));
+        $I->assertTrue($charge->amount === 1000);
     }
 
     public function testRefunds(IntegrationTester $I)
     {
-        $user = Users::findFirstOrFail([
-            'conditions' => 'stripe_id is not null',
-            'order' => 'RAND()'
+        $companyGroup = CompaniesGroups::findFirst();
+
+        $customer = $companyGroup->createOrGetStripeCustomerInfo();
+
+        $stripe = new StripeClient(
+            getenv('STRIPE_SECRET')
+        );
+        $payment = $stripe->paymentMethods->create([
+            'type' => 'card',
+            'card' => [
+                'number' => '4242424242424242',
+                'exp_month' => 11,
+                'exp_year' => date('Y') + 1,
+                'cvc' => '314',
+            ],
         ]);
-        // Create Invoice
-        $user->createAsStripeCustomer($this->getTestToken());
-        $invoice = $user->invoiceFor('Phalcon PHP Cashier', 1000);
+
+        $stripe->paymentMethods->attach(
+            $payment->id,
+            ['customer' => $customer->id]
+        );
+
+        $charge = $companyGroup->charge(1000, $payment);
 
         // Create the refund
-        $refund = $user->refund($invoice->charge);
+        $refund = $companyGroup->refund($charge->id);
 
         // Refund Tests
         $I->assertEquals(1000, $refund->amount);
-    }
-
-    protected function getTestToken(IntegrationTester $I)
-    {
-        return Token::create([
-            'card' => [
-                'number' => '4242424242424242',
-                'exp_month' => date('m', strtotime('+1 month')),
-                'exp_year' => date('Y', strtotime('+1 year')),
-                'cvc' => '123',
-            ],
-        ], ['api_key' => getenv('STRIPE_SECRET')])->id;
     }
 }
