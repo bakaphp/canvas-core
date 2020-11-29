@@ -77,30 +77,34 @@ class SubscriptionBuilder
         $this->plan = $appPlan->stripe_id;
         $this->appsPlan = $appPlan;
 
-        $this->addPlan($this->plan);
+        $this->addPlan($appPlan);
     }
 
     /**
      * Stripe has change plans to prices, we will continue to use plans name since it a best use
      * to subscriptions.
      *
-     * @param string $plan
+     * @param AppsPlans $plan
      * @param int $quantity
      *
      * @return self
      */
-    public function addPlan(string $plan, int $quantity = 1) : self
+    public function addPlan(AppsPlans $plan, int $quantity = 1) : self
     {
+        $planStripeId = $plan->stripe_id;
         $options = [
-            'price' => $plan,
+            'price' => $planStripeId,
             'quantity' => $quantity,
+            'metadata' => [
+                'appPlan' => $plan->getId()
+            ]
         ];
 
-        if ($taxRates = $this->getPlanTaxRatesForPayload($plan)) {
+        if ($taxRates = $this->getPlanTaxRatesForPayload($planStripeId)) {
             $options['tax_rates'] = $taxRates;
         }
 
-        $this->plans[$plan] = $options;
+        $this->plans[$planStripeId] = $options;
 
         return $this;
     }

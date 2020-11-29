@@ -56,6 +56,7 @@ class CashierCest
         //Create Subscription
         $companyGroup->newSubscription($defaultPlan)
          ->trialDays($defaultPlan->free_trial_dates)
+         ->withMetadata(['appPlan' => $defaultPlan->getId()])
          ->create();
 
         $subscription = $companyGroup->subscription();

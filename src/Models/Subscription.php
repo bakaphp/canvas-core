@@ -4,6 +4,7 @@ namespace Canvas\Models;
 
 use Baka\Http\Exception\InternalServerErrorException;
 use Canvas\Cashier\Cashier;
+use Canvas\Cashier\Exceptions\Subscriptions as SubscriptionException;
 use Carbon\Carbon;
 use DateTime;
 use DateTimeInterface;
@@ -366,7 +367,7 @@ class Subscription extends AbstractModel
         foreach ($stripeSubscription->items as $item) {
             $subscriptionItem = new SubscriptionItems();
             $subscriptionItem->subscription_id = $this->getId();
-            $subscriptionItem->apps_plans_id = $plan->getId();
+            $subscriptionItem->apps_plans_id = $item->metadata->appPlan ?: 0;
             $subscriptionItem->stripe_id = $item->id;
             $subscriptionItem->stripe_plan = $item->plan->id;
             $subscriptionItem->quantity = $item->quantity;
@@ -376,8 +377,29 @@ class Subscription extends AbstractModel
         return $this;
     }
 
-    public function addPlan(AppsPlans $plan)
+    /**
+     * Add plan to the current entity.
+     */
+    public function addPlan(AppsPlans $plan, int $quantity = 1)
     {
+        /*  if ($this->countPlans('apps_plans_id =' . $plan->getId())) {
+             throw SubscriptionException::duplicatePlan($plan);
+         }
+
+         $subscription = $this->asStripeSubscription();
+
+         $item = $subscription->items->create(array_merge([
+             'plan' => $plan->stripe_id,
+             'quantity' => $quantity,
+         ], Cashier::stripeOptions()));
+
+         $subscriptionItem = new SubscriptionItems();
+         $subscriptionItem->subscription_id = $this->getId();
+         $subscriptionItem->apps_plans_id = $item->metadata->appPlan ?: 0;
+         $subscriptionItem->stripe_id = $item->id;
+         $subscriptionItem->stripe_plan = $item->plan->id;
+         $subscriptionItem->quantity = $item->quantity;
+         $subscriptionItem->saveOrFail(); */
     }
 
     /**
@@ -395,6 +417,9 @@ class Subscription extends AbstractModel
                 [
                     'id' => $this->getPlans('apps_plans_id > 0')[0]->stripe_id,
                     'price' => $plan->stripe_id,
+                    'metadata' => [
+                        'appPlan' => $plan->getId()
+                    ]
                 ]
             ],
             'expand' => ['latest_invoice.payment_intent'],

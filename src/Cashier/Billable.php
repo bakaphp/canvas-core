@@ -40,6 +40,7 @@ trait Billable
 
         return $this->newSubscription($defaultPlan)
             ->trialDays($defaultPlan->free_trial_dates)
+            ->withMetadata(['appPlan' => $defaultPlan->getId()])
             ->create($options, $customerOptions);
     }
 }
