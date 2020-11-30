@@ -215,4 +215,19 @@ class CashierCest
         // Refund Tests
         $I->assertEquals(1000, $refund->amount);
     }
+
+    public function testAddPlan(IntegrationTester $I)
+    {
+        $companyGroup = CompaniesGroups::findFirst();
+        $subscription = $companyGroup->subscription();
+
+        $defaultPlan = AppsPlans::getDefaultPlan();
+        $otherPlan = AppsPlans::findFirstOrFail('id != ' . $defaultPlan->getId() . ' and apps_id = ' . $defaultPlan->apps_id);
+
+        $swap = $subscription->swap($defaultPlan);
+
+        $addedPlan = $subscription->addPlan($otherPlan);
+
+        $I->assertTrue(count($addedPlan->plans) == 2);
+    }
 }

@@ -342,7 +342,7 @@ class Subscription extends AbstractModel
     /**
      * Swap the subscription to a new Stripe plan.
      *
-     * @param  string  $plan
+     * @param  AppsPlans  $plan
      *
      * @return self
      */
@@ -357,8 +357,8 @@ class Subscription extends AbstractModel
         );
 
         $this->updateOrFail([
-            'stripe_plan' => $stripeSubscription->plan ? $stripeSubscription->plan->id : null,
-            'quantity' => $stripeSubscription->quantity,
+            'stripe_plan' => $stripeSubscription->plan ? $stripeSubscription->plan->id : count($stripeSubscription->items) . ' items',
+            'quantity' => $stripeSubscription->quantity ?: count($stripeSubscription->items),
             'name' => $plan->name,
             'ends_at' => null,
         ]);
@@ -380,26 +380,31 @@ class Subscription extends AbstractModel
     /**
      * Add plan to the current entity.
      */
-    public function addPlan(AppsPlans $plan, int $quantity = 1)
+    public function addPlan(AppsPlans $plan, int $quantity = 1) : self
     {
-        /*  if ($this->countPlans('apps_plans_id =' . $plan->getId())) {
-             throw SubscriptionException::duplicatePlan($plan);
-         }
+        if ($this->countPlans('apps_plans_id =' . $plan->getId())) {
+            throw SubscriptionException::duplicatePlan($plan);
+        }
 
-         $subscription = $this->asStripeSubscription();
+        $subscription = $this->asStripeSubscription();
 
-         $item = $subscription->items->create(array_merge([
-             'plan' => $plan->stripe_id,
-             'quantity' => $quantity,
-         ], Cashier::stripeOptions()));
+        $item = $subscription->items->create(array_merge([
+            'plan' => $plan->stripe_id,
+            'quantity' => $quantity,
+            'metadata' => [
+                'appPlan' => $plan->getId()
+            ]
+        ]));
 
-         $subscriptionItem = new SubscriptionItems();
-         $subscriptionItem->subscription_id = $this->getId();
-         $subscriptionItem->apps_plans_id = $item->metadata->appPlan ?: 0;
-         $subscriptionItem->stripe_id = $item->id;
-         $subscriptionItem->stripe_plan = $item->plan->id;
-         $subscriptionItem->quantity = $item->quantity;
-         $subscriptionItem->saveOrFail(); */
+        $subscriptionItem = new SubscriptionItems();
+        $subscriptionItem->subscription_id = $this->getId();
+        $subscriptionItem->apps_plans_id = $item->metadata->appPlan ?: 0;
+        $subscriptionItem->stripe_id = $item->id;
+        $subscriptionItem->stripe_plan = $item->plan->id;
+        $subscriptionItem->quantity = $item->quantity;
+        $subscriptionItem->saveOrFail();
+
+        return $this;
     }
 
     /**
