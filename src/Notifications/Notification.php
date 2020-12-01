@@ -246,15 +246,7 @@ class Notification implements NotificationInterface
 
         $toRealtime = $this->toRealtime();
         if ($toRealtime instanceof PusherNotification) {
-            $this->fire('notification:sendRealtimeNotification', $toRealtime);
-        }
-
-        /**
-         * @todo send to push notification
-         */
-
-        if ($this->type->with_realtime) {
-            $this->fire('notification:sendRealtime', $this);
+            $this->fire('notification:sendRealtime', $toRealtime);
         }
 
         return true;
