@@ -141,7 +141,10 @@ class Subscription extends AbstractModel
             return true;
         }
 
-        return (bool) $this->is_active;
+        return (bool) $this->is_active &&
+            $this->stripe_status !== StripeSubscription::STATUS_INCOMPLETE &&
+            $this->stripe_status !== StripeSubscription::STATUS_INCOMPLETE_EXPIRED &&
+            $this->stripe_status !== StripeSubscription::STATUS_UNPAID;
     }
 
     /**
@@ -168,7 +171,7 @@ class Subscription extends AbstractModel
         $this->is_active = 1;
         $this->paid = 1;
         //$this->grace_period_ends = new RawValue('NULL');
-        $this->ends_at = new rawValue('NULL');
+        $this->ends_at = null; //new rawValue('NULL');
         $this->next_due_payment = $this->ends_at;
         $this->is_cancelled = 0;
         return $this->update();

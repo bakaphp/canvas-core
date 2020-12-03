@@ -93,7 +93,7 @@ class CashierCest
         $subscription->cancel();
 
         $I->assertTrue($subscription->active());
-        $I->assertFalse($subscription->onGracePeriod());
+        $I->assertTrue($subscription->onGracePeriod());
     }
 
     public function testCancelAndActiveSub(IntegrationTester $I)
@@ -115,12 +115,12 @@ class CashierCest
 
         //still active
         $I->assertTrue($subscription->active());
-        $I->assertFalse($subscription->onGracePeriod());
+        $I->assertTrue($subscription->onGracePeriod());
 
         $subscription->resume();
 
         $I->assertTrue($subscription->active());
-        $I->assertTrue($subscription->onGracePeriod());
+        $I->assertFalse($subscription->onGracePeriod());
     }
 
     public function testCancelNowAndActiveSub(IntegrationTester $I)
