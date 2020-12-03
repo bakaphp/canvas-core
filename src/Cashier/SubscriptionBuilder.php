@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Canvas\Cashier;
 
 use Canvas\Models\Apps;
@@ -248,6 +250,7 @@ class SubscriptionBuilder
         $subscription->name = $this->name;
         $subscription->stripe_id = $stripeSubscription->id;
         $subscription->stripe_plan = $stripeSubscription->plan ? $stripeSubscription->plan->id : null;
+        $subscription->stripe_status = $stripeSubscription->status;
         $subscription->quantity = $stripeSubscription->quantity;
         $subscription->trial_ends_at = $trialEndsAt->toDateTimeString();
         $subscription->companies_groups_id = $this->entity->getId();

@@ -147,7 +147,7 @@ class CashierCest
         try {
             $subscription->resume();
         } catch (Exception $e) {
-            //cant reactive a subscription if it doesn't have exceeded it grace period
+            //cant reactive a subscription if it  exceeded it grace period
             $I->assertFalse($subscription->active());
             $I->assertFalse($subscription->onGracePeriod());
         }
@@ -219,9 +219,15 @@ class CashierCest
     public function testAddPlan(IntegrationTester $I)
     {
         $companyGroup = CompaniesGroups::findFirst();
+        $defaultPlan = AppsPlans::getDefaultPlan();
+
+        //Create Subscription
+        $companyGroup->newSubscription($defaultPlan)
+          ->trialDays($defaultPlan->free_trial_dates)
+          ->create();
+
         $subscription = $companyGroup->subscription();
 
-        $defaultPlan = AppsPlans::getDefaultPlan();
         $otherPlan = AppsPlans::findFirstOrFail('id != ' . $defaultPlan->getId() . ' and apps_id = ' . $defaultPlan->apps_id);
 
         $swap = $subscription->swap($defaultPlan);
@@ -229,5 +235,18 @@ class CashierCest
         $addedPlan = $subscription->addPlan($otherPlan);
 
         $I->assertTrue(count($addedPlan->plans) == 2);
+    }
+
+    public function removePlan(IntegrationTester $I)
+    {
+        $companyGroup = CompaniesGroups::findFirst();
+        $subscription = $companyGroup->subscription();
+
+        $defaultPlan = AppsPlans::getDefaultPlan();
+        $otherPlan = AppsPlans::findFirstOrFail('id != ' . $defaultPlan->getId() . ' and apps_id = ' . $defaultPlan->apps_id);
+
+        $addedPlan = $subscription->removePlan($otherPlan);
+
+        $I->assertTrue(count($addedPlan->plans) == 1);
     }
 }

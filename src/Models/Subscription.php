@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Canvas\Models;
 
 use Baka\Http\Exception\InternalServerErrorException;
@@ -8,6 +10,7 @@ use Canvas\Cashier\Exceptions\Subscriptions as SubscriptionException;
 use Carbon\Carbon;
 use DateTime;
 use DateTimeInterface;
+use Exception;
 use LogicException;
 use Phalcon\Db\RawValue;
 use Phalcon\Di;
@@ -23,6 +26,7 @@ class Subscription extends AbstractModel
     public ?string $name = null;
     public string $stripe_id;
     public string $stripe_plan;
+    public ?string $stripe_status;
     public int $quantity;
     public ?int $payment_frequency_id = null;
     public ?string $trial_ends_at = null;
@@ -234,7 +238,7 @@ class Subscription extends AbstractModel
      */
     public function onGracePeriod() : bool
     {
-        $endsAt = new DateTime($this->ends_at);
+        $endsAt = new DateTime((string) $this->ends_at);
 
         if (!is_null($endsAt)) {
             return Carbon::now()->lt(Carbon::instance($endsAt));
@@ -357,6 +361,7 @@ class Subscription extends AbstractModel
         );
 
         $this->updateOrFail([
+            'stripe_status' => $stripeSubscription->status,
             'stripe_plan' => $stripeSubscription->plan ? $stripeSubscription->plan->id : count($stripeSubscription->items) . ' items',
             'quantity' => $stripeSubscription->quantity ?: count($stripeSubscription->items),
             'name' => $plan->name,
@@ -408,6 +413,39 @@ class Subscription extends AbstractModel
     }
 
     /**
+     * Remove a plan from a subscription.
+     *
+     * @param AppsPlans $plan
+     *
+     * @return self
+     */
+    public function removePlan(AppsPlans $plan) : self
+    {
+        if ($this->hasSinglePlan()) {
+            throw new SubscriptionException('Cant delete single plan for this subscription');
+        }
+
+        if (!$item = $this->getPlans('apps_plans_id = ' . $plan->getId())) {
+            throw new Exception('Plan Id ' . $plan->getId() . ' not found on this subscription');
+        }
+
+        $item->getFirst()->asStripeSubscriptionItem()->delete();
+
+        $item->getFirst()->deleteOrFail();
+
+        if ($this->plans->count() < 2) {
+            $item = $this->plans->getFirst();
+
+            $this->updateOrFail([
+                'stripe_plan' => $item->stripe_plan,
+                'quantity' => $item->quantity,
+            ]);
+        }
+
+        return $this;
+    }
+
+    /**
      * Get the options array for a swap operation.
      *
      * @param AppsPlans $items
@@ -417,10 +455,12 @@ class Subscription extends AbstractModel
      */
     protected function getSwapOptions(AppsPlans $plan, array $options = []) : array
     {
+        //replace the id of the plan with this new one
+
         $payload = [
             'items' => [
                 [
-                    'id' => $this->getPlans('apps_plans_id > 0')[0]->stripe_id,
+                    'id' => $this->getPlans('apps_plans_id > 0')->getFirst()->stripe_id,
                     'price' => $plan->stripe_id,
                     'metadata' => [
                         'appPlan' => $plan->getId()
@@ -446,6 +486,8 @@ class Subscription extends AbstractModel
         $subscription->cancel_at_period_end = true;
         $subscription->save();
 
+        $this->stripe_status = $subscription->status;
+
         // If the user was on trial, we will set the grace period to end when the trial
         // would have ended. Otherwise, we'll retrieve the end of the billing period
         // period and make that the end of the grace period for this current user.
@@ -457,7 +499,7 @@ class Subscription extends AbstractModel
             );
         }
 
-        //$this->markAsCancelled();
+        $this->save();
 
         return $this;
     }
@@ -501,6 +543,7 @@ class Subscription extends AbstractModel
         $this->ends_at = Carbon::now()->toDateTimeString();
         $this->is_cancelled = 1;
         $this->is_active = 0;
+        $this->stripe_status = StripeSubscription::STATUS_CANCELED;
         $this->updateOrFail();
     }
 
@@ -533,7 +576,10 @@ class Subscription extends AbstractModel
         // Finally, we will remove the ending timestamp from the user's record in the
         // local database to indicate that the subscription is active again and is
         // no longer "cancelled". Then we will save this record in the database.
-        $this->updateOrFail(['ends_at' => null]);
+        $this->updateOrFail([
+            'ends_at' => null,
+            'stripe_status' => $subscription->status,
+        ]);
 
         return $this;
     }
@@ -574,6 +620,60 @@ class Subscription extends AbstractModel
             'bind' => [
                 'stripe_plan' => $plan->stripe_plan
             ]
-        ]);
+        ]) > 0;
+    }
+
+    /**
+     * Determine if the subscription has multiple plans.
+     *
+     * @return bool
+     */
+    public function hasMultiplePlans() : bool
+    {
+        return count($this->plans) > 1;
+    }
+
+    /**
+     * Determine if the subscription has a single plan.
+     *
+     * @return bool
+     */
+    public function hasSinglePlan() : bool
+    {
+        return !$this->hasMultiplePlans();
+    }
+
+    /**
+     * Determine if the subscription is incomplete.
+     *
+     * @return bool
+     */
+    public function incomplete() : bool
+    {
+        return $this->stripe_status === StripeSubscription::STATUS_INCOMPLETE;
+    }
+
+    /**
+     * Determine if the subscription is past due.
+     *
+     * @return bool
+     */
+    public function pastDue() : bool
+    {
+        return $this->stripe_status === StripeSubscription::STATUS_PAST_DUE;
+    }
+
+    /**
+     * Sync the Stripe status of the subscription.
+     *
+     * @return void
+     */
+    public function syncStripeStatus()
+    {
+        $subscription = $this->asStripeSubscription();
+
+        $this->stripe_status = $subscription->status;
+
+        $this->save();
     }
 }
