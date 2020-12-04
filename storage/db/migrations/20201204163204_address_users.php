@@ -19,8 +19,8 @@ final class AddressUsers extends AbstractMigration
     public function change() : void
     {
         $this->table('users')
-            ->addColumn('address1', 'text', ['null' => true])
-            ->addColumn('address2', 'text', ['null' => true])
+            ->addColumn('address_1 ', 'text', ['null' => true])
+            ->addColumn('address_2', 'text', ['null' => true])
             ->addColumn('zip_code', 'text', ['null' => true])
             ->save();
     }
