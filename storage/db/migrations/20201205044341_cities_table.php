@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 use Phinx\Migration\AbstractMigration;
 
-final class StatesTable extends AbstractMigration
+final class CitiesTable extends AbstractMigration
 {
     /**
      * Change Method.
@@ -18,10 +18,12 @@ final class StatesTable extends AbstractMigration
      */
     public function change() : void
     {
-        $this->table('countries_states')
+        $this->table('cities')
+            ->addColumn('states_id', 'integer', ['null' => true])
             ->addColumn('countries_id', 'integer', ['null' => true])
             ->addColumn('name', 'string', ['null' => false])
-            ->addColumn('code', 'string', ['null' => false])
+            ->addColumn('latitude', 'decimal', ['null' => true])
+            ->addColumn('longitude', 'decimal', ['null' => true])
             ->addColumn('created_at', 'datetime', ['null' => false, 'default' => 'CURRENT_TIMESTAMP'])
             ->addColumn('updated_at', 'datetime', ['null' => true])
             ->addColumn('is_deleted', 'integer', ['null' => false, 'default' => '0'])
