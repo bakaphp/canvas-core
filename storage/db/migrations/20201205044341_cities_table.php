@@ -18,7 +18,7 @@ final class CitiesTable extends AbstractMigration
      */
     public function change() : void
     {
-        $this->table('cities')
+        $this->table('countries_cities')
             ->addColumn('states_id', 'integer', ['null' => true])
             ->addColumn('countries_id', 'integer', ['null' => true])
             ->addColumn('name', 'string', ['null' => false])
