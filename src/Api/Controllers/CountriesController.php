@@ -49,7 +49,6 @@ class CountriesController extends BaseController
         $this->additionalSearchFields = [
             ['is_deleted', ':', '0'],
         ];
-
     }
 
     /**
@@ -60,7 +59,7 @@ class CountriesController extends BaseController
     public function getStates($countriesId) : Response
     {
         $this->additionalSearchFields[] = ['countries_id', ':', $countriesId];
-     
+
         $this->model = new States();
         $results = $this->processIndex();
 
@@ -77,7 +76,6 @@ class CountriesController extends BaseController
     {
         $this->additionalSearchFields[] = ['countries_id', ':', $countriesId];
         $this->additionalSearchFields[] = ['states_id', ':', $statesId];
-
 
         $this->model = new Cities();
         $results = $this->processIndex();
