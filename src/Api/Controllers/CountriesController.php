@@ -56,7 +56,7 @@ class CountriesController extends BaseController
      *
      * @return Response
      */
-    public function getStates($countriesId) : Response
+    public function getStates(int $countriesId) : Response
     {
         $this->additionalSearchFields[] = ['countries_id', ':', $countriesId];
 
@@ -72,7 +72,7 @@ class CountriesController extends BaseController
      *
      * @return Response
      */
-    public function getCities($countriesId, $statesId) : Response
+    public function getCities(int $countriesId, int $statesId) : Response
     {
         $this->additionalSearchFields[] = ['countries_id', ':', $countriesId];
         $this->additionalSearchFields[] = ['states_id', ':', $statesId];
