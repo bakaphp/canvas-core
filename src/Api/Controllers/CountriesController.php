@@ -57,14 +57,10 @@ class CountriesController extends BaseController
      *
      * @return Response
      */
-    public function getStates() : Response
+    public function getStates($countriesId) : Response
     {
-        $params = $this->router->getParams();
-
-        if (key_exists('countriesId', $params)) {
-            $this->additionalSearchFields[] = ['countries_id', ':', $params['countriesId']];
-        }
-
+        $this->additionalSearchFields[] = ['countries_id', ':', $countriesId];
+     
         $this->model = new States();
         $results = $this->processIndex();
 
@@ -77,17 +73,11 @@ class CountriesController extends BaseController
      *
      * @return Response
      */
-    public function getCities() : Response
+    public function getCities($countriesId, $statesId) : Response
     {
-        $params = $this->router->getParams();
+        $this->additionalSearchFields[] = ['countries_id', ':', $countriesId];
+        $this->additionalSearchFields[] = ['states_id', ':', $statesId];
 
-        if (key_exists('countriesId', $params)) {
-            $this->additionalSearchFields[] = ['countries_id', ':', $params['countriesId']];
-        }
-
-        if (key_exists('statesId', $params)) {
-            $this->additionalSearchFields[] = ['states_id', ':', $params['statesId']];
-        }
 
         $this->model = new Cities();
         $results = $this->processIndex();
