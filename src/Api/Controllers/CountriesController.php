@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Canvas\Api\Controllers;
 
-use Canvas\Models\Cities;
-use Canvas\Models\Countries;
-use Canvas\Models\States;
+use Canvas\Models\Locations\Cities;
+use Canvas\Models\Locations\Countries;
+use Canvas\Models\Locations\States;
 use Phalcon\Http\Response;
 
 /**
@@ -45,19 +45,11 @@ class CountriesController extends BaseController
     public function onConstruct()
     {
         $this->model = new Countries();
-        $params = $this->router->getParams();
 
         $this->additionalSearchFields = [
             ['is_deleted', ':', '0'],
         ];
 
-        if (key_exists('countriesId', $params)) {
-            $this->additionalSearchFields[] = ['countries_id', ':', $params['countriesId']];
-        }
-
-        if (key_exists('statesId', $params)) {
-            $this->additionalSearchFields[] = ['states_id', ':', $params['statesId']];
-        }
     }
 
     /**
@@ -67,6 +59,12 @@ class CountriesController extends BaseController
      */
     public function getStates() : Response
     {
+        $params = $this->router->getParams();
+
+        if (key_exists('countriesId', $params)) {
+            $this->additionalSearchFields[] = ['countries_id', ':', $params['countriesId']];
+        }
+
         $this->model = new States();
         $results = $this->processIndex();
 
@@ -81,6 +79,16 @@ class CountriesController extends BaseController
      */
     public function getCities() : Response
     {
+        $params = $this->router->getParams();
+
+        if (key_exists('countriesId', $params)) {
+            $this->additionalSearchFields[] = ['countries_id', ':', $params['countriesId']];
+        }
+
+        if (key_exists('statesId', $params)) {
+            $this->additionalSearchFields[] = ['states_id', ':', $params['statesId']];
+        }
+
         $this->model = new Cities();
         $results = $this->processIndex();
 

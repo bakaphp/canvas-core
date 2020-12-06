@@ -1,7 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Canvas\Models;
+namespace Canvas\Models\Locations;
+
+use Canvas\Models\AbstractModel;
 
 class States extends AbstractModel
 {
