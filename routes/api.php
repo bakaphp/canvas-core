@@ -19,6 +19,8 @@ $publicRoutes = [
     Route::get('/countries')->controller('CountriesController')->action('index'),
     Route::get('/countries/{id}')->controller('CountriesController')->action('getById'),
     Route::get('/timezones')->controller('TimeZonesController'),
+    Route::crud('/countries/{countriesId}/states')->controller('StatesController'),
+    Route::crud('/countries/{countriesId}/states/{statesId}/regions')->controller('CitiesController')
 ];
 
 $privateRoutes = [

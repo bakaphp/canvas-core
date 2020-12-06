@@ -7,18 +7,18 @@ namespace Canvas\Api\Controllers;
 use Canvas\Models\Countries;
 
 /**
- * Class TimeZonesController
+ * Class TimeZonesController.
  *
  * @package Canvas\Api\Controllers
  *
  */
 class CountriesController extends BaseController
 {
-/*
-     * fields we accept to create
-     *
-     * @var array
-     */
+    /*
+         * fields we accept to create
+         *
+         * @var array
+         */
     protected $createFields = [
         'name',
         'flag',
