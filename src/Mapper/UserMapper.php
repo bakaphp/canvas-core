@@ -95,8 +95,8 @@ class UserMapper extends CustomMapper
         $userDto->welcome = $user->welcome;
         $userDto->photo = $user->photo;
         $userDto->countries = $user->countries ?: [];
-        $userDto->states = $user->states ?: [];
-        $userDto->cities = $user->cities ?: [];
+        $userDto->states = $user->states ?: null;
+        $userDto->cities = $user->cities ?: null;
         /**
          * Properties we need to overwrite base on the
          * current app and company the user is running.
