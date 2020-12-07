@@ -56,13 +56,6 @@ class Companies extends AbstractModel
             ['alias' => 'user']
         );
 
-        $this->belongsTo(
-            'companies_group_id',
-            'Canvas\Models\CompaniesGroups',
-            'id',
-            ['alias' => 'companyGroup']
-        );
-
         $this->hasMany(
             'id',
             'Canvas\Models\CompaniesBranches',
@@ -190,32 +183,6 @@ class Companies extends AbstractModel
             ]
         );
 
-        $this->hasOne(
-            'id',
-            'Canvas\Models\Subscription',
-            'companies_id',
-            [
-                'alias' => 'subscription',
-                'params' => [
-                    'conditions' => 'apps_id = ' . $this->di->getApp()->getId() . ' AND is_deleted = 0',
-                    'order' => 'id DESC'
-                ]
-            ]
-        );
-
-        $this->hasMany(
-            'id',
-            'Canvas\Models\Subscription',
-            'companies_id',
-            [
-                'alias' => 'subscriptions',
-                'params' => [
-                    'conditions' => 'apps_id = ' . $this->di->getApp()->getId() . ' AND is_deleted = 0',
-                    'order' => 'id DESC'
-                ]
-            ]
-        );
-
         $this->hasMany(
             'id',
             'Canvas\Models\UserWebhooks',
@@ -223,7 +190,7 @@ class Companies extends AbstractModel
             ['alias' => 'user-webhooks']
         );
 
-        $systemModule = SystemModules::getSystemModuleByModelName(self::class);
+        $systemModule = SystemModules::getByModelName(self::class);
         $this->hasOne(
             'id',
             'Canvas\Models\FileSystemEntities',
@@ -246,7 +213,7 @@ class Companies extends AbstractModel
     public function getDefaultCompanyGroup() : CompaniesGroups
     {
         $companyGroup = $this->getCompanyGroups([
-            'conditions' => 'Canvas\Models\CompaniesGroups.apps_id = :apps_id: AND is_default = 1',
+            'conditions' => 'Canvas\Models\CompaniesGroups.apps_id = :apps_id: AND Canvas\Models\CompaniesGroups.is_default = 1',
             'bind' => [
                 'apps_id' => Di::getDefault()->get('app')->getId()
             ],

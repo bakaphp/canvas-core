@@ -97,7 +97,7 @@ class Subscription extends AbstractModel
         $subscription = self::findFirst([
             'conditions' => 'companies_groups_id = ?0 and apps_id = ?1 and is_deleted  = 0',
             'bind' => [
-                $user->getDefaultCompany()->getDefaultCompanyGroup->getId(),
+                $user->getDefaultCompany()->getDefaultCompanyGroup()->getId(),
                 Di::getDefault()->get('app')->getId()
             ]
         ]);
@@ -175,6 +175,14 @@ class Subscription extends AbstractModel
         $this->next_due_payment = $this->ends_at;
         $this->is_cancelled = 0;
         return $this->update();
+    }
+
+    /**
+     * @deprecated v0.3
+     */
+    public function activate() : bool
+    {
+        return $this->markAsActivate();
     }
 
     /**
@@ -678,5 +686,15 @@ class Subscription extends AbstractModel
         $this->stripe_status = $subscription->status;
 
         $this->save();
+    }
+
+    /**
+     * Get the active subscription for this company app.
+     *
+     * @return Subscription
+     */
+    public static function getActiveForThisApp() : Subscription
+    {
+        return self::getByDefaultCompany(Di::getDefault()->get('userData'));
     }
 }

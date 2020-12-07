@@ -149,7 +149,7 @@ class Users extends BakUser implements UserInterface
             ['alias' => 'userWebhook']
         );
 
-        $systemModule = SystemModules::getSystemModuleByModelName(self::class);
+        $systemModule = SystemModules::getByModelName(self::class);
         $this->hasOne(
             'id',
             'Canvas\Models\FileSystemEntities',

@@ -249,4 +249,10 @@ class CashierCest
 
         $I->assertTrue(count($addedPlan->plans) == 1);
     }
+
+    /**
+     * @todo
+     * - missing test for items
+     * - missing testing other subscription features still
+     */
 }

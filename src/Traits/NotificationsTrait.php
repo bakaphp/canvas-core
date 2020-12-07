@@ -39,7 +39,7 @@ trait NotificationsTrait
         $notification->companies_id = $user['default_company'];
         $notification->apps_id = Di::getDefault()->getApp()->getId();
         $notification->notification_type_id = $notificationTypeId;
-        $notification->system_module_id = SystemModules::getSystemModuleByModelName($systemModule)->id;
+        $notification->system_module_id = SystemModules::getByModelName($systemModule)->id;
         $notification->entity_id = $entity['id'];
         $notification->content = $content;
         $notification->created_at = date('Y-m-d H:i:s');

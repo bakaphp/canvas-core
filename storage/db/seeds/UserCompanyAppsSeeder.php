@@ -8,12 +8,10 @@ class UserCompanyAppsSeeder extends AbstractSeed
     {
         $data = [
             [
-                'companies_id'=>1,
-                'apps_id'=>1,
-                'stripe_id'=>'monthly-10-1',
-                'subscriptions_id'=>3,
+                'companies_id' => 1,
+                'apps_id' => 1,
                 'created_at' => date('Y-m-d H:m:s'),
-                'is_deleted'=>0
+                'is_deleted' => 0
             ]
         ];
 

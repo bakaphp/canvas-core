@@ -3,11 +3,9 @@
 namespace Gewaer\Tests\integration\library\Models;
 
 use Canvas\Models\Apps;
-use Canvas\Models\Users;
 use Canvas\Models\Subscription;
+use Canvas\Models\Users;
 use IntegrationTester;
-use Canvas\Providers\ConfigProvider;
-use Phalcon\Di\FactoryDefault;
 
 class UsersCest
 {
@@ -15,6 +13,7 @@ class UsersCest
      * Confirm the default apps exist.
      *
      * @param IntegrationTester $I
+     *
      * @return void
      */
     public function subscription(IntegrationTester $I)
@@ -27,6 +26,7 @@ class UsersCest
      * Get Current Company Id.
      *
      * @param IntegrationTester $I
+     *
      * @return void
      */
     public function currentCompanyId(IntegrationTester $I)
@@ -38,6 +38,7 @@ class UsersCest
      * Get Current Company Branch Id.
      *
      * @param IntegrationTester $I
+     *
      * @return void
      */
     public function currentCompanyBranchId(IntegrationTester $I)
@@ -49,6 +50,7 @@ class UsersCest
      * Get Associated Apps.
      *
      * @param IntegrationTester $I
+     *
      * @return void
      */
     public function getAssociatedApps(IntegrationTester $I)
@@ -60,6 +62,7 @@ class UsersCest
      * Get Associated Companies.
      *
      * @param IntegrationTester $I
+     *
      * @return void
      */
     public function getAssociatedCompanies(IntegrationTester $I)
@@ -71,22 +74,12 @@ class UsersCest
      * Get By User Activation Email.
      *
      * @param IntegrationTester $I
+     *
      * @return void
      */
     public function getByUserActivationEmail(IntegrationTester $I)
     {
         $I->assertTrue($I->grabFromDi('userData')->getByUserActivationEmail($I->grabFromDi('userData')->user_activation_email) instanceof Users);
-    }
-
-    /**
-     * Start Free Trial.
-     *
-     * @param IntegrationTester $I
-     * @return void
-     */
-    public function startFreeTrial(IntegrationTester $I)
-    {
-        $I->assertTrue($I->grabFromDi('userData')->startFreeTrial() instanceof Subscription);
     }
 
     public function generateForgotHash(IntegrationTester $I)

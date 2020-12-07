@@ -156,7 +156,7 @@ trait FileSystemModelTrait
      */
     public function deleteFile(int $id)
     {
-        $systemModule = SystemModules::getSystemModuleByModelName(self::class);
+        $systemModule = SystemModules::getByModelName(self::class);
 
         $file = FileSystemEntities::findFirstOrFail([
             'contidions' => 'id = ?0 AND entity_id = ?1 AND system_modules_id = ?2 AND is_deleted = ?3',
@@ -183,7 +183,7 @@ trait FileSystemModelTrait
      */
     public function attach(array $files) : bool
     {
-        $systemModule = SystemModules::getSystemModuleByModelName(self::class);
+        $systemModule = SystemModules::getByModelName(self::class);
 
         foreach ($files as $file) {
             //im looking for the file inside an array
@@ -244,7 +244,7 @@ trait FileSystemModelTrait
      */
     public function getFiles(string $fileType = null) : array
     {
-        $systemModule = SystemModules::getSystemModuleByModelName(self::class);
+        $systemModule = SystemModules::getByModelName(self::class);
 
         $attachments = $this->getAttachments($fileType);
 
@@ -267,7 +267,7 @@ trait FileSystemModelTrait
      */
     public function getFilesByName(string $fieldName) : array
     {
-        $systemModule = SystemModules::getSystemModuleByModelName(self::class);
+        $systemModule = SystemModules::getByModelName(self::class);
 
         $attachments = $this->getAttachmentsByName($fieldName);
 
@@ -355,7 +355,7 @@ trait FileSystemModelTrait
      */
     protected function fileMapper($fileEntity) : ?object
     {
-        $systemModule = SystemModules::getSystemModuleByModelName(self::class);
+        $systemModule = SystemModules::getByModelName(self::class);
 
         if ($fileEntity instanceof FileSystemEntities) {
             $fileMapper = new FileMapper($this->getId(), $systemModule->getId());
@@ -395,7 +395,7 @@ trait FileSystemModelTrait
      */
     protected function searchCriteriaForFilesByName(string $fieldName) : array
     {
-        $systemModule = SystemModules::getSystemModuleByModelName(self::class);
+        $systemModule = SystemModules::getByModelName(self::class);
         $appPublicImages = (bool) $this->di->get('app')->get('public_images');
 
         $bindParams = [
@@ -431,7 +431,7 @@ trait FileSystemModelTrait
      */
     public function getAttachmentByNameAndAttributes(string $fieldName, string $key, string $value)
     {
-        $systemModule = SystemModules::getSystemModuleByModelName(self::class);
+        $systemModule = SystemModules::getByModelName(self::class);
         $appPublicImages = (bool) $this->di->get('app')->get('public_images');
 
         $bindParams = [
@@ -477,7 +477,7 @@ trait FileSystemModelTrait
      */
     public function getAttachments(string $fileType = null) : ResultsetInterface
     {
-        $systemModule = SystemModules::getSystemModuleByModelName(self::class);
+        $systemModule = SystemModules::getByModelName(self::class);
         $appPublicImages = (bool) $this->di->get('app')->get('public_images');
 
         $bindParams = [

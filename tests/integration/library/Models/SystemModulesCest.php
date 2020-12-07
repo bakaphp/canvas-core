@@ -15,7 +15,7 @@ class SystemModulesCest
      */
     public function getSystemModuleByModelNameUser(IntegrationTester $I)
     {
-        $systemModule = SystemModules::getSystemModuleByModelName('Canvas\Models\Users');
+        $systemModule = SystemModules::getByModelName('Canvas\Models\Users');
         $I->assertTrue($systemModule instanceof SystemModules);
     }
 
@@ -27,7 +27,7 @@ class SystemModulesCest
      */
     public function getSystemModuleByModelNameCompanies(IntegrationTester $I)
     {
-        $systemModule = SystemModules::getSystemModuleByModelName('Canvas\Models\Companies');
+        $systemModule = SystemModules::getByModelName('Canvas\Models\Companies');
         $I->assertTrue($systemModule instanceof SystemModules);
     }
 
