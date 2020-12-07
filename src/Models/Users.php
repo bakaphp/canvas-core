@@ -13,6 +13,9 @@ use Baka\Hashing\Keys;
 use Baka\Hashing\Password;
 use Baka\Validations\PasswordValidation;
 use Canvas\Auth\App as AppAuth;
+use Canvas\Models\Locations\Cities;
+use Canvas\Models\Locations\Countries;
+use Canvas\Models\Locations\States;
 use Canvas\Traits\FileSystemModelTrait;
 use Canvas\Traits\PermissionsTrait;
 use Canvas\Traits\SubscriptionPlanLimitTrait;
@@ -164,6 +167,9 @@ class Users extends BakUser implements UserInterface
                 ]
             ]
         );
+        $this->belongsTo('city_id', Cities::class, 'id', ['alias' => 'cities']);
+        $this->belongsTo('state_id', States::class, 'id', ['alias' => 'states']);
+        $this->belongsTo('country_id', Countries::class, 'id', ['alias' => 'countries']);
     }
 
     /**
