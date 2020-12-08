@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Canvas\Models;
 
 use Baka\Auth\Models\Users as BakUser;
+use Baka\Database\Exception\ModelNotProcessedException;
 use Baka\Cashier\Billable;
 use Baka\Contracts\Auth\UserInterface;
 use Baka\Contracts\Database\HashTableTrait;
@@ -711,5 +712,17 @@ class Users extends BakUser implements UserInterface
         }
 
         throw new Exception((new ReflectionClass(new static))->getShortName() . ' Record not found');
+    }
+    
+    /**
+     * Throws an exception with including all validation messages that were retrieved.
+     *
+     * @throws ModelNotProcessedException
+     */
+    protected function throwErrorMessages() : void
+    {
+        throw new ModelNotProcessedException(
+           current($this->getMessages())->getMessage()
+        );
     }
 }
