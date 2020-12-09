@@ -4,46 +4,34 @@ namespace Canvas\Cli\Jobs;
 
 use Baka\Contracts\Queue\QueueableJobInterface;
 use Baka\Jobs\Job;
-use Phalcon\Di;
+use Canvas\Models\UserLinkedSources;
+use Canvas\Models\Users;
+use Canvas\Notifications\PushNotification;
+use Exception;
 use GuzzleHttp\Client as GuzzleClient;
 use Http\Adapter\Guzzle6\Client as GuzzleAdapter;
 use Http\Client\Common\HttpMethodsClient as HttpClient;
 use Http\Message\MessageFactory\GuzzleMessageFactory;
 use OneSignal\Config;
 use OneSignal\OneSignal;
-use Canvas\Models\UserLinkedSources;
-use Canvas\Notifications\PushNotification;
-use Exception;
+use Phalcon\Di;
 
 class PushNotifications extends Job implements QueueableJobInterface
 {
-    /**
-     * Realtime channel.
-     *
-     * @var string
-     */
-    protected $users;
-
-    /**
-     * Realtime event.
-     *
-     * @var string
-     */
-    protected $message;
+    protected Users $users;
+    protected string $message;
 
     /**
      * Realtime params.
      *
      * @var array
      */
-    protected $params;
+    protected array $params;
 
     /**
-     * Constructor setup info for Pusher.
+     * Push notification construct.
      *
-     * @param string $channel
-     * @param string $event
-     * @param array $params
+     * @param PushNotification $pushNotification
      */
     public function __construct(PushNotification $pushNotification)
     {
@@ -55,11 +43,11 @@ class PushNotifications extends Job implements QueueableJobInterface
     /**
      * Handle the pusher request.
      *
-     * @return void
+     * @return bool
      */
     public function handle()
     {
-        $config = Di::getDefault()->getConfig();
+        $config = Di::getDefault()->get('config');
 
         if (empty($this->users)) {
             return false;
@@ -79,13 +67,13 @@ class PushNotifications extends Job implements QueueableJobInterface
                 'en' => $this->message
             ]
         ];
-        
-        if(!empty($this->params)){
+
+        if (!empty($this->params)) {
             $pushBody['data'] = $this->params;
         }
 
         /**
-         * @todo change to use some constante , ID dont tell you what device it is
+         * @todo change to use some constanta , ID don't tell you what device it is
          */
         //send push android
         if (!empty($userDevicesArray[2])) {
@@ -105,10 +93,10 @@ class PushNotifications extends Job implements QueueableJobInterface
             )->notifications->add(
                 $pushBody
             );
-            
+
             if (Di::getDefault()->has('log')) {
                 Di::getDefault()->get('log')->info(
-                    'OneSignal Sending Push Notification to UserId: '. $this->users->getId() .' - ',
+                    'OneSignal Sending Push Notification to UserId: ' . $this->users->getId() . ' - ',
                     [$response]
                 );
             }
@@ -130,9 +118,10 @@ class PushNotifications extends Job implements QueueableJobInterface
      * @param string $appId
      * @param string $appAuthKey
      * @param string $appUserKey
+     *
      * @return OneSignal
      */
-    private function oneSignal(string $appId, string $appAuthKey, string $appUserKey): OneSignal
+    private function oneSignal(string $appId, string $appAuthKey, string $appUserKey) : OneSignal
     {
         $config = new Config();
         $config->setApplicationId($appId);
