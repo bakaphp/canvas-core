@@ -26,7 +26,7 @@ class PushNotifications extends Job implements QueueableJobInterface
      *
      * @var array
      */
-    protected array $params;
+    protected ?array $params;
 
     /**
      * Push notification construct.
@@ -48,10 +48,6 @@ class PushNotifications extends Job implements QueueableJobInterface
     public function handle()
     {
         $config = Di::getDefault()->get('config');
-
-        if (empty($this->users)) {
-            return false;
-        }
 
         $userDevicesArray = UserLinkedSources::getMobileUserLinkedSources($this->users->getId());
 
