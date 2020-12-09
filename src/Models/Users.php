@@ -4,12 +4,12 @@ declare(strict_types=1);
 namespace Canvas\Models;
 
 use Baka\Auth\Models\Users as BakUser;
-use Baka\Database\Exception\ModelNotProcessedException;
 use Baka\Cashier\Billable;
 use Baka\Contracts\Auth\UserInterface;
 use Baka\Contracts\Database\HashTableTrait;
 use Baka\Contracts\EventsManager\EventManagerAwareTrait;
 use Baka\Contracts\Notifications\NotifiableTrait;
+use Baka\Database\Exception\ModelNotProcessedException;
 use Baka\Hashing\Keys;
 use Baka\Hashing\Password;
 use Baka\Validations\PasswordValidation;
@@ -713,16 +713,18 @@ class Users extends BakUser implements UserInterface
 
         throw new Exception((new ReflectionClass(new static))->getShortName() . ' Record not found');
     }
-    
+
     /**
      * Throws an exception with including all validation messages that were retrieved.
+     *
+     * @todo lets add a configuration to remove the Model name of the exception in Kanvas
      *
      * @throws ModelNotProcessedException
      */
     protected function throwErrorMessages() : void
     {
         throw new ModelNotProcessedException(
-           current($this->getMessages())->getMessage()
+            current($this->getMessages())->getMessage()
         );
     }
 }
