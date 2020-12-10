@@ -334,7 +334,7 @@ class Users extends AbstractModel implements UserInterface
      */
     public function isActive() : bool
     {
-        return $this->user_active;
+        return (bool) $this->user_active;
     }
 
     /**
