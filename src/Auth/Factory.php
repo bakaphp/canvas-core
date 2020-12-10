@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Canvas\Auth;
 
-use Canvas\Models\Users;
+use Baka\Auth\Auth;
 
 class Factory
 {
@@ -15,7 +15,7 @@ class Factory
      *
      * @return Auth
      */
-    public static function create(bool $ecosystemAuth)
+    public static function create(bool $ecosystemAuth) : Auth
     {
         $user = null;
         switch ($ecosystemAuth) {

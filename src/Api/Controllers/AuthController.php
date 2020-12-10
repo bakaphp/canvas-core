@@ -4,15 +4,18 @@ declare(strict_types=1);
 
 namespace Canvas\Api\Controllers;
 
-use Canvas\Models\Sessions;
-use Canvas\Auth\Models\Users as BakaUsers;
+use Baka\Auth\UserProvider;
 use Baka\Http\Exception\InternalServerErrorException;
 use Baka\Http\Exception\NotFoundException;
 use Baka\Validation as CanvasValidation;
 use Baka\Validations\PasswordValidation;
 use Canvas\Auth\Auth;
 use Canvas\Auth\Factory;
+use Canvas\Contracts\AuthTrait;
+use Canvas\Contracts\SocialLoginTrait;
+use Canvas\Contracts\TokenTrait;
 use Canvas\Exception\ModelException;
+use Canvas\Models\Sessions;
 use Canvas\Models\Sources;
 use Canvas\Models\UserLinkedSources;
 use Canvas\Models\Users;
@@ -20,16 +23,12 @@ use Canvas\Notifications\PasswordUpdate;
 use Canvas\Notifications\ResetPassword;
 use Canvas\Notifications\Signup;
 use Canvas\Notifications\UpdateEmail;
-use Canvas\Contracts\AuthTrait;
-use Canvas\Contracts\SocialLoginTrait;
-use Canvas\Contracts\TokenTrait;
 use Exception;
 use Phalcon\Http\Response;
 use Phalcon\Validation\Validator\Confirmation;
 use Phalcon\Validation\Validator\Email as EmailValidator;
 use Phalcon\Validation\Validator\PresenceOf;
 use Phalcon\Validation\Validator\StringLength;
-use Baka\Auth\UserProvider;
 
 /**
  * Class AuthController.
@@ -207,7 +206,6 @@ class AuthController extends BaseController
      * @return Response
      *
      * @todo Validate access_token and refresh token, session's user email and re-login
-     * @todo Validate access_token and refresh token, session's user email and relogin
      */
     public function refresh() : Response
     {
@@ -351,7 +349,7 @@ class AuthController extends BaseController
      */
     public function reset(string $key) : Response
     {
-        //is the key empty or does it existe?
+        //is the key empty or does it exist?
         if (empty($key) || !$userData = Users::findFirst(['user_activation_forgot = :key:', 'bind' => ['key' => $key]])) {
             throw new Exception(_('This Key to reset password doesn\'t exist'));
         }
@@ -380,5 +378,32 @@ class AuthController extends BaseController
         $userData->notify($passwordUpdate);
 
         return $this->response(_('Password Updated'));
+    }
+
+    /**
+     * Send the user how filled out the form to the specify email
+     * a link to reset his password.
+     *
+     * @return Response
+     */
+    public function recover() : Response
+    {
+        $request = $this->request->getPostData();
+
+        $validation = new CanvasValidation();
+        $validation->add('email', new EmailValidator(['message' => _('The email is not valid.')]));
+        $validation->validate($request);
+
+        $email = $validation->getValue('email');
+
+        $recoverUser = Users::getByEmail($email);
+        $recoverUser->generateForgotHash();
+
+        $resetPassword = new ResetPassword($recoverUser);
+        $resetPassword->setFrom($recoverUser);
+
+        $recoverUser->notify($resetPassword);
+
+        return $this->response(_('Check your email to recover your password'));
     }
 }
