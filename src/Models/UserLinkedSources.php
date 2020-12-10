@@ -36,7 +36,7 @@ class UserLinkedSources extends BakaUserLinkedSources
          * @todo change this from ID's to use the actual definition of the android / ios apps
          */
         $linkedSource = UserLinkedSources::find([
-            'conditions' => 'users_id = ?0 and source_id in (2,3)',
+            'conditions' => 'users_id = ?0 and source_id in (2,3) AND is_deleted = 0',
             'bind' => [$usersId]
         ]);
 

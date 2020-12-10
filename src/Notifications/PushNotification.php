@@ -8,38 +8,25 @@ use Canvas\Models\Users;
 
 class PushNotification
 {
-    /**
-     * @var string
-     */
-    public $title;
+    public string $title;
+    public string $message;
+    public Users $to;
 
     /**
-     * @var string
-     */
-    public $message;
-
-    /**
-     * User Object
-     * 
-     * @var Users
-     */
-    public $to;
-
-    /**
-     * Additional params if needed
+     * Additional params if needed.
      *
      * @var array
      */
-    public $params;
+    public ?array $params = null;
 
     /**
-     * Init a push notification object
+     * Init a push notification object.
      *
      * @param Users $user
      * @param string $title
      * @param string $message
      * @param array $params
-     * 
+     *
      * @return void
      */
     public function __construct(Users $user, string $title, string $message, ?array $params = null)
