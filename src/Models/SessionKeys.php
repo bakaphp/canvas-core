@@ -16,6 +16,6 @@ class SessionKeys extends Model
      */
     public function initialize()
     {
-        $this->belongsTo('sessions_id', 'Baka\Auth\Models\Sesssions', 'id', ['alias' => 'session']);
+        $this->belongsTo('sessions_id', Sessions::class, 'id', ['alias' => 'session']);
     }
 }

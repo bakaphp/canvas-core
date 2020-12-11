@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Canvas\Models;
 
-use Baka\Http\Exception\InternalServerErrorException;
-use Baka\Social\Apple\ASDecoder;
 use Baka\Database\Model;
+use Baka\Http\Exception\InternalServerErrorException;
 use Baka\Http\Exception\NotFoundException;
+use Baka\Social\Apple\ASDecoder;
 
 class Sources extends Model
 {
@@ -28,7 +28,7 @@ class Sources extends Model
     {
         $this->setSource('sources');
 
-        $this->hasMany('id', 'Canvas\Models\UserLinkedSources', 'source_id', ['alias' => 'linkedSource']);
+        $this->hasMany('id', UserLinkedSources::class, 'source_id', ['alias' => 'linkedSource']);
     }
 
     /**

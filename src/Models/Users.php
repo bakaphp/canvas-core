@@ -77,7 +77,7 @@ class Users extends AbstractModel implements UserInterface
     public ?string $banned = null;
     public ?int $user_last_login_try = 0;
     public int $user_level = 0;
-    public int $user_login_tries = 0;
+    public ?int $user_login_tries = 0;
     public static string $locale = 'ja_jp';
 
     /**

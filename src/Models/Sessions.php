@@ -1,9 +1,5 @@
 <?php
 
-/**
- * JWT Session Token Manager.
- */
-
 namespace Canvas\Models;
 
 use Baka\Contracts\Auth\AuthTokenTrait;
@@ -27,7 +23,7 @@ class Sessions extends Model
      */
     public function initialize()
     {
-        $this->belongsTo('users_id', 'Canvas\Models\Users', 'id', ['alias' => 'user']);
+        $this->belongsTo('users_id', Users::class, 'id', ['alias' => 'user']);
     }
 
     /**
