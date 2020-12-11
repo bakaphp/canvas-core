@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Canvas\Auth;
 
-use Baka\Auth\Auth;
+use Baka\Contracts\Auth\UserInterface;
 use Baka\Hashing\Password;
 use Canvas\Models\Users;
 use Exception;
@@ -21,9 +21,9 @@ class App extends Auth
      * @param int $admin
      * @param string $userIp
      *
-     * @return Users
+     * @return UserInterface
      */
-    public static function login(string $email, string $password, int $autologin = 1, int $admin, string $userIp) : Users
+    public static function login(string $email, string $password, int $autologin = 1, int $admin, string $userIp) : UserInterface
     {
         //trim email
         $email = ltrim(trim($email));

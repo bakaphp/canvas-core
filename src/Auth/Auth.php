@@ -25,7 +25,7 @@ class Auth
      * @param int $admin
      * @param string $userIp
      *
-     * @return Users
+     * @return UserInterface
      */
     public static function login(string $email, string $password) : UserInterface
     {
@@ -88,7 +88,7 @@ class Auth
         $user->session_time = time();
         $user->session_page = time();
         $user->password = Password::make($user->password);
-        $user->language = $user->language ?? 'EN';
+        $user->language = $user->language ?: 'EN';
         $user->user_activation_key = Keys::make();
 
         //if you need to run any extra feature with the data we get from the request

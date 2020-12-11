@@ -4,16 +4,14 @@ declare(strict_types=1);
 
 namespace Canvas\Auth;
 
-use Baka\Auth\Auth;
-
 class Factory
 {
     /**
      * Create the Auth factory.
      *
-     * @param int $ecosystem_auth
+     * @param bool $ecosystemAuth
      *
-     * @return Auth
+     * @return Auth|App
      */
     public static function create(bool $ecosystemAuth) : Auth
     {
