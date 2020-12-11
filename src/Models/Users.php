@@ -588,18 +588,17 @@ class Users extends AbstractModel implements UserInterface
      */
     public function currentCompanyId() : int
     {
-        $defaultCompanyId = $this->get(Companies::cacheKey());
-        return !is_null($defaultCompanyId) ? (int) $defaultCompanyId : (int) $this->default_company;
+        return  (int) $this->get(Companies::cacheKey()) ?: (int) $this->default_company;
     }
 
     /**
      * Overwrite the user relationship.
-     * use Phalcon Registry to assure we mantian the same instance accross the request.
+     * use Phalcon Registry to assure we maintain the same instance across the request.
      */
     public function getDefaultCompany() : Companies
     {
-        $registry = Di::getDefault()->getRegistry();
-        $key = 'company_' . Di::getDefault()->getApp()->getId() . '_' . $this->getId();
+        $registry = Di::getDefault()->get('registry');
+        $key = 'company_' . Di::getDefault()->get('app')->getId() . '_' . $this->getId();
         if (!isset($registry[$key])) {
             $registry[$key] = Companies::findFirstOrFail($this->currentCompanyId());
         }
@@ -629,7 +628,7 @@ class Users extends AbstractModel implements UserInterface
         $isFirstSignup = $this->isFirstSignup();
 
         /**
-         * if we dont find the userdata di lets create it.
+         * if we don't find the userdata di lets create it.
          *
          * @todo this is not ideal lets fix it later
          */
