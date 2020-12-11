@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Canvas\Models;
 
 use Baka\Cashier\Billable;
-use Baka\Contracts\Auth\AuthTokenTrait;
 use Baka\Contracts\Auth\UserInterface;
 use Baka\Contracts\Database\HashTableTrait;
 use Baka\Contracts\EventsManager\EventManagerAwareTrait;
@@ -14,6 +13,7 @@ use Baka\Hashing\Password;
 use Baka\Validations\PasswordValidation;
 use Canvas\Auth\App as AppAuth;
 use Canvas\Auth\Models\Users as BakUser;
+use Canvas\Contracts\Auth\TokenTrait;
 use Canvas\Contracts\FileSystemModelTrait;
 use Canvas\Contracts\PermissionsTrait;
 use Canvas\Contracts\SubscriptionPlanLimitTrait;
@@ -36,7 +36,7 @@ class Users extends AbstractModel implements UserInterface
     use HashTableTrait;
     use NotifiableTrait;
     use EventManagerAwareTrait;
-    use AuthTokenTrait;
+    use TokenTrait;
 
     /**
      * Constant for anonymous user.
@@ -78,6 +78,8 @@ class Users extends AbstractModel implements UserInterface
     public ?int $user_last_login_try = 0;
     public int $user_level = 0;
     public ?int $user_login_tries = 0;
+    public ?int $session_time = null;
+    public ?int $session_page = 0;
     public static string $locale = 'ja_jp';
 
     /**
