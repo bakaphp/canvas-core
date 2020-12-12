@@ -218,13 +218,13 @@ class Companies extends AbstractModel
                 'apps_id' => Di::getDefault()->get('app')->getId()
             ],
             'limit' => 1
-        ]);
+        ])->getFirst();
 
-        if (empty($companyGroup)) {
+        if (!$companyGroup) {
             throw new InternalServerErrorException('No default Company Group Found');
         }
 
-        return $companyGroup[0];
+        return $companyGroup;
     }
 
     /**
@@ -274,7 +274,7 @@ class Companies extends AbstractModel
      */
     public function userAssociatedToCompany(Users $user) : bool
     {
-        return $this->countUsersAssociatedApps('users_id =' . $user->getId() . " and apps_id = " . Di::getDefault()->getApp()->getId()) > 0;
+        return $this->countUsersAssociatedApps('users_id =' . $user->getId() . ' and apps_id = ' . Di::getDefault()->getApp()->getId()) > 0;
     }
 
     /**

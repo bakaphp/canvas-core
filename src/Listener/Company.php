@@ -65,6 +65,7 @@ class Company
             'name' => $company->name,
             'apps_id' => Di::getDefault()->get('app')->getId(),
             'users_id' => Di::getDefault()->get('userData')->getId(),
+            'is_default' => 1
         ]);
 
         //if the app is subscription based, create a free trial for this companyGroup and this app
