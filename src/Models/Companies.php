@@ -206,6 +206,20 @@ class Companies extends AbstractModel
     }
 
     /**
+     * Get the subscription from company group
+     * used for relationship
+     *
+     * @return Subscription
+     *
+     * @deprecated v0.3
+     *  Frontend need to change the relationship call to companyGroup
+     */
+    public function getSubscription() : Subscription
+    {
+        return $this->getDefaultCompanyGroup()->subscription();
+    }
+
+    /**
      * Get the default company group for this company on the current app.
      *
      * @return CompaniesGroups
