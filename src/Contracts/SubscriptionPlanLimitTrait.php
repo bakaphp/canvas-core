@@ -55,7 +55,8 @@ trait SubscriptionPlanLimitTrait
 
                 if ($currentCompanyAppActivityTotal >= $appPlanLimit) {
                     throw new SubscriptionPlanLimitException(_(
-                        'This action cannot be performed ' . $subscription->company->name . ' has reach the limit of it current plan ' . $appPlan->name . ' please upgrade or contact support'
+                        'This action cannot be performed ' . $subscription->company->name . ' has reach the limit of it current plan 
+                        ' . $appPlan->name . ' please upgrade or contact support'
                     ));
                 }
             }

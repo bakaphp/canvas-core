@@ -8,6 +8,7 @@ use Baka\Contracts\Database\HashTableTrait;
 use Baka\Contracts\EventsManager\EventManagerAwareTrait;
 use Baka\Contracts\Notifications\NotifiableTrait;
 use Baka\Database\Exception\ModelNotProcessedException;
+use function Baka\getShortClassName;
 use Baka\Hashing\Keys;
 use Baka\Hashing\Password;
 use Baka\Validations\PasswordValidation;
@@ -26,7 +27,6 @@ use Phalcon\Validation;
 use Phalcon\Validation\Validator\Email;
 use Phalcon\Validation\Validator\PresenceOf;
 use Phalcon\Validation\Validator\Uniqueness;
-use ReflectionClass;
 
 class Users extends AbstractModel implements UserInterface
 {
@@ -156,7 +156,7 @@ class Users extends AbstractModel implements UserInterface
                 'alias' => 'allSubscriptions',
                 'params' => [
                     'conditions' => 'apps_id = ?0',
-                    'bind' => [$this->di->getApp()->getId()],
+                    'bind' => [$this->getDI()->get('app')->getId()],
                     'order' => 'id DESC'
                 ]
             ]
@@ -170,7 +170,7 @@ class Users extends AbstractModel implements UserInterface
                 'alias' => 'companies',
                 'params' => [
                     'conditions' => 'apps_id = ?0',
-                    'bind' => [$this->di->getApp()->getId()],
+                    'bind' => [$this->getDI()->get('app')->getId()],
                 ]
             ]
         );
@@ -241,7 +241,7 @@ class Users extends AbstractModel implements UserInterface
                 'alias' => 'roles',
                 'params' => [
                     'limit' => 1,
-                    'conditions' => 'Canvas\Models\UserRoles.apps_id = ' . $this->di->getApp()->getId() . ' AND Canvas\Models\UserRoles.companies_id = ' . $this->currentCompanyId(),
+                    'conditions' => 'Canvas\Models\UserRoles.apps_id = ' . $this->getDI()->get('app')->getId() . ' AND Canvas\Models\UserRoles.companies_id = ' . $this->currentCompanyId(),
                     'order' => 'Canvas\Models\UserRoles.apps_id desc',
                 ]
             ]
@@ -256,7 +256,7 @@ class Users extends AbstractModel implements UserInterface
                 'params' => [
                     'limit' => 1,
                     'conditions' => 'Canvas\Models\UserRoles.apps_id in (?0, ?1) AND Canvas\Models\UserRoles.companies_id = ' . $this->currentCompanyId(),
-                    'bind' => [$this->di->getApp()->getId(), Roles::DEFAULT_ACL_APP_ID],
+                    'bind' => [$this->getDI()->get('app')->getId(), Roles::DEFAULT_ACL_APP_ID],
                     'order' => 'apps_id desc',
                 ]
             ]
@@ -269,7 +269,7 @@ class Users extends AbstractModel implements UserInterface
             [
                 'alias' => 'permissions',
                 'params' => [
-                    'conditions' => 'Canvas\Models\UserRoles.apps_id = ' . $this->di->getApp()->getId() . ' AND Canvas\Models\UserRoles.companies_id = ' . $this->currentCompanyId(),
+                    'conditions' => 'Canvas\Models\UserRoles.apps_id = ' . $this->getDI()->get('app')->getId() . ' AND Canvas\Models\UserRoles.companies_id = ' . $this->currentCompanyId(),
                 ]
             ]
         );
@@ -590,8 +590,8 @@ class Users extends AbstractModel implements UserInterface
          *
          * @todo this is not ideal lets fix it later
          */
-        if (!$this->di->has('userData')) {
-            $this->di->setShared('userData', $this);
+        if (!$this->getDI()->has('userData')) {
+            $this->getDI()->setShared('userData', $this);
         }
 
         $this->fire('user:afterSignup', $this, $isFirstSignup);
@@ -735,7 +735,7 @@ class Users extends AbstractModel implements UserInterface
         $newPassword = trim($newPassword);
         $verifyPassword = trim($verifyPassword);
 
-        $app = Di::getDefault()->getApp();
+        $app = $this->getDI()->get('app');
 
         if (!$app->ecosystemAuth()) {
             $userAppData = $this->getApp([
@@ -769,7 +769,7 @@ class Users extends AbstractModel implements UserInterface
      */
     public function resetPassword(string $newPassword) : bool
     {
-        $app = Di::getDefault()->getApp();
+        $app = $this->getDI()->get('app');
 
         if (!$app->ecosystemAuth()) {
             //update all companies password for the current user app
@@ -803,7 +803,7 @@ class Users extends AbstractModel implements UserInterface
     public function generateDefaultDisplayname() : string
     {
         if (empty($this->firstname) && empty($this->lastname)) {
-            $appName = Di::getDefault()->getApp()->name;
+            $appName = $this->getDI()->get('app')->name;
             $random = new Random();
             $this->lastname = 'User';
             $this->firstname = $appName;
@@ -821,13 +821,13 @@ class Users extends AbstractModel implements UserInterface
      */
     public function inApp() : bool
     {
-        $appId = Di::getDefault()->get('app')->getId();
+        $appId = $this->getDI()->get('app')->getId();
 
         if ($this->getApps("apps_id = {$appId}")->count()) {
             return true;
         }
 
-        throw new Exception((new ReflectionClass(new static))->getShortName() . ' Record not found');
+        throw new Exception(getShortClassName($this) . ' Record not found');
     }
 
     /**

@@ -9,7 +9,7 @@ use Canvas\Models\CompaniesAssociations;
 use Canvas\Models\CompaniesBranches;
 use Canvas\Models\CompaniesCustomFields;
 use Canvas\Models\CompaniesGroups;
-use Canvas\Models\CompanySettings;
+use Canvas\Models\CompaniesSettings;
 use Canvas\Models\FileSystemEntities;
 use Canvas\Models\UserCompanyApps;
 use Canvas\Models\Users;
@@ -27,7 +27,7 @@ class CompaniesCest
 
         $expected = [
             [0, 'users_id', Users::class, 'id', ['alias' => 'user']],
-            [2, 'id', CompanySettings::class, 'id', ['alias' => 'settings']],
+            [2, 'id', CompaniesSettings::class, 'id', ['alias' => 'settings']],
             [2, 'id', CompaniesBranches::class, 'companies_id', ['alias' => 'branches']],
             [2, 'id', CompaniesCustomFields::class, 'companies_id', ['alias' => 'fields']],
             [2, 'id', CustomFields::class, 'companies_id', ['alias' => 'custom-fields']],
