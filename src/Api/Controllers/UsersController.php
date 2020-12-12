@@ -4,23 +4,21 @@ declare(strict_types=1);
 
 namespace Canvas\Api\Controllers;
 
+use Baka\Contracts\Http\Api\CrudBehaviorTrait;
+use Baka\Http\Exception\InternalServerErrorException;
 use Baka\Validation as CanvasValidation;
 use Canvas\Contracts\Controllers\ProcessOutputMapperTrait;
 use Canvas\Dto\User as UserDto;
-use Baka\Http\Exception\InternalServerErrorException;
 use Canvas\Mapper\UserMapper;
 use Canvas\Models\Users;
 use Canvas\Models\UsersAssociatedApps;
 use Phalcon\Http\Response;
 use Phalcon\Validation\Validator\PresenceOf;
-use Baka\Contracts\Http\Api\CrudBehaviorTrait;
-use Canvas\Contracts\UsersTrait;
 
 class UsersController extends BaseController
 {
     use ProcessOutputMapperTrait;
     use CrudBehaviorTrait;
-    use UsersTrait;
 
     /*
      * fields we accept to create
@@ -99,6 +97,36 @@ class UsersController extends BaseController
                 ['id', ':', implode('|', $this->userData->getDefaultCompany()->getAssociatedUsersByApp())],
             ];
         }
+    }
+
+    /**
+     * Get User.
+     *
+     * @param mixed $id
+     *
+     * @method GET
+     * @url /v1/users/{id}
+     *
+     * @return Response
+     */
+    public function getById($id) : Response
+    {
+        //none admin users can only edit themselves
+        if (!$this->userData->hasRole('Default.Admins') || (int) $id === 0) {
+            $id = $this->userData->getId();
+        }
+
+        $this->userData->can('SettingsMenu.company-settings');
+
+        /**
+         * @todo filter only by user from this app / company
+         */
+        $user = $this->model->findFirstOrFail([
+            'id = ?0 AND is_deleted = 0',
+            'bind' => [$id],
+        ]);
+
+        return $this->response($this->processOutput($user));
     }
 
     /**
@@ -182,7 +210,7 @@ class UsersController extends BaseController
     /**
      * Delete a Record.
      *
-     * @throws Exception
+     * @throws InternalServerErrorException
      *
      * @return Response
      */
@@ -220,12 +248,12 @@ class UsersController extends BaseController
     }
 
     /**
-     * Given the results we will proess the output
+     * Given the results we will proses the output
      * we will check if a DTO transformer exist and if so we will send it over to change it.
      *
      * @param object|array $results
      *
-     * @return void
+     * @return mixed
      */
     protected function processOutput($results)
     {

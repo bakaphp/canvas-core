@@ -77,11 +77,11 @@ class UserLinkedSources extends Model
     }
 
     /**
-    * is the user already connected to the social media site?
-    *
-    * @param  $userData Users
-    * @param  $socialNetwork string
-    */
+     * is the user already connected to the social media site?
+     *
+     * @param  $userData Users
+     * @param  $socialNetwork string
+     */
     public static function alreadyConnected(Users $userData, $socialNetwork) : bool
     {
         $source = Sources::findFirst(['title = :title:', 'bind' => ['title' => $socialNetwork]]);

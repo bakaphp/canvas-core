@@ -1,18 +1,14 @@
 <?php
 
-/**
- * JWT Session Token Manager.
- */
-
 namespace Canvas\Models;
 
-use Baka\Contracts\Auth\AuthTokenTrait;
 use Baka\Database\Model;
+use Canvas\Contracts\Auth\TokenTrait;
 use Exception;
 
 class Sessions extends Model
 {
-    use AuthTokenTrait;
+    use TokenTrait;
 
     public int $users_id;
     public string $token;
@@ -27,7 +23,7 @@ class Sessions extends Model
      */
     public function initialize()
     {
-        $this->belongsTo('users_id', 'Canvas\Models\Users', 'id', ['alias' => 'user']);
+        $this->belongsTo('users_id', Users::class, 'id', ['alias' => 'user']);
     }
 
     /**
@@ -204,7 +200,7 @@ class Sessions extends Model
         $sql = "DELETE FROM  Canvas\Models\Sessions
             WHERE time < :session_time:";
 
-        $sessionTime = time() - (int) $this->getDI()->getConfig()->jwt->payload->exp;
+        $sessionTime = time() - (int) $this->getDI()->get('config')->jwt->payload->exp;
 
         $params = [
             'session_time' => $sessionTime,
@@ -218,7 +214,7 @@ class Sessions extends Model
         $sql = 'DELETE FROM Canvas\Models\SessionKeys
                 WHERE last_login < :last_login: ';
 
-        $last_login = time() - (2 * (int)$this->getDI()->getConfig()->jwt->payload->exp);
+        $last_login = time() - (2 * (int)$this->getDI()->get('config')->jwt->payload->exp);
 
         $params = ['last_login' => $last_login];
 
@@ -257,7 +253,7 @@ class Sessions extends Model
     {
         $session = new self();
         $session->check($user, $sessionId, $clientAddress, 1);
-        $token = self::createJwtToken($sessionId, $user->email);
+        $token = self::createJwtToken($sessionId, $user->getEmail());
         $session->start($user, $token['sessionId'], $token['token'], $clientAddress, 1);
         return $token;
     }

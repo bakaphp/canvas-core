@@ -20,6 +20,6 @@ class UserConfig extends Model
     public function initialize()
     {
         $this->setSource('user_config');
-        $this->belongsTo('users_id', 'Canvas\Models\Users', 'id', ['alias' => 'user']);
+        $this->belongsTo('users_id', Users::class, 'id', ['alias' => 'user']);
     }
 }

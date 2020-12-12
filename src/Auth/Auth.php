@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Canvas\Auth;
 
-use Canvas\Models\Users;
+use Baka\Auth\UserProvider;
 use Baka\Contracts\Auth\UserInterface;
 use Baka\Exception\AuthException;
 use Baka\Hashing\Keys;
 use Baka\Hashing\Password;
 use Baka\Support\Random;
+use Canvas\Models\Users;
 use Exception;
 use stdClass;
-use Baka\Auth\UserProvider;
 
 class Auth
 {
@@ -25,7 +25,7 @@ class Auth
      * @param int $admin
      * @param string $userIp
      *
-     * @return Users
+     * @return UserInterface
      */
     public static function login(string $email, string $password) : UserInterface
     {
@@ -64,10 +64,10 @@ class Auth
     }
 
     /**
-    * Create a new user.
-    *
-    * @return Users
-    */
+     * Create a new user.
+     *
+     * @return Users
+     */
     public static function signUp(UserInterface $user) : UserInterface
     {
         $user->sex = 'U';
@@ -88,7 +88,7 @@ class Auth
         $user->session_time = time();
         $user->session_page = time();
         $user->password = Password::make($user->password);
-        $user->language = $user->language ?? 'EN';
+        $user->language = $user->language ?: 'EN';
         $user->user_activation_key = Keys::make();
 
         //if you need to run any extra feature with the data we get from the request
@@ -108,7 +108,7 @@ class Auth
      *
      * @throws Exception
      *
-     * @return void
+     * @return bool
      */
     protected static function loginAttemptsValidation(UserInterface $user) : bool
     {

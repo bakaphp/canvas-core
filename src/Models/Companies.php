@@ -263,7 +263,7 @@ class Companies extends AbstractModel
      *
      * @param Users $user
      *
-     * @return boolean
+     * @return bool
      */
     public function userAssociatedToCompany(Users $user) : bool
     {
