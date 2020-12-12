@@ -2,18 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Canvas\Contracts;
+namespace Canvas\Contracts\Jwt;
 
-use Lcobucci\JWT\Parser;
-use Lcobucci\JWT\Token;
 use function Baka\envValue;
+use Canvas\Auth\Jwt;
+use Lcobucci\JWT\Token;
 use function time;
 
-/**
- * Trait TokenTrait.
- *
- * @package Niden\Traits
- */
 trait TokenTrait
 {
     /**
@@ -23,9 +18,11 @@ trait TokenTrait
      *
      * @return Token
      */
-    protected function getToken(string $token): Token
+    protected function getToken(string $token) : Token
     {
-        return (new Parser())->parse($token);
+        $config = Jwt::getConfig();
+
+        return $config->parser()->parse($token);
     }
 
     /**
@@ -33,7 +30,7 @@ trait TokenTrait
      *
      * @return string
      */
-    protected function getTokenAudience(): string
+    protected function getTokenAudience() : string
     {
         /** @var string $audience */
         $audience = envValue('TOKEN_AUDIENCE', '');
@@ -46,7 +43,7 @@ trait TokenTrait
      *
      * @return int
      */
-    protected function getTokenTimeIssuedAt(): int
+    protected function getTokenTimeIssuedAt() : int
     {
         return time();
     }
@@ -56,7 +53,7 @@ trait TokenTrait
      *
      * @return int
      */
-    protected function getTokenTimeNotBefore(): int
+    protected function getTokenTimeNotBefore() : int
     {
         return (time() + envValue('TOKEN_NOT_BEFORE', 10));
     }
@@ -66,7 +63,7 @@ trait TokenTrait
      *
      * @return int
      */
-    protected function getTokenTimeExpiration(): int
+    protected function getTokenTimeExpiration() : int
     {
         return (time() + envValue('TOKEN_EXPIRATION', 86400));
     }

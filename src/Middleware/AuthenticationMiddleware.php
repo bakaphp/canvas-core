@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace Canvas\Middleware;
 
-use Canvas\Models\Sessions;
 use Baka\Auth\UserProvider;
 use Baka\Http\Exception\UnauthorizedException;
 use Canvas\Constants\Flags;
 use Canvas\Models\Apps;
 use Canvas\Models\AppsKeys;
+use Canvas\Models\Sessions;
 use Canvas\Models\Users;
+use Lcobucci\JWT\Token;
 use Phalcon\Config;
 use Phalcon\Http\RequestInterface;
 use Phalcon\Mvc\Micro;
@@ -68,7 +69,7 @@ class AuthenticationMiddleware extends TokenBase
      *
      * @return void
      */
-    protected function sessionUser(Micro $api, Config $config, object $token, RequestInterface $request) : void
+    protected function sessionUser(Micro $api, Config $config, Token $token, RequestInterface $request) : void
     {
         $api->getDI()->setShared(
             'userData',
@@ -101,7 +102,7 @@ class AuthenticationMiddleware extends TokenBase
          *
          * Find the user attached to this token
          */
-        if (!$token->validate(Users::getValidationData($token->getHeader('jti')))) {
+        if (!Users::validateJwtToken($token)) {
             throw new UnauthorizedException('Invalid Token');
         }
     }

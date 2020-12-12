@@ -4,19 +4,14 @@ declare(strict_types=1);
 
 namespace Canvas\Contracts;
 
+use function Baka\isSwooleServer;
 use Canvas\Http\Response;
 use Phalcon\Mvc\Micro;
-use function Baka\isSwooleServer;
 
-/**
- * Trait ResponseTrait
- *
- * @package Canvas\Traits
- */
 trait ResponseTrait
 {
     /**
-     * Halt execution after setting the message in the response
+     * Halt execution after setting the message in the response.
      *
      * @param Micro  $api
      * @param int    $status

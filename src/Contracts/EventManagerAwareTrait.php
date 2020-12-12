@@ -7,14 +7,6 @@ namespace Canvas\Contracts;
 use Phalcon\Di;
 use Phalcon\Events\ManagerInterface as EventsManager;
 
-/**
- * Phalcon\Traits\EventManagerAwareTrait.
- *
- * Trait for event processing
- *
- * @package Phalcon\Traits
- */
-
 trait EventManagerAwareTrait
 {
     /**
@@ -60,7 +52,7 @@ trait EventManagerAwareTrait
      * @param string $event
      * @param object $source
      * @param mixed $data
-     * @param boolean $cancelable
+     * @param bool $cancelable
      *
      */
     public function fire($event, $source, $data = null, $cancelable = true)

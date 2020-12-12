@@ -4,21 +4,16 @@ declare(strict_types=1);
 
 namespace Canvas\Contracts;
 
+use function Baka\envValue;
 use League\Fractal\Manager;
 use League\Fractal\Serializer\JsonApiSerializer;
-use function Baka\envValue;
 use function sprintf;
 use function ucfirst;
 
-/**
- * Trait FractalTrait
- *
- * @package Canvas\Traits
- */
 trait FractalTrait
 {
     /**
-     * Format results based on a transformer
+     * Format results based on a transformer.
      *
      * @param string  $method
      * @param mixed   $results
@@ -29,14 +24,14 @@ trait FractalTrait
      *
      * @return array
      */
-    protected function format(string $method, $results, string $transformer, string $resource, array $relationships = [], array $fields = []): array
+    protected function format(string $method, $results, string $transformer, string $resource, array $relationships = [], array $fields = []) : array
     {
         $url = envValue('APP_URL', 'http://localhost');
         $manager = new Manager();
         $manager->setSerializer(new JsonApiSerializer($url));
 
         /**
-         * Process relationships
+         * Process relationships.
          */
         if (count($relationships) > 0) {
             $manager->parseIncludes($relationships);

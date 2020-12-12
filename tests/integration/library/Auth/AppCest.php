@@ -111,8 +111,8 @@ class AppCest
     }
 
     /**
-     * Can login to especific app
-     * we run it after updateuserpass to make sure we have the correct pass for this speciifc app.
+     * Can login to specific app
+     * we run it after updateuserpass to make sure we have the correct pass for this specific app.
      *
      * @param IntegrationTester $I
      *

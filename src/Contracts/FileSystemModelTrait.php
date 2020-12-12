@@ -13,19 +13,6 @@ use Canvas\Models\SystemModules;
 use Phalcon\Mvc\Model\ResultsetInterface;
 use RuntimeException;
 
-/**
- * Trait ResponseTrait.
- *
- * @package Canvas\Traits
- *
- * @property Users $user
- * @property AppsPlans $appPlan
- * @property CompanyBranches $branches
- * @property Companies $company
- * @property UserCompanyApps $app
- * @property \Phalcon\Di $di
- *
- */
 trait FileSystemModelTrait
 {
     public $uploadedFiles = [];

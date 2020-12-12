@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace Canvas\Contracts\Auth;
 
-use Lcobucci\JWT\Builder;
-use Lcobucci\JWT\Signer\Hmac\Sha512;
+use Canvas\Auth\Jwt;
+use DateTimeImmutable;
+use Lcobucci\JWT\Token;
+use Lcobucci\JWT\Validation\Constraint\IssuedBy;
+use Lcobucci\JWT\Validation\Constraint\SignedWith;
 use Lcobucci\JWT\ValidationData;
 use Phalcon\Di;
 use Phalcon\Security\Random;
@@ -37,19 +40,34 @@ trait TokenTrait
     /**
      * Returns the ValidationData object for this record (JWT).
      *
-     * @return ValidationData
+     * @return bool
      *
-     * @throws ModelException
+     * @deprecated 0.2
      */
-    public static function getValidationData(string $id) : ValidationData
+    public static function getValidationData(Token $token) : bool
     {
-        $validationData = new ValidationData();
-        $validationData->setIssuer(getenv('TOKEN_AUDIENCE'));
-        $validationData->setAudience(getenv('TOKEN_AUDIENCE'));
-        $validationData->setId($id);
-        $validationData->setCurrentTime(time() + 500);
+        return self::validateJwtToken($token);
+    }
 
-        return $validationData;
+    /**
+     * Given a JWT token validate it.
+     *
+     * @param Token $token
+     *
+     * @throws RequiredConstraintsViolated
+     * @throws NoConstraintsGiven
+     *
+     * @return bool
+     */
+    public static function validateJwtToken(Token $token) : bool
+    {
+        $config = Jwt::getConfig();
+
+        return $config->validator()->validate(
+            $token,
+            new IssuedBy(getenv('TOKEN_AUDIENCE')),
+            new SignedWith($config->signer(), $config->verificationKey())
+        );
     }
 
     /**
@@ -62,23 +80,27 @@ trait TokenTrait
      */
     public static function createJwtToken(string $sessionId, string $email) : array
     {
-        $signer = new Sha512();
-        $builder = new Builder();
-        $token = $builder
-            ->setIssuer(getenv('TOKEN_AUDIENCE'))
-            ->setAudience(getenv('TOKEN_AUDIENCE'))
-            ->setId($sessionId, true)
-            ->setIssuedAt(time())
-            ->setNotBefore(time() + 500)
-            ->setExpiration(time() + Di::getDefault()->get('config')->jwt->payload->exp ?? 604800)
-            ->set('sessionId', $sessionId)
-            ->set('email', $email)
-            ->sign($signer, getenv('TOKEN_PASSWORD'))
-            ->getToken();
+        $now = new DateTimeImmutable();
+        $config = Jwt::getConfig();
+        //get the expiration in hours
+        $expiration = ceil((Di::getDefault()->get('config')->jwt->payload->exp ?? 604800) / 3600);
+
+        //https://lcobucci-jwt.readthedocs.io/en/latest/issuing-tokens/
+        $token = $config->builder()
+                ->issuedBy(getenv('TOKEN_AUDIENCE'))
+                ->permittedFor(getenv('TOKEN_AUDIENCE'))
+                ->identifiedBy($sessionId)
+                ->issuedAt($now)
+                ->canOnlyBeUsedAfter($now->modify('+10 minute'))
+                ->expiresAt($now->modify('+' . $expiration . ' hour'))
+                ->withClaim('sessionId', $sessionId)
+                ->withClaim('email', $email)
+                // Builds a new token
+                ->getToken($config->signer(), $config->signingKey());
 
         return [
             'sessionId' => $sessionId,
-            'token' => $token->__toString()
+            'token' => $token->toString()
         ];
     }
 }

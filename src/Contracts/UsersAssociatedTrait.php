@@ -5,22 +5,8 @@ declare(strict_types=1);
 namespace Canvas\Contracts;
 
 use Canvas\Models\Companies;
-use Canvas\Models\Roles;
 use Canvas\Models\Users;
 
-/**
- * Trait ResponseTrait.
- *
- * @package Canvas\Traits
- *
- * @property Users $user
- * @property Config $config
- * @property Request $request
- * @property Auth $auth
- * @property \Phalcon\Di $di
- * @property Roles $roles_id
- *
- */
 trait UsersAssociatedTrait
 {
     /**

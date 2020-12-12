@@ -4,35 +4,23 @@ declare(strict_types=1);
 
 namespace Canvas\Contracts;
 
-use Canvas\Models\SystemModules;
 use Canvas\Models\Notifications;
+use Canvas\Models\SystemModules;
 use Phalcon\Di;
 
-/**
- * Trait ResponseTrait.
- *
- * @package Canvas\Traits
- *
- * @property Users $user
- * @property AppsPlans $appPlan
- * @property CompanyBranches $branches
- * @property Companies $company
- * @property UserCompanyApps $app
- * @property \Phalcon\Di $di
- * @property Id $id
- *
- */
 trait NotificationsTrait
 {
     /**
      * Create a new notification.
+     *
      * @param array $user
      * @param string $content
      * @param int $notificationTypeId
      * @param string $systemModule
+     *
      * @return void
      */
-    public static function create(array $entity, array $user, string $content, int $notificationTypeId, string $systemModule): void
+    public static function create(array $entity, array $user, string $content, int $notificationTypeId, string $systemModule) : void
     {
         $notification = new Notifications();
         $notification->users_id = $user['id'];

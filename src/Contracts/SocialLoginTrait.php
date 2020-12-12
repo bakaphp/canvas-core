@@ -4,20 +4,15 @@ declare(strict_types=1);
 
 namespace Canvas\Contracts;
 
-use Canvas\Auth\Auth;
+use Baka\Auth\UserProvider;
 use Baka\Http\Exception\UnprocessableEntityException;
+use Canvas\Auth\Auth;
 use Canvas\Models\Sources;
 use Canvas\Models\UserLinkedSources;
 use Canvas\Models\Users;
-use Baka\Auth\UserProvider;
 use Exception;
 use Phalcon\Security\Random;
 
-/**
- * Trait SocialLoginTrait.
- *
- * @package Niden\Traits
- */
 trait SocialLoginTrait
 {
     /**
@@ -46,7 +41,7 @@ trait SocialLoginTrait
      * @param string $accessToken
      * @param array $userInfo
      *
-     * @return Array
+     * @return array
      */
     protected function providerLogin(Sources $source, string $identifier, array $userInfo) : array
     {
