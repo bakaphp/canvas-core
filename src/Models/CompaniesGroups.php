@@ -13,6 +13,7 @@ class CompaniesGroups extends AbstractModel
     public string $name;
     public int $apps_id;
     public int $users_id;
+    public ?string $stripe_id = null;
     public ?int $is_default = 0;
 
     /**
