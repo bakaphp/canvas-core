@@ -14,7 +14,6 @@ use Canvas\Auth\Factory;
 use Canvas\Contracts\AuthTrait;
 use Canvas\Contracts\SocialLoginTrait;
 use Canvas\Contracts\TokenTrait;
-use Canvas\Exception\ModelException;
 use Canvas\Models\Sessions;
 use Canvas\Models\Sources;
 use Canvas\Models\UserLinkedSources;
@@ -30,17 +29,6 @@ use Phalcon\Validation\Validator\Email as EmailValidator;
 use Phalcon\Validation\Validator\PresenceOf;
 use Phalcon\Validation\Validator\StringLength;
 
-/**
- * Class AuthController.
- *
- * @package Canvas\Api\Controllers
- *
- * @property Users $userData
- * @property Request $request
- * @property Config $config
- * @property \Baka\Mail\Message $mail
- * @property Apps $app
- */
 class AuthController extends BaseController
 {
     /**
@@ -219,7 +207,7 @@ class AuthController extends BaseController
         }
 
         //Check if both tokens relate to the same user's email
-        if ($accessToken->getClaim('sessionId') == $refreshToken->getClaim('sessionId')) {
+        if ($accessToken->getClaim('sessionId') === $refreshToken->getClaim('sessionId')) {
             $user = Users::getByEmail($accessToken->getClaim('email'));
         }
 
@@ -227,7 +215,11 @@ class AuthController extends BaseController
             throw new NotFoundException(_('User not found'));
         }
 
-        $token = Sessions::restart($user, $refreshToken->getClaim('sessionId'), (string)$this->request->getClientAddress());
+        $token = Sessions::restart(
+            $user,
+            $refreshToken->getClaim('sessionId'),
+            (string)$this->request->getClientAddress()
+        );
 
         return $this->response([
             'token' => $token['token'],
@@ -248,10 +240,6 @@ class AuthController extends BaseController
     {
         //Search for user
         $user = Users::getById($id);
-
-        if (!is_object($user)) {
-            throw new NotFoundException(_('User not found'));
-        }
 
         $user->notify(new UpdateEmail($user));
 
@@ -300,10 +288,7 @@ class AuthController extends BaseController
         $this->db->begin();
 
         $user->email = $newEmail;
-
-        if (!$user->update()) {
-            throw new ModelException((string) current($user->getMessages()));
-        }
+        $user->updateOrFail();
 
         if (!$userData = $this->loginUsers($user->email, $password)) {
             $this->db->rollback();
@@ -372,10 +357,7 @@ class AuthController extends BaseController
         $session = new Sessions();
         $session->end($userData);
 
-        $passwordUpdate = new PasswordUpdate($userData);
-        $passwordUpdate->setFrom($userData);
-
-        $userData->notify($passwordUpdate);
+        $userData->notify(new PasswordUpdate($userData));
 
         return $this->response(_('Password Updated'));
     }
@@ -399,10 +381,7 @@ class AuthController extends BaseController
         $recoverUser = Users::getByEmail($email);
         $recoverUser->generateForgotHash();
 
-        $resetPassword = new ResetPassword($recoverUser);
-        $resetPassword->setFrom($recoverUser);
-
-        $recoverUser->notify($resetPassword);
+        $recoverUser->notify(new ResetPassword($recoverUser));
 
         return $this->response(_('Check your email to recover your password'));
     }
