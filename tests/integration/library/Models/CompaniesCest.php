@@ -2,7 +2,6 @@
 
 namespace Gewaer\Tests\integration\library\Models;
 
-use Baka\Auth\Models\CompanySettings;
 use Canvas\CustomFields\CustomFields;
 use Canvas\Models\Apps;
 use Canvas\Models\Companies;
@@ -10,6 +9,7 @@ use Canvas\Models\CompaniesAssociations;
 use Canvas\Models\CompaniesBranches;
 use Canvas\Models\CompaniesCustomFields;
 use Canvas\Models\CompaniesGroups;
+use Canvas\Models\CompanySettings;
 use Canvas\Models\FileSystemEntities;
 use Canvas\Models\UserCompanyApps;
 use Canvas\Models\Users;

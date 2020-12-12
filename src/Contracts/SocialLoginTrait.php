@@ -2,13 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Canvas\Traits;
+namespace Canvas\Contracts;
 
-use Baka\Auth\Auth;
+use Canvas\Auth\Auth;
 use Baka\Http\Exception\UnprocessableEntityException;
 use Canvas\Models\Sources;
 use Canvas\Models\UserLinkedSources;
 use Canvas\Models\Users;
+use Baka\Auth\UserProvider;
 use Exception;
 use Phalcon\Security\Random;
 
@@ -114,15 +115,16 @@ trait SocialLoginTrait
         $userObj = new Users();
         //Create a new User
 
-        $newUser['firstname'] = $userInfo['firstname'];
-        $newUser['lastname'] = $userInfo['lastname'];
-        $newUser['displayname'] = $userObj->generateDefaultDisplayname();
-        $newUser['password'] = $password;
-        $newUser['email'] = $userInfo['email'];
-        $newUser['user_active'] = 1;
-        $newUser['roles_id'] = 1;
-        $newUser['created_at'] = date('Y-m-d H:m:s');
-        $newUser['defaultCompanyName'] = $newUser['displayname'] . ' Company';
+        $newUser = UserProvider::get();
+        $newUser->firstname = $userInfo['firstname'];
+        $newUser->lastname = $userInfo['lastname'];
+        $newUser->displayname = $userObj->generateDefaultDisplayname();
+        $newUser->password = $password;
+        $newUser->email = $userInfo['email'];
+        $newUser->user_active = 1;
+        $newUser->roles_id = 1;
+        $newUser->created_at = date('Y-m-d H:m:s');
+        $newUser->defaultCompanyName = $newUser->displayname . ' Company';
 
         try {
             $this->db->begin();

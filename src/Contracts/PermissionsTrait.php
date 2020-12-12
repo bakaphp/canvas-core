@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Canvas\Traits;
+namespace Canvas\Contracts;
 
 use Baka\Http\Exception\InternalServerErrorException;
 use Baka\Http\Exception\UnauthorizedException;
@@ -79,7 +79,7 @@ trait PermissionsTrait
                 "users_id" => $this->getId(),
                 "apps_id" => $role->apps_id,
                 "companies_id" => $this->currentCompanyId()
-            ]],[
+            ]], [
                 "users_id" => $this->getId(),
                 "roles_id" => $role->getId(),
                 "apps_id" => $role->apps_id,

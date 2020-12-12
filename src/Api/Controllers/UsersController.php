@@ -4,20 +4,22 @@ declare(strict_types=1);
 
 namespace Canvas\Api\Controllers;
 
-use Baka\Auth\UsersController as BakaUsersController;
+use Baka\Contracts\Http\Api\CrudBehaviorTrait;
+use Baka\Http\Exception\InternalServerErrorException;
 use Baka\Validation as CanvasValidation;
 use Canvas\Contracts\Controllers\ProcessOutputMapperTrait;
 use Canvas\Dto\User as UserDto;
-use Baka\Http\Exception\InternalServerErrorException;
 use Canvas\Mapper\UserMapper;
 use Canvas\Models\Users;
 use Canvas\Models\UsersAssociatedApps;
 use Phalcon\Http\Response;
 use Phalcon\Validation\Validator\PresenceOf;
 
-class UsersController extends BakaUsersController
+class UsersController extends BaseController
 {
     use ProcessOutputMapperTrait;
+    use CrudBehaviorTrait;
+
     /*
      * fields we accept to create
      *
@@ -98,7 +100,7 @@ class UsersController extends BakaUsersController
     }
 
     /**
-     * Get Uer.
+     * Get User.
      *
      * @param mixed $id
      *
@@ -177,7 +179,7 @@ class UsersController extends BakaUsersController
             unset($request['default_company'], $request['default_company_branch']);
         }
 
-        if(isset($request['roles_id'])){
+        if (isset($request['roles_id'])) {
             $user->assignRoleById((int)$request['roles_id']);
         }
 
@@ -208,7 +210,7 @@ class UsersController extends BakaUsersController
     /**
      * Delete a Record.
      *
-     * @throws Exception
+     * @throws InternalServerErrorException
      *
      * @return Response
      */
@@ -243,5 +245,22 @@ class UsersController extends BakaUsersController
         $userAssociatedToApp->user_active = $userAssociatedToApp->user_active ? 0 : 1;
         $userAssociatedToApp->updateOrFail();
         return $this->response($userAssociatedToApp);
+    }
+
+    /**
+     * Given the results we will proses the output
+     * we will check if a DTO transformer exist and if so we will send it over to change it.
+     *
+     * @param object|array $results
+     *
+     * @return mixed
+     */
+    protected function processOutput($results)
+    {
+        //remove the user password
+        if (is_object($results)) {
+            $results->password = null;
+        }
+        return $results;
     }
 }

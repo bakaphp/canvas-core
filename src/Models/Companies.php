@@ -8,8 +8,8 @@ use Baka\Blameable\BlameableTrait;
 use Baka\Contracts\Database\HashTableTrait;
 use Baka\Contracts\EventsManager\EventManagerAwareTrait;
 use Baka\Http\Exception\InternalServerErrorException;
-use Canvas\Traits\FileSystemModelTrait;
-use Canvas\Traits\UsersAssociatedTrait;
+use Canvas\Contracts\FileSystemModelTrait;
+use Canvas\Contracts\UsersAssociatedTrait;
 use Exception;
 use Phalcon\Di;
 use Phalcon\Validation;
@@ -47,7 +47,7 @@ class Companies extends AbstractModel
         $this->keepSnapshots(true);
         $this->addBehavior(new Blameable());
 
-        $this->hasMany('id', 'Baka\Auth\Models\CompanySettings', 'id', ['alias' => 'settings']);
+        $this->hasMany('id', CompaniesSettings::class, 'id', ['alias' => 'settings']);
 
         $this->belongsTo(
             'users_id',

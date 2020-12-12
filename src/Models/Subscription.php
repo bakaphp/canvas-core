@@ -18,6 +18,8 @@ use Stripe\Subscription as StripeSubscription;
 
 class Subscription extends AbstractModel
 {
+    const FREE_TRIAL = 1;
+    const DEFAULT_APP = 1;
     const DEFAULT_GRACE_PERIOD_DAYS = 5;
 
     public int $users_id;

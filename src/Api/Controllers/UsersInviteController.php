@@ -12,7 +12,7 @@ use Canvas\Models\Roles;
 use Canvas\Models\Users;
 use Canvas\Models\UsersInvite;
 use Canvas\Notifications\Invitation;
-use Canvas\Traits\AuthTrait;
+use Canvas\Contracts\AuthTrait;
 use Exception;
 use Phalcon\Http\Response;
 use Phalcon\Security\Random;
@@ -176,7 +176,7 @@ class UsersInviteController extends BaseController
                 $this->db->begin();
 
                 //signup
-                $newUser = Auth::signUp($newUser->toArray());
+                $newUser = Auth::signUp($newUser);
 
                 $this->db->commit();
             } catch (Exception $e) {

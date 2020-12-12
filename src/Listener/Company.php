@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Canvas\Listener;
 
-use Baka\Auth\Models\UserCompanyApps;
 use Canvas\Models\Companies;
 use Canvas\Models\CompaniesAssociations;
 use Canvas\Models\CompaniesBranches;
 use Canvas\Models\CompaniesGroups;
 use Canvas\Models\Roles;
+use Canvas\Models\UserCompanyApps;
 use Canvas\Models\Users;
 use Phalcon\Di;
 use Phalcon\Events\Event;

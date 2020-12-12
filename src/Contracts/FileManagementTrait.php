@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Canvas\Traits;
+namespace Canvas\Contracts;
 
 use Baka\Http\Exception\UnprocessableEntityException;
 use Canvas\Filesystem\Helper;

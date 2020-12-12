@@ -2,8 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Canvas\Traits;
-
+namespace Canvas\Contracts;
 
 /**
  * Trait TokenTrait.

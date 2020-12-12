@@ -3,10 +3,12 @@ declare(strict_types=1);
 
 namespace Canvas\Models;
 
+use Baka\Database\Model;
 use Phalcon\Di;
 
-class UserCompanyApps extends \Baka\Auth\Models\UserCompanyApps
+class UserCompanyApps extends Model
 {
+    public int $company_id;
     public int $companies_id;
     public int $apps_id;
     public ?string $stripe_id = null;
@@ -17,8 +19,6 @@ class UserCompanyApps extends \Baka\Auth\Models\UserCompanyApps
      */
     public function initialize()
     {
-        parent::initialize();
-
         $this->belongsTo(
             'companies_id',
             'Canvas\Models\Companies',

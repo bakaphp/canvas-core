@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Canvas\Middleware;
 
 use Canvas\Http\Response;
-use Canvas\Traits\ResponseTrait;
+use Canvas\Contracts\ResponseTrait;
 use Phalcon\Mvc\Micro;
 use Phalcon\Mvc\Micro\MiddlewareInterface;
 use Phalcon\Mvc\User\Plugin;
