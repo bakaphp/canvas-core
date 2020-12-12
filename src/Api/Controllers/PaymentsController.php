@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Canvas\Api\Controllers;
 
-use Baka\Contracts\Cashier\StripeWebhookHandlersTrait;
 use Baka\Http\Exception\NotFoundException;
+use Canvas\Contracts\Cashier\StripeWebhookHandlersTrait;
 use Canvas\Models\CompaniesSettings;
 use Canvas\Models\Subscription;
 use Canvas\Models\Users;
