@@ -88,7 +88,7 @@ class UsersAssociatedApps extends AbstractModel implements UserInterface
             "bind" => [
                 "apps_id" => Di::getDefault()->getApp()->getId(),
                 "users_id" => $userId,
-                "companies_id" => Di::getDefault()->getUserData()->getCurrentCompany()->getId()
+                "companies_id" => Di::getDefault()->getUserData()->get(Companies::cacheKey())
             ]
         ]);
     }

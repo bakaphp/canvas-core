@@ -372,7 +372,7 @@ class AuthController extends BaseController
         $session = new Sessions();
         $session->end($userData);
 
-        $passwordUpdate = new PasswordUpdate($recoverUser);
+        $passwordUpdate = new PasswordUpdate($userData);
         $passwordUpdate->setFrom($userData);
 
         $userData->notify($passwordUpdate);

@@ -7,15 +7,18 @@ use Baka\Contracts\Auth\UserInterface;
 use Baka\Contracts\Database\HashTableTrait;
 use Baka\Contracts\EventsManager\EventManagerAwareTrait;
 use Baka\Contracts\Notifications\NotifiableTrait;
+use Baka\Database\Exception\ModelNotProcessedException;
 use Baka\Hashing\Keys;
 use Baka\Hashing\Password;
 use Baka\Validations\PasswordValidation;
 use Canvas\Auth\App as AppAuth;
-use Canvas\Auth\Models\Users as BakUser;
 use Canvas\Contracts\Auth\TokenTrait;
 use Canvas\Contracts\FileSystemModelTrait;
 use Canvas\Contracts\PermissionsTrait;
 use Canvas\Contracts\SubscriptionPlanLimitTrait;
+use Canvas\Models\Locations\Cities;
+use Canvas\Models\Locations\Countries;
+use Canvas\Models\Locations\States;
 use Exception;
 use Phalcon\Di;
 use Phalcon\Security\Random;
@@ -214,6 +217,9 @@ class Users extends AbstractModel implements UserInterface
                 ]
             ]
         );
+        $this->belongsTo('city_id', Cities::class, 'id', ['alias' => 'cities']);
+        $this->belongsTo('state_id', States::class, 'id', ['alias' => 'states']);
+        $this->belongsTo('country_id', Countries::class, 'id', ['alias' => 'countries']);
     }
 
     /**
@@ -709,7 +715,7 @@ class Users extends AbstractModel implements UserInterface
                 if ($branch->company->userAssociatedToCompany($this)) {
                     $this->default_company = $branch->company->getId();
                     $this->default_company_branch = $branch->getId();
-                    //set the default company id per the specific app , we do this so we can have multip default companies per diff apps
+                    //set the default company id per the specific app , we do this so we can have multiple default companies per diff apps
                     $this->set(Companies::cacheKey(), $this->default_company);
                 }
             }
@@ -776,59 +782,6 @@ class Users extends AbstractModel implements UserInterface
     }
 
     /**
-     * user signup to the service.
-     *
-     * did we find the email?
-     * does it have access to this app?
-     * no?
-     * ok lets register / associate to this app
-     * yes?
-     * it meas he was invites so get the fuck out?
-     *
-     * @deprecated v1
-     *
-     * @return Users
-     */
-    public function signUp() : BakUser
-    {
-        $app = Di::getDefault()->getApp();
-
-        if (!$app->ecosystemAuth()) {
-            try {
-                $user = self::getByEmail($this->email);
-
-                $userAppData = $user->countApps('apps_id = ' . $this->getDI()->getDefault()->getApp()->getId());
-
-                if ($userAppData > 0) {
-                    throw new Exception('This email already has an account.');
-                }
-
-                //assign user role for the current app
-                $user->roles_id = Roles::getByName(Roles::DEFAULT)->getId();
-
-                $this->fire('user:afterSignup', $user, true);
-
-                //update the passwords for the current app
-                AppAuth::updatePassword($user, Password::make($this->password));
-
-                //overwrite the current user object
-                $this->id = $user->getId();
-                $this->email = $user->getEmail();
-            } catch (Exception $e) {
-                //if we cant find the user normal signup
-                $user = parent::signUp();
-
-                //update all the password for the apps
-                AppAuth::updatePassword($user, $this->password);
-            }
-        } else {
-            $user = parent::signUp();
-        }
-
-        return $user;
-    }
-
-    /**
      * Generate new forgot password hash.
      *
      * @return string
@@ -875,5 +828,19 @@ class Users extends AbstractModel implements UserInterface
         }
 
         throw new Exception((new ReflectionClass(new static))->getShortName() . ' Record not found');
+    }
+
+    /**
+     * Throws an exception with including all validation messages that were retrieved.
+     *
+     * @todo lets add a configuration to remove the Model name of the exception in Kanvas
+     *
+     * @throws ModelNotProcessedException
+     */
+    protected function throwErrorMessages() : void
+    {
+        throw new ModelNotProcessedException(
+            current($this->getMessages())->getMessage()
+        );
     }
 }

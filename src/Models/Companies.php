@@ -274,7 +274,7 @@ class Companies extends AbstractModel
      */
     public function userAssociatedToCompany(Users $user) : bool
     {
-        return $this->countUsersAssociatedCompanies('users_id =' . $user->getId()) > 0;
+        return $this->countUsersAssociatedApps('users_id =' . $user->getId() . " and apps_id = " . Di::getDefault()->getApp()->getId()) > 0;
     }
 
     /**
