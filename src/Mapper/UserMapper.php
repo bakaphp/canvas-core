@@ -92,6 +92,7 @@ class UserMapper extends CustomMapper
         $userDto->countries = $user->countries ?: null;
         $userDto->states = $user->states ?: null;
         $userDto->cities = $user->cities ?: null;
+        
         /**
          * Properties we need to overwrite base on the
          * current app and company the user is running.

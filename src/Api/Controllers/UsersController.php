@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace Canvas\Api\Controllers;
 
-use Baka\Contracts\Http\Api\CrudBehaviorTrait;
 use Baka\Http\Exception\InternalServerErrorException;
 use Baka\Validation as CanvasValidation;
-use Canvas\Contracts\Controllers\ProcessOutputMapperTrait;
+use Baka\Contracts\Controllers\ProcessOutputMapperTrait;
 use Canvas\Dto\User as UserDto;
 use Canvas\Mapper\UserMapper;
 use Canvas\Models\Users;
@@ -18,7 +17,6 @@ use Phalcon\Validation\Validator\PresenceOf;
 class UsersController extends BaseController
 {
     use ProcessOutputMapperTrait;
-    use CrudBehaviorTrait;
 
     /*
      * fields we accept to create
@@ -74,6 +72,7 @@ class UsersController extends BaseController
         'location',
         'user_active'
     ];
+    
 
     /**
      * set objects.
@@ -245,22 +244,5 @@ class UsersController extends BaseController
         $userAssociatedToApp->user_active = $userAssociatedToApp->user_active ? 0 : 1;
         $userAssociatedToApp->updateOrFail();
         return $this->response($userAssociatedToApp);
-    }
-
-    /**
-     * Given the results we will proses the output
-     * we will check if a DTO transformer exist and if so we will send it over to change it.
-     *
-     * @param object|array $results
-     *
-     * @return mixed
-     */
-    protected function processOutput($results)
-    {
-        //remove the user password
-        if (is_object($results)) {
-            $results->password = null;
-        }
-        return $results;
     }
 }
