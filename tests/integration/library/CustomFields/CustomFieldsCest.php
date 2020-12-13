@@ -1,6 +1,6 @@
 <?php
 
-namespace Gewaer\Tests\integration\library\CustomFields;
+namespace Canvas\Tests\integration\library\CustomFields;
 
 use Canvas\CustomFields\CustomFields;
 use Canvas\Models\SystemModules;

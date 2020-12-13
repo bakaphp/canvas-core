@@ -1,6 +1,6 @@
 <?php
 
-namespace Gewaer\Tests\integration\library\Auth;
+namespace Canvas\Tests\integration\library\Auth;
 
 use Baka\Hashing\Password;
 use Canvas\Auth\App;

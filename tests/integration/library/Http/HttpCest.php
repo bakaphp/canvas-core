@@ -1,6 +1,6 @@
 <?php
 
-namespace Gewaer\Tests\integration\library\Http;
+namespace Canvas\Tests\integration\library\Http;
 
 use Canvas\Http\Request;
 use IntegrationTester;
@@ -21,11 +21,11 @@ class HttpCest
 
     public function checkGetBearerTokenFromHeader(IntegrationTester $I)
     {
-        $I->assertEmpty($this->request->getBearerTokenFromHeader());
+        $I->assertTrue($this->request->getBearerTokenFromHeader());
     }
 
     public function checkIsEmptyBearerToken(IntegrationTester $I)
     {
-        $I->assertTrue($this->request->isEmptyBearerToken());
+        $I->assertFalse($this->request->isEmptyBearerToken());
     }
 }

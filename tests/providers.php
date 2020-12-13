@@ -24,6 +24,7 @@ use Canvas\Providers\MapperProvider;
 use Canvas\Providers\ElasticProvider;
 use Canvas\Providers\ModelsCacheProvider;
 use Canvas\Providers\RegistryProvider;
+use Canvas\Providers\RouterProvider;
 
 return [
     ConfigProvider::class,
