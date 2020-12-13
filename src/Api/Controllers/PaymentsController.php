@@ -101,7 +101,7 @@ class PaymentsController extends BaseController
     }
 
     /**
-     * Handle sucessfull payment.
+     * Handle successfully payment.
      *
      * @param array $payload
      *
