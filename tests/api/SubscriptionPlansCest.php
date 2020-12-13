@@ -5,7 +5,7 @@ use Canvas\Models\Subscription;
 use Canvas\Models\Users;
 use Canvas\Tests\api\PaymentsCest;
 
-class AppsPlanCest
+class SubscriptionPlansCest
 {
     /**
      * Create subscription.
