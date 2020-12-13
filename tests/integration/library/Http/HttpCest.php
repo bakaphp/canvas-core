@@ -21,11 +21,11 @@ class HttpCest
 
     public function checkGetBearerTokenFromHeader(IntegrationTester $I)
     {
-        $I->assertTrue($this->request->getBearerTokenFromHeader());
+        $I->assertEmpty($this->request->getBearerTokenFromHeader());
     }
 
     public function checkIsEmptyBearerToken(IntegrationTester $I)
     {
-        $I->assertFalse($this->request->isEmptyBearerToken());
+        $I->assertTrue($this->request->isEmptyBearerToken());
     }
 }

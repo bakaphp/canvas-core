@@ -112,10 +112,10 @@ jobs:
         if: success()
         run: vendor/bin/codecept run integration
 
-      - name: Run Integration
+      - name: Run Unit
         if: success()
         run: vendor/bin/codecept run unit
 
-      - name: Run Integration
+      - name: Run Api
         if: success()
         run: vendor/bin/codecept run api
