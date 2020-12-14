@@ -617,7 +617,7 @@ class Users extends AbstractModel implements UserInterface
     /**
      * update user role for the specific app.
      *
-     * @return void
+     * @return bool
      */
     protected function updatePermissionRoles() : bool
     {

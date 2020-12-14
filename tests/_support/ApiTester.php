@@ -1,12 +1,13 @@
 <?php
 
+use Canvas\Http\Response;
 use Codeception\Util\HttpCode;
 use Faker\Generator;
-use Canvas\Http\Response;
 use Page\Data as DataPage;
 
 /**
- * Inherited Methods
+ * Inherited Methods.
+ *
  * @method void wantToTest($text)
  * @method void wantTo($text)
  * @method void execute($callable)
@@ -25,7 +26,7 @@ class ApiTester extends \Codeception\Actor
     use _generated\ApiTesterActions;
 
     /**
-     * Faker data
+     * Faker data.
      *
      * @return void
      */
@@ -35,7 +36,7 @@ class ApiTester extends \Codeception\Actor
     }
 
     /**
-     * Checks if the response was successful
+     * Checks if the response was successful.
      */
     public function seeResponseIsSuccessful($code = HttpCode::OK)
     {
@@ -44,7 +45,7 @@ class ApiTester extends \Codeception\Actor
     }
 
     /**
-     * Checks if the response was successful
+     * Checks if the response was successful.
      */
     public function seeResponseIs400()
     {
@@ -52,7 +53,7 @@ class ApiTester extends \Codeception\Actor
     }
 
     /**
-     * Checks if the response was successful
+     * Checks if the response was successful.
      */
     public function seeResponseIs404()
     {
@@ -60,9 +61,10 @@ class ApiTester extends \Codeception\Actor
     }
 
     /**
-     * Is a error response
+     * Is a error response.
      *
      * @param string $message
+     *
      * @return void
      */
     public function seeErrorJsonResponse(string $message)
@@ -80,10 +82,11 @@ class ApiTester extends \Codeception\Actor
     }
 
     /**
-     * Is a successful json response
+     * Is a successful json response.
      *
      * @param string $key
      * @param array $data
+     *
      * @return void
      */
     public function seeSuccessJsonResponse(string $key = 'data', array $data = [])
@@ -92,7 +95,7 @@ class ApiTester extends \Codeception\Actor
     }
 
     /**
-     * Login the user
+     * Login the user.
      *
      * @return void
      */
@@ -108,7 +111,7 @@ class ApiTester extends \Codeception\Actor
     }
 
     /**
-     * Check if it has hash
+     * Check if it has hash.
      *
      * @return void
      */
@@ -123,9 +126,10 @@ class ApiTester extends \Codeception\Actor
     }
 
     /**
-     * Check if it has a error
+     * Check if it has a error.
      *
-     * @param integer $code
+     * @param int $code
+     *
      * @return void
      */
     private function checkErrorResponse(int $code)

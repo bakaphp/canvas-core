@@ -10,7 +10,7 @@ modules:
     - \Helper\Integration
     - Phalcon4:
         bootstrap: "tests/_ci/bootstrap-api.php"
-        cleanup: true
-        savepoints: true
+        cleanup: false
+        savepoints: false
     - REST:
         depends: Phalcon4
