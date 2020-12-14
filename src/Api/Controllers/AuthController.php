@@ -28,7 +28,6 @@ use Phalcon\Validation\Validator\Confirmation;
 use Phalcon\Validation\Validator\Email as EmailValidator;
 use Phalcon\Validation\Validator\PresenceOf;
 use Phalcon\Validation\Validator\StringLength;
-use Baka\Auth\UserProvider;
 
 class AuthController extends BaseController
 {
