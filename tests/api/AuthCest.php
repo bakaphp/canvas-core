@@ -46,12 +46,12 @@ class AuthCest
      */
     public function signup(ApiTester $I)
     {
-        $email = !Users::findFirstByEmail('tes2t@baka.io') ? 'tes2t@baka.io' : $I->faker()->email;
+        $email = !Users::findFirstByEmail(Data::$defaultEmail) ? Data::$defaultEmail : $I->faker()->email;
 
         $I->sendPOST(Data::$usersUrl, [
             'email' => $email,
-            'password' => 'bakatest123567',
-            'verify_password' => 'bakatest123567',
+            'password' => Data::$defaultPassword,
+            'verify_password' => Data::$defaultPassword,
             'firstname' => $I->faker()->firstName,
             'lastname' => $I->faker()->lastName,
             'displayname' => $I->faker()->userName,

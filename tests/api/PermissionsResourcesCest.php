@@ -9,9 +9,10 @@ class PermissionsResourcesCest extends BakaRestTest
     protected $model = 'permissions-resources';
 
     /**
-     * Create
+     * Create.
      *
      * @param ApiTester $I
+     *
      * @return void
      */
     public function create(ApiTester $I) : void
@@ -19,9 +20,10 @@ class PermissionsResourcesCest extends BakaRestTest
     }
 
     /**
-     * update
+     * update.
      *
      * @param ApiTester $I
+     *
      * @return void
      */
     public function update(ApiTester $I) : void
@@ -29,9 +31,10 @@ class PermissionsResourcesCest extends BakaRestTest
     }
 
     /**
-     * Get
+     * Get.
      *
      * @param ApiTester $I
+     *
      * @return void
      */
     public function getById(ApiTester $I) : void
@@ -56,12 +59,13 @@ class PermissionsResourcesCest extends BakaRestTest
     }
 
     /**
-     * List
+     * List.
      *
      * @param ApiTester $I
+     *
      * @return void
      */
-    public function list(ApiTester $I):void
+    public function list(ApiTester $I) : void
     {
         $userData = $I->apiLogin();
 
@@ -77,9 +81,10 @@ class PermissionsResourcesCest extends BakaRestTest
     }
 
     /**
-     * Delete
+     * Delete.
      *
      * @param ApiTester $I
+     *
      * @return void
      */
     public function delete(ApiTester $I) : void
