@@ -10,6 +10,32 @@ class FileSystemCest
     protected $model = 'filesystem';
 
     /**
+     * Create.
+     *
+     * @param ApiTester $I
+     *
+     * @return void
+     */
+    public function create(ApiTester $I) : void
+    {
+        $userData = $I->apiLogin();
+        $fileName = 'test.png';
+
+        $I->haveHttpHeader('Authorization', $userData->token);
+
+        //use the app path, path changes by container
+        $testFile = appPath() . 'tests/testfiles/test.png';
+
+        $I->sendPost('/v1/' . $this->model, ['system_modules_id' => 1, 'entity_id' => 0], ['file' => $testFile]);
+
+        $I->seeResponseIsSuccessful();
+        $response = $I->grabResponse();
+        $data = json_decode($response, true);
+
+        $I->assertTrue($data[0]['name'] == $fileName);
+    }
+
+    /**
      * Get.
      *
      * @param ApiTester $I
@@ -34,32 +60,6 @@ class FileSystemCest
         $data = json_decode($response, true);
 
         $I->assertTrue(isset($data['id']));
-    }
-
-    /**
-     * Create.
-     *
-     * @param ApiTester $I
-     *
-     * @return void
-     */
-    public function create(ApiTester $I) : void
-    {
-        $userData = $I->apiLogin();
-        $fileName = 'test.png';
-
-        $I->haveHttpHeader('Authorization', $userData->token);
-
-        //use the app path, path changes by container
-        $testFile = appPath() . 'tests/testfiles/test.png';
-
-        $I->sendPost('/v1/' . $this->model, ['system_modules_id' => 1, 'entity_id' => 0], ['file' => $testFile]);
-
-        $I->seeResponseIsSuccessful();
-        $response = $I->grabResponse();
-        $data = json_decode($response, true);
-
-        $I->assertTrue($data[0]['name'] == $fileName);
     }
 
     /**
