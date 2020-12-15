@@ -20,6 +20,8 @@ class Roles extends AbstractModel
     public ?int $scope;
     public int $companies_id;
     public int $apps_id;
+    public int $is_default = 0;
+    public int $is_active = 1;
 
     /**
      * Default ACL company.
