@@ -107,7 +107,7 @@ class Apps extends BakaApps
         //Create a new UserAssociatedApps record
         $userAssociatedApp = new UsersAssociatedApps();
         $userAssociatedApp->users_id = Di::getDefault()->getUserData()->getId();
-        $userAssociatedApp->apps_id = Di::getDefault()->getApp()->getId();
+        $userAssociatedApp->apps_id = $this->getId();
         $userAssociatedApp->companies_id = Di::getDefault()->getUserData()->getCurrentCompany()->getId();
         $userAssociatedApp->identify_id = (string)Di::getDefault()->getUserData()->getId();
         $userAssociatedApp->user_active = 1;
