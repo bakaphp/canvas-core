@@ -97,7 +97,7 @@ class UserMapper extends CustomMapper
         $userDto->countries = $user->countries ?: null;
         $userDto->states = $user->states ?: null;
         $userDto->cities = $user->cities ?: null;
-        $userDto->default_company = $user->default_company;
+        $userDto->default_company = $user->getDefaultCompany()->getId();
         $userDto->default_company_branch = $user->default_company_branch;
         $userDto->roles_id = $user->getPermission()->roles_id;
         $userDto->access_list = [];

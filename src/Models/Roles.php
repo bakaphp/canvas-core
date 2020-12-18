@@ -362,4 +362,14 @@ class Roles extends AbstractModel
 
         return true;
     }
+
+    /**
+     * check if role is default or not
+     *
+     * @return bool
+     */
+    public function isDefault() : bool
+    {
+        return $this->is_default;
+    }
 }
