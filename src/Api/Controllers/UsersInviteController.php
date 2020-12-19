@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace Canvas\Api\Controllers;
 
 use Baka\Http\Exception\NotFoundException;
+use Baka\Http\Exception\UnprocessableEntityException;
 use Baka\Validation as CanvasValidation;
 use Canvas\Auth\Auth;
-use Baka\Http\Exception\UnprocessableEntityException;
-use Baka\Http\Exception\InternalServerErrorException;
 use Canvas\Models\Roles;
 use Canvas\Models\Users;
 use Canvas\Models\UsersInvite;
@@ -110,7 +109,7 @@ class UsersInviteController extends BaseController
 
         //Check if role is not a default one.
         if (!Roles::existsById((int)$request['role_id'])->isDefault()) {
-            throw new InternalServerErrorException(
+            throw new UnprocessableEntityException(
                 "Can't create a new user with a default role."
             );
         }
