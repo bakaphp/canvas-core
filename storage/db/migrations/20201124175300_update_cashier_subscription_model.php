@@ -68,22 +68,6 @@ class UpdateCashierSubscriptionModel extends Phinx\Migration\AbstractMigration
                 'limit' => '10',
                 'after' => 'currency_id',
             ])
-            ->changeColumn('created_at', 'datetime', [
-                'null' => true,
-                'default' => null,
-                'after' => 'system_modules_id',
-            ])
-            ->changeColumn('updated_at', 'datetime', [
-                'null' => true,
-                'default' => null,
-                'after' => 'created_at',
-            ])
-            ->changeColumn('is_deleted', 'integer', [
-                'null' => true,
-                'default' => null,
-                'limit' => '10',
-                'after' => 'updated_at',
-            ])
             ->removeColumn('companies_group_id')
             ->save();
 
@@ -232,21 +216,6 @@ class UpdateCashierSubscriptionModel extends Phinx\Migration\AbstractMigration
                 'limit' => MysqlAdapter::INT_REGULAR,
                 'comment' => 'The integers in this field represent months',
                 'after' => 'is_default',
-            ])
-            ->changeColumn('created_at', 'datetime', [
-                'null' => false,
-                'after' => 'payment_frequencies_id',
-            ])
-            ->changeColumn('updated_at', 'datetime', [
-                'null' => true,
-                'default' => null,
-                'after' => 'created_at',
-            ])
-            ->changeColumn('is_deleted', 'integer', [
-                'null' => true,
-                'default' => '0',
-                'limit' => '3',
-                'after' => 'updated_at',
             ])
             ->save();
 
