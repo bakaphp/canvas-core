@@ -47,7 +47,7 @@ class Companies extends AbstractModel
         $this->keepSnapshots(true);
         $this->addBehavior(new Blameable());
 
-        $this->hasMany('id', CompaniesSettings::class, 'id', ['alias' => 'settings']);
+        $this->hasMany('id', CompaniesSettings::class, 'companies_id', ['alias' => 'settings']);
 
         $this->belongsTo(
             'users_id',
@@ -207,7 +207,7 @@ class Companies extends AbstractModel
 
     /**
      * Get the subscription from company group
-     * used for relationship
+     * used for relationship.
      *
      * @return Subscription
      *

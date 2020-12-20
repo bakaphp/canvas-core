@@ -150,20 +150,6 @@ class Users extends AbstractModel implements UserInterface
 
         $this->hasMany(
             'id',
-            'Canvas\Models\Subscription',
-            'user_id',
-            [
-                'alias' => 'allSubscriptions',
-                'params' => [
-                    'conditions' => 'apps_id = ?0',
-                    'bind' => [$this->getDI()->get('app')->getId()],
-                    'order' => 'id DESC'
-                ]
-            ]
-        );
-
-        $this->hasMany(
-            'id',
             'Canvas\Models\UsersAssociatedApps',
             'users_id',
             [
