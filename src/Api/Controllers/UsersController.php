@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Canvas\Api\Controllers;
 
 use Baka\Auth\UsersController as BakaUsersController;
-use Baka\Http\Exception\InternalServerErrorException;
 use Baka\Validation as CanvasValidation;
 use Canvas\Contracts\Controllers\ProcessOutputMapperTrait;
 use Canvas\Dto\User as UserDto;
+use Baka\Http\Exception\InternalServerErrorException;
 use Canvas\Mapper\UserMapper;
 use Canvas\Models\Users;
 use Canvas\Models\UsersAssociatedApps;
@@ -177,7 +177,7 @@ class UsersController extends BakaUsersController
             unset($request['default_company'], $request['default_company_branch']);
         }
 
-        if (isset($request['roles_id'])) {
+        if(isset($request['roles_id'])){
             $user->assignRoleById((int)$request['roles_id']);
         }
 

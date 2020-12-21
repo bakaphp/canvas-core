@@ -104,7 +104,7 @@ class CompaniesBranchesController extends BaseController
         $request = $this->request->getPutData();
 
         //update
-        if ($company->updateOrFail($request, $this->updateFields)) {
+        if ($company->update($request, $this->updateFields)) {
             return $this->response($this->processOutput($company));
         } else {
             //didnt work

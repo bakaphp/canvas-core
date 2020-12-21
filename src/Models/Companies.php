@@ -37,7 +37,6 @@ class Companies extends AbstractModel
     const DEFAULT_COMPANY = 'DefaulCompany';
     const DEFAULT_COMPANY_APP = 'DefaulCompanyApp_';
     const PAYMENT_GATEWAY_CUSTOMER_KEY = 'payment_gateway_customer_id';
-    const DEFAULT_COMPANY_BRANCH_APP = 'DefaultCompanyBranchApp_';
 
     /**
      * Initialize method for model.
@@ -112,7 +111,7 @@ class Companies extends AbstractModel
             [
                 'alias' => 'UsersAssociatedByApps',
                 'params' => [
-                    'conditions' => 'apps_id = ' . $this->di->get('app')->getId()
+                    'conditions' => 'apps_id = ' . $this->di->getApp()->getId()
                 ]
             ]
         );
@@ -133,7 +132,7 @@ class Companies extends AbstractModel
             [
                 'alias' => 'app',
                 'params' => [
-                    'conditions' => 'apps_id = ' . $this->di->get('app')->getId()
+                    'conditions' => 'apps_id = ' . $this->di->getApp()->getId()
                 ]
             ]
         );
@@ -145,7 +144,7 @@ class Companies extends AbstractModel
             [
                 'alias' => 'apps',
                 'params' => [
-                    'conditions' => 'apps_id = ' . $this->di->get('app')->getId()
+                    'conditions' => 'apps_id = ' . $this->di->getApp()->getId()
                 ]
             ]
         );
@@ -168,7 +167,7 @@ class Companies extends AbstractModel
             [
                 'alias' => 'users',
                 'params' => [
-                    'conditions' => 'apps_id = ' . $this->di->get('app')->getId() . ' AND Canvas\Models\UsersAssociatedApps.is_deleted = 0',
+                    'conditions' => 'apps_id = ' . $this->di->getApp()->getId() . ' AND Canvas\Models\UsersAssociatedApps.is_deleted = 0',
                 ]
             ]
         );
@@ -180,7 +179,7 @@ class Companies extends AbstractModel
             [
                 'alias' => 'subscription',
                 'params' => [
-                    'conditions' => 'apps_id = ' . $this->di->get('app')->getId() . ' AND is_deleted = 0',
+                    'conditions' => 'apps_id = ' . $this->di->getApp()->getId() . ' AND is_deleted = 0',
                     'order' => 'id DESC'
                 ]
             ]
@@ -193,7 +192,7 @@ class Companies extends AbstractModel
             [
                 'alias' => 'subscriptions',
                 'params' => [
-                    'conditions' => 'apps_id = ' . $this->di->get('app')->getId() . ' AND is_deleted = 0',
+                    'conditions' => 'apps_id = ' . $this->di->getApp()->getId() . ' AND is_deleted = 0',
                     'order' => 'id DESC'
                 ]
             ]
@@ -264,11 +263,11 @@ class Companies extends AbstractModel
      *
      * @param Users $user
      *
-     * @return bool
+     * @return boolean
      */
     public function userAssociatedToCompany(Users $user) : bool
     {
-        return $this->countUsersAssociatedApps('users_id =' . $user->getId() . ' and apps_id = ' . Di::getDefault()->get('app')->getId()) > 0;
+        return $this->countUsersAssociatedApps('users_id =' . $user->getId() . " and apps_id = " . Di::getDefault()->getApp()->getId()) > 0;
     }
 
     /**
@@ -290,9 +289,9 @@ class Companies extends AbstractModel
     {
         parent::beforeCreate();
 
-        $this->language = $this->di->get('app')->get('language');
-        $this->timezone = $this->di->get('app')->get('timezone');
-        $this->currency_id = Currencies::findFirstByCode($this->di->get('app')->get('currency'))->getId();
+        $this->language = $this->di->getApp()->get('language');
+        $this->timezone = $this->di->getApp()->get('timezone');
+        $this->currency_id = Currencies::findFirstByCode($this->di->getApp()->get('currency'))->getId();
     }
 
     /**
@@ -343,7 +342,7 @@ class Companies extends AbstractModel
     public function startFreeTrial() : ?string
     {
         $defaultPlan = AppsPlans::getDefaultPlan();
-        $trialEndsAt = Carbon::now()->addDays($this->di->get('app')->plan->free_trial_dates);
+        $trialEndsAt = Carbon::now()->addDays($this->di->getApp()->plan->free_trial_dates);
 
         //Lets create a new default subscription without payment method
         $this->user->newSubscription($defaultPlan->name, $defaultPlan->stripe_id, $this, $this->di->getApp())
@@ -352,7 +351,7 @@ class Companies extends AbstractModel
 
         //ook for the subscription and update the missing info
         $subscription = $this->subscription;
-        $subscription->apps_plans_id = $this->di->get('app')->default_apps_plan_id;
+        $subscription->apps_plans_id = $this->di->getApp()->default_apps_plan_id;
         $subscription->trial_ends_days = $trialEndsAt->diffInDays(Carbon::now());
         $subscription->is_freetrial = 1;
         $subscription->is_active = 1;
@@ -409,25 +408,13 @@ class Companies extends AbstractModel
     /**
      * Get the default company key for the current app
      * this is use to store in redis the default company id for the current
-     * user in session every time they switch between companies on the diff apps.
+     * user in session everytime they switch between companies on the diff apps.
      *
      * @return string
      */
     public static function cacheKey() : string
     {
-        return self::DEFAULT_COMPANY_APP . Di::getDefault()->get('app')->getId();
-    }
-
-    /**
-     * Get the default company key for the current app
-     * this is use to store in redis the default company id for the current
-     * user in session every time they switch between companies on the diff apps.
-     *
-     * @return string
-     */
-    public function branchCacheKey() : string
-    {
-        return self::DEFAULT_COMPANY_BRANCH_APP . $this->getDI()->get('app')->getId() . '_' . $this->getId();
+        return self::DEFAULT_COMPANY_APP . Di::getDefault()->getApp()->getId();
     }
 
     /**
