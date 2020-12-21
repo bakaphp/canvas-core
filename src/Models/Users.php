@@ -381,6 +381,17 @@ class Users extends BakUser implements UserInterface
     }
 
     /**
+     * Whats the current default branch of the current company.
+     *
+     * @return int
+     */
+    public function currentBranchId() : int
+    {
+        $defaultBranch = $this->get($this->getDefaultCompany()->branchCacheKey());
+        return !is_null($defaultBranch) ? (int) $defaultBranch : (int) $this->default_company_branch;
+    }
+
+    /**
      * Overwrite the user relationship.
      * use Phalcon Registry to assure we mantian the same instance accross the request.
      */
@@ -546,8 +557,9 @@ class Users extends BakUser implements UserInterface
                 if ($branch->company->userAssociatedToCompany($this)) {
                     $this->default_company = $branch->company->getId();
                     $this->default_company_branch = $branch->getId();
-                    //set the default company id per the specific app , we do this so we can have multip default companies per diff apps
+                    //set the default company id per the specific app , we do this so we can have multi default companies per diff apps
                     $this->set(Companies::cacheKey(), $this->default_company);
+                    $this->set($branch->company->branchCacheKey(), $branch->getId());
                 }
             }
         }
