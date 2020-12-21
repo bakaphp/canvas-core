@@ -97,13 +97,12 @@ class UserMapper extends CustomMapper
         $userDto->countries = $user->countries ?: null;
         $userDto->states = $user->states ?: null;
         $userDto->cities = $user->cities ?: null;
-
         /**
          * Properties we need to overwrite base on the
          * current app and company the user is running.
          */
         $userDto->default_company = $user->getDefaultCompany()->getId();
-        $userDto->default_company_branch = $user->currentBranchId();
+        $userDto->default_company_branch = $user->getDefaultCompany()->defaultBranch->getId();
         $userDto->roles_id = $user->getPermission()->roles_id;
         $userDto->access_list = [];
 
