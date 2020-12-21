@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Canvas\Api\Controllers;
 
 use Baka\Http\Exception\NotFoundException;
+use Baka\Http\Exception\UnprocessableEntityException;
 use Baka\Validation as CanvasValidation;
 use Canvas\Auth\Auth;
-use Baka\Http\Exception\UnprocessableEntityException;
 use Canvas\Models\Roles;
 use Canvas\Models\Users;
 use Canvas\Models\UsersInvite;
@@ -106,6 +106,13 @@ class UsersInviteController extends BaseController
 
         //validate this form for password
         $validation->validate($request);
+
+        //Check if role is not a default one.
+        if (!Roles::existsById((int)$request['role_id'])->isDefault()) {
+            throw new UnprocessableEntityException(
+                "Can't create a new user with a default role."
+            );
+        }
 
         //Check if user was already was invited to current company and return message
         UsersInvite::isValid($request['email'], (int) $request['role_id']);
