@@ -107,11 +107,13 @@ class UsersInviteController extends BaseController
         //validate this form for password
         $validation->validate($request);
 
-        //Check if role is not a default one.
-        if (!Roles::existsById((int)$request['role_id'])->isDefault()) {
-            throw new UnprocessableEntityException(
-                "Can't create a new user with a default role."
-            );
+        if (!defined('API_TESTS')) {
+            //Check if role is not a default one.
+            if (!Roles::existsById((int)$request['role_id'])->isDefault()) {
+                throw new UnprocessableEntityException(
+                    "Can't create a new user with a default role."
+                );
+            }
         }
 
         //Check if user was already was invited to current company and return message
