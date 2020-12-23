@@ -36,6 +36,7 @@ class Companies extends AbstractModel
     const DEFAULT_COMPANY = 'DefaulCompany';
     const DEFAULT_COMPANY_APP = 'DefaulCompanyApp_';
     const PAYMENT_GATEWAY_CUSTOMER_KEY = 'payment_gateway_customer_id';
+    const DEFAULT_COMPANY_BRANCH_APP = 'DefaultCompanyBranchApp_';
 
     /**
      * Initialize method for model.
@@ -110,7 +111,7 @@ class Companies extends AbstractModel
             [
                 'alias' => 'UsersAssociatedByApps',
                 'params' => [
-                    'conditions' => 'apps_id = ' . $this->di->getApp()->getId()
+                    'conditions' => 'apps_id = ' . $this->di->get('app')->getId()
                 ]
             ]
         );
@@ -131,7 +132,7 @@ class Companies extends AbstractModel
             [
                 'alias' => 'app',
                 'params' => [
-                    'conditions' => 'apps_id = ' . $this->di->getApp()->getId()
+                    'conditions' => 'apps_id = ' . $this->di->get('app')->getId()
                 ]
             ]
         );
@@ -143,7 +144,7 @@ class Companies extends AbstractModel
             [
                 'alias' => 'apps',
                 'params' => [
-                    'conditions' => 'apps_id = ' . $this->di->getApp()->getId()
+                    'conditions' => 'apps_id = ' . $this->di->get('app')->getId()
                 ]
             ]
         );
@@ -166,7 +167,7 @@ class Companies extends AbstractModel
             [
                 'alias' => 'users',
                 'params' => [
-                    'conditions' => 'apps_id = ' . $this->di->getApp()->getId() . ' AND Canvas\Models\UsersAssociatedApps.is_deleted = 0',
+                    'conditions' => 'apps_id = ' . $this->di->get('app')->getId() . ' AND Canvas\Models\UsersAssociatedApps.is_deleted = 0',
                 ]
             ]
         );
@@ -288,7 +289,7 @@ class Companies extends AbstractModel
      */
     public function userAssociatedToCompany(Users $user) : bool
     {
-        return $this->countUsersAssociatedApps('users_id =' . $user->getId() . ' and apps_id = ' . Di::getDefault()->getApp()->getId()) > 0;
+        return $this->countUsersAssociatedApps('users_id =' . $user->getId() . ' and apps_id = ' . Di::getDefault()->get('app')->getId()) > 0;
     }
 
     /**
@@ -310,9 +311,9 @@ class Companies extends AbstractModel
     {
         parent::beforeCreate();
 
-        $this->language = $this->di->getApp()->get('language');
-        $this->timezone = $this->di->getApp()->get('timezone');
-        $this->currency_id = Currencies::findFirstByCode($this->di->getApp()->get('currency'))->getId();
+        $this->language = $this->di->get('app')->get('language');
+        $this->timezone = $this->di->get('app')->get('timezone');
+        $this->currency_id = Currencies::findFirstByCode($this->di->get('app')->get('currency'))->getId();
     }
 
     /**
@@ -399,13 +400,25 @@ class Companies extends AbstractModel
     /**
      * Get the default company key for the current app
      * this is use to store in redis the default company id for the current
-     * user in session everytime they switch between companies on the diff apps.
+     * user in session every time they switch between companies on the diff apps.
      *
      * @return string
      */
     public static function cacheKey() : string
     {
-        return self::DEFAULT_COMPANY_APP . Di::getDefault()->getApp()->getId();
+        return self::DEFAULT_COMPANY_APP . Di::getDefault()->get('app')->getId();
+    }
+
+    /**
+     * Get the default company key for the current app
+     * this is use to store in redis the default company id for the current
+     * user in session every time they switch between companies on the diff apps.
+     *
+     * @return string
+     */
+    public function branchCacheKey() : string
+    {
+        return self::DEFAULT_COMPANY_BRANCH_APP . $this->getDI()->get('app')->getId() . '_' . $this->getId();
     }
 
     /**
