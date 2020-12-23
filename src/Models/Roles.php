@@ -20,6 +20,8 @@ class Roles extends AbstractModel
     public ?int $scope;
     public int $companies_id;
     public int $apps_id;
+    public int $is_default = 0;
+    public int $is_active = 1;
 
     /**
      * Default ACL company.
@@ -361,5 +363,15 @@ class Roles extends AbstractModel
         }
 
         return true;
+    }
+
+    /**
+     * check if role is default or not.
+     *
+     * @return bool
+     */
+    public function isDefault() : bool
+    {
+        return (bool) $this->is_default;
     }
 }
