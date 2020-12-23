@@ -61,7 +61,7 @@ $privateRoutes = [
     Route::post('/roles-accesslist/{id}/copy')->controller('RolesAccessListController')->action('copy'),
     Route::get('/custom-fields-modules/{id}/fields')->controller('CustomFieldsModulesController')->action('customFieldsByModulesId'),
     Route::put('/apps-plans/{id}/method')->controller('AppsPlansController')->action('updatePaymentMethod'),
-    Route::get('/apps-plans/{id}/method')->controller('PaymentMethodsCredsController')->action('getCurrentPaymentMethodsCreds'),
+    Route::get('/apps-plans/{id}/method')->controller('PaymentMethodsCredentialsController')->action('getCurrentPaymentMethods'),
     Route::get('/schema/{slug}')->controller('SchemaController')->action('getBySlug'),
     Route::get('/schema/{slug}/description')->controller('SchemaController')->action('getModelDescription'),
     Route::post('/users/{hash}/change-email')->controller('AuthController')->action('changeUserEmail'),

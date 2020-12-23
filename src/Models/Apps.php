@@ -7,7 +7,7 @@ use Baka\Contracts\Database\HashTableTrait;
 use Baka\Contracts\EventsManager\EventManagerAwareTrait;
 use Baka\Database\Apps as BakaApps;
 use Canvas\Cli\Jobs\Apps as JobsApps;
-use Canvas\Traits\UsersAssociatedTrait;
+use Canvas\Contracts\UsersAssociatedTrait;
 use Phalcon\Security\Random;
 use Phalcon\Di;
 
@@ -57,6 +57,18 @@ class Apps extends BakaApps
             ['alias' => 'plan']
         );
 
+        $this->hasOne(
+            'id',
+            'Canvas\Models\AppsPlans',
+            'apps_id',
+            [
+                'alias' => 'defaultPlan',
+                'params' => [
+                    'conditions' => 'Canvas\Models\AppsPlans.is_default = 1',
+                ]
+            ]
+        );
+
         $this->hasMany(
             'id',
             'Canvas\Models\AppsPlans',
@@ -77,6 +89,16 @@ class Apps extends BakaApps
             'apps_id',
             ['alias' => 'settingsApp']
         );
+    }
+
+    /**
+     * Get the default Plan.
+     *
+     * @return AppsPlans
+     */
+    public function getDefaultPlan() : AppsPlans
+    {
+        return $this->defaultPlan;
     }
 
     /**
@@ -189,6 +211,16 @@ class Apps extends BakaApps
     }
 
     /**
+     * Get th default app currency.
+     *
+     * @return string
+     */
+    public function defaultCurrency() : string
+    {
+        return $this->get('currency');
+    }
+
+    /**
      * Get app by domain name.
      *
      * @param string $domain
@@ -197,15 +229,14 @@ class Apps extends BakaApps
      */
     public static function getByDomainName(string $domain) : ?self
     {
+        /**
+         * @todo add cache
+         */
         return self::findFirst([
             'conditions' => 'domain = :domain: AND domain_based = 1',
             'bind' => [
                 'domain' => $domain
-            ],
-            'cache' => [
-                'key' => 'app-by-domain-cache' . $domain,
-                'lifetime' => 432000, //1week
-            ],
+            ]
         ]);
     }
 }

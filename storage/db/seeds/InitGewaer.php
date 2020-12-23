@@ -37,26 +37,55 @@ class InitGewaer extends AbstractSeed
         $table = $this->table('apps');
         $table->insert($data)->save();
 
-        //add default companies
+        //add default companies group
+        $data = [
+            [
+                'name' => 'Canvas',
+                'users_id' => 1,
+                'apps_id' => 1,
+                'is_default' => 1,
+                'created_at' => date('Y-m-d H:i:s'),
+                'is_deleted' => 0
+            ],
+        ];
+
+        $table = $this->table('companies_groups');
+        $table->insert($data)->save();
+
+        //companies
         $data = [
             [
                 'name' => 'Canvas',
                 'users_id' => 1,
                 'system_modules_id' => 1,
-                'language' => "EN",
+                'language' => 'EN',
                 'created_at' => date('Y-m-d H:i:s'),
                 'is_deleted' => 0
             ], [
                 'name' => 'CRM',
                 'users_id' => 1,
                 'system_modules_id' => 1,
-                'language' => "EN",
+                'language' => 'EN',
                 'created_at' => date('Y-m-d H:i:s'),
                 'is_deleted' => 0
             ],
         ];
 
         $table = $this->table('companies');
+        $table->insert($data)->save();
+
+        //add default companies group
+        $data = [
+            [
+                'companies_groups_id' => 1,
+                'companies_id' => 1,
+                'is_default' => 1,
+                'created_at' => date('Y-m-d H:i:s'),
+                'is_deleted' => 0
+            ],
+        ];
+
+        $table = $this->table('companies_associations');
         $table->insert($data)->save();
 
         //add default companies
@@ -231,7 +260,8 @@ class InitGewaer extends AbstractSeed
                 'currency_id' => 1,
                 'free_trial_dates' => 14,
                 'is_default' => 1,
-                'payment_frequencies_id' => 1
+                'payment_frequencies_id' => 1,
+                'created_at' => date('Y-m-d H:i:s'),
             ], [
                 'apps_id' => '1',
                 'name' => 'monthly-10-2',
@@ -244,7 +274,8 @@ class InitGewaer extends AbstractSeed
                 'currency_id' => 1,
                 'free_trial_dates' => 14,
                 'is_default' => 0,
-                'payment_frequencies_id' => 1
+                'payment_frequencies_id' => 1,
+                'created_at' => date('Y-m-d H:i:s'),
             ],
             [
                 'apps_id' => '1',
@@ -258,7 +289,8 @@ class InitGewaer extends AbstractSeed
                 'currency_id' => 1,
                 'free_trial_dates' => 14,
                 'is_default' => 1,
-                'payment_frequencies_id' => 2
+                'payment_frequencies_id' => 2,
+                'created_at' => date('Y-m-d H:i:s'),
             ], [
                 'apps_id' => '1',
                 'name' => 'yearly-10-2',
@@ -271,7 +303,8 @@ class InitGewaer extends AbstractSeed
                 'currency_id' => 1,
                 'free_trial_dates' => 14,
                 'is_default' => 0,
-                'payment_frequencies_id' => 2
+                'payment_frequencies_id' => 2,
+                'created_at' => date('Y-m-d H:i:s'),
             ]
         ];
 

@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace Canvas\Api\Controllers;
 
-use Baka\Auth\UsersController as BakaUsersController;
+use Baka\Contracts\Controllers\ProcessOutputMapperTrait;
 use Baka\Http\Exception\InternalServerErrorException;
 use Baka\Validation as CanvasValidation;
-use Canvas\Contracts\Controllers\ProcessOutputMapperTrait;
 use Canvas\Dto\User as UserDto;
 use Canvas\Mapper\UserMapper;
 use Canvas\Models\Users;
@@ -15,9 +14,10 @@ use Canvas\Models\UsersAssociatedApps;
 use Phalcon\Http\Response;
 use Phalcon\Validation\Validator\PresenceOf;
 
-class UsersController extends BakaUsersController
+class UsersController extends BaseController
 {
     use ProcessOutputMapperTrait;
+
     /*
      * fields we accept to create
      *
@@ -98,7 +98,7 @@ class UsersController extends BakaUsersController
     }
 
     /**
-     * Get Uer.
+     * Get User.
      *
      * @param mixed $id
      *
@@ -208,7 +208,7 @@ class UsersController extends BakaUsersController
     /**
      * Delete a Record.
      *
-     * @throws Exception
+     * @throws InternalServerErrorException
      *
      * @return Response
      */

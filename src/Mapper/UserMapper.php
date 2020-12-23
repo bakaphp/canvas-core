@@ -10,11 +10,6 @@ use Canvas\Models\AccessList;
 use Canvas\Models\Users;
 use Phalcon\Di;
 
-/**
- * Class UserMapper.
- *
- * @package Canvas\Mapper
- */
 class UserMapper extends CustomMapper
 {
     use RelationshipTrait;
@@ -119,7 +114,7 @@ class UserMapper extends CustomMapper
     }
 
     /**
-     * Attach acces list to the user.
+     * Attach access list to the user.
      *
      * @param object $userDto
      *
@@ -127,7 +122,7 @@ class UserMapper extends CustomMapper
      */
     protected function accessList(object $userDto) : void
     {
-        $app = Di::getDefault()->getApp();
+        $app = Di::getDefault()->get('app');
         $accessList = AccessList::find([
             'conditions' => 'roles_name = ?0 and apps_id in (?1, ?2) and allowed = 0',
             'bind' => [$userDto->roles[0]->name, $app->getId(), $app::CANVAS_DEFAULT_APP_ID]

@@ -1,19 +1,20 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Canvas\Models;
 
-/**
- * Class CompanyBranches.
- *
- * @package Canvas\Models
- *
- */
+use Canvas\Cashier\Billable;
+
 class CompaniesGroups extends AbstractModel
 {
+    use Billable;
+
     public string $name;
     public int $apps_id;
     public int $users_id;
+    public ?string $stripe_id = null;
+    public ?int $is_default = 0;
 
     /**
      * Initialize method for model.
@@ -37,6 +38,28 @@ class CompaniesGroups extends AbstractModel
             Companies::class,
             'id',
             ['alias' => 'companies']
+        );
+
+        $this->hasOne(
+            'id',
+            'Canvas\Models\Subscription',
+            'companies_groups_id',
+            [
+                'alias' => 'subscription',
+                'params' => [
+                    'conditions' => 'apps_id = ' . $this->di->get('app')->getId() . ' AND is_deleted = 0',
+                    'order' => 'id DESC'
+                ]
+            ]
+        );
+
+        $this->belongsTo(
+            'users_id',
+            Users::class,
+            'id',
+            [
+                'alias' => 'users'
+            ]
         );
     }
 }

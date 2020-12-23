@@ -4,32 +4,14 @@ declare(strict_types=1);
 
 namespace Canvas\Api\Controllers;
 
-use Canvas\Models\AppsPlans;
-use Stripe\Token as StripeToken;
-use Phalcon\Http\Response;
-use Stripe\Customer as StripeCustomer;
-use Phalcon\Validation\Validator\PresenceOf;
 use Baka\Http\Exception\NotFoundException;
-use Baka\Http\Exception\UnauthorizedException;
-use Baka\Http\Exception\UnprocessableEntityException;
+use Baka\Validation as CanvasValidation;
+use Canvas\Models\AppsPlans;
 use Canvas\Models\Subscription as CanvasSubscription;
 use Phalcon\Cashier\Subscription;
-use Canvas\Models\UserCompanyApps;
-use function Baka\paymentGatewayIsActive;
-use Baka\Validation as CanvasValidation;
-use Canvas\Models\PaymentMethodsCreds;
+use Phalcon\Http\Response;
+use Phalcon\Validation\Validator\PresenceOf;
 
-/**
- * Class LanguagesController.
- *
- * @package Canvas\Api\Controllers
- *
- * @property Users $userData
- * @property Request $request
- * @property Config $config
- * @property Apps $app
- * @property \Phalcon\Db\Adapter\Pdo\Mysql $db
- */
 class AppsPlansController extends BaseController
 {
     /*
@@ -70,6 +52,7 @@ class AppsPlansController extends BaseController
      * Update a given subscription.
      *
      * @param string $stripeId
+     *
      * @return Response
      */
     public function edit($stripeId) : Response
@@ -77,14 +60,10 @@ class AppsPlansController extends BaseController
         $appPlan = $this->model->findFirstByStripeId($stripeId);
 
         if (!is_object($appPlan)) {
-            throw new NotFoundException(_('This plan doesnt exist'));
+            throw new NotFoundException(_('This plan doesn\'t exist'));
         }
 
-        $userSubscription = CanvasSubscription::getActiveForThisApp();
-
-        $this->db->begin();
-
-        $subscription = $this->userData->subscription($userSubscription->name);
+        $subscription = CanvasSubscription::getActiveSubscription();
 
         if ($subscription->onTrial()) {
             $subscription->name = $appPlan->name;
@@ -93,31 +72,9 @@ class AppsPlansController extends BaseController
             $subscription->swap($stripeId);
         }
 
-        //update company app
-        $companyApp = UserCompanyApps::getCurrentApp();
-
-        //update the company app to the new plan
-        if (is_object($companyApp)) {
-            $subscription->name = $stripeId;
-            $subscription->save();
-
-            $companyApp->stripe_id = $stripeId;
-            $companyApp->subscriptions_id = $subscription->getId();
-            if (!$companyApp->update()) {
-                $this->db->rollback();
-                throw new UnprocessableEntityException((string) current($companyApp->getMessages()));
-            }
-
-            //update the subscription with the plan
-            $subscription->apps_plans_id = $appPlan->getId();
-            if (!$subscription->update()) {
-                $this->db->rollback();
-
-                throw new UnprocessableEntityException((string) current($subscription->getMessages()));
-            }
-        }
-
-        $this->db->commit();
+        //update the subscription with the plan
+        $subscription->apps_plans_id = $appPlan->getId();
+        $subscription->updateOrFail();
 
         //return the new subscription plan
         return $this->response($appPlan);
@@ -127,14 +84,15 @@ class AppsPlansController extends BaseController
      * Cancel a given subscription.
      *
      * @param string $stripeId
+     *
      * @return Response
      */
-    public function delete($stripeId): Response
+    public function delete($stripeId) : Response
     {
         $appPlan = $this->model->findFirstByStripeId($stripeId);
 
         if (!is_object($appPlan)) {
-            throw new NotFoundException(_('This plan doesnt exist'));
+            throw new NotFoundException(_('This plan doesn\'t exist'));
         }
 
         $subscription = CanvasSubscription::getActiveSubscription();
@@ -154,14 +112,15 @@ class AppsPlansController extends BaseController
      * Reactivate a given subscription.
      *
      * @param string $stripeId
+     *
      * @return Response
      */
-    public function reactivateSubscription($stripeId): Response
+    public function reactivateSubscription($stripeId) : Response
     {
         $appPlan = $this->model->findFirstByStripeId($stripeId);
 
         if (!is_object($appPlan)) {
-            throw new NotFoundException(_('This plan doesnt exist'));
+            throw new NotFoundException(_('This plan doesn\'t exist'));
         }
 
         $subscription = CanvasSubscription::getActiveSubscription();
@@ -179,11 +138,15 @@ class AppsPlansController extends BaseController
 
     /**
      * Update payment method.
-     * @param integer $id
+     *
+     * @param int $id
+     *
      * @return Response
      */
-    public function updatePaymentMethod(string $id): Response
+    public function updatePaymentMethod(string $id) : Response
     {
+        $companyGroup = $this->userData->getDefaultCompany()->getDefaultCompanyGroup();
+
         if (empty($this->request->hasPut('card_token'))) {
             $validation = new CanvasValidation();
             $validation->add('card_number', new PresenceOf(['message' => _('Credit Card Number is required.')]));
@@ -199,19 +162,17 @@ class AppsPlansController extends BaseController
             $expYear = $this->request->getPut('card_exp_year', 'string');
             $cvc = $this->request->getPut('card_cvc', 'string');
 
-            //Create a new card token
-            $token = StripeToken::create([
+            $companyGroup->createCreditCard([
                 'card' => [
                     'number' => $cardNumber,
                     'exp_month' => $expMonth,
                     'exp_year' => $expYear,
                     'cvc' => $cvc,
-                ],
-            ], [
-                'api_key' => $this->config->stripe->secret
-            ])->id;
+                ]
+            ]);
         } else {
             $token = $this->request->getPut('card_token');
+            $companyGroup->updateDefaultCreditCard($token);
         }
 
         $address = $this->request->getPut('address', 'string');
@@ -222,24 +183,14 @@ class AppsPlansController extends BaseController
         $this->userData->getDefaultCompany()->zipcode = $zipcode;
         $this->userData->getDefaultCompany()->update();
 
-        $customerId = $this->userData->getDefaultCompany()->get('payment_gateway_customer_id');
-
         //Update default payment method with new card.
-        $stripeCustomer = $this->userData->updatePaymentMethod($customerId, $token);
-
-        $subscription = CanvasSubscription::getActiveForThisApp();
+        $subscription = $companyGroup->subscription();
 
         //not valid? ok then lets charge the credit card to active your subscription
         if (!$subscription->valid()) {
             $subscription->activate();
         }
 
-        if (is_object($stripeCustomer) && $stripeCustomer instanceof StripeCustomer) {
-
-            //We now create a partially persist the payment method data
-            PaymentMethodsCreds::createByStripeToken($token);
-            return $this->response($subscription);
-        }
         return $this->response('Card could not be updated');
     }
 }

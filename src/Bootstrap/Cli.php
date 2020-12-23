@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace Canvas\Bootstrap;
 
 use function Baka\appPath;
+use Canvas\Constants\Flags;
+use Canvas\Exception\ServerErrorHttpException;
 use Phalcon\Cli\Console;
 use Phalcon\Di\FactoryDefault\Cli as PhCli;
 use Throwable;
-use Canvas\Exception\ServerErrorHttpException;
-use Canvas\Constants\Flags;
 
 /**
- * Class Cli
+ * Class Cli.
  *
  * @package Canvas\Bootstrap
  *
@@ -23,7 +23,7 @@ class Cli extends AbstractBootstrap
     protected $argv;
 
     /**
-     * Run the application
+     * Run the application.
      *
      * @return mixed
      */
@@ -40,7 +40,7 @@ class Cli extends AbstractBootstrap
             }
 
             //we need to see it on the console -_-
-            echo $e->getMessage();
+            echo $e->getMessage() . PHP_EOL;
         }
     }
 
@@ -58,7 +58,7 @@ class Cli extends AbstractBootstrap
     }
 
     /**
-     * Setup the application object in the container
+     * Setup the application object in the container.
      *
      * @return void
      */
@@ -69,18 +69,19 @@ class Cli extends AbstractBootstrap
     }
 
     /**
-     * Pass php argv
+     * Pass php argv.
      *
      * @param array $argv
+     *
      * @return void
      */
-    public function setArgv(array $argv): void
+    public function setArgv(array $argv) : void
     {
         $this->argv = $argv;
     }
 
     /**
-     * Parses arguments from the command line
+     * Parses arguments from the command line.
      */
     private function processArguments()
     {

@@ -8,9 +8,8 @@ use Baka\Blameable\BlameableTrait;
 use Baka\Contracts\Database\HashTableTrait;
 use Baka\Contracts\EventsManager\EventManagerAwareTrait;
 use Baka\Http\Exception\InternalServerErrorException;
-use Canvas\Traits\FileSystemModelTrait;
-use Canvas\Traits\UsersAssociatedTrait;
-use Carbon\Carbon;
+use Canvas\Contracts\FileSystemModelTrait;
+use Canvas\Contracts\UsersAssociatedTrait;
 use Exception;
 use Phalcon\Di;
 use Phalcon\Validation;
@@ -49,7 +48,7 @@ class Companies extends AbstractModel
         $this->keepSnapshots(true);
         $this->addBehavior(new Blameable());
 
-        $this->hasMany('id', 'Baka\Auth\Models\CompanySettings', 'id', ['alias' => 'settings']);
+        $this->hasMany('id', CompaniesSettings::class, 'companies_id', ['alias' => 'settings']);
 
         $this->belongsTo(
             'users_id',
@@ -173,29 +172,15 @@ class Companies extends AbstractModel
             ]
         );
 
-        $this->hasOne(
+        $this->hasManyToMany(
             'id',
-            'Canvas\Models\Subscription',
+            'Canvas\Models\CompaniesAssociations',
             'companies_id',
-            [
-                'alias' => 'subscription',
-                'params' => [
-                    'conditions' => 'apps_id = ' . $this->di->get('app')->getId() . ' AND is_deleted = 0',
-                    'order' => 'id DESC'
-                ]
-            ]
-        );
-
-        $this->hasMany(
+            'companies_groups_id',
+            'Canvas\Models\CompaniesGroups',
             'id',
-            'Canvas\Models\Subscription',
-            'companies_id',
             [
-                'alias' => 'subscriptions',
-                'params' => [
-                    'conditions' => 'apps_id = ' . $this->di->get('app')->getId() . ' AND is_deleted = 0',
-                    'order' => 'id DESC'
-                ]
+                'alias' => 'companyGroups',
             ]
         );
 
@@ -206,7 +191,7 @@ class Companies extends AbstractModel
             ['alias' => 'user-webhooks']
         );
 
-        $systemModule = SystemModules::getSystemModuleByModelName(self::class);
+        $systemModule = SystemModules::getByModelName(self::class);
         $this->hasOne(
             'id',
             'Canvas\Models\FileSystemEntities',
@@ -219,6 +204,42 @@ class Companies extends AbstractModel
                 ]
             ]
         );
+    }
+
+    /**
+     * Get the subscription from company group
+     * used for relationship.
+     *
+     * @return Subscription
+     *
+     * @deprecated v0.3
+     *  Frontend need to change the relationship call to companyGroup
+     */
+    public function getSubscription() : Subscription
+    {
+        return $this->getDefaultCompanyGroup()->subscription();
+    }
+
+    /**
+     * Get the default company group for this company on the current app.
+     *
+     * @return CompaniesGroups
+     */
+    public function getDefaultCompanyGroup() : CompaniesGroups
+    {
+        $companyGroup = $this->getCompanyGroups([
+            'conditions' => 'Canvas\Models\CompaniesGroups.apps_id = :apps_id: AND Canvas\Models\CompaniesGroups.is_default = 1',
+            'bind' => [
+                'apps_id' => Di::getDefault()->get('app')->getId()
+            ],
+            'limit' => 1
+        ])->getFirst();
+
+        if (!$companyGroup) {
+            throw new InternalServerErrorException('No default Company Group Found');
+        }
+
+        return $companyGroup;
     }
 
     /**
@@ -333,36 +354,6 @@ class Companies extends AbstractModel
         }
 
         throw new Exception(_("User doesn't have an active company"));
-    }
-
-    /**
-     * Start a free trial for a new company.
-     *
-     * @return string //the customer id
-     */
-    public function startFreeTrial() : ?string
-    {
-        $defaultPlan = AppsPlans::getDefaultPlan();
-        $trialEndsAt = Carbon::now()->addDays($this->di->get('app')->plan->free_trial_dates);
-
-        //Lets create a new default subscription without payment method
-        $this->user->newSubscription($defaultPlan->name, $defaultPlan->stripe_id, $this, $this->di->getApp())
-                ->trialDays($defaultPlan->free_trial_dates)
-                ->create();
-
-        //ook for the subscription and update the missing info
-        $subscription = $this->subscription;
-        $subscription->apps_plans_id = $this->di->get('app')->default_apps_plan_id;
-        $subscription->trial_ends_days = $trialEndsAt->diffInDays(Carbon::now());
-        $subscription->is_freetrial = 1;
-        $subscription->is_active = 1;
-        $subscription->payment_frequency_id = 1;
-
-        if (!$subscription->save()) {
-            throw new InternalServerErrorException((string) 'Subscription for new company couldnt be created ' . current($this->getMessages()));
-        }
-
-        return $this->user->stripe_id;
     }
 
     /**

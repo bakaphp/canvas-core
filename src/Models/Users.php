@@ -3,24 +3,23 @@ declare(strict_types=1);
 
 namespace Canvas\Models;
 
-use Baka\Auth\Models\Users as BakUser;
-use Baka\Cashier\Billable;
 use Baka\Contracts\Auth\UserInterface;
 use Baka\Contracts\Database\HashTableTrait;
 use Baka\Contracts\EventsManager\EventManagerAwareTrait;
 use Baka\Contracts\Notifications\NotifiableTrait;
 use Baka\Database\Exception\ModelNotProcessedException;
+use function Baka\getShortClassName;
 use Baka\Hashing\Keys;
 use Baka\Hashing\Password;
 use Baka\Validations\PasswordValidation;
 use Canvas\Auth\App as AppAuth;
+use Canvas\Contracts\Auth\TokenTrait;
+use Canvas\Contracts\FileSystemModelTrait;
+use Canvas\Contracts\PermissionsTrait;
+use Canvas\Contracts\SubscriptionPlanLimitTrait;
 use Canvas\Models\Locations\Cities;
 use Canvas\Models\Locations\Countries;
 use Canvas\Models\Locations\States;
-use Canvas\Traits\FileSystemModelTrait;
-use Canvas\Traits\PermissionsTrait;
-use Canvas\Traits\SubscriptionPlanLimitTrait;
-use Carbon\Carbon;
 use Exception;
 use Phalcon\Di;
 use Phalcon\Security\Random;
@@ -28,18 +27,68 @@ use Phalcon\Validation;
 use Phalcon\Validation\Validator\Email;
 use Phalcon\Validation\Validator\PresenceOf;
 use Phalcon\Validation\Validator\Uniqueness;
-use ReflectionClass;
 
-class Users extends BakUser implements UserInterface
+class Users extends AbstractModel implements UserInterface
 {
     use PermissionsTrait;
-    use Billable;
     use SubscriptionPlanLimitTrait;
     use FileSystemModelTrait;
     use HashTableTrait;
     use NotifiableTrait;
     use EventManagerAwareTrait;
+    use TokenTrait;
 
+    /**
+     * Constant for anonymous user.
+     */
+    const ANONYMOUS = '-1';
+
+    public ?string $email = null;
+    public ?string $password = null;
+    public ?string $firstname = null;
+    public ?string $lastname = null;
+    public ?string $displayname = null;
+    public ?string $registered = null;
+    public ?string $lastvisit = null;
+    public int $default_company = 0;
+    public ?string $defaultCompanyName = null;
+    public ?string $dob = null;
+    public ?string $sex = null;
+    public ?string $description = null;
+    public ?string $phone_number = null;
+    public ?string $cell_phone_number = null;
+    public ?string $timezone = null;
+    public ?int $city_id = 0;
+    public ?int $state_id = 0;
+    public ?int $country_id = 0;
+    public int $welcome = 0;
+    public int $user_active = 0;
+    public ?string $user_activation_key = null;
+    public ?string $user_activation_email = null;
+    public ?string $profile_header = '';
+    public bool $loggedIn = false;
+    public ?string $location = null;
+    public string $interest = '';
+    public int $profile_privacy = 0;
+    public ?string $user_activation_forgot = null;
+    public ?string $language = null;
+    public string $session_id = '';
+    public string $session_key = '';
+    public ?string $banned = null;
+    public ?int $user_last_login_try = 0;
+    public int $user_level = 0;
+    public ?int $user_login_tries = 0;
+    public ?int $session_time = null;
+    public ?int $session_page = 0;
+    public static string $locale = 'ja_jp';
+
+    /**
+     * @deprecated with filesystem
+     */
+    public ?string $profile_image = null;
+    public ?string $profile_image_mobile = null;
+    public ?string $profile_remote_image = null;
+    public ?string $profile_image_thumb = ' ';
     public int $default_company_branch = 0;
     public ?int $roles_id = null;
     public ?string $stripe_id = null;
@@ -77,13 +126,13 @@ class Users extends BakUser implements UserInterface
         $this->setSource('users');
 
         //overwrite parent relationships
-        $this->hasOne('id', 'Baka\Auth\Models\Sessions', 'users_id', ['alias' => 'session']);
-        $this->hasMany('id', 'Baka\Auth\Models\Sessions', 'users_id', ['alias' => 'sessions']);
-        $this->hasMany('id', 'Baka\Auth\Models\SessionKeys', 'users_id', ['alias' => 'sessionKeys']);
-        $this->hasMany('id', 'Baka\Auth\Models\Banlist', 'users_id', ['alias' => 'bans']);
-        $this->hasMany('id', 'Baka\Auth\Models\Sessions', 'users_id', ['alias' => 'sessions']);
-        $this->hasMany('id', 'Canvas\Models\UserConfig', 'users_id', ['alias' => 'config']);
-        $this->hasMany('id', 'Canvas\Models\UserLinkedSources', 'users_id', ['alias' => 'sources']);
+        $this->hasOne('id', Sessions::class, 'users_id', ['alias' => 'session']);
+        $this->hasMany('id', Sessions::class, 'users_id', ['alias' => 'sessions']);
+        $this->hasMany('id', SessionKeys::class, 'users_id', ['alias' => 'sessionKeys']);
+        $this->hasMany('id', Banlist::class, 'users_id', ['alias' => 'bans']);
+        $this->hasMany('id', Sessions::class, 'users_id', ['alias' => 'sessions']);
+        $this->hasMany('id', UserConfig::class, 'users_id', ['alias' => 'config']);
+        $this->hasMany('id', UserLinkedSources::class, 'users_id', ['alias' => 'sources']);
 
         $this->hasOne(
             'default_company',
@@ -101,27 +150,13 @@ class Users extends BakUser implements UserInterface
 
         $this->hasMany(
             'id',
-            'Canvas\Models\Subscription',
-            'user_id',
-            [
-                'alias' => 'allSubscriptions',
-                'params' => [
-                    'conditions' => 'apps_id = ?0',
-                    'bind' => [$this->di->getApp()->getId()],
-                    'order' => 'id DESC'
-                ]
-            ]
-        );
-
-        $this->hasMany(
-            'id',
             'Canvas\Models\UsersAssociatedApps',
             'users_id',
             [
                 'alias' => 'companies',
                 'params' => [
                     'conditions' => 'apps_id = ?0',
-                    'bind' => [$this->di->getApp()->getId()],
+                    'bind' => [$this->getDI()->get('app')->getId()],
                 ]
             ]
         );
@@ -155,7 +190,7 @@ class Users extends BakUser implements UserInterface
             ['alias' => 'userWebhook']
         );
 
-        $systemModule = SystemModules::getSystemModuleByModelName(self::class);
+        $systemModule = SystemModules::getByModelName(self::class);
         $this->hasOne(
             'id',
             'Canvas\Models\FileSystemEntities',
@@ -192,7 +227,7 @@ class Users extends BakUser implements UserInterface
                 'alias' => 'roles',
                 'params' => [
                     'limit' => 1,
-                    'conditions' => 'Canvas\Models\UserRoles.apps_id = ' . $this->di->getApp()->getId() . ' AND Canvas\Models\UserRoles.companies_id = ' . $this->currentCompanyId(),
+                    'conditions' => 'Canvas\Models\UserRoles.apps_id = ' . $this->getDI()->get('app')->getId() . ' AND Canvas\Models\UserRoles.companies_id = ' . $this->currentCompanyId(),
                     'order' => 'Canvas\Models\UserRoles.apps_id desc',
                 ]
             ]
@@ -207,7 +242,7 @@ class Users extends BakUser implements UserInterface
                 'params' => [
                     'limit' => 1,
                     'conditions' => 'Canvas\Models\UserRoles.apps_id in (?0, ?1) AND Canvas\Models\UserRoles.companies_id = ' . $this->currentCompanyId(),
-                    'bind' => [$this->di->getApp()->getId(), Roles::DEFAULT_ACL_APP_ID],
+                    'bind' => [$this->getDI()->get('app')->getId(), Roles::DEFAULT_ACL_APP_ID],
                     'order' => 'apps_id desc',
                 ]
             ]
@@ -220,7 +255,7 @@ class Users extends BakUser implements UserInterface
             [
                 'alias' => 'permissions',
                 'params' => [
-                    'conditions' => 'Canvas\Models\UserRoles.apps_id = ' . $this->di->getApp()->getId() . ' AND Canvas\Models\UserRoles.companies_id = ' . $this->currentCompanyId(),
+                    'conditions' => 'Canvas\Models\UserRoles.apps_id = ' . $this->getDI()->get('app')->getId() . ' AND Canvas\Models\UserRoles.companies_id = ' . $this->currentCompanyId(),
                 ]
             ]
         );
@@ -261,6 +296,172 @@ class Users extends BakUser implements UserInterface
     }
 
     /**
+     * get the user by its Id, we can specify the cache if we want to
+     * we only get result if the user is active.
+     *
+     * @param int $userId
+     * @param bool $cache
+     *
+     * @return UserInterface
+     */
+    public static function getById($id, $cache = false) : UserInterface
+    {
+        $options = null;
+        $key = 'userInfo_' . $id;
+
+        if ($cache) {
+            $options = ['cache' => ['lifetime' => 3600, 'key' => $key]];
+        }
+
+        return self::findFirstOrFail([
+            'conditions' => 'id = ?0 and is_deleted = 0',
+            'bind' => [$id]
+        ]);
+    }
+
+    /**
+     * is the user active?
+     *
+     * @return bool
+     */
+    public function isActive() : bool
+    {
+        return (bool) $this->user_active;
+    }
+
+    /**
+     * get user by there email address.
+     *
+     * @return User
+     */
+    public static function getByEmail(string $email) : UserInterface
+    {
+        $user = self::findFirst([
+            'conditions' => 'email = ?0 and is_deleted = 0',
+            'bind' => [$email]
+        ]);
+
+        if (!$user) {
+            throw new Exception('No User Found');
+        }
+
+        return $user;
+    }
+
+    /**
+     * get user nickname.
+     *
+     * @return string
+     */
+    public function getDisplayName() : string
+    {
+        return strtolower($this->displayname);
+    }
+
+    /**
+     * get user email.
+     *
+     * @return string
+     */
+    public function getEmail() : ?string
+    {
+        return $this->email;
+    }
+
+    /**
+     * is the user logged in?
+     *
+     * @return bool
+     */
+    public function isLoggedIn() : bool
+    {
+        return $this->loggedIn;
+    }
+
+    /**
+     * Is Anonymous user.
+     *
+     * @return bool
+     */
+    public function isAnonymous() : bool
+    {
+        return (int) $this->getId() == self::ANONYMOUS;
+    }
+
+    /**
+     * get the user sex, not get sex from the user :P.
+     *
+     * @return string
+     */
+    public function getSex() : string
+    {
+        if ($this->sex == 'M') {
+            return _('Male');
+        } elseif ($this->sex == 'F') {
+            return _('Female');
+        } else {
+            return _('Undefined');
+        }
+    }
+
+    /**
+     * Log a user out of the system.
+     *
+     * @return bool
+     */
+    public function logOut() : bool
+    {
+        $session = new Sessions();
+        $session->end($this);
+
+        return true;
+    }
+
+    /**
+     * Clean the user session from the system.
+     *
+     * @return true
+     */
+    public function cleanSession() : bool
+    {
+        $session = new Sessions();
+        $session->end($this);
+
+        return true;
+    }
+
+    /**
+     * get the user session id.
+     *
+     * @return string
+     */
+    public function getSessionId() : string
+    {
+        //if its empty get it from the relationship, else get it from the property
+        return empty($this->session_id) ? $this->getSession(['order' => 'time desc'])->session_id : $this->session_id;
+    }
+
+    /**
+     * get the user language.
+     *
+     * @return string
+     */
+    public function getLanguage() : ? string
+    {
+        return $this->language;
+    }
+
+    /**
+     * Determine if a user is banned.
+     *
+     * @return bool
+     */
+    public function isBanned() : bool
+    {
+        return !$this->isActive() && $this->banned === 'Y';
+    }
+
+    /**
      * Set hashtable settings table, userConfig ;).
      *
      * @return void
@@ -293,61 +494,6 @@ class Users extends BakUser implements UserInterface
     }
 
     /**
-     * Get all of the subscriptions for the user.
-     */
-    public function subscriptions()
-    {
-        $this->hasMany(
-            'id',
-            'Canvas\Models\Subscription',
-            'user_id',
-            [
-                'alias' => 'subscriptions',
-                'params' => [
-                    'conditions' => 'apps_id = ?0 and companies_id = ?1',
-                    'bind' => [$this->di->getApp()->getId(), $this->default_company],
-                    'order' => 'id DESC'
-                ]
-            ]
-        );
-
-        return $this->getRelated('subscriptions');
-    }
-
-    /**
-     * Strat a free trial.
-     *
-     * @param Users $user
-     *
-     * @return Subscription
-     */
-    public function startFreeTrial() : Subscription
-    {
-        $defaultPlan = AppsPlans::getDefaultPlan();
-        $trialEndsAt = Carbon::now()->addDays($this->di->getApp()->plan->free_trial_dates);
-
-        $subscription = new Subscription();
-        $subscription->user_id = $this->getId();
-        $subscription->companies_id = $this->default_company;
-        $subscription->apps_id = $this->di->getApp()->getId();
-        $subscription->apps_plans_id = $this->di->getApp()->default_apps_plan_id;
-        $subscription->name = $defaultPlan->name;
-        $subscription->stripe_id = $defaultPlan->stripe_id;
-        $subscription->stripe_plan = $defaultPlan->stripe_plan;
-        $subscription->quantity = 1;
-        $subscription->trial_ends_at = $trialEndsAt->toDateTimeString();
-        $subscription->trial_ends_days = $trialEndsAt->diffInDays(Carbon::now());
-        $subscription->is_freetrial = 1;
-        $subscription->is_active = 1;
-        $subscription->saveOrFail();
-
-        $this->trial_ends_at = $subscription->trial_ends_at;
-        $this->updateOrFail();
-
-        return $subscription;
-    }
-
-    /**
      * Before create.
      *
      * @return void
@@ -376,8 +522,7 @@ class Users extends BakUser implements UserInterface
      */
     public function currentCompanyId() : int
     {
-        $defaultCompanyId = $this->get(Companies::cacheKey());
-        return !is_null($defaultCompanyId) ? (int) $defaultCompanyId : (int) $this->default_company;
+        return  (int) $this->get(Companies::cacheKey()) ?: (int) $this->default_company;
     }
 
     /**
@@ -393,16 +538,26 @@ class Users extends BakUser implements UserInterface
 
     /**
      * Overwrite the user relationship.
-     * use Phalcon Registry to assure we mantian the same instance accross the request.
+     * use Phalcon Registry to assure we maintain the same instance across the request.
      */
     public function getDefaultCompany() : Companies
     {
-        $registry = Di::getDefault()->getRegistry();
-        $key = 'company_' . Di::getDefault()->getApp()->getId() . '_' . $this->getId();
+        $registry = Di::getDefault()->get('registry');
+        $key = 'company_' . Di::getDefault()->get('app')->getId() . '_' . $this->getId();
         if (!isset($registry[$key])) {
             $registry[$key] = Companies::findFirstOrFail($this->currentCompanyId());
         }
         return  $registry[$key];
+    }
+
+    /**
+     * Get the default company Group.
+     *
+     * @return CompaniesGroups
+     */
+    public function getDefaultCompanyGroup() : CompaniesGroups
+    {
+        return $this->getDefaultCompany()->getDefaultCompanyGroup();
     }
 
     /**
@@ -428,12 +583,12 @@ class Users extends BakUser implements UserInterface
         $isFirstSignup = $this->isFirstSignup();
 
         /**
-         * if we dont find the userdata di lets create it.
+         * if we don't find the userdata di lets create it.
          *
          * @todo this is not ideal lets fix it later
          */
-        if (!$this->di->has('userData')) {
-            $this->di->setShared('userData', $this);
+        if (!$this->getDI()->has('userData')) {
+            $this->getDI()->setShared('userData', $this);
         }
 
         $this->fire('user:afterSignup', $this, $isFirstSignup);
@@ -459,7 +614,7 @@ class Users extends BakUser implements UserInterface
     /**
      * update user role for the specific app.
      *
-     * @return void
+     * @return bool
      */
     protected function updatePermissionRoles() : bool
     {
@@ -557,7 +712,7 @@ class Users extends BakUser implements UserInterface
                 if ($branch->company->userAssociatedToCompany($this)) {
                     $this->default_company = $branch->company->getId();
                     $this->default_company_branch = $branch->getId();
-                    //set the default company id per the specific app , we do this so we can have multi default companies per diff apps
+                    //set the default company id per the specific app , we do this so we can have multiple default companies per diff apps
                     $this->set(Companies::cacheKey(), $this->default_company);
                     $this->set($branch->company->branchCacheKey(), $branch->getId());
                 }
@@ -578,7 +733,7 @@ class Users extends BakUser implements UserInterface
         $newPassword = trim($newPassword);
         $verifyPassword = trim($verifyPassword);
 
-        $app = Di::getDefault()->getApp();
+        $app = $this->getDI()->get('app');
 
         if (!$app->ecosystemAuth()) {
             $userAppData = $this->getApp([
@@ -612,7 +767,7 @@ class Users extends BakUser implements UserInterface
      */
     public function resetPassword(string $newPassword) : bool
     {
-        $app = Di::getDefault()->getApp();
+        $app = $this->getDI()->get('app');
 
         if (!$app->ecosystemAuth()) {
             //update all companies password for the current user app
@@ -622,59 +777,6 @@ class Users extends BakUser implements UserInterface
         }
 
         return true;
-    }
-
-    /**
-     * user signup to the service.
-     *
-     * did we find the email?
-     * does it have access to this app?
-     * no?
-     * ok lets register / associate to this app
-     * yes?
-     * it meas he was invites so get the fuck out?
-     *
-     * @deprecated v1
-     *
-     * @return Users
-     */
-    public function signUp() : BakUser
-    {
-        $app = Di::getDefault()->getApp();
-
-        if (!$app->ecosystemAuth()) {
-            try {
-                $user = self::getByEmail($this->email);
-
-                $userAppData = $user->countApps('apps_id = ' . $this->getDI()->getDefault()->getApp()->getId());
-
-                if ($userAppData > 0) {
-                    throw new Exception('This email already has an account.');
-                }
-
-                //assign user role for the current app
-                $user->roles_id = Roles::getByName(Roles::DEFAULT)->getId();
-
-                $this->fire('user:afterSignup', $user, true);
-
-                //update the passwords for the current app
-                AppAuth::updatePassword($user, Password::make($this->password));
-
-                //overwrite the current user object
-                $this->id = $user->getId();
-                $this->email = $user->getEmail();
-            } catch (Exception $e) {
-                //if we cant find the user normal signup
-                $user = parent::signUp();
-
-                //update all the password for the apps
-                AppAuth::updatePassword($user, $this->password);
-            }
-        } else {
-            $user = parent::signUp();
-        }
-
-        return $user;
     }
 
     /**
@@ -699,7 +801,7 @@ class Users extends BakUser implements UserInterface
     public function generateDefaultDisplayname() : string
     {
         if (empty($this->firstname) && empty($this->lastname)) {
-            $appName = Di::getDefault()->getApp()->name;
+            $appName = $this->getDI()->get('app')->name;
             $random = new Random();
             $this->lastname = 'User';
             $this->firstname = $appName;
@@ -717,13 +819,13 @@ class Users extends BakUser implements UserInterface
      */
     public function inApp() : bool
     {
-        $appId = Di::getDefault()->get('app')->getId();
+        $appId = $this->getDI()->get('app')->getId();
 
         if ($this->getApps("apps_id = {$appId}")->count()) {
             return true;
         }
 
-        throw new Exception((new ReflectionClass(new static))->getShortName() . ' Record not found');
+        throw new Exception(getShortClassName($this) . ' Record not found');
     }
 
     /**

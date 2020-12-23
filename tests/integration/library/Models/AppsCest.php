@@ -1,6 +1,6 @@
 <?php
 
-namespace Gewaer\Tests\integration\library\Models;
+namespace Canvas\Tests\integration\library\Models;
 
 use Canvas\Models\Apps;
 use Canvas\Models\AppsPlans;
@@ -18,6 +18,9 @@ class AppsCest
             [2, 'id', UserWebhooks::class, 'apps_id', ['alias' => 'user-webhooks']],
             [2, 'id', AppsSettings::class, 'apps_id', ['alias' => 'settingsApp']],
             [1, 'default_apps_plan_id', AppsPlans::class, 'id', ['alias' => 'plan']],
+            [1, 'id', AppsPlans::class, 'apps_id', ['alias' => 'defaultPlan', 'params' => [
+                'conditions' => 'Canvas\Models\AppsPlans.is_default = 1'
+            ]]],
         ];
 
         $I->assertEquals($expected, $actual);

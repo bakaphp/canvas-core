@@ -9,11 +9,7 @@ use Baka\Http\Exception\UnauthorizedException;
 use Canvas\Models\Subscription;
 use Canvas\Models\UsersAssociatedApps;
 
-/**
- * Class AuthenticationMiddleware.
- *
- * @package Niden\Middleware
- */
+
 class ActiveStatusMiddleware extends TokenBase
 {
     /**
