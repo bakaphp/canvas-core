@@ -27,15 +27,15 @@ class AddSubscriptionsHistoryTable extends Phinx\Migration\AbstractMigration
                 'limit' => '10',
                 'after' => 'id',
             ])
-            ->addColumn('companies_id', 'integer', [
+            ->addColumn('companies_groups_id', 'integer', [
                 'null' => false,
                 'limit' => '10',
-                'after' => 'user_id',
+                'after' => 'users_id',
             ])
             ->addColumn('apps_id', 'integer', [
                 'null' => false,
                 'limit' => '10',
-                'after' => 'companies_id',
+                'after' => 'companies_groups_id',
             ])
             ->addColumn('apps_plans_id', 'integer', [
                 'null' => true,
