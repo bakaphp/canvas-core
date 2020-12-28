@@ -22,7 +22,7 @@ class AddSubscriptionsHistoryTable extends Phinx\Migration\AbstractMigration
                 'limit' => '10',
                 'identity' => 'enable',
             ])
-            ->addColumn('user_id', 'integer', [
+            ->addColumn('users_id', 'integer', [
                 'null' => false,
                 'limit' => '10',
                 'after' => 'id',
