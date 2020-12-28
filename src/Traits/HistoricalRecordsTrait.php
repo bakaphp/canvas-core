@@ -24,9 +24,9 @@ trait HistoricalRecordsTrait
      *
      * @param Model $subscription
      *
-     * @return void
+     * @return bool
      */
-    public static function addRecord(Model $record): void
+    public static function addRecord(Model $record): bool
     {
         $recordFieldsArray = [];
         $newHistoricalRecord = new self();
@@ -46,5 +46,7 @@ trait HistoricalRecordsTrait
         $newHistoricalRecord->assign($recordFieldsArray);
         $newHistoricalRecord->saveOrFail();
         reset($recordFieldsArray);
+
+        return true;
     }
 }
