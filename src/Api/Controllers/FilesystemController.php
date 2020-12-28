@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Canvas\Api\Controllers;
 
 use Canvas\Models\FileSystem;
-use Canvas\Traits\FileManagementTrait;
+use Canvas\Contracts\FileManagementTrait;
 
 class FilesystemController extends BaseController
 {

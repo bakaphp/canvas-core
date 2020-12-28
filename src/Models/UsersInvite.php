@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Canvas\Models;
 
 use Baka\Database\Exception\ModelNotFoundException;
-use Canvas\Traits\SubscriptionPlanLimitTrait;
+use Canvas\Contracts\SubscriptionPlanLimitTrait;
 use Phalcon\Di;
 
 class UsersInvite extends AbstractModel

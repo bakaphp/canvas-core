@@ -7,8 +7,9 @@ use Baka\Contracts\Database\HashTableTrait;
 use Baka\Contracts\EventsManager\EventManagerAwareTrait;
 use Baka\Database\Apps as BakaApps;
 use Canvas\Cli\Jobs\Apps as JobsApps;
-use Canvas\Traits\UsersAssociatedTrait;
+use Canvas\Contracts\UsersAssociatedTrait;
 use Phalcon\Security\Random;
+use Phalcon\Di;
 
 class Apps extends BakaApps
 {
@@ -16,10 +17,10 @@ class Apps extends BakaApps
 
     public ?string $key = null;
     public ?string $url = null;
-    public int $default_apps_plan_id;
     public ?int $is_actived = 1;
-    public int $ecosystem_auth;
-    public int $payments_active;
+    public int $ecosystem_auth = 0;
+    public int $default_apps_plan_id = 0;
+    public int $payments_active = 0;
     public int $is_public = 1;
     public array $settings = [];
 
@@ -56,6 +57,18 @@ class Apps extends BakaApps
             ['alias' => 'plan']
         );
 
+        $this->hasOne(
+            'id',
+            'Canvas\Models\AppsPlans',
+            'apps_id',
+            [
+                'alias' => 'defaultPlan',
+                'params' => [
+                    'conditions' => 'Canvas\Models\AppsPlans.is_default = 1',
+                ]
+            ]
+        );
+
         $this->hasMany(
             'id',
             'Canvas\Models\AppsPlans',
@@ -76,6 +89,16 @@ class Apps extends BakaApps
             'apps_id',
             ['alias' => 'settingsApp']
         );
+    }
+
+    /**
+     * Get the default Plan.
+     *
+     * @return AppsPlans
+     */
+    public function getDefaultPlan() : AppsPlans
+    {
+        return $this->defaultPlan;
     }
 
     /**
@@ -102,6 +125,16 @@ class Apps extends BakaApps
         foreach ($this->settings as $key => $value) {
             $this->set($key, $value);
         }
+
+        //Create a new UserAssociatedApps record
+        $userAssociatedApp = new UsersAssociatedApps();
+        $userAssociatedApp->users_id = Di::getDefault()->getUserData()->getId();
+        $userAssociatedApp->apps_id = $this->getId();
+        $userAssociatedApp->companies_id = Di::getDefault()->getUserData()->getCurrentCompany()->getId();
+        $userAssociatedApp->identify_id = (string)Di::getDefault()->getUserData()->getId();
+        $userAssociatedApp->user_active = 1;
+        $userAssociatedApp->user_role = (string)Di::getDefault()->getUserData()->roles_id;
+        $userAssociatedApp->saveOrFail();
 
         //send job to finish app creation
         JobsApps::dispatch($this);
@@ -175,5 +208,35 @@ class Apps extends BakaApps
     public function hasSettings() : bool
     {
         return (bool) $this->getSettingsApp()->count();
+    }
+
+    /**
+     * Get th default app currency.
+     *
+     * @return string
+     */
+    public function defaultCurrency() : string
+    {
+        return $this->get('currency');
+    }
+
+    /**
+     * Get app by domain name.
+     *
+     * @param string $domain
+     *
+     * @return self
+     */
+    public static function getByDomainName(string $domain) : ?self
+    {
+        /**
+         * @todo add cache
+         */
+        return self::findFirst([
+            'conditions' => 'domain = :domain: AND domain_based = 1',
+            'bind' => [
+                'domain' => $domain
+            ]
+        ]);
     }
 }

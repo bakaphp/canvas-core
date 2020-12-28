@@ -20,6 +20,8 @@ class Roles extends AbstractModel
     public ?int $scope;
     public int $companies_id;
     public int $apps_id;
+    public int $is_default = 0;
+    public int $is_active = 1;
 
     /**
      * Default ACL company.
@@ -95,7 +97,7 @@ class Roles extends AbstractModel
     }
 
     /**
-     * Check if the role existe in the db.
+     * Check if the role exists in the db.
      *
      * @param AclRole $role
      *
@@ -118,7 +120,7 @@ class Roles extends AbstractModel
     /**
      * check if this string is already a role
      * whats the diff with exist or why not merge them? exist uses the alc object and only check
-     * with your current app, this also check with de defautl company ap.
+     * with your current app, this also check with de default company ap.
      *
      * @param string $roleName
      *
@@ -203,7 +205,7 @@ class Roles extends AbstractModel
      */
     public static function getByAppName(string $role, Companies $company) : Roles
     {
-        //echeck if we have a dot , taht means we are sending the specific app to use
+        //check if we have a dot , that means we are sending the specific app to use
         if (strpos($role, '.') === false) {
             throw new InternalServerErrorException('ACL - We are expecting the app for this role');
         }
@@ -237,7 +239,7 @@ class Roles extends AbstractModel
      */
     public function copy() : Roles
     {
-        $accesList = $this->accesList;
+        $accessList = $this->accessList;
 
         //remove id to create new record
         $this->name .= 'Copie';
@@ -247,7 +249,7 @@ class Roles extends AbstractModel
         $this->apps_id = $this->di->getApp()->getId();
         $this->save();
 
-        foreach ($accesList as $access) {
+        foreach ($accessList as $access) {
             $copyAccessList = new AccessList();
             $copyAccessList->apps_id = $this->apps_id;
             $copyAccessList->roles_id = $this->getId();
@@ -361,5 +363,15 @@ class Roles extends AbstractModel
         }
 
         return true;
+    }
+
+    /**
+     * check if role is default or not.
+     *
+     * @return bool
+     */
+    public function isDefault() : bool
+    {
+        return (bool) $this->is_default;
     }
 }

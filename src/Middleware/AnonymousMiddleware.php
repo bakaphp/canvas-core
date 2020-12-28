@@ -17,7 +17,9 @@ class AnonymousMiddleware extends AuthenticationMiddleware
      * Call me.
      *
      * @param Micro $api
+     *
      * @todo need to check section for auth here
+     *
      * @return bool
      */
     public function call(Micro $api)

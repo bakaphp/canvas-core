@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace Canvas\Listener;
 
-use Baka\Auth\Models\UserCompanyApps;
-use Canvas\Models\AppsPlans;
 use Canvas\Models\Companies;
 use Canvas\Models\CompaniesAssociations;
 use Canvas\Models\CompaniesBranches;
 use Canvas\Models\CompaniesGroups;
 use Canvas\Models\Roles;
+use Canvas\Models\UserCompanyApps;
 use Canvas\Models\Users;
 use Phalcon\Di;
 use Phalcon\Events\Event;
@@ -28,13 +27,7 @@ class Company
      */
     public function afterSignup(Event $event, Companies $company) : void
     {
-        //setup the user notification setting
-        $company->set('notifications', $company->user->email);
-        /**
-         * @todo removed , we have it on subscription
-         */
-        $company->set('paid', '1');
-        $app = $company->getDI()->getApp();
+        $app = Di::getDefault()->get('app');
 
         //now that we setup de company and associated with the user we need to setup this as its default company
         if (!$company->user->get(Companies::cacheKey())) {
@@ -57,42 +50,26 @@ class Company
         $companyApps = new UserCompanyApps();
         $companyApps->companies_id = $company->getId();
         $companyApps->apps_id = $app->getId();
-        //$companyApps->subscriptions_id = 0;
-
-        //we need to assign this company to a plan
-        if (empty($company->appPlanId)) {
-            $plan = AppsPlans::getDefaultPlan();
-            $companyApps->stripe_id = $plan->stripe_id;
-        }
-
-        //if the app is subscription based, create a free trial for this company
-        if ($app->subscriptionBased()) {
-            $company->set(
-                Companies::PAYMENT_GATEWAY_CUSTOMER_KEY,
-                $company->startFreeTrial()
-            );
-
-            $companyApps->subscriptions_id = $company->subscription->getId();
-        }
-
         $companyApps->created_at = date('Y-m-d H:i:s');
         $companyApps->is_deleted = 0;
         $companyApps->saveOrFail();
 
-        $companiesGroup = CompaniesGroups::findFirst([
+        $companiesGroup = CompaniesGroups::findFirstOrCreate([
             'conditions' => 'apps_id = ?0 and users_id = ?1 and is_deleted = 0',
             'bind' => [
-                Di::getDefault()->getApp()->getId(),
-                Di::getDefault()->getUserData()->getId()
+                Di::getDefault()->get('app')->getId(),
+                Di::getDefault()->get('userData')->getId()
             ]
+        ], [
+            'name' => $company->name,
+            'apps_id' => Di::getDefault()->get('app')->getId(),
+            'users_id' => Di::getDefault()->get('userData')->getId(),
+            'is_default' => 1
         ]);
 
-        if (!$companiesGroup) {
-            $companiesGroup = new CompaniesGroups();
-            $companiesGroup->name = $company->name;
-            $companiesGroup->apps_id = Di::getDefault()->getApp()->getId();
-            $companiesGroup->users_id = Di::getDefault()->getUserData()->getId();
-            $companiesGroup->saveOrFail();
+        //if the app is subscription based, create a free trial for this companyGroup and this app
+        if ($app->subscriptionBased()) {
+            $companiesGroup->startFreeTrial();
         }
 
         /**
@@ -104,6 +81,6 @@ class Company
         $companiesAssoc->saveOrFail();
 
         //assign role
-        $company->user->assignRole(Roles::findFirstOrFail($company->user->role_id)->name);
+        $company->user->assignRole(Roles::DEFAULT);
     }
 }

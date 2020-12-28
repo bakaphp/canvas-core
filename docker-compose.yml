@@ -4,7 +4,7 @@ services:
 
   #php server
   canvasapi:
-    image: mctekk/phalconphp:latest
+    image: mctekk/phalconphp:7.4
     volumes:
       - .:/app
     depends_on:

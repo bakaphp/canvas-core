@@ -32,7 +32,8 @@ class RouterProvider extends BakaRouterProvider
      */
     protected function getRoutes(): array
     {
-        $path = appPath('api/routes');
+        //when testing change the path of routes
+        $path = !defined('API_TESTS') ? appPath('api/routes') : appPath('routes');
 
         $routes = [
             'api' => $path . '/api.php',

@@ -9,6 +9,7 @@ $publicRoutes = [
     Route::post('/auth')->controller('AuthController')->action('login'),
     Route::post('/refresh-token')->controller('AuthController')->action('refresh'),
     Route::post('/users')->controller('AuthController')->action('signup'),
+    Route::post('/users/custom-registration')->controller('AuthController')->action('signupByRegisterRole'),
     Route::post('/auth/forgot')->controller('AuthController')->action('recover'),
     Route::post('/auth/reset/{key}')->controller('AuthController')->action('reset'),
     Route::get('/users-invite/validate/{hash}')->controller('UsersInviteController')->action('getByHash'),
@@ -19,6 +20,8 @@ $publicRoutes = [
     Route::get('/countries')->controller('CountriesController')->action('index'),
     Route::get('/countries/{id}')->controller('CountriesController')->action('getById'),
     Route::get('/timezones')->controller('TimeZonesController'),
+    Route::get('/countries/{countriesId}/states')->controller('CountriesController')->action('getStates'),
+    Route::get('/countries/{countriesId}/states/{statesId}/regions')->controller('CountriesController')->action('getCities')
 ];
 
 $privateRoutes = [
@@ -58,7 +61,7 @@ $privateRoutes = [
     Route::post('/roles-accesslist/{id}/copy')->controller('RolesAccessListController')->action('copy'),
     Route::get('/custom-fields-modules/{id}/fields')->controller('CustomFieldsModulesController')->action('customFieldsByModulesId'),
     Route::put('/apps-plans/{id}/method')->controller('AppsPlansController')->action('updatePaymentMethod'),
-    Route::get('/apps-plans/{id}/method')->controller('PaymentMethodsCredsController')->action('getCurrentPaymentMethodsCreds'),
+    Route::get('/apps-plans/{id}/method')->controller('PaymentMethodsCredentialsController')->action('getCurrentPaymentMethods'),
     Route::get('/schema/{slug}')->controller('SchemaController')->action('getBySlug'),
     Route::get('/schema/{slug}/description')->controller('SchemaController')->action('getModelDescription'),
     Route::post('/users/{hash}/change-email')->controller('AuthController')->action('changeUserEmail'),
@@ -87,6 +90,7 @@ $privateRoutes = [
     Route::delete('/menus/{menusId}/links/{id}')->controller('MenusLinksController')->action('delete'),
     Route::crud('/menus-links')->controller('MenusLinksController'),
     Route::put('/users/{usersId}/activate')->controller('UsersAssociatedAppsController')->action('changeUserActiveStatus'),
+    Route::crud('/register-roles')->controller('RegisterRolesController'),
 ];
 
 $privateSubscriptionRoutes = [
