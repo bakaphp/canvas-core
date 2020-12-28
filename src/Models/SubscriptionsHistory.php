@@ -25,9 +25,8 @@ class SubscriptionsHistory extends AbstractModel
     use HistoricalRecordsTrait;
 
     public int $record_id;
-    public ?int $apps_plans_id = null;
-    public ?int $user_id = null;
-    public ?int $companies_id = null;
+    public ?int $users_id = null;
+    public ?int $companies_groups_id = null;
     public ?int $apps_id = null;
     public ?string $name = null;
     public string $stripe_id = "";
