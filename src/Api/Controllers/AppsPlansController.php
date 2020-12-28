@@ -74,16 +74,8 @@ class AppsPlansController extends BaseController
             $subscription->swap($stripeId);
         }
 
-        $this->db->begin();
-
         //Create new history record for the edited subscription
         $subscriptionRecord = SubscriptionsHistory::addRecord($subscription);
-
-        if (!$subscriptionRecord) {
-            $this->db->rollback();
-        }
-
-        $this->db->commit();
 
         //update the subscription with the plan
         $subscription->apps_plans_id = $appPlan->getId();
