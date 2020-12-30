@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace Canvas\Api\Controllers;
 
+use Canvas\Contracts\Controllers\ProcessOutputMapperTrait;
 use Canvas\CustomFields\CustomFields;
-use Phalcon\Mvc\ModelInterface;
-use Phalcon\Http\Request;
 use Canvas\Dto\CustomFields as CustomFieldsDto;
 use Canvas\Mapper\CustomFieldsMapper;
-use Canvas\Contracts\Controllers\ProcessOutputMapperTrait;
+use Phalcon\Http\Request;
 use Phalcon\Http\Response;
-
+use Phalcon\Mvc\ModelInterface;
 
 class CustomFieldsController extends BaseController
 {
@@ -67,9 +66,10 @@ class CustomFieldsController extends BaseController
      * Process the input data.
      *
      * @param array $request
+     *
      * @return array
      */
-    protected function processInput(array $request): array
+    protected function processInput(array $request) : array
     {
         //encode the attribute field from #teamfrontend
         if (!empty($request['attributes']) && is_array($request['attributes'])) {
@@ -80,12 +80,13 @@ class CustomFieldsController extends BaseController
     }
 
     /**
-    * Process the create request and record the object.
-    *
-    * @return ModelInterface
-    * @throws Exception
-    */
-    protected function processCreate(Request $request): ModelInterface
+     * Process the create request and record the object.
+     *
+     * @return ModelInterface
+     *
+     * @throws Exception
+     */
+    protected function processCreate(Request $request) : ModelInterface
     {
         $model = parent::processCreate($request);
         $request = $request->getPostData();
@@ -103,10 +104,12 @@ class CustomFieldsController extends BaseController
      *
      * @param Request $request
      * @param ModelInterface $record
+     *
      * @throws Exception
+     *
      * @return ModelInterface
      */
-    protected function processEdit(Request $request, ModelInterface $record): ModelInterface
+    protected function processEdit(Request $request, ModelInterface $record) : ModelInterface
     {
         //process the input
         $record = parent::processEdit($request, $record);
@@ -120,7 +123,7 @@ class CustomFieldsController extends BaseController
     }
 
     /**
-     * Deletes a custom field and all its values
+     * Deletes a custom field and all its values.
      *
      * @param int $id
      *
@@ -129,11 +132,11 @@ class CustomFieldsController extends BaseController
     public function delete(int $id) : Response
     {
         $customField = $this->model::findFirstOrFail([
-            "conditions" => "id = :id: and apps_id = :apps_id: and companies_id = :companies_id: and is_deleted = 0",
-            "bind" => [
-                "id" => $id, 
-                "apps_id" => $this->app->getId(), 
-                "companies_id" => $this->userData->currentCompanyId()
+            'conditions' => 'id = :id: and apps_id = :apps_id: and companies_id = :companies_id: and is_deleted = 0',
+            'bind' => [
+                'id' => $id,
+                'apps_id' => $this->app->getId(),
+                'companies_id' => $this->userData->currentCompanyId()
             ]
         ]);
         $customField->removeValues();

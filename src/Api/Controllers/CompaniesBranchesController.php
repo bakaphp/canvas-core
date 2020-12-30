@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Canvas\Api\Controllers;
 
-use Phalcon\Http\Response;
 use Baka\Http\Exception\UnprocessableEntityException;
 use Canvas\Models\CompaniesBranches;
+use Phalcon\Http\Response;
 
 /**
  * Class CompaniesController.
@@ -72,7 +72,7 @@ class CompaniesBranchesController extends BaseController
      *
      * @return Response
      */
-    public function getById($id): Response
+    public function getById($id) : Response
     {
         //find the info
         $record = $this->model->findFirstOrFail([
