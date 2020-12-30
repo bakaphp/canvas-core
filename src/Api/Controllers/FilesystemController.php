@@ -7,17 +7,6 @@ namespace Canvas\Api\Controllers;
 use Canvas\Models\FileSystem;
 use Canvas\Traits\FileManagementTrait;
 
-/**
- * Class BaseController.
- *
- * @package Canvas\Api\Controllers
- *
- * @property Users $userData
- * @property Request $request
- * @property Config $config
- * @property \Baka\Mail\Message $mail
- * @property Apps $app
- */
 class FilesystemController extends BaseController
 {
     use FileManagementTrait;

@@ -5,71 +5,16 @@ namespace Canvas\Models;
 
 class MenusLinks extends AbstractModel
 {
-    /**
-     *
-     * @var integer
-     */
-    public $id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $menus_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $parent_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $system_modules_id;
-
-    /**
-     *
-     * @var string
-     */
-    public $url;
-
-    /**
-     *
-     * @var string
-     */
-    public $title;
-
-    /**
-     *
-     * @var integer
-     */
-    public $position;
-
-    /**
-     *
-     * @var integer
-     */
-    public $is_published;
-
-    /**
-     *
-     * @var string
-     */
-    public $created_at;
-
-    /**
-     *
-     * @var string
-     */
-    public $updated_at;
-
-    /**
-     *
-     * @var integer
-     */
-    public $is_deleted;
+    public int $menus_id = 0;
+    public int $parent_id = 0;
+    public ?int $system_modules_id = null;
+    public ?string $url = null;
+    public ?string $title = null;
+    public ?string $position = null;
+    public ?string $icon_url = null;
+    public ?string $icon_class = null;
+    public ?string $route = null;
+    public int $is_published = 0;
 
     /**
      * Initialize method for model.
@@ -98,16 +43,6 @@ class MenusLinks extends AbstractModel
             'id',
             ['alias' => 'modules']
         );
-    }
-
-    /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource() : string
-    {
-        return 'menus_links';
     }
 
     /**

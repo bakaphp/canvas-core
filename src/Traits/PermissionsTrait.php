@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Canvas\Traits;
 
+use Baka\Http\Exception\InternalServerErrorException;
+use Baka\Http\Exception\UnauthorizedException;
 use Canvas\Models\Roles;
 use Canvas\Models\UserRoles;
-use Canvas\Http\Exception\InternalServerErrorException;
-use Canvas\Http\Exception\UnauthorizedException;
 
 /**
  * Trait FractalTrait.
@@ -17,16 +17,17 @@ use Canvas\Http\Exception\UnauthorizedException;
 trait PermissionsTrait
 {
     /**
-     * Assigne a user this role
+     * Assigned a user this role
      * Example: App.Role.
      *
      * @param string $role
+     *
      * @return boolean
      */
-    public function assignRole(string $role): bool
+    public function assignRole(string $role) : bool
     {
         /**
-         * check if we have a dot, that mes it legacy and sending the app name
+         * check if we have a dot, that means it legacy and sending the app name
          * not needed any more so we remove it.
          */
         if (strpos($role, '.') !== false) {
@@ -61,13 +62,44 @@ trait PermissionsTrait
     }
 
     /**
+     * Assigned a user this role
+     * Example: App.Role.
+     *
+     * @param int $id
+     *
+     * @return boolean
+     */
+    public function assignRoleById(int $id) : bool
+    {
+        $role = Roles::getById($id);
+
+        $userRole = UserRoles::findFirstOrCreate([
+            'conditions' => 'users_id = :users_id: and apps_id = :apps_id: and companies_id = :companies_id: and is_deleted = 0',
+            'bind' => [
+                "users_id" => $this->getId(),
+                "apps_id" => $role->apps_id,
+                "companies_id" => $this->currentCompanyId()
+            ]],[
+                "users_id" => $this->getId(),
+                "roles_id" => $role->getId(),
+                "apps_id" => $role->apps_id,
+                "companies_id" => $this->currentCompanyId()
+        ]);
+
+        $userRole->roles_id = $role->getId();
+        
+        return $userRole->saveOrFail();
+    }
+
+    /**
      * Remove a role for the current user
      * Example: App.Role.
      *
      * @param string $role
+     *
      * @return boolean
      */
-    public function removeRole(string $role): bool
+    public function removeRole(string $role) : bool
     {
         $role = Roles::getByAppName($role, $this->getDefaultCompany());
 
@@ -92,9 +124,10 @@ trait PermissionsTrait
      * Check if the user has this role.
      *
      * @param string $role
+     *
      * @return boolean
      */
-    public function hasRole(string $role): bool
+    public function hasRole(string $role) : bool
     {
         $role = Roles::getByAppName($role, $this->getDefaultCompany());
 
@@ -118,9 +151,10 @@ trait PermissionsTrait
      *
      * @param string $action
      * @param bool $throwException
+     *
      * @return boolean
      */
-    public function can(string $action, bool $throwException = false): bool
+    public function can(string $action, bool $throwException = false) : bool
     {
         //if we find the . then les
         if (strpos($action, '.') === false) {
@@ -134,7 +168,7 @@ trait PermissionsTrait
         //get your user account role for this app or the canvas ecosystem
         if (!$role = $this->getPermission()) {
             throw new InternalServerErrorException(
-                'ACL - User doesnt have any set roles in this current app ' . $this->di->getApp()->name
+                'ACL - User doesn\'t have any set roles in this current app ' . $this->di->getApp()->name
             );
         }
 
@@ -145,5 +179,19 @@ trait PermissionsTrait
         }
 
         return (bool) $canExecute;
+    }
+
+    /**
+     * Check whether a role is an Admin or not
+     *
+     * @return bool
+     */
+    public function isAdmin(): bool
+    {
+        if (!$this->hasRole("{$this->app->name}.Admins")) {
+            throw new UnauthorizedException("Current user does not have Admins role");
+        }
+
+        return true;
     }
 }

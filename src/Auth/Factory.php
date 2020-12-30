@@ -9,9 +9,10 @@ use Canvas\Models\Users;
 class Factory
 {
     /**
-     * Create the Auth factory
+     * Create the Auth factory.
      *
-     * @param integer $ecosystem_auth
+     * @param int $ecosystem_auth
+     *
      * @return Auth
      */
     public static function create(bool $ecosystemAuth)
@@ -21,13 +22,12 @@ class Factory
             case false:
                 $user = new App();
                 break;
-            
+
             default:
-                $user = new Users();
+                $user = new Auth();
                 break;
         }
 
         return $user;
     }
-    
 }

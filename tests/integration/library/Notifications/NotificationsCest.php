@@ -3,7 +3,7 @@
 namespace Gewaer\Tests\integration\library\Jobs;
 
 use Canvas\Models\Users;
-use Canvas\Notifications\Notify;
+use Baka\Notifications\Notify;
 use Canvas\Notifications\PasswordUpdate;
 use IntegrationTester;
 

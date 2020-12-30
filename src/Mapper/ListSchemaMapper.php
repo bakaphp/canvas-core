@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Canvas\Mapper;
 
 use AutoMapperPlus\CustomMapper\CustomMapper;
-use Baka\Elasticsearch\Contracts\CustomFiltersSchemaTrait;
+use Baka\Contracts\Elasticsearch\CustomFiltersSchemaTrait;
 
 // You can either extend the CustomMapper, or just implement the MapperInterface
 // directly.
@@ -16,12 +16,12 @@ class ListSchemaMapper extends CustomMapper
     private $elastic;
 
     /**
-     * @param SystemModules $systeModel
+     * @param SystemModules $systemModel
      * @param \Canvas\Dto\ListSchema $listSchema
      *
      * @return ListSchema
      */
-    public function mapToObject($systeModel, $listSchema, array $context = [])
+    public function mapToObject($systemModel, $listSchema, array $context = [])
     {
         $listSchema->bulkActions = [
             [
@@ -37,9 +37,9 @@ class ListSchemaMapper extends CustomMapper
         ];
 
         //if the system model uses elastic then we can show custom filters
-        /*         if ($systeModel->useElastic()) {
+        /*         if ($systemModel->useElastic()) {
                     $this->elastic = DI::getDefault()->get('elastic');
-                    $listSchema->customFilterFields = $this->getSchema($systeModel->slug);
+                    $listSchema->customFilterFields = $this->getSchema($systemModel->slug);
                 }
          */
         /**
@@ -47,7 +47,7 @@ class ListSchemaMapper extends CustomMapper
          *
          * @todo in PHP 7.3 change to use exceptions
          */
-        $listSchema->tableFields = !empty($systeModel->browse_fields) ? json_decode($systeModel->browse_fields) : null;
+        $listSchema->tableFields = !empty($systemModel->browse_fields) ? json_decode($systemModel->browse_fields) : null;
 
         return $listSchema;
     }

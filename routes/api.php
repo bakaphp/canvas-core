@@ -1,14 +1,15 @@
 <?php
 
+use function Baka\envValue;
 use Baka\Router\Route;
 use Baka\Router\RouteGroup;
-use function Canvas\Core\envValue;
 
 $publicRoutes = [
     Route::get('/')->controller('IndexController'),
     Route::post('/auth')->controller('AuthController')->action('login'),
     Route::post('/refresh-token')->controller('AuthController')->action('refresh'),
     Route::post('/users')->controller('AuthController')->action('signup'),
+    Route::post('/users/custom-registration')->controller('AuthController')->action('signupByRegisterRole'),
     Route::post('/auth/forgot')->controller('AuthController')->action('recover'),
     Route::post('/auth/reset/{key}')->controller('AuthController')->action('reset'),
     Route::get('/users-invite/validate/{hash}')->controller('UsersInviteController')->action('getByHash'),
@@ -18,6 +19,9 @@ $publicRoutes = [
     Route::post('/users/social')->controller('AuthController')->action('loginBySocial'),
     Route::get('/countries')->controller('CountriesController')->action('index'),
     Route::get('/countries/{id}')->controller('CountriesController')->action('getById'),
+    Route::get('/timezones')->controller('TimeZonesController'),
+    Route::get('/countries/{countriesId}/states')->controller('CountriesController')->action('getStates'),
+    Route::get('/countries/{countriesId}/states/{statesId}/regions')->controller('CountriesController')->action('getCities')
 ];
 
 $privateRoutes = [
@@ -30,12 +34,12 @@ $privateRoutes = [
     Route::crud('/currencies'),
     Route::crud('/apps'),
     Route::crud('/notifications'),
-    Route::post('/notifications/bulk/delete')->controller('NotificationsController')->action('delete'),
     Route::crud('/system-modules')->controller('SystemModulesController'),
     Route::crud('/companies-branches')->controller('CompaniesBranchesController'),
     Route::crud('/apps-plans')->controller('AppsPlansController'),
     Route::post('/apps-plans/{id}/reactivate')->controller('AppsPlansController')->action('reactivateSubscription'),
-    Route::crud('/roles-acceslist')->controller('RolesAccesListController'),
+    Route::crud('/roles-acceslist')->controller('RolesAccessListController'),
+    Route::crud('/roles-accesslist')->controller('RolesAccessListController'),
     Route::crud('/permissions-resources')->controller('PermissionsResourcesController'),
     Route::crud('/permissions-resources-access')->controller('PermissionsResourcesAccessController'),
     Route::crud('/users-invite')->controller('UsersInviteController'),
@@ -45,10 +49,6 @@ $privateRoutes = [
     Route::crud('/filesystem'),
     Route::crud('/custom-fields-types')->controller('CustomFieldsTypesController'),
     Route::crud('/custom-fields-values')->controller('CustomFieldsValuesController'),
-    Route::crud('/menus')->controller('MenusController'),
-    Route::crud('/menus/{menusId}/links')->controller('MenusLinksController'),
-
-    Route::get('/timezones')->controller('TimeZonesController'),
     Route::post('/notifications-read-all')->controller('NotificationsController')->action('cleanAll'),
     Route::post('/users/{id}/devices')->controller('UserLinkedSourcesController')->action('devices'),
     Route::delete('/users/{id}/devices/{deviceId}')->controller('UserLinkedSourcesController')->action('detachDevice'),
@@ -57,7 +57,8 @@ $privateRoutes = [
     Route::crud('/filesystem-entity')->controller('FilesystemEntitiesController'),
     Route::put('/auth/logout')->controller('AuthController')->action('logout'),
     Route::post('/users/invite')->controller('UsersInviteController')->action('insertInvite'),
-    Route::post('/roles-acceslist/{id}/copy')->controller('RolesAccesListController')->action('copy'),
+    Route::post('/roles-acceslist/{id}/copy')->controller('RolesAccessListController')->action('copy'),
+    Route::post('/roles-accesslist/{id}/copy')->controller('RolesAccessListController')->action('copy'),
     Route::get('/custom-fields-modules/{id}/fields')->controller('CustomFieldsModulesController')->action('customFieldsByModulesId'),
     Route::put('/apps-plans/{id}/method')->controller('AppsPlansController')->action('updatePaymentMethod'),
     Route::get('/apps-plans/{id}/method')->controller('PaymentMethodsCredsController')->action('getCurrentPaymentMethodsCreds'),
@@ -77,7 +78,19 @@ $privateRoutes = [
     Route::crud('/companies-settings')->controller('CompaniesSettingsController'),
     Route::crud('/users-associated-companies')->controller('UsersAssociatedCompaniesController'),
     Route::crud('/users-companies-apps')->controller('UserCompanyAppsController'),
-    Route::crud('/companies-associations')->controller('CompaniesAssociationsController')
+    Route::crud('/companies-associations')->controller('CompaniesAssociationsController'),
+    Route::crud('/custom-forms')->controller('SystemModulesFormsController'),
+    Route::get('/custom-forms/{slug}')->controller('SystemModulesFormsController')->action('getBySlug'),
+    Route::crud('/menus')->controller('MenusController'),
+    Route::get('/menus/{slug}')->controller('MenusController')->action('getBySlug'),
+    Route::post('/menus/{menusId}/links')->controller('MenusLinksController')->action('create'),
+    Route::get('/menus/{menusId}/links')->controller('MenusLinksController')->action('index'),
+    Route::get('/menus/{menusId}/links/{id}')->controller('MenusLinksController')->action('getById'),
+    Route::put('/menus/{menusId}/links/{id}')->controller('MenusLinksController')->action('edit'),
+    Route::delete('/menus/{menusId}/links/{id}')->controller('MenusLinksController')->action('delete'),
+    Route::crud('/menus-links')->controller('MenusLinksController'),
+    Route::put('/users/{usersId}/activate')->controller('UsersAssociatedAppsController')->action('changeUserActiveStatus'),
+    Route::crud('/register-roles')->controller('RegisterRolesController'),
 ];
 
 $privateSubscriptionRoutes = [
@@ -102,7 +115,7 @@ $publicRoutesGroup = RouteGroup::from($publicRoutes)
 
 $privateRoutesGroup = RouteGroup::from($privateRoutes)
                 ->defaultNamespace('Canvas\Api\Controllers')
-                ->addMiddlewares('auth.jwt@before', 'auth.acl@before')
+                ->addMiddlewares('auth.jwt@before', 'auth.acl@before', 'auth.activeStatus@before')
                 ->defaultPrefix(envValue('API_VERSION', '/v1'));
 
 $subscriptionPrivateRoutes = RouteGroup::from($privateSubscriptionRoutes)

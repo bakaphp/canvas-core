@@ -22,10 +22,11 @@ class AddCustomFieldsAttributes extends AbstractMigration
                 'signed' => false,
                 'identity' => 'enable',
             ])
-            ->addColumn('entity_id', 'integer', [
+            ->addColumn('entity_id', 'string', [
                 'null' => false,
-                'limit' => '10',
-                'signed' => false,
+                'limit' => '255',
+                'collation' => 'utf8mb4_general_ci',
+                'encoding' => 'utf8mb4',
                 'after' => 'id',
             ])
             ->addColumn('model_name', 'string', [

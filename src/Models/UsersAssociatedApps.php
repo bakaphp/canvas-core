@@ -3,49 +3,19 @@ declare(strict_types=1);
 
 namespace Canvas\Models;
 
-class UsersAssociatedApps extends AbstractModel
+use Baka\Contracts\Auth\UserInterface;
+use Phalcon\Di;
+use Canvas\Notifications\UserInactiveConfirmation;
+
+class UsersAssociatedApps extends AbstractModel implements UserInterface
 {
-    /**
-     *
-     * @var integer
-     */
-    public $users_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $apps_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $companies_id;
-
-    /**
-     *
-     * @var string
-     */
-    public $identify_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $user_active;
-
-    /**
-     *
-     * @var string
-     */
-    public $user_role;
-
-    /**
-     *
-     * @var string
-     */
-    public $password;
+    public int $users_id;
+    public int $apps_id;
+    public int $companies_id;
+    public string $identify_id;
+    public int $user_active;
+    public string $user_role;
+    public ?string $password = null;
 
     /**
      * Initialize method for model.
@@ -77,12 +47,49 @@ class UsersAssociatedApps extends AbstractModel
     }
 
     /**
-     * Returns table name mapped in the model.
+     * Upload Files.
      *
-     * @return string
+     * @todo move this to the baka class
+     *
+     * @return void
      */
-    public function getSource(): string
+    public function afterSave()
     {
-        return 'users_associated_apps';
+        if (!$this->validateIsActive()) {
+            $parentUser = Di::getDefault()->getUserData();
+            $userInactiveConfirmation = new UserInactiveConfirmation($parentUser);
+            $userInactiveConfirmation->setFrom($parentUser);
+
+            $this->getUser()->notify($userInactiveConfirmation);
+        }
+    }
+
+    /**
+     * Checks whether or not a user is active on the current app's company
+     *
+     * @return bool
+     */
+    public function validateIsActive() : bool
+    {
+        return $this->user_active ? true : false;
+    }
+
+    /**
+     * Get record by user's id
+     *
+     * @param int $userId
+     *
+     * @return UsersAssociatedApps
+     */
+    public static function getByUserId(int $userId): self
+    {
+        return self::findFirstOrFail([
+            "conditions" => "apps_id = :apps_id: and users_id = :users_id: and companies_id = :companies_id: and is_deleted = 0",
+            "bind" => [
+                "apps_id" => Di::getDefault()->getApp()->getId(),
+                "users_id" => $userId,
+                "companies_id" => Di::getDefault()->getUserData()->get(Companies::cacheKey())
+            ]
+        ]);
     }
 }

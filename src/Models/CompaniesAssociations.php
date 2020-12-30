@@ -3,46 +3,10 @@ declare(strict_types=1);
 
 namespace Canvas\Models;
 
-use Phalcon\Validation;
-use Phalcon\Validation\Validator\PresenceOf;
-
-/**
- * Class CompanyBranches.
- *
- * @package Canvas\Models
- *
- */
 class CompaniesAssociations extends AbstractModel
 {
-    /**
-     *
-     * @var integer
-     */
-    public $companies_groups_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $companies_id;
-
-    /**
-     *
-     * @var string
-     */
-    public $created_at;
-
-    /**
-     *
-     * @var string
-     */
-    public $updated_at;
-
-    /**
-     *
-     * @var integer
-     */
-    public $is_deleted;
+    public int $companies_groups_id;
+    public int $companies_id;
 
     /**
      * Initialize method for model.
@@ -64,15 +28,5 @@ class CompaniesAssociations extends AbstractModel
             'id',
             ['alias' => 'companiesGroups']
         );
-    }
-
-    /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource() : string
-    {
-        return 'companies_associations';
     }
 }

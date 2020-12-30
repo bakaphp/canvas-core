@@ -2,31 +2,64 @@
 
 namespace Canvas\Cli\Tasks;
 
+use function Baka\appPath;
+use Canvas\App\Setup;
+use Canvas\Models\Apps;
 use Phalcon\Cli\Task as PhTask;
-use Canvas\Cli\Tasks\AclTask;
-use Canvas\Cli\Tasks\EmailtemplatesTask;
+use Phinx\Console\PhinxApplication;
+use Phinx\Wrapper\TextWrapper;
 
-/**
- * Class AclTask.
- *
- * @package Canvas\Cli\Tasks;
- *
- * @property \Canvas\Acl\Manager $acl
- */
 class SetupTask extends PhTask
 {
     /**
-     * Create the default roles of the system.
+     * Start a fresh kanvas ecosystem.
      *
      * @return void
      */
-    public function mainAction()
+    public function startAction()
     {
-        $acl = new AclTask();
-        $emailTemplates = new EmailtemplatesTask();
+        echo 'Starting a Kanvas Ecosystem Fresh Setup' . PHP_EOL;
+        echo 'Initializing migration' . PHP_EOL;
 
-        $acl->setupDefaultRoles();
-        $acl->kanvas();
-        $emailTemplates->insertUserNotificationTemplate();
+        $phinxApp = new PhinxApplication();
+        $phinxTextWrapper = new TextWrapper($phinxApp);
+        $configFile = 'phinx-kanvas.php';
+        $parser = 'php';
+
+        $phinxTextWrapper->setOption('configuration', appPath($configFile));
+        $phinxTextWrapper->setOption('parser', $parser);
+
+        $phinxTextWrapper->getMigrate();
+        echo 'Processing Seeds' . PHP_EOL;
+        $phinxTextWrapper->getSeed();
+
+        echo 'Setting up App ACL' . PHP_EOL;
+        $setup = new Setup($this->app);
+        $setup->acl();
+
+        echo 'Finish with Kanvas Setup' . PHP_EOL;
+    }
+
+    /**
+     * Create new app.
+     *
+     * @param string $name
+     *
+     * @return void
+     */
+    public function newAppAction(string $name)
+    {
+        $app = new Apps();
+        $app->name = $name;
+        $app->description = $name;
+        $app->ecosystem_auth = 1;
+        $app->url = '';
+        $app->default_apps_plan_id = 1;
+        $app->is_actived = 1;
+        $app->payments_active = 1;
+        $app->is_public = 1;
+        $app->saveOrFail();
+
+        echo 'App Create ' . $app->name . PHP_EOL;
     }
 }

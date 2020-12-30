@@ -8,10 +8,17 @@ class AppsPlansSettingsSeeder extends AbstractSeed
     {
         $data = [
             [
-                'apps_plans_id'=>1,
-                'apps_id'=>1,
-                'key'=>'example123456',
-                'value'=>1,
+                'apps_plans_id' => 1,
+                'apps_id' => 1,
+                'key' => 'example123456',
+                'value' => 1,
+                'created_at' => date('Y-m-d H:m:s')
+            ],
+            [
+                'apps_plans_id' => 1,
+                'apps_id' => 1,
+                'key' => 'users_total',
+                'value' => 30,
                 'created_at' => date('Y-m-d H:m:s')
             ]
         ];

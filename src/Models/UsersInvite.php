@@ -11,65 +11,12 @@ class UsersInvite extends AbstractModel
 {
     use SubscriptionPlanLimitTrait;
 
-    /**
-     *
-     * @var integer
-     */
-    public $id;
-
-    /**
-     *
-     * @var string
-     */
-    public $invite_hash;
-
-    /**
-     *
-     * @var integer
-     */
-    public $users_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $companies_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $role_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $app_id;
-
-    /**
-     *
-     * @var string
-     */
-    public $email;
-
-    /**
-     *
-     * @var integer
-     */
-    public $is_deleted;
-
-    /**
-     *
-     * @var string
-     */
-    public $created_at;
-
-    /**
-     *
-     * @var string
-     */
-    public $updated_at;
+    public string $invite_hash;
+    public int $users_id;
+    public int $companies_id;
+    public int $role_id;
+    public int $apps_id;
+    public string $email;
 
     /**
      * Subscription plan key.
@@ -99,16 +46,6 @@ class UsersInvite extends AbstractModel
     }
 
     /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource(): string
-    {
-        return 'users_invite';
-    }
-
-    /**
      * What to do after the creation of a new users
      *  - Assign default role.
      *
@@ -120,12 +57,13 @@ class UsersInvite extends AbstractModel
     }
 
     /**
-     * Get the invite by hash
+     * Get the invite by hash.
      *
      * @param string $hash
+     *
      * @return UsersInvite
      */
-    public static function getByHash(string $hash): UsersInvite
+    public static function getByHash(string $hash) : UsersInvite
     {
         return self::findFirstOrFail([
             'conditions' => 'invite_hash = ?0 and is_deleted = 0',
@@ -137,16 +75,20 @@ class UsersInvite extends AbstractModel
      * Validate if the current email is valid to invite.
      *
      * @throws Exception
+     *
      * @param string $email
+     *
      * @return bool
      */
-    public static function isValid(string $email, int $roleId = 1): bool
+    public static function isValid(string $email, int $roleId = 1) : bool
     {
-        $userData = Di::getDefault()->getUserData();
+        $userData = Di::getDefault()->get('userData');
+        $app = Di::getDefault()->get('app');
+
         //check inviste
         $invitedUser = self::findFirst([
-            'conditions' => 'email = ?0 and companies_id = ?1 and role_id = ?2 and is_deleted = 0',
-            'bind' => [$email, $userData->currentCompanyId(), $roleId]
+            'conditions' => 'email = ?0 and companies_id = ?1 and role_id = ?2 and apps_id = ?3 and is_deleted = 0',
+            'bind' => [$email, $userData->currentCompanyId(), $roleId, $app->getId()]
         ]);
 
         if (is_object($invitedUser)) {
@@ -172,9 +114,10 @@ class UsersInvite extends AbstractModel
      * Given the form request return a new user invite.
      *
      * @param array $requets
+     *
      * @return Users
      */
-    public function newUser(array $request): Users
+    public function newUser(array $request) : Users
     {
         $user = new Users();
         $user->firstname = $request['firstname'];

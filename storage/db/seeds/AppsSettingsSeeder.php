@@ -101,6 +101,24 @@ class AppsSettingsSeeder extends AbstractSeed
                 'name' => 'show_notifications',
                 'value' => '1',
                 'created_at' => date('Y-m-d H:m:s'),
+            ],
+            [
+                'apps_id' => 1,
+                'name' => 'delete_images_on_empty_files_field',
+                'value' => '1',
+                'created_at' => date('Y-m-d H:m:s'),
+            ],
+            [
+                'apps_id' => 1,
+                'name' => 'public_images',
+                'value' => '0',
+                'created_at' => date('Y-m-d H:m:s'),
+            ],
+            [
+                'apps_id' => 1,
+                'name' => 'default_feeds_comments',
+                'value' => '3',
+                'created_at' => date('Y-m-d H:m:s'),
             ]
         ];
 

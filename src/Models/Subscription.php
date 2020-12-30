@@ -2,11 +2,11 @@
 
 namespace Canvas\Models;
 
-use Phalcon\Cashier\Subscription as PhalconSubscription;
-use Canvas\Http\Exception\InternalServerErrorException;
-use Phalcon\Di;
+use Baka\Cashier\Subscription as BakaSubscription;
+use Baka\Http\Exception\InternalServerErrorException;
 use Carbon\Carbon;
 use Phalcon\Db\RawValue;
+use Phalcon\Di;
 
 /**
  * Trait Subscription.
@@ -21,140 +21,29 @@ use Phalcon\Db\RawValue;
  * @property \Phalcon\Di $di
  *
  */
-class Subscription extends PhalconSubscription
+class Subscription extends BakaSubscription
 {
     const DEFAULT_GRACE_PERIOD_DAYS = 5;
-    /**
-     *
-     * @var integer
-     */
-    public $apps_plans_id = 0;
 
-    /**
-     *
-     * @var integer
-     */
-    public $user_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $companies_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $apps_id;
-
-    /**
-     *
-     * @var string
-     */
-    public $name;
-
-    /**
-     *
-     * @var string
-     */
-    public $stripe_id;
-
-    /**
-     *
-     * @var string
-     */
-    public $stripe_plan;
-
-    /**
-     *
-     * @var integer
-     */
-    public $quantity;
-
-    /**
-     *
-     * @var integer
-     */
-    public $payment_frequency_id;
-
-    /**
-     *
-     * @var string
-     */
-    public $trial_ends_at;
-
-    /**
-     *
-     * @var integer
-     */
-    public $trial_ends_days;
-
-    /**
-     *
-     * @var integer
-     */
-    public $is_freetrial;
-
-    /**
-     *
-     * @var integer
-     */
-    public $is_active;
-
-    /**
-     *
-     * @var integer
-     */
-    public $paid;
-
-    /**
-     *
-     * @var string
-     */
-    public $charge_date;
-
-    /**
-     *
-     * @var string
-     */
-    public $ends_at;
-
-    /**
-     *
-     * @var date
-     */
-    public $grace_period_ends;
-
-    /**
-     *
-     * @var datetime
-     */
-    public $next_due_payment;
-
-    /**
-     *
-     * @var integer
-     */
-    public $is_cancelled;
-
-    /**
-     *
-     * @var string
-     */
-    public $created_at;
-
-    /**
-     *
-     * @var string
-     */
-    public $updated_at;
-
-    /**
-     *
-     * @var integer
-     */
-    public $is_deleted;
+    public ?int $apps_plans_id = null;
+    public int $user_id;
+    public int $companies_id;
+    public int $apps_id;
+    public ?string $name = null;
+    public string $stripe_id;
+    public string $stripe_plan;
+    public int $quantity;
+    public ?int $payment_frequency_id = null;
+    public ?string $trial_ends_at = null;
+    public ?int $trial_ends_days = null;
+    public int $is_freetrial = 0;
+    public int $is_active = 0;
+    public int $paid = 0;
+    public ?string $charge_date = null;
+    public ?string $ends_at = null;
+    public ?string $grace_period_ends = null;
+    public ?String $next_due_payment = null;
+    public int $is_cancelled = 0;
 
     /**
      * Initialize.
@@ -163,6 +52,8 @@ class Subscription extends PhalconSubscription
      */
     public function initialize()
     {
+        $this->setSource('subscriptions');
+
         $this->belongsTo('user_id', 'Canvas\Models\Users', 'id', ['alias' => 'user']);
 
         $this->belongsTo(
@@ -192,17 +83,19 @@ class Subscription extends PhalconSubscription
      *
      * @return Subscription
      */
-    public static function getActiveForThisApp(): Subscription
+    public static function getActiveForThisApp() : Subscription
     {
         return self::getByDefaultCompany(Di::getDefault()->getUserData());
     }
 
     /**
      * Get subscription by user's default company;.
+     *
      * @param Users $user
+     *
      * @return Subscription
      */
-    public static function getByDefaultCompany(Users $user): Subscription
+    public static function getByDefaultCompany(Users $user) : Subscription
     {
         $subscription = self::findFirst([
             'conditions' => 'companies_id = ?0 and apps_id = ?1 and is_deleted  = 0',
@@ -220,12 +113,13 @@ class Subscription extends PhalconSubscription
      * Search current company's app setting with key paid to verify payment status for current company.
      *
      * @param Users $user
+     *
      * @return bool
      */
-    public static function getPaymentStatus(Users $user): bool
+    public static function getPaymentStatus(Users $user) : bool
     {
         //if its not subscription based return true to ignore any payment status
-        if (!Di::getDefault()->getApp()->subscriptioBased()) {
+        if (!Di::getDefault()->getApp()->subscriptionBased()) {
             return true;
         }
 
@@ -241,9 +135,9 @@ class Subscription extends PhalconSubscription
      *
      * @return bool
      */
-    public function active(): bool
+    public function active() : bool
     {
-        if (!Di::getDefault()->getApp()->subscriptioBased()) {
+        if (!Di::getDefault()->getApp()->subscriptionBased()) {
             return true;
         }
 
@@ -255,9 +149,9 @@ class Subscription extends PhalconSubscription
      *
      * @return boolean
      */
-    public function paid(): bool
+    public function paid() : bool
     {
-        if (!Di::getDefault()->getApp()->subscriptioBased()) {
+        if (!Di::getDefault()->getApp()->subscriptionBased()) {
             return true;
         }
 
@@ -269,11 +163,11 @@ class Subscription extends PhalconSubscription
      *
      * @return void
      */
-    public function activate(): bool
+    public function activate() : bool
     {
         $this->is_active = 1;
         $this->paid = 1;
-        $this->grace_period_ends = new RawValue('NULL');
+        //$this->grace_period_ends = new RawValue('NULL');
         $this->ends_at = Carbon::now()->addDays(30)->toDateTimeString();
         $this->next_due_payment = $this->ends_at;
         $this->is_cancelled = 0;
@@ -293,9 +187,9 @@ class Subscription extends PhalconSubscription
     /**
      * Get actual subscription.
      */
-    public static function getActiveSubscription(): self
+    public static function getActiveSubscription() : self
     {
-        $userSubscription = PhalconSubscription::findFirstOrFail([
+        $userSubscription = self::findFirstOrFail([
             'conditions' => 'companies_id = ?0 and apps_id = ?1 and is_deleted  = 0',
             'bind' => [Di::getDefault()->getUserData()->currentCompanyId(), Di::getDefault()->getApp()->getId()]
         ]);
@@ -308,7 +202,7 @@ class Subscription extends PhalconSubscription
      *
      * @return void
      */
-    public function validateByGracePeriod(): void
+    public function validateByGracePeriod() : void
     {
         if (!is_null($this->grace_period_ends)) {
             if (($this->charge_date == $this->grace_period_ends) && !$this->paid) {

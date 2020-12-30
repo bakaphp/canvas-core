@@ -2,19 +2,20 @@
 
 namespace Canvas\Tests\unit\cli;
 
-use FilesystemIterator;
+use function Baka\appPath;
 use Canvas\Cli\Tasks\ClearcacheTask;
 use Canvas\Providers\CacheDataProvider;
+use Canvas\Providers\ConfigProvider;
 use Canvas\Providers\RedisProvider;
-use Phalcon\Di\FactoryDefault\Cli;
-use UnitTester;
 use function fclose;
+use FilesystemIterator;
 use function iterator_count;
-use function Canvas\Core\appPath;
 use function ob_end_clean;
 use function ob_get_contents;
 use function ob_start;
+use Phalcon\Di\FactoryDefault\Cli;
 use function uniqid;
+use UnitTester;
 
 class ClearCacheCest
 {
@@ -24,6 +25,8 @@ class ClearCacheCest
 
         $path = appPath('storage/cache/data/');
         $container = new Cli();
+        $config = new ConfigProvider();
+        $config->register($container);
         $redis = new RedisProvider();
         $redis->register($container);
         $cache = new CacheDataProvider();

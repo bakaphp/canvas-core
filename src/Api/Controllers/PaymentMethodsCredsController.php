@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Canvas\Api\Controllers;
 
 use Canvas\Models\PaymentMethodsCreds;
+use Exception;
 use Phalcon\Http\Response;
 
 /**
@@ -46,19 +47,18 @@ class PaymentMethodsCredsController extends BaseController
     }
 
     /**
-     * Get current payment methods creds
-     *
-     * @param mixed $id
-     *
-     * @method GET
-     * @url /v1/roles-acceslist/{id}
+     * Get current payment methods creds.
      *
      * @return Response
      */
-    public function getCurrentPaymentMethodsCreds(): Response
+    public function getCurrentPaymentMethodsCreds() : Response
     {
-        return $this->response($this->model->getCurrentPaymentMethodCreds());
+        $paymentMethod = [];
+
+        try {
+            $paymentMethod = $this->model->getCurrentPaymentMethodCreds();
+        } catch (Exception $e) {
+        }
+        return $this->response($paymentMethod);
     }
-
-
 }

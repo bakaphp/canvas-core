@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Canvas\Api\Controllers;
 
 use Phalcon\Http\Response;
-use Canvas\Http\Exception\UnprocessableEntityException;
+use Baka\Http\Exception\UnprocessableEntityException;
 use Canvas\Models\CompaniesBranches;
 
 /**
@@ -104,7 +104,7 @@ class CompaniesBranchesController extends BaseController
         $request = $this->request->getPutData();
 
         //update
-        if ($company->update($request, $this->updateFields)) {
+        if ($company->updateOrFail($request, $this->updateFields)) {
             return $this->response($this->processOutput($company));
         } else {
             //didnt work

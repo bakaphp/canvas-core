@@ -35,7 +35,6 @@ filter:
     - 'storage/*'
     - 'vendor/*'
     - 'phinx.php'
-    - 'src/Http/SwooleRequest.php' #it need to be this big , since the phalcon interfase requires it
 
 build_failure_conditions:
     # No classes/methods with a rating of D or worse

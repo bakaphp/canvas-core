@@ -56,6 +56,7 @@ class SystemModulesController extends BaseController
             ['is_deleted', ':', '0'],
             ['apps_id', ':', $this->app->getId()],
         ];
+        $this->sort = 'menu_order|ASC';
     }
 
     /**

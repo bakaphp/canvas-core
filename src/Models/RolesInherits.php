@@ -5,17 +5,9 @@ namespace Canvas\Models;
 
 class RolesInherits extends AbstractModel
 {
-    /**
-     *
-     * @var integer
-     */
-    public $roles_id;
 
-    /**
-     *
-     * @var integer
-     */
-    public $roles_inherit;
+    public int $roles_id;
+    public int $roles_inherit;
 
     /**
      * Initialize method for model.
@@ -32,13 +24,4 @@ class RolesInherits extends AbstractModel
         );
     }
 
-    /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource(): string
-    {
-        return 'roles_inherits';
-    }
 }

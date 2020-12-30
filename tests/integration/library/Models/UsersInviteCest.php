@@ -64,7 +64,7 @@ class UsersInviteCest
         $userInvite = new UsersInvite();
         $userInvite->companies_id = $I->grabFromDi('userData')->currentCompanyId();
         $userInvite->users_id = $I->grabFromDi('userData')->getId();
-        $userInvite->app_id = $this->app->id;
+        $userInvite->apps_id = $this->app->id;
         $userInvite->role_id = Roles::existsById(1)->id;
         $userInvite->email = $this->usersInviteEmail;
         $userInvite->invite_hash = $this->random->base58();

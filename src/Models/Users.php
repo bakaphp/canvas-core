@@ -4,19 +4,24 @@ declare(strict_types=1);
 namespace Canvas\Models;
 
 use Baka\Auth\Models\Users as BakUser;
-use Baka\Database\Contracts\HashTableTrait;
+use Baka\Cashier\Billable;
+use Baka\Contracts\Auth\UserInterface;
+use Baka\Contracts\Database\HashTableTrait;
+use Baka\Contracts\EventsManager\EventManagerAwareTrait;
+use Baka\Contracts\Notifications\NotifiableTrait;
+use Baka\Database\Exception\ModelNotProcessedException;
+use Baka\Hashing\Keys;
+use Baka\Hashing\Password;
+use Baka\Validations\PasswordValidation;
 use Canvas\Auth\App as AppAuth;
-use Canvas\Contracts\Auth\UserInterface;
-use Canvas\Contracts\Notifications\NotifiableTrait;
-use Canvas\Hashing\Password;
-use Canvas\Traits\EventManagerAwareTrait;
+use Canvas\Models\Locations\Cities;
+use Canvas\Models\Locations\Countries;
+use Canvas\Models\Locations\States;
 use Canvas\Traits\FileSystemModelTrait;
 use Canvas\Traits\PermissionsTrait;
 use Canvas\Traits\SubscriptionPlanLimitTrait;
-use Canvas\Validations\PasswordValidation;
 use Carbon\Carbon;
 use Exception;
-use Phalcon\Cashier\Billable;
 use Phalcon\Di;
 use Phalcon\Security\Random;
 use Phalcon\Validation;
@@ -25,17 +30,6 @@ use Phalcon\Validation\Validator\PresenceOf;
 use Phalcon\Validation\Validator\Uniqueness;
 use ReflectionClass;
 
-/**
- * Class Users.
- *
- * @package Canvas\Models
- *
- * @property Users $user
- * @property Config $config
- * @property Apps $app
- * @property Companies $defaultCompany
- * @property \Phalcon\Di $di
- */
 class Users extends BakUser implements UserInterface
 {
     use PermissionsTrait;
@@ -46,83 +40,34 @@ class Users extends BakUser implements UserInterface
     use NotifiableTrait;
     use EventManagerAwareTrait;
 
-    /**
-     * Description.
-     *
-     * @var integer
-     */
-    public $description;
-
-    /**
-     * Default Company Branch.
-     *
-     * @var integer
-     */
-    public $default_company_branch;
-
-    /**
-     * Roles id.
-     *
-     * @var integer
-     */
-    public $roles_id;
-
-    /**
-     * Stripe id.
-     *
-     * @var string
-     */
-    public $stripe_id;
-
-    /**
-     * Card last four numbers.
-     *
-     * @var integer
-     */
-    public $card_last_four;
-
-    /**
-     * Card Brand.
-     *
-     * @var integer
-     */
-    public $card_brand;
-
-    /**
-     * Trial end date.
-     *
-     * @var string
-     */
-    public $trial_ends_at;
+    public int $default_company_branch = 0;
+    public ?int $roles_id = null;
+    public ?string $stripe_id = null;
+    public ?string $card_last_four = null;
+    public ?string $card_brand = null;
+    public ?string $trial_ends_at = null;
 
     /**
      * Provide the app plan id
      * if the user is signing up a new company.
      *
-     * @var integer
+     * @var int
      */
-    public $appPlanId = null;
+    public ?int $appPlanId = null;
 
     /**
      * Active subscription id.Not an actual table field, used temporarily.
      *
      * @var string
      */
-    public $active_subscription_id;
+    public ?string $active_subscription_id = null;
 
     /**
      * System Module Id.
      *
-     * @var integer
+     * @var int
      */
-    public $system_modules_id = 2;
-
-    /**
-     * User email activation code.
-     *
-     * @var string
-     */
-    public $user_activation_email;
+    public int $system_modules_id = 2;
 
     /**
      * Initialize method for model.
@@ -223,10 +168,13 @@ class Users extends BakUser implements UserInterface
                 ]
             ]
         );
+        $this->belongsTo('city_id', Cities::class, 'id', ['alias' => 'cities']);
+        $this->belongsTo('state_id', States::class, 'id', ['alias' => 'states']);
+        $this->belongsTo('country_id', Countries::class, 'id', ['alias' => 'countries']);
     }
 
     /**
-     * Initialize relationshit after fetch
+     * Initialize relationship after fetch
      * since we need company id info.
      *
      * @return void
@@ -313,21 +261,11 @@ class Users extends BakUser implements UserInterface
     }
 
     /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource() : string
-    {
-        return 'users';
-    }
-
-    /**
      * Set hashtable settings table, userConfig ;).
      *
      * @return void
      */
-    private function createSettingsModel() : void
+    protected function createSettingsModel() : void
     {
         $this->settingsModel = new UserConfig();
     }
@@ -344,10 +282,10 @@ class Users extends BakUser implements UserInterface
 
     /**
      * A company owner is the first person that register this company
-     * This only ocurres when signing up the first time, after that all users invites
+     * This only ocurred when signing up the first time, after that all users invites
      * come with a default_company id attached.
      *
-     * @return boolean
+     * @return bool
      */
     public function isFirstSignup() : bool
     {
@@ -427,19 +365,30 @@ class Users extends BakUser implements UserInterface
         }
 
         $role = Roles::getByName('Admins');
-        $this->roles_id = $role->getId();
+        $this->roles_id = $this->roles_id ?? $role->getId();
     }
 
     /**
      * What the current company the users is logged in with
      * in this current session?
      *
-     * @return integer
+     * @return int
      */
     public function currentCompanyId() : int
     {
         $defaultCompanyId = $this->get(Companies::cacheKey());
         return !is_null($defaultCompanyId) ? (int) $defaultCompanyId : (int) $this->default_company;
+    }
+
+    /**
+     * Whats the current default branch of the current company.
+     *
+     * @return int
+     */
+    public function currentBranchId() : int
+    {
+        $defaultBranch = $this->get($this->getDefaultCompany()->branchCacheKey());
+        return !is_null($defaultBranch) ? (int) $defaultBranch : (int) $this->default_company_branch;
     }
 
     /**
@@ -460,7 +409,7 @@ class Users extends BakUser implements UserInterface
      * What the current company brach the users is logged in with
      * in this current session?
      *
-     * @return integer
+     * @return int
      */
     public function currentCompanyBranchId() : int
     {
@@ -475,7 +424,7 @@ class Users extends BakUser implements UserInterface
      */
     public function afterCreate()
     {
-        //need to run it here, since we overwirte the default_company id and null this function objective
+        //need to run it here, since we overwrite the default_company id and null this function objective
         $isFirstSignup = $this->isFirstSignup();
 
         /**
@@ -505,7 +454,6 @@ class Users extends BakUser implements UserInterface
     public function afterSave()
     {
         $this->associateFileSystem();
-        //$this->updatePermissionRoles();
     }
 
     /**
@@ -609,8 +557,9 @@ class Users extends BakUser implements UserInterface
                 if ($branch->company->userAssociatedToCompany($this)) {
                     $this->default_company = $branch->company->getId();
                     $this->default_company_branch = $branch->getId();
-                    //set the default company id per the specific app , we do this so we can have multip default companies per diff apps
+                    //set the default company id per the specific app , we do this so we can have multi default companies per diff apps
                     $this->set(Companies::cacheKey(), $this->default_company);
+                    $this->set($branch->company->branchCacheKey(), $branch->getId());
                 }
             }
         }
@@ -621,7 +570,7 @@ class Users extends BakUser implements UserInterface
      *
      * @param string $newPassword
      *
-     * @return boolean
+     * @return bool
      */
     public function updatePassword(string $currentPassword, string $newPassword, string $verifyPassword) : bool
     {
@@ -655,7 +604,7 @@ class Users extends BakUser implements UserInterface
     }
 
     /**
-     * Reset the user passwrod.
+     * Reset the user password.
      *
      * @param string $newPassword
      *
@@ -684,6 +633,8 @@ class Users extends BakUser implements UserInterface
      * ok lets register / associate to this app
      * yes?
      * it meas he was invites so get the fuck out?
+     *
+     * @deprecated v1
      *
      * @return Users
      */
@@ -733,7 +684,7 @@ class Users extends BakUser implements UserInterface
      */
     public function generateForgotHash() : string
     {
-        $this->user_activation_forgot = $this->generateActivationKey();
+        $this->user_activation_forgot = Keys::make();
         $this->updateOrFail();
 
         return $this->user_activation_forgot;
@@ -762,7 +713,7 @@ class Users extends BakUser implements UserInterface
     /**
      * Verify if the user bellow to the current app.
      *
-     * @return boolean
+     * @return bool
      */
     public function inApp() : bool
     {
@@ -773,5 +724,19 @@ class Users extends BakUser implements UserInterface
         }
 
         throw new Exception((new ReflectionClass(new static))->getShortName() . ' Record not found');
+    }
+
+    /**
+     * Throws an exception with including all validation messages that were retrieved.
+     *
+     * @todo lets add a configuration to remove the Model name of the exception in Kanvas
+     *
+     * @throws ModelNotProcessedException
+     */
+    protected function throwErrorMessages() : void
+    {
+        throw new ModelNotProcessedException(
+            current($this->getMessages())->getMessage()
+        );
     }
 }

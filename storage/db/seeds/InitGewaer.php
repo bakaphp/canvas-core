@@ -1,4 +1,4 @@
-u<?php
+<?php
 
 use Phalcon\Security\Random;
 use Phinx\Seed\AbstractSeed;
@@ -8,11 +8,10 @@ class InitGewaer extends AbstractSeed
     public function run()
     {
         $random = new Random();
-        //add default languages
         $data = [
             [
                 'name' => 'Default',
-                'key' => 'mQsVRvorhqBJOijxkC4MB4hHFVcVTJia',
+                'key' => 'ac53fedf-f873-4b96-973a-2368690652b5',
                 'is_public' => 1,
                 'description' => 'Gewaer Ecosystem',
                 'created_at' => date('Y-m-d H:i:s'),
@@ -44,12 +43,14 @@ class InitGewaer extends AbstractSeed
                 'name' => 'Canvas',
                 'users_id' => 1,
                 'system_modules_id' => 1,
+                'language' => "EN",
                 'created_at' => date('Y-m-d H:i:s'),
                 'is_deleted' => 0
             ], [
                 'name' => 'CRM',
                 'users_id' => 1,
                 'system_modules_id' => 1,
+                'language' => "EN",
                 'created_at' => date('Y-m-d H:i:s'),
                 'is_deleted' => 0
             ],
@@ -135,6 +136,7 @@ class InitGewaer extends AbstractSeed
                 'displayname' => 'anonymous',
                 'system_modules_id' => 2,
                 'default_company_branch' => 1,
+                'user_last_login_try' => 0,
                 'created_at' => date('Y-m-d H:i:s'),
                 'status' => 1,
                 'user_active' => 1,
@@ -150,6 +152,7 @@ class InitGewaer extends AbstractSeed
                 'displayname' => 'nobody',
                 'system_modules_id' => 2,
                 'default_company_branch' => 1,
+                'user_last_login_try' => 0,
                 'created_at' => date('Y-m-d H:i:s'),
                 'status' => 1,
                 'user_active' => 1,
@@ -224,7 +227,7 @@ class InitGewaer extends AbstractSeed
                 'stripe_id' => 'monthly-10-1',
                 'stripe_plan' => 'monthly-10-1',
                 'pricing' => 10,
-                'pricing_anual' => 100,
+                'pricing_annual' => 100,
                 'currency_id' => 1,
                 'free_trial_dates' => 14,
                 'is_default' => 1,
@@ -237,7 +240,7 @@ class InitGewaer extends AbstractSeed
                 'stripe_id' => 'monthly-10-2',
                 'stripe_plan' => 'monthly-10-2',
                 'pricing' => 100,
-                'pricing_anual' => 100,
+                'pricing_annual' => 100,
                 'currency_id' => 1,
                 'free_trial_dates' => 14,
                 'is_default' => 0,
@@ -251,7 +254,7 @@ class InitGewaer extends AbstractSeed
                 'stripe_id' => 'yearly-10-1',
                 'stripe_plan' => 'yearly-10-1',
                 'pricing' => 100,
-                'pricing_anual' => 60,
+                'pricing_annual' => 60,
                 'currency_id' => 1,
                 'free_trial_dates' => 14,
                 'is_default' => 1,
@@ -264,7 +267,7 @@ class InitGewaer extends AbstractSeed
                 'stripe_id' => 'yearly-10-2',
                 'stripe_plan' => 'yearly-10-2',
                 'pricing' => 1000,
-                'pricing_anual' => 60,
+                'pricing_annual' => 60,
                 'currency_id' => 1,
                 'free_trial_dates' => 14,
                 'is_default' => 0,

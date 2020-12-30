@@ -6,7 +6,7 @@ namespace Canvas\Traits;
 
 use League\Fractal\Manager;
 use League\Fractal\Serializer\JsonApiSerializer;
-use function Canvas\Core\envValue;
+use function Baka\envValue;
 use function sprintf;
 use function ucfirst;
 

@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Canvas\Traits;
 
-use Baka\Http\Router\Collection;
-use Phalcon\Mvc\Router\Route;
 
 /**
  * Trait TokenTrait.
@@ -28,22 +26,6 @@ trait RequestJwtTrait
     public function isEmptyBearerToken(): bool
     {
         return empty($this->getBearerTokenFromHeader());
-    }
-
-    /**
-     * Did we specify we dont need to validate JWT Token on this section?
-     *
-     * @return bool
-     */
-    public function ignoreJwt(Route $route) : bool
-    {
-        //did we find the router?
-        if (is_array(Collection::getJwtIgnoreRoutes()[$route->getHttpMethods()])) {
-            return isset(Collection::getJwtIgnoreRoutes()[$route->getHttpMethods()][md5($route->getPattern())]);
-        }
-
-        //nop we dont have this route in ignore jwt
-        return false;
     }
 
     abstract public function getHeader($header);

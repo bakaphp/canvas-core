@@ -109,10 +109,31 @@ class AddMenusAndMenusLinksTables extends Phinx\Migration\AbstractMigration
                 'limit' => MysqlAdapter::INT_SMALL,
                 'after' => 'title',
             ])
+            ->addColumn('icon_url', 'string', [
+                'null' => true,
+                'limit' => MysqlAdapter::TEXT_SMALL,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'position',
+            ])
+            ->addColumn('icon_class', 'string', [
+                'null' => true,
+                'limit' => MysqlAdapter::TEXT_SMALL,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'icon_url',
+            ])
+            ->addColumn('route', 'string', [
+                'null' => true,
+                'limit' => MysqlAdapter::TEXT_SMALL,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'icon_class',
+            ])
             ->addColumn('is_published', 'integer', [
                 'null' => false,
                 'limit' => MysqlAdapter::INT_TINY,
-                'after' => 'position',
+                'after' => 'route',
             ])
             ->addColumn('created_at', 'datetime', [
                 'null' => true,

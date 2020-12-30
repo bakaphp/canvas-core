@@ -4,7 +4,7 @@ namespace Canvas\Tests\unit\config;
 
 use UnitTester;
 use function is_array;
-use function Canvas\Core\appPath;
+use function Baka\appPath;
 
 class ConfigCest
 {

@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Canvas\Mapper;
 
 use AutoMapperPlus\CustomMapper\CustomMapper;
-use function Canvas\Core\isJson;
-use Phalcon\Mvc\Model\Resultset;
 use Canvas\Models\MenusLinks;
 
 class MenusMapper extends CustomMapper
@@ -21,30 +19,34 @@ class MenusMapper extends CustomMapper
     {
         $menusDto->id = $menus->getId();
         $menusDto->apps_id = $menus->apps_id;
-        $menusDto->companies_id = $menus->companies_id;
         $menusDto->name = $menus->name;
         $menusDto->slug = $menus->slug;
 
         foreach ($menus->getLinks() as $link) {
-
-            if($link->isParent())
-            {
+            if ($link->isParent()) {
                 $childLinks = MenusLinks::find([
                     'conditions' => 'parent_id = ?0 and is_deleted = 0',
                     'bind' => [$link->getId()]
                 ]);
-    
-                if(sizeof($childLinks) != 0){
+
+                if (sizeof($childLinks) != 0) {
                     $childLinksArray = [];
                     $childLinksArray['title'] = $link->title;
-                    $childLinksArray['links'] = $childLinks;
-                    $menusDto->sidebar[] = $childLinksArray;
-                }
-                else {
-                    $menusDto->sidebar[] = $link;
-                }
+                    $childLinksArray['links'] = [];
 
-            }else if($link->menus_id != 0) {
+                    foreach ($childLinks as $childLink) {
+                        $childArray = $this->convertObjectToArray($childLink);
+                        $childArray['slug'] = $childLink->getModules() ? $childLink->getModules()->slug : '';
+                        $childLinksArray['links'][] = $childArray;
+                    }
+
+                    $menusDto->sidebar[] = $childLinksArray;
+                } else {
+                    $linkArray = $this->convertObjectToArray($link);
+                    $linkArray['slug'] = $link->getModules() ? $link->getModules()->slug : '';
+                    $menusDto->sidebar[] = $linkArray;
+                }
+            } elseif ($link->menus_id != 0 && $link->isParent()) {
                 $menusDto->sidebar[] = $link;
             }
         }
@@ -54,5 +56,22 @@ class MenusMapper extends CustomMapper
         $menusDto->is_deleted = $menus->is_deleted;
 
         return $menusDto;
+    }
+
+    /**
+     * Convert object to array.
+     *
+     * @param object $object
+     *
+     * @return array
+     */
+    private function convertObjectToArray(object $object) : array
+    {
+        $array = [];
+        foreach ($object as $key => $value) {
+            $array[$key] = $value;
+        }
+
+        return $array;
     }
 }

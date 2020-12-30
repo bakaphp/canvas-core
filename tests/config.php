@@ -1,7 +1,7 @@
 <?php
 
-use function Canvas\Core\appPath;
-use function Canvas\Core\envValue;
+use function Baka\appPath;
+use function Baka\envValue;
 
 return [
     'application' => [ //@todo migration to app
@@ -15,14 +15,14 @@ return [
         ],
     ],
     'app' => [
-        //GEWAER is a multi entity app encosystem so we need what is the current api ID for this api
+        //GEWAER is a multi entity app ecosystem so we need what is the current api ID for this api
         'id' => envValue('GEWAER_APP_ID', 1),
         'frontEndUrl' => envValue('FRONTEND_URL'),
         'version' => envValue('VERSION', time()),
         'timezone' => envValue('APP_TIMEZONE', 'UTC'),
         'debug' => envValue('APP_DEBUG', false),
         'env' => envValue('APP_ENV', 'development'),
-        'production ' => envValue('PRODUCTION', 0) == 1 ? 1 : 0,
+        'production' => envValue('PRODUCTION', 0) == 1 ? 1 : 0,
         'logsReport' => envValue('APP_LOGS_REPORT', false),
         'devMode' => boolval(
             'development' === envValue('APP_ENV', 'development')
@@ -38,8 +38,8 @@ return [
         ]
     ],
     'filesystem' => [
-        //temp directoy where we will upload our files before moving them to the final location
-        'uploadDirectoy' => appPath(envValue('LOCAL_UPLOAD_DIR_TEMP')),
+        //temp directory where we will upload our files before moving them to the final location
+        'uploadDirectory' => appPath(envValue('LOCAL_UPLOAD_DIR_TEMP')),
         'local' => [
             'path' => appPath(envValue('LOCAL_UPLOAD_DIR')),
             'cdn' => envValue('FILESYSTEM_CDN_URL'),
@@ -62,32 +62,15 @@ return [
         ],
     ],
     'cache' => [
-        'data' => [
-            'front' => [
-                'adapter' => 'Data',
-                'options' => [
-                    'lifetime' => envValue('CACHE_LIFETIME'),
-                ],
-            ],
-            'back' => [
-                'dev' => [
-                    'adapter' => 'File',
-                    'options' => [
-                        'cacheDir' => appPath('storage/cache/data/'),
-                    ],
-                ],
-                'prod' => [
-                    'adapter' => 'Libmemcached',
-                    'options' => [
-                        'servers' => [
-                            [
-                                'host' => envValue('DATA_API_MEMCACHED_HOST'),
-                                'port' => envValue('DATA_API_MEMCACHED_PORT'),
-                                'weight' => envValue('DATA_API_MEMCACHED_WEIGHT'),
-                            ],
-                        ],
-                    ],
-                ],
+        'adapter' => 'redis',
+        'options' => [
+            'redis' => [
+                'defaultSerializer' => Redis::SERIALIZER_PHP,
+                'host' => envValue('REDIS_HOST', '127.0.0.1'),
+                'port' => envValue('REDIS_PORT', 6379),
+                'lifetime' => envValue('CACHE_LIFETIME', 86400),
+                'index' => 1,
+                'prefix' => 'data-',
             ],
         ],
         'metadata' => [
@@ -96,9 +79,13 @@ return [
                 'options' => [],
             ],
             'prod' => [
-                'adapter' => 'Files',
+                'adapter' => 'redis',
                 'options' => [
-                    'metaDataDir' => appPath('storage/cache/metadata/'),
+                    'host' => envValue('REDIS_HOST', '127.0.0.1'),
+                    'port' => envValue('REDIS_PORT', 6379),
+                    'index' => 1,
+                    'lifetime' => envValue('CACHE_LIFETIME', 86400),
+                    'prefix' => 'metadatas-caches-'
                 ],
             ],
         ],

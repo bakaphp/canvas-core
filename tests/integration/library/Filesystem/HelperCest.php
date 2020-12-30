@@ -4,10 +4,12 @@ namespace Gewaer\Tests\integration\library\Filesystem;
 
 use Aws\S3\Exception\S3Exception;
 use Canvas\Filesystem\Helper;
-use IntegrationTester;
-use Phalcon\Http\Request\File;
 use Canvas\Models\FileSystem;
 use Exception;
+use IntegrationTester;
+use Phalcon\Http\Request\File;
+
+use function Baka\appPath;
 
 class HelperCest
 {
@@ -27,7 +29,7 @@ class HelperCest
     public function upload(IntegrationTester $I)
     {
         try {
-            $file = Helper::upload(Helper::pathToFile('./README.md'));
+            $file = Helper::upload(Helper::pathToFile(appPath('README.md')));
 
             $I->assertTrue($file instanceof FileSystem);
         } catch (S3Exception $s) {
