@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace Canvas\Api\Controllers;
 
+use Baka\Contracts\Http\Api\CrudBehaviorTrait;
+use function Baka\isJson;
 use Canvas\Models\Apps;
+use Phalcon\Http\RequestInterface;
 use Phalcon\Http\Response;
+use Phalcon\Mvc\ModelInterface;
 
 /**
  * Class LanguagesController.
@@ -15,19 +19,38 @@ use Phalcon\Http\Response;
  */
 class AppsController extends BaseController
 {
+    use CrudBehaviorTrait;
     /*
      * fields we accept to create
      *
      * @var array
      */
-    protected $createFields = [];
+    protected $createFields =
+    [
+        'name',
+        'description',
+        'url',
+        'default_apps_plan_id',
+        'payments_active',
+        'ecosystem_auth',
+        'is_public'
+    ];
 
     /*
      * fields we accept to create
      *
      * @var array
      */
-    protected $updateFields = [];
+    protected $updateFields =
+    [
+        'name',
+        'description',
+        'url',
+        'default_apps_plan_id',
+        'payments_active',
+        'ecosystem_auth',
+        'is_public'
+    ];
 
     /**
      * set objects.
@@ -44,6 +67,51 @@ class AppsController extends BaseController
     }
 
     /**
+     * Process the create request and records the object.
+     *
+     * @return ModelInterface
+     *
+     * @throws Exception
+     */
+    protected function processCreate(RequestInterface $request) : ModelInterface
+    {
+        //process the input
+        $request = $this->processInput($request->getPostData());
+
+        if (array_key_exists('settings', $request) && isJson($request['settings'])) {
+            $this->model->setSettings(json_decode($request['settings'], true));
+        }
+
+        $this->model->saveOrFail($request, $this->createFields);
+
+        return $this->model;
+    }
+
+    /**
+     * Process the update request and return the object.
+     *
+     * @param RequestInterface $request
+     * @param ModelInterface $record
+     *
+     * @throws Exception
+     *
+     * @return ModelInterface
+     */
+    protected function processEdit(RequestInterface $request, ModelInterface $record) : ModelInterface
+    {
+        //process the input
+        $request = $this->processInput($request->getPutData());
+
+        if (array_key_exists('settings', $request) && isJson($request['settings'])) {
+            $this->model->setSettings(json_decode($request['settings'], true));
+        }
+
+        $record->updateOrFail($request, $this->updateFields);
+
+        return $record;
+    }
+
+    /**
      * get item.
      *
      * @param mixed $id
@@ -53,7 +121,7 @@ class AppsController extends BaseController
      *
      * @return \Phalcon\Http\Response
      */
-    public function getById($id = null): Response
+    public function getById($id = null) : Response
     {
         //find the info
         $record = $this->model->findFirstOrFail([
@@ -71,9 +139,10 @@ class AppsController extends BaseController
      * Delete a Record.
      *
      * @throws Exception
+     *
      * @return Response
      */
-    public function delete($id): Response
+    public function delete($id) : Response
     {
         return $this->response('Cant delete app at the moment');
     }

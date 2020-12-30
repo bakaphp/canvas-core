@@ -14,17 +14,14 @@ use Phalcon\Config;
  */
 class ErrorHandler
 {
-    /** @var Config */
-    private $config;
-
-    /** @var Logger */
-    private $logger;
+    private Config $config;
+    private Logger $logger;
 
     /**
      * ErrorHandler constructor.
      *
      * @param Logger $logger
-     * @param Config $config
+     * @param \Phalcon\Config $config
      */
     public function __construct(Logger $logger, Config $config)
     {
@@ -40,7 +37,7 @@ class ErrorHandler
      * @param string $file
      * @param int    $line
      */
-    public function handle(int $number, string $message, string $file = '', int $line = 0)
+    public function handle(int $number, string $message, string $file = '', int $line = 0) : void
     {
         $this
             ->logger
@@ -58,7 +55,7 @@ class ErrorHandler
     /**
      * Application shutdown - logs metrics in devMode.
      */
-    public function shutdown()
+    public function shutdown() : void
     {
         if (true === $this->config->path('app.devMode')) {
             $memory = number_format(memory_get_usage() / 1000000, 2);

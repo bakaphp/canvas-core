@@ -3,37 +3,20 @@ declare(strict_types=1);
 
 namespace Canvas\Models;
 
+use Baka\Blameable\Blameable;
+use Baka\Blameable\BlameableTrait;
+use Baka\Contracts\Database\HashTableTrait;
+use Baka\Contracts\EventsManager\EventManagerAwareTrait;
+use Baka\Http\Exception\InternalServerErrorException;
+use Canvas\Traits\FileSystemModelTrait;
+use Canvas\Traits\UsersAssociatedTrait;
+use Carbon\Carbon;
+use Exception;
+use Phalcon\Di;
 use Phalcon\Validation;
 use Phalcon\Validation\Validator\PresenceOf;
-use Canvas\Exception\ServerErrorHttpException;
-use Exception;
-use Carbon\Carbon;
-use Baka\Database\Contracts\HashTableTrait;
-use Baka\Blameable\BlameableTrait;
-use Canvas\Traits\UsersAssociatedTrait;
-use Canvas\Traits\FileSystemModelTrait;
-use Baka\Blameable\Blameable;
-use Canvas\Http\Exception\InternalServerErrorException;
-use Canvas\Traits\EventManagerAwareTrait;
-use Phalcon\Di;
 
-/**
- * Class Companies.
- *
- * @package Canvas\Models
- *
- * @property Users $user
- * @property Users $userData
- * @property DefaultCompany $default_company
- * @property CompaniesBranches $branch
- * @property CompaniesBranches $branches
- * @property Subscription $subscription
- * @property Config $config
- * @property UserCompanyApps $app
- * @property \Phalcon\Di $di
- * @property Roles $roles_id
- */
-class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
+class Companies extends AbstractModel
 {
     use HashTableTrait;
     use UsersAssociatedTrait;
@@ -41,106 +24,20 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
     use BlameableTrait;
     use EventManagerAwareTrait;
 
+    public int $users_id;
+    public ?int $has_activities = 0;
+    public ?int $appPlanId = null;
+    public ?int $currency_id = 0;
+    public ?string $language = null;
+    public ?string $timezone = null;
+    public ?string $currency = null;
+    public int $system_modules_id = 1;
+    public ?string $phone = null;
+
     const DEFAULT_COMPANY = 'DefaulCompany';
     const DEFAULT_COMPANY_APP = 'DefaulCompanyApp_';
     const PAYMENT_GATEWAY_CUSTOMER_KEY = 'payment_gateway_customer_id';
-
-    /**
-     *
-     * @var integer
-     */
-    public $id;
-
-    /**
-     *
-     * @var string
-     */
-    public $name;
-
-    /**
-     *
-     * @var string
-     */
-    public $profile_image;
-
-    /**
-     *
-     * @var string
-     */
-    public $website;
-
-    /**
-     *
-     * @var integer
-     */
-    public $users_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $has_activities;
-
-    /**
-     *
-     * @var string
-     */
-    public $created_at;
-
-    /**
-     *
-     * @var string
-     */
-    public $updated_at;
-
-    /**
-     *
-     * @var integer
-     */
-    public $is_deleted;
-
-    /**
-     * Provide the app plan id.
-     *
-     * @var integer
-     */
-    public $appPlanId = null;
-
-    /**
-     *
-     * @var integer
-     */
-    public $currency_id;
-
-    /**
-     *
-     * @var string
-     */
-    public $language;
-
-    /**
-     *
-     * @var string
-     */
-    public $timezone;
-
-    /**
-     *
-     * @var string
-     */
-    public $currency;
-
-    /**
-     *
-     * @var integer
-     */
-    public $system_modules_id = 1;
-
-    /**
-     *
-     * @var string
-     */
-    public $phone;
+    const DEFAULT_COMPANY_BRANCH_APP = 'DefaultCompanyBranchApp_';
 
     /**
      * Initialize method for model.
@@ -215,7 +112,7 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
             [
                 'alias' => 'UsersAssociatedByApps',
                 'params' => [
-                    'conditions' => 'apps_id = ' . $this->di->getApp()->getId()
+                    'conditions' => 'apps_id = ' . $this->di->get('app')->getId()
                 ]
             ]
         );
@@ -236,7 +133,7 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
             [
                 'alias' => 'app',
                 'params' => [
-                    'conditions' => 'apps_id = ' . $this->di->getApp()->getId()
+                    'conditions' => 'apps_id = ' . $this->di->get('app')->getId()
                 ]
             ]
         );
@@ -248,7 +145,7 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
             [
                 'alias' => 'apps',
                 'params' => [
-                    'conditions' => 'apps_id = ' . $this->di->getApp()->getId()
+                    'conditions' => 'apps_id = ' . $this->di->get('app')->getId()
                 ]
             ]
         );
@@ -271,7 +168,7 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
             [
                 'alias' => 'users',
                 'params' => [
-                    'conditions' => 'apps_id = ' . $this->di->getApp()->getId() . ' AND Canvas\Models\UsersAssociatedApps.is_deleted = 0',
+                    'conditions' => 'apps_id = ' . $this->di->get('app')->getId() . ' AND Canvas\Models\UsersAssociatedApps.is_deleted = 0',
                 ]
             ]
         );
@@ -283,7 +180,7 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
             [
                 'alias' => 'subscription',
                 'params' => [
-                    'conditions' => 'apps_id = ' . $this->di->getApp()->getId() . ' AND is_deleted = 0',
+                    'conditions' => 'apps_id = ' . $this->di->get('app')->getId() . ' AND is_deleted = 0',
                     'order' => 'id DESC'
                 ]
             ]
@@ -296,7 +193,7 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
             [
                 'alias' => 'subscriptions',
                 'params' => [
-                    'conditions' => 'apps_id = ' . $this->di->getApp()->getId() . ' AND is_deleted = 0',
+                    'conditions' => 'apps_id = ' . $this->di->get('app')->getId() . ' AND is_deleted = 0',
                     'order' => 'id DESC'
                 ]
             ]
@@ -345,13 +242,14 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
     }
 
     /**
-    * Register a company given a user and name.
-    *
-    * @param  Users  $user
-    * @param  string $name
-    * @return Companies
-    */
-    public static function register(Users $user, string $name): Companies
+     * Register a company given a user and name.
+     *
+     * @param  Users  $user
+     * @param  string $name
+     *
+     * @return Companies
+     */
+    public static function register(Users $user, string $name) : Companies
     {
         $company = new self();
         $company->name = $name;
@@ -362,24 +260,15 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
     }
 
     /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource() : string
-    {
-        return 'companies';
-    }
-
-    /**
      * Confirm if a user belongs to this current company.
      *
      * @param Users $user
-     * @return boolean
+     *
+     * @return bool
      */
-    public function userAssociatedToCompany(Users $user): bool
+    public function userAssociatedToCompany(Users $user) : bool
     {
-        return $this->countUsersAssociatedCompanies('users_id =' . $user->getId()) > 0;
+        return $this->countUsersAssociatedApps('users_id =' . $user->getId() . ' and apps_id = ' . Di::getDefault()->get('app')->getId()) > 0;
     }
 
     /**
@@ -387,7 +276,7 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
      *
      * @return ?string
      */
-    public function getPaymentGatewayCustomerId(): ?string
+    public function getPaymentGatewayCustomerId() : ?string
     {
         return $this->get(self::PAYMENT_GATEWAY_CUSTOMER_KEY);
     }
@@ -401,9 +290,9 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
     {
         parent::beforeCreate();
 
-        $this->language = $this->di->getApp()->get('language');
-        $this->timezone = $this->di->getApp()->get('timezone');
-        $this->currency_id = Currencies::findFirstByCode($this->di->getApp()->get('currency'))->getId();
+        $this->language = $this->di->get('app')->get('language');
+        $this->timezone = $this->di->get('app')->get('timezone');
+        $this->currency_id = Currencies::findFirstByCode($this->di->get('app')->get('currency'))->getId();
     }
 
     /**
@@ -413,8 +302,6 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
      */
     public function afterCreate()
     {
-        parent::afterCreate();
-
         $this->fire('company:afterSignup', $this);
     }
 
@@ -422,9 +309,10 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
      * Get the default company the users has selected.
      *
      * @param  Users  $user
+     *
      * @return Companies
      */
-    public static function getDefaultByUser(Users $user): Companies
+    public static function getDefaultByUser(Users $user) : Companies
     {
         //verify the user has a default company
         $defaultCompany = $user->get(self::cacheKey());
@@ -455,7 +343,7 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
     public function startFreeTrial() : ?string
     {
         $defaultPlan = AppsPlans::getDefaultPlan();
-        $trialEndsAt = Carbon::now()->addDays($this->di->getApp()->plan->free_trial_dates);
+        $trialEndsAt = Carbon::now()->addDays($this->di->get('app')->plan->free_trial_dates);
 
         //Lets create a new default subscription without payment method
         $this->user->newSubscription($defaultPlan->name, $defaultPlan->stripe_id, $this, $this->di->getApp())
@@ -464,7 +352,7 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
 
         //ook for the subscription and update the missing info
         $subscription = $this->subscription;
-        $subscription->apps_plans_id = $this->di->getApp()->default_apps_plan_id;
+        $subscription->apps_plans_id = $this->di->get('app')->default_apps_plan_id;
         $subscription->trial_ends_days = $trialEndsAt->diffInDays(Carbon::now());
         $subscription->is_freetrial = 1;
         $subscription->is_active = 1;
@@ -481,6 +369,7 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
      * Upload Files.
      *
      * @todo move this to the baka class
+     *
      * @return void
      */
     public function afterSave()
@@ -490,11 +379,11 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
     }
 
     /**
-    * Get an array of the associates users_id for this company.
-    *
-    * @return array
-    */
-    public function getAssociatedUsersByApp(): array
+     * Get an array of the associates users_id for this company.
+     *
+     * @return array
+     */
+    public function getAssociatedUsersByApp() : array
     {
         /**
          * @todo move to use the users relationship
@@ -520,21 +409,34 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
     /**
      * Get the default company key for the current app
      * this is use to store in redis the default company id for the current
-     * user in session everytime they switch between companies on the diff apps.
+     * user in session every time they switch between companies on the diff apps.
      *
      * @return string
      */
-    public static function cacheKey(): string
+    public static function cacheKey() : string
     {
-        return self::DEFAULT_COMPANY_APP . Di::getDefault()->getApp()->getId();
+        return self::DEFAULT_COMPANY_APP . Di::getDefault()->get('app')->getId();
     }
 
     /**
-    * Given a user remove it from this app company.
-    *
-    * @param Users $user
-    * @return void
-    */
+     * Get the default company key for the current app
+     * this is use to store in redis the default company id for the current
+     * user in session every time they switch between companies on the diff apps.
+     *
+     * @return string
+     */
+    public function branchCacheKey() : string
+    {
+        return self::DEFAULT_COMPANY_BRANCH_APP . $this->getDI()->get('app')->getId() . '_' . $this->getId();
+    }
+
+    /**
+     * Given a user remove it from this app company.
+     *
+     * @param Users $user
+     *
+     * @return void
+     */
     public function deactiveUser(Users $user)
     {
         //deactive the user from a company app, not delete
@@ -544,6 +446,7 @@ class Companies extends \Canvas\CustomFields\AbstractCustomFieldsModel
      * Given the user reactive it for this app company.
      *
      * @param Users $user
+     *
      * @return void
      */
     public function reactiveUser(Users $user)

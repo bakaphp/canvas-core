@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Canvas\Providers;
 
-use function Canvas\Core\appPath;
-use function Canvas\Core\envValue;
+use function Baka\appPath;
+use function Baka\envValue;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
+use Phalcon\Di\DiInterface;
 use Phalcon\Di\ServiceProviderInterface;
-use Phalcon\DiInterface;
 use Sentry\ClientBuilder;
 use Sentry\Monolog\Handler as SentryHandler;
 use Sentry\State\Hub;
@@ -22,7 +22,7 @@ class LoggerProvider implements ServiceProviderInterface
      *
      * @param DiInterface $container
      */
-    public function register(DiInterface $container)
+    public function register(DiInterface $container) : void
     {
         $config = $container->getShared('config');
 
@@ -43,10 +43,10 @@ class LoggerProvider implements ServiceProviderInterface
                 $handler->setFormatter($formatter);
 
                 //only run logs in production
-                if ($config->app->production) {
+                if ($config->app->production && (bool) envValue('SENTRY_PROJECT', 1)) {
                     //sentry logger
                     $client = ClientBuilder::create([
-                        'dsn' => 'https://' . getenv('SENTRY_RPOJECT_SECRET') . '@sentry.io/' . getenv('SENTRY_PROJECT_ID')
+                        'dsn' => 'https://' . getenv('SENTRY_PROJECT_SECRET') . '@sentry.io/' . getenv('SENTRY_PROJECT_ID')
                     ])->getClient();
 
                     $hub = Hub::setCurrent(new Hub($client));

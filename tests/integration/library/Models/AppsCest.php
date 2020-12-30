@@ -7,8 +7,6 @@ use Canvas\Models\AppsPlans;
 use Canvas\Models\AppsSettings;
 use Canvas\Models\UserWebhooks;
 use IntegrationTester;
-use Canvas\Providers\ConfigProvider;
-use Phalcon\Di\FactoryDefault;
 
 class AppsCest
 {
@@ -29,6 +27,7 @@ class AppsCest
      * Confirm the default apps exist.
      *
      * @param IntegrationTester $I
+     *
      * @return void
      */
     public function getDefaultApp(IntegrationTester $I)
@@ -41,6 +40,7 @@ class AppsCest
      * Confirm the default apps exist.
      *
      * @param IntegrationTester $I
+     *
      * @return void
      */
     public function getGewaerApp(IntegrationTester $I)
@@ -53,6 +53,7 @@ class AppsCest
      * Validate is an app has an active status or not.
      *
      * @param UnitTester $I
+     *
      * @return void
      */
     public function isActive(IntegrationTester $I)
@@ -70,6 +71,22 @@ class AppsCest
     public function validateSubscriptionBased(IntegrationTester $I)
     {
         $app = Apps::getACLApp('Default');
-        $I->assertTrue(is_bool($app->subscriptioBased()));
+        $I->assertTrue(is_bool($app->subscriptionBased()));
+    }
+
+    public function getAppByDomain(IntegrationTester $I)
+    {
+        $app = Apps::findFirst(1);
+        $app->domain = 'localhost';
+        $app->domain_based = 1;
+        $app->update();
+
+        $I->assertTrue(Apps::getByDomainName('localhost') instanceof Apps);
+
+        //revert
+        $app = Apps::findFirst(1);
+        $app->domain = '';
+        $app->domain_based = 0;
+        $app->update();
     }
 }

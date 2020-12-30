@@ -3,83 +3,30 @@ declare(strict_types=1);
 
 namespace Canvas\Models;
 
+use Baka\Contracts\Database\HashTableTrait;
+use Baka\Contracts\EventsManager\EventManagerAwareTrait;
+use Baka\Database\Apps as BakaApps;
+use Canvas\Cli\Jobs\Apps as JobsApps;
 use Canvas\Traits\UsersAssociatedTrait;
-use Baka\Database\Contracts\HashTableTrait;
+use Phalcon\Security\Random;
+use Phalcon\Di;
 
-class Apps extends \Baka\Database\Apps
+class Apps extends BakaApps
 {
-    /**
-     *
-     * @var integer
-     */
-    public $id;
+    use EventManagerAwareTrait;
 
-    /**
-     *
-     * @var string
-     */
-    public $key;
-
-    /**
-     *
-     * @var string
-     */
-    public $name;
-
-    /**
-     *
-     * @var string
-     */
-    public $description;
-
-    /**
-     *
-     * @var string
-     */
-    public $url;
-
-    /**
-     *
-     * @var integer
-     */
-    public $default_apps_plan_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $is_actived;
-
-    /**
-     * @var integer
-     */
-    public $ecosystem_auth;
-
-    /**
-     * @var integer
-     */
-    public $payments_active;
-
-    /**
-     *
-     * @var string
-     */
-    public $created_at;
-
-    /**
-     *
-     * @var string
-     */
-    public $updated_at;
-
-    /**
-     *
-     * @var integer
-     */
-    public $is_deleted;
+    public ?string $key = null;
+    public ?string $url = null;
+    public ?int $is_actived = 1;
+    public int $ecosystem_auth = 0;
+    public int $default_apps_plan_id = 0;
+    public int $payments_active = 0;
+    public int $is_public = 1;
+    public array $settings = [];
 
     /**
      * Ecosystem default app.
+     *
      * @var string
      */
     const CANVAS_DEFAULT_APP_ID = 1;
@@ -133,17 +80,70 @@ class Apps extends \Baka\Database\Apps
     }
 
     /**
+     * Before Create function.
+     *
+     * @return void
+     */
+    public function beforeCreate() : void
+    {
+        $random = new Random();
+        parent::beforeCreate();
+
+        $this->key = $random->uuid();
+        $this->is_actived = 1;
+    }
+
+    /**
+     * After Create function.
+     *
+     * @return void
+     */
+    public function afterCreate() : void
+    {
+        foreach ($this->settings as $key => $value) {
+            $this->set($key, $value);
+        }
+
+        //Create a new UserAssociatedApps record
+        $userAssociatedApp = new UsersAssociatedApps();
+        $userAssociatedApp->users_id = Di::getDefault()->getUserData()->getId();
+        $userAssociatedApp->apps_id = $this->getId();
+        $userAssociatedApp->companies_id = Di::getDefault()->getUserData()->getCurrentCompany()->getId();
+        $userAssociatedApp->identify_id = (string)Di::getDefault()->getUserData()->getId();
+        $userAssociatedApp->user_active = 1;
+        $userAssociatedApp->user_role = (string)Di::getDefault()->getUserData()->roles_id;
+        $userAssociatedApp->saveOrFail();
+
+        //send job to finish app creation
+        JobsApps::dispatch($this);
+    }
+
+    /**
+     * Sets Apps settings.
+     *
+     * @param array $settings
+     *
+     * @return void
+     */
+    public function setSettings(array $settings) : void
+    {
+        $this->settings = $settings;
+    }
+
+    /**
      * You can only get 2 variations or default in DB or the api app.
      *
      * @param string $name
+     *
      * @return Apps
      */
-    public static function getACLApp(string $name): Apps
+    public static function getACLApp(string $name) : Apps
     {
         if (trim($name) == self::CANVAS_DEFAULT_APP_NAME) {
             $app = self::findFirst(1);
         } else {
-            $app = self::findFirstByKey(\Phalcon\DI::getDefault()->getConfig()->app->id);
+            $appByName = self::findFirstByName($name);
+            $app = $appByName ?: self::findFirstByKey(\Phalcon\DI::getDefault()->getConfig()->app->id);
         }
 
         return $app;
@@ -152,30 +152,20 @@ class Apps extends \Baka\Database\Apps
     /**
      * Is active?
      *
-     * @return boolean
+     * @return bool
      */
-    public function isActive(): bool
+    public function isActive() : bool
     {
         return (bool) $this->is_actived;
-    }
-
-    /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource() : string
-    {
-        return 'apps';
     }
 
     /**
      * Those this app use ecosystem login or
      * the its own local login?
      *
-     * @return boolean
+     * @return bool
      */
-    public function ecosystemAuth(): bool
+    public function ecosystemAuth() : bool
     {
         return (bool) $this->ecosystem_auth;
     }
@@ -183,10 +173,39 @@ class Apps extends \Baka\Database\Apps
     /**
      * Is this app subscription based?
      *
-     * @return boolean
+     * @return bool
      */
-    public function subscriptioBased(): bool
+    public function subscriptionBased() : bool
     {
         return (bool) $this->payments_active;
+    }
+
+    /**
+     * Has any settings values?
+     */
+    public function hasSettings() : bool
+    {
+        return (bool) $this->getSettingsApp()->count();
+    }
+
+    /**
+     * Get app by domain name.
+     *
+     * @param string $domain
+     *
+     * @return self
+     */
+    public static function getByDomainName(string $domain) : ?self
+    {
+        return self::findFirst([
+            'conditions' => 'domain = :domain: AND domain_based = 1',
+            'bind' => [
+                'domain' => $domain
+            ],
+            'cache' => [
+                'key' => 'app-by-domain-cache' . $domain,
+                'lifetime' => 432000, //1week
+            ],
+        ]);
     }
 }

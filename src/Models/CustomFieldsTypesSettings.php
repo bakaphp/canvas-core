@@ -3,43 +3,10 @@ declare(strict_types=1);
 
 namespace Canvas\Models;
 
-class CustomFieldsTypesSettings extends AbstractModel
+use Baka\Database\CustomFields\FieldsTypeSettings;
+
+class CustomFieldsTypesSettings extends FieldsTypeSettings
 {
-    /**
-     *
-     * @var integer
-     */
-    public $id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $custom_fields_types_id;
-
-    /**
-     *
-     * @var string
-     */
-    public $name;
-
-    /**
-     *
-     * @var integer
-     */
-    public $is_deleted;
-
-    /**
-     *
-     * @var string
-     */
-    public $created_at;
-
-    /**
-     *
-     * @var string
-     */
-    public $updated_at;
 
     /**
      * Initialize method for model.
@@ -54,15 +21,5 @@ class CustomFieldsTypesSettings extends AbstractModel
             'id',
             ['alias' => 'fieldsType']
         );
-    }
-
-    /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource(): string
-    {
-        return 'custom_fields_types_settings';
     }
 }

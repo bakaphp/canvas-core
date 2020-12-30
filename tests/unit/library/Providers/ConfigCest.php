@@ -45,7 +45,7 @@ class ConfigCest
         $I->assertTrue(isset($configArray['application']['debug']['logRequest']));
 
         //FileSystem
-        $I->assertTrue(isset($configArray['filesystem']['uploadDirectoy']));
+        $I->assertTrue(isset($configArray['filesystem']['uploadDirectory']));
         $I->assertTrue(isset($configArray['filesystem']['local']['path']));
         $I->assertTrue(isset($configArray['filesystem']['local']['cdn']));
         $I->assertTrue(isset($configArray['filesystem']['s3']['info']['credentials']['key']));
@@ -58,9 +58,8 @@ class ConfigCest
 
         //Cache
         $I->assertTrue(isset($configArray['cache']));
-        $I->assertTrue(isset($configArray['cache']['data']));
-        $I->assertTrue(isset($configArray['cache']['data']['front']));
-        $I->assertTrue(isset($configArray['cache']['data']['back']));
+        $I->assertTrue(isset($configArray['cache']['adapter']));
+        $I->assertTrue(isset($configArray['cache']['options']));
         $I->assertTrue(isset($configArray['cache']['metadata']));
         $I->assertTrue(isset($configArray['cache']['metadata']['dev']));
         $I->assertTrue(isset($configArray['cache']['metadata']['prod']));

@@ -4,35 +4,24 @@ declare(strict_types=1);
 
 namespace Canvas\Acl;
 
-use Phalcon\Db;
-use Phalcon\Db\AdapterInterface as DbAdapter;
+use BadMethodCallException;
+use Canvas\Models\AccessList as AccessListDB;
+use Canvas\Models\Apps;
+use Canvas\Models\Companies;
+use Canvas\Models\Resources as ResourcesDB;
+use Canvas\Models\ResourcesAccesses;
+use Canvas\Models\Roles as RolesDB;
+use Phalcon\Acl\Adapter\AbstractAdapter;
+use Phalcon\Acl\Component;
+use Phalcon\Acl\Enum as AclEnum;
 use Phalcon\Acl\Exception;
-use Phalcon\Acl\Resource;
-use Phalcon\Acl;
 use Phalcon\Acl\Role;
 use Phalcon\Acl\RoleInterface;
-use Canvas\Models\Companies;
-use Canvas\Models\Apps;
-use Canvas\Models\Roles as RolesDB;
-use Canvas\Models\AccessList as AccessListDB;
-use Canvas\Models\Resources as ResourcesDB;
-use Phalcon\Acl\Adapter;
-use BadMethodCallException;
-use Canvas\Exception\ModelException;
-use Canvas\Models\ResourcesAccesses;
+use Phalcon\Db\AdapterInterface as DbAdapter;
+use Phalcon\Db\Enum;
 use Phalcon\Di;
 
-/**
- * Class Manager.
- *
- * Manages Geweaer Multi tenant ACL lists in database
- *
- * @package Canvas\Acl
- *
- * @property Users $userData
- * @property Request $request
- */
-class Manager extends Adapter
+class Manager extends AbstractAdapter
 {
     /**
      * @var DbAdapter
@@ -41,39 +30,45 @@ class Manager extends Adapter
 
     /**
      * Roles table.
+     *
      * @var string
      */
     protected $roles;
 
     /**
      * Resources table.
+     *
      * @var string
      */
     protected $resources;
 
     /**
      * Resources Accesses table.
+     *
      * @var string
      */
     protected $resourcesAccesses;
 
     /**
      * Access List table.
+     *
      * @var string
      */
     protected $accessList;
 
     /**
      * Roles Inherits table.
+     *
      * @var string
      */
     protected $rolesInherits;
 
     /**
      * Default action for no arguments is allow.
+     *
      * @var int
      */
-    protected $noArgumentsDefaultAction = Acl::ALLOW;
+    protected $noArgumentsDefaultAction = AclEnum::ALLOW;
 
     /**
      * Company Object.
@@ -93,6 +88,7 @@ class Manager extends Adapter
      * Class constructor.
      *
      * @param  array $options Adapter config
+     *
      * @throws Exception
      */
     public function __construct(array $options)
@@ -104,6 +100,7 @@ class Manager extends Adapter
      * Set current user Company.
      *
      * @param Companies $company
+     *
      * @return void
      */
     public function setCompany(Companies $company) : void
@@ -115,6 +112,7 @@ class Manager extends Adapter
      * Set current user app.
      *
      * @param Apps $app
+     *
      * @return void
      */
     public function setApp(Apps $app) : void
@@ -125,12 +123,12 @@ class Manager extends Adapter
     /**
      * Get the current App.
      *
-     * @return void
+     * @return Apps
      */
     public function getApp() : Apps
     {
         if (!is_object($this->app)) {
-            $this->app = Di::getDefault()->getApp();
+            $this->app = Di::getDefault()->get('app');
         }
 
         return $this->app;
@@ -161,14 +159,16 @@ class Manager extends Adapter
      *
      * Example:
      * <code>
-     * $acl->addRole(new Phalcon\Acl\Role('administrator'), 'consultor');
-     * $acl->addRole('administrator', 'consultor');
+     * $acl->addRole(new Phalcon\Acl\Role('administrator'), 'consulter');
+     * $acl->addRole('administrator', 'consulter');
      * </code>
      *
      * @param  \Phalcon\Acl\Role|string $role
      * @param  int   $scope
      * @param  string                   $accessInherits
-     * @return boolean
+     *
+     * @return bool
+     *
      * @throws \Phalcon\Acl\Exception
      */
     public function addRole($role, $scope = 0, $accessInherits = null) : bool
@@ -197,7 +197,7 @@ class Manager extends Adapter
             $accessListDB->roles_id = $rolesDB->getId();
             $accessListDB->resources_name = '*';
             $accessListDB->access_name = '*';
-            $accessListDB->allowed = $this->_defaultAccess;
+            $accessListDB->allowed = $this->noArgumentsDefaultAction;
             $accessListDB->apps_id = $this->getApp()->getId();
             $accessListDB->saveOrFail();
         }
@@ -213,7 +213,8 @@ class Manager extends Adapter
      * {@inheritdoc}
      *
      * @param  string  $roleName
-     * @return boolean
+     *
+     * @return bool
      */
     public function isRole($roleName) : bool
     {
@@ -224,9 +225,10 @@ class Manager extends Adapter
      * {@inheritdoc}
      *
      * @param  string  $resourceName
-     * @return boolean
+     *
+     * @return bool
      */
-    public function isResource($resourceName) : bool
+    public function isComponent($resourceName) : bool
     {
         return ResourcesDB::isResource($resourceName);
     }
@@ -236,6 +238,7 @@ class Manager extends Adapter
      *
      * @param  string $roleName
      * @param  string $roleToInherit
+     *
      * @throws \Phalcon\Acl\Exception
      */
     public function addInherit($roleName, $roleToInherit) : bool
@@ -247,11 +250,12 @@ class Manager extends Adapter
      * Given a resource with a dot CRM.Leads , it will set the app.
      *
      * @param string $resource
-     * @return void
+     *
+     * @return string
      */
     protected function setAppByResource(string $resource) : string
     {
-        //echeck if we have a dot , taht means we are sending the specific app to use
+        //check if we have a dot , taht means we are sending the specific app to use
         if (strpos($resource, '.') !== false) {
             $appResource = explode('.', $resource);
             $resource = $appResource[1];
@@ -270,11 +274,12 @@ class Manager extends Adapter
      * Given a resource with a dot CRM.Leads , it will set the app.
      *
      * @param string $resource
-     * @return void
+     *
+     * @return string
      */
     protected function setAppByRole(string $role) : string
     {
-        //echeck if we have a dot , taht means we are sending the specific app to use
+        //check if we have a dot , that means we are sending the specific app to use
         if (strpos($role, '.') !== false) {
             $appRole = explode('.', $role);
             $role = $appRole[1];
@@ -294,28 +299,29 @@ class Manager extends Adapter
      * Example:
      * <code>
      * //Add a resource to the the list allowing access to an action
-     * $acl->addResource(new Phalcon\Acl\Resource('customers'), 'search');
+     * $acl->addResource(new Phalcon\Acl\Component('customers'), 'search');
      * $acl->addResource('customers', 'search');
      * //Add a resource  with an access list
-     * $acl->addResource(new Phalcon\Acl\Resource('customers'), ['create', 'search']);
+     * $acl->addResource(new Phalcon\Acl\Component('customers'), ['create', 'search']);
      * $acl->addResource('customers', ['create', 'search']);
      * $acl->addResource('App.customers', ['create', 'search']);
      * </code>.
      *
-     * @param  \Phalcon\Acl\Resource|string $resource
+     * @param  \Phalcon\Acl\Component|string $resource
      * @param  array|string                 $accessList
-     * @return boolean
+     *
+     * @return bool
      */
-    public function addResource($resource, $accessList = null) : bool
+    public function addComponent($resource, $accessList = null) : bool
     {
         if (!is_object($resource)) {
-            //echeck if we have a dot , taht means we are sending the specific app to use
+            //check if we have a dot , that means we are sending the specific app to use
             $resource = $this->setAppByResource($resource);
 
-            $resource = new Resource($resource);
+            $resource = new Component($resource);
         }
 
-        if (!ResourcesDB::isResource($resource->getName())) {
+        if (!ResourcesDB::isResource($resource->getName(), $this->getApp())) {
             $resourceDB = new ResourcesDB();
             $resourceDB->name = $resource->getName();
             $resourceDB->description = $resource->getDescription();
@@ -324,7 +330,7 @@ class Manager extends Adapter
         }
 
         if ($accessList) {
-            return $this->addResourceAccess($resource->getName(), $accessList);
+            return $this->addComponentAccess($resource->getName(), $accessList);
         }
 
         return true;
@@ -335,16 +341,18 @@ class Manager extends Adapter
      *
      * @param  string       $resourceName
      * @param  array|string $accessList
-     * @return boolean
+     *
+     * @return bool
+     *
      * @throws \Phalcon\Acl\Exception
      */
-    public function addResourceAccess($resourceName, $accessList) : bool
+    public function addComponentAccess($resourceName, $accessList) : bool
     {
-        if (!ResourcesDB::isResource($resourceName)) {
+        if (!ResourcesDB::isResource($resourceName, $this->getApp())) {
             throw new Exception("Resource '{$resourceName}' does not exist in ACL");
         }
 
-        $resource = ResourcesDB::getByName($resourceName);
+        $resource = ResourcesDB::getByName($resourceName, $this->getApp());
 
         if (!is_array($accessList)) {
             $accessList = [$accessList];
@@ -367,14 +375,14 @@ class Manager extends Adapter
     /**
      * {@inheritdoc}
      *
-     * @return \Phalcon\Acl\Resource[]
+     * @return array
      */
-    public function getResources() : \Phalcon\Acl\ResourceInterface
+    public function getComponents() : array
     {
         $resources = [];
 
         foreach (ResourcesDB::find() as $row) {
-            $resources[] = new Resource($row->name, $row->description);
+            $resources[] = new Component($row->name, $row->description);
         }
         return $resources;
     }
@@ -382,9 +390,9 @@ class Manager extends Adapter
     /**
      * {@inheritdoc}
      *
-     * @return RoleInterface[]
+     * @return array
      */
-    public function getRoles() : \Phalcon\Acl\RoleInterface
+    public function getRoles() : array
     {
         $roles = [];
 
@@ -400,7 +408,7 @@ class Manager extends Adapter
      * @param string       $resourceName
      * @param array|string $accessList
      */
-    public function dropResourceAccess($resourceName, $accessList)
+    public function dropComponentAccess($resourceName, $accessList) : void
     {
         throw new BadMethodCallException('Not implemented yet.');
     }
@@ -425,9 +433,9 @@ class Manager extends Adapter
      * @param array|string $access
      * @param mixed $func
      */
-    public function allow($roleName, $resourceName, $access, $func = null)
+    public function allow($roleName, $resourceName, $access, $func = null) : void
     {
-        return $this->allowOrDeny($roleName, $resourceName, $access, Acl::ALLOW);
+        $this->allowOrDeny($roleName, $resourceName, $access, AclEnum::ALLOW);
     }
 
     /**
@@ -449,11 +457,12 @@ class Manager extends Adapter
      * @param  string       $resourceName
      * @param  array|string $access
      * @param  mixed $func
-     * @return boolean
+     *
+     * @return bool
      */
-    public function deny($roleName, $resourceName, $access, $func = null)
+    public function deny($roleName, $resourceName, $access, $func = null) : void
     {
-        return $this->allowOrDeny($roleName, $resourceName, $access, Acl::DENY);
+        $this->allowOrDeny($roleName, $resourceName, $access, AclEnum::DENY);
     }
 
     /**
@@ -470,12 +479,13 @@ class Manager extends Adapter
      * @param string $resource
      * @param string $access
      * @param array  $parameters
+     *
      * @return bool
      */
     public function isAllowed($role, $resource, $access, array $parameters = null) : bool
     {
         $role = $this->setAppByRole($role);
-        //resoure always overwrites the role app?
+        //resource always overwrites the role app?
         $resource = $this->setAppByResource($resource);
         $roleObj = RolesDB::getByName($role);
 
@@ -493,18 +503,29 @@ class Manager extends Adapter
             // resources_name should be given one or 'any'
             "AND resources_name IN (?, '*')",
             // access_name should be given one or 'any'
-            //"AND access_name IN (?, '*')", you need to specify * , we are forcing to check always for permisions
-            'AND access_name IN (?)',
+            //"AND access_name IN (?, '*')", you need to specify * , we are forcing to check always for permissions
+            "AND access_name IN (?, '*')",
             'AND apps_id = ? ',
             'AND roles_id = ? ',
-            // order be the sum of bools for 'literals' before 'any'
+            'AND is_deleted = 0 ',
+            // order be the sum of bool for 'literals' before 'any'
             'ORDER BY ' . $this->connection->escapeIdentifier('allowed') . ' DESC',
             // get only one...
             'LIMIT 1'
         ]);
 
         // fetch one entry...
-        $allowed = $this->connection->fetchOne($sql, Db::FETCH_NUM, [$roleObj->getId(), $resource, $access, $this->getApp()->getId(), $roleObj->getId()]);
+        $allowed = $this->connection->fetchOne(
+            $sql,
+            Enum::FETCH_NUM,
+            [
+                $roleObj->getId(),
+                $resource,
+                $access,
+                $this->getApp()->getId(),
+                $roleObj->getId()
+            ]
+        );
 
         if (is_array($allowed)) {
             return (bool) $allowed[0];
@@ -513,7 +534,7 @@ class Manager extends Adapter
         /**
          * Return the default access action.
          */
-        return (bool) $this->_defaultAccess;
+        return (bool) $this->noArgumentsDefaultAction;
     }
 
     /**
@@ -531,9 +552,9 @@ class Manager extends Adapter
      * Sets the default access level for no arguments provided
      * in isAllowed action if there exists func for accessKey.
      *
-     * @param int $defaultAccess Phalcon\Acl::ALLOW or Phalcon\Acl::DENY
+     * @param int $defaultAccess Phalcon\AclEnum::ALLOW or Phalcon\AclEnum::DENY
      */
-    public function setNoArgumentsDefaultAction($defaultAccess)
+    public function setNoArgumentsDefaultAction($defaultAccess) : void
     {
         $this->noArgumentsDefaultAction = intval($defaultAccess);
     }
@@ -544,8 +565,10 @@ class Manager extends Adapter
      * @param  string  $roleName
      * @param  string  $resourceName
      * @param  string  $accessName
-     * @param  integer $action
-     * @return boolean
+     * @param  int $action
+     *
+     * @return bool
+     *
      * @throws \Phalcon\Acl\Exception
      */
     protected function insertOrUpdateAccess($roleName, $resourceName, $accessName, $action)
@@ -556,7 +579,7 @@ class Manager extends Adapter
          * Check if the access is valid in the resource unless wildcard.
          */
         if ($resourceName !== '*' && $accessName !== '*') {
-            $resource = ResourcesDB::getByName($resourceName);
+            $resource = ResourcesDB::getByName($resourceName, $this->getApp());
 
             if (!ResourcesAccesses::exist($resource, $accessName)) {
                 throw new Exception(
@@ -595,7 +618,7 @@ class Manager extends Adapter
             $accessListDB->roles_name = $roleName;
             $accessListDB->resources_name = $resourceName;
             $accessListDB->access_name = '*';
-            $accessListDB->allowed = $this->_defaultAccess;
+            $accessListDB->allowed = $this->noArgumentsDefaultAction;
             $accessListDB->apps_id = $this->getApp()->getId();
             $accessListDB->saveOrFail();
         }
@@ -609,10 +632,11 @@ class Manager extends Adapter
      * @param  string       $roleName
      * @param  string       $resourceName
      * @param  array|string $access
-     * @param  integer      $action
+     * @param  int      $action
+     *
      * @throws \Phalcon\Acl\Exception
      */
-    protected function allowOrDeny($roleName, $resourceName, $access, $action)
+    protected function allowOrDeny($roleName, $resourceName, $access, $action) : void
     {
         if (!RolesDB::isRole($roleName)) {
             throw new Exception("Role '{$roleName}' does not exist in the list");
@@ -623,7 +647,5 @@ class Manager extends Adapter
         foreach ($access as $accessName) {
             $this->insertOrUpdateAccess($roleName, $resourceName, $accessName, $action);
         }
-
-        return true;
     }
 }

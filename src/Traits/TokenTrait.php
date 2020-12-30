@@ -6,7 +6,7 @@ namespace Canvas\Traits;
 
 use Lcobucci\JWT\Parser;
 use Lcobucci\JWT\Token;
-use function Canvas\Core\envValue;
+use function Baka\envValue;
 use function time;
 
 /**

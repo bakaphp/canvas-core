@@ -4,26 +4,12 @@ declare(strict_types=1);
 
 namespace Canvas\Api\Controllers;
 
+use Baka\Http\Exception\NotFoundException;
 use Canvas\Models\EmailTemplates;
 use Canvas\Models\Users;
-use Canvas\Http\Exception\NotFoundException;
-use Phalcon\Security\Random;
 use Phalcon\Http\Response;
+use Phalcon\Security\Random;
 
-
-
-/**
- * Class LanguagesController.
- *
- * @package Canvas\Api\Controllers
- *
- * @property Users $userData
- * @property Request $request
- * @property Config $config
- * @property \Baka\Mail\Message $mail
- * @property Apps $app
- *
- */
 class EmailTemplatesController extends BaseController
 {
     /*
@@ -71,22 +57,20 @@ class EmailTemplatesController extends BaseController
      *
      * @method POST
      * @url /v1/data
-     * @param integer $id
+     *
+     * @param int $id
+     *
      * @return \Phalcon\Http\Response
      */
-    public function copy(int $id): Response
+    public function copy(int $id) : Response
     {
         $request = $this->request->getPostData();
 
         //Find email template based on the basic parameters
-        $existingEmailTemplate = $this->model::findFirst([
+        $existingEmailTemplate = $this->model::findFirstOrFail([
             'conditions' => 'id = ?0 and companies_id in (?1,?2) and apps_id in (?3,?4) and is_deleted = 0',
             'bind' => [$id, $this->userData->currentCompanyId(), 0, $this->app->getId(), 0]
         ]);
-
-        if (!is_object($existingEmailTemplate)) {
-            throw new NotFoundException('Email Template not found');
-        }
 
         $random = new Random();
         $randomInstance = $random->base58();
@@ -94,20 +78,26 @@ class EmailTemplatesController extends BaseController
         $request['users_id'] = $existingEmailTemplate->users_id;
         $request['companies_id'] = $this->userData->currentCompanyId();
         $request['apps_id'] = $this->app->getId();
-        $request['name'] = $existingEmailTemplate->name . '-' . $randomInstance;
+        if (empty($request['name'])) {
+            $request['name'] = $existingEmailTemplate->name . '-' . $randomInstance;
+        }
         $request['template'] = $existingEmailTemplate->template;
 
         $this->model->saveOrFail($request, $this->createFields);
 
-        return $this->response($this->model->toArray());
+        return $this->response(
+            $this->processOutput($this->model)
+        );
     }
 
     /**
      * Send test email to specific recipient.
+     *
      * @param string $email
+     *
      * @return Response
      */
-    public function sendTestEmail(): Response
+    public function sendTestEmail() : Response
     {
         $request = $this->request->getPost();
 

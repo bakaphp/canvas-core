@@ -3,110 +3,25 @@ declare(strict_types=1);
 
 namespace Canvas\Models;
 
+use Baka\Contracts\Database\HashTableTrait;
 use Phalcon\Di;
 
-/**
- * Class AppsPlans.
- *
- * @package Canvas\Models
- *
- * @property Users $user
- * @property Config $config
- * @property Apps $app
- * @property Companies $defaultCompany
- * @property \Phalcon\Di $di
- */
 class AppsPlans extends AbstractModel
 {
-    /**
-     *
-     * @var integer
-     */
-    public $id;
+    use HashTableTrait;
 
-    /**
-     *
-     * @var integer
-     */
-    public $apps_id;
-
-    /**
-     *
-     * @var string
-     */
-    public $name;
-
-    /**
-     *
-     * @var string
-     */
-    public $payment_ìnterval;
-
-    /**
-     *
-     * @var string
-     */
-    public $description;
-
-    /**
-     *
-     * @var string
-     */
-    public $stripe_id;
-
-    /**
-     *
-     * @var string
-     */
-    public $stripe_plan;
-
-    /**
-     *
-     * @var double
-     */
-    public $pricing;
-
-    /**
-     *
-     * @var integer
-     */
-    public $currency_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $free_trial_dates;
-
-    /**
-     *
-     * @var integer
-     */
-    public $is_default;
-
-    /**
-     *
-     * @var integer
-     */
-    public $payment_frequencies_id;
-
-    /**
-     *
-     * @var string
-     */
-    public $created_at;
-
-    /**
-     *
-     * @var string
-     */
-    public $updated_at;
-
-    /**
-     *
-     * @var integer
-     */
-    public $is_deleted;
+    public int $apps_id;
+    public string $name;
+    public string $description;
+    public string $stripe_id;
+    public string $stripe_plan;
+    public ?string $payment_interval = null;
+    public float $pricing;
+    public float $pricing_annual;
+    public int $currency_id = 1;
+    public int $free_trial_dates = 14;
+    public int $is_default = 0;
+    public int $payment_frequencies_id = 1;
 
     /**
      * Initialize method for model.
@@ -126,6 +41,14 @@ class AppsPlans extends AbstractModel
             'payment_frequencies_id',
             'Canvas\Models\PaymentFrequencies',
             'id',
+            ['alias' => 'paymentFrequencies']
+        );
+
+        //remove
+        $this->belongsTo(
+            'payment_frequencies_id',
+            'Canvas\Models\PaymentFrequencies',
+            'id',
             ['alias' => 'paymentFrequecies']
         );
 
@@ -138,17 +61,7 @@ class AppsPlans extends AbstractModel
     }
 
     /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource() : string
-    {
-        return 'apps_plans';
-    }
-
-    /**
-     * Just a preatty function that returns the same object for.
+     * Just a pretty function that returns the same object for.
      *
      * $app->settings()->set(key, value);
      * $app->settings()->get(key);
@@ -216,9 +129,7 @@ class AppsPlans extends AbstractModel
 
         $setting->value = $value;
 
-        $setting->saveOrFail();
-
-        return true;
+        return $setting->saveOrFail();
     }
 
     /**
@@ -228,7 +139,7 @@ class AppsPlans extends AbstractModel
      */
     public function afterSave()
     {
-        //if we udpate the is_default for this plan we need to remove all others and update the main app
+        //if we update the is_default for this plan we need to remove all others and update the main app
         if ($this->is_default) {
             $this->app->default_apps_plan_id = $this->getId();
             $this->app->update();

@@ -4,28 +4,13 @@ declare(strict_types=1);
 
 namespace Canvas\Traits;
 
+use Baka\Http\Exception\UnprocessableEntityException;
 use Canvas\Filesystem\Helper;
-use Canvas\Http\Exception\UnprocessableEntityException;
 use Canvas\Models\FileSystem;
 use Canvas\Models\FileSystemEntities;
 use Canvas\Models\FileSystemSettings;
 use Phalcon\Http\Response;
-use Phalcon\Validation;
-use Phalcon\Validation\Validator\File as FileValidator;
 
-/**
- * Trait ResponseTrait.
- *
- * @package Canvas\Traits
- *
- * @property Users $user
- * @property AppsPlans $appPlan
- * @property CompanyBranches $branches
- * @property Companies $company
- * @property UserCompanyApps $app
- * @property \Phalcon\Di $di
- *
- */
 trait FileManagementTrait
 {
     /**
@@ -41,9 +26,7 @@ trait FileManagementTrait
     public function create() : Response
     {
         if (!$this->request->hasFiles()) {
-            /**
-             * @todo handle file hash to avoid uploading same files again
-             */
+            throw new UnprocessableEntityException('No files to upload');
         }
 
         return $this->response($this->processFiles());
@@ -104,7 +87,7 @@ trait FileManagementTrait
     }
 
     /**
-     * Delete a file atribute.
+     * Delete a file attribute.
      *
      * @param $id
      * @param string $name
@@ -127,48 +110,6 @@ trait FileManagementTrait
     }
 
     /**
-     * Set the validation for the files.
-     *
-     * @return Validation
-     */
-    protected function validation() : Validation
-    {
-        $validator = new Validation();
-
-        /**
-         * @todo add validation for other file types, but we need to
-         * look for a scalable way
-         */
-        $uploadConfig = [
-            'maxSize' => '100M',
-            'messageSize' => ':field exceeds the max filesize (:max)',
-            'allowedTypes' => [
-                'image/jpeg',
-                'image/png',
-                'image/webp',
-                'audio/mpeg',
-                'audio/mp3',
-                'audio/mpeg',
-                'application/pdf',
-                'audio/mpeg3',
-                'audio/x-mpeg-3',
-                'application/x-zip-compressed',
-                'application/octet-stream',
-                'application/msword',
-                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-            ],
-            'messageType' => 'Allowed file types are :types',
-        ];
-
-        $validator->add(
-            'file',
-            new FileValidator($uploadConfig)
-        );
-
-        return $validator;
-    }
-
-    /**
      * Upload the document and save them to the filesystem.
      *
      * @todo add test
@@ -179,32 +120,8 @@ trait FileManagementTrait
     {
         $allFields = $this->request->getPostData();
 
-        $validator = $this->validation();
-
         $files = [];
         foreach ($this->request->getUploadedFiles() as $file) {
-            //validate this current file
-            $errors = $validator->validate([
-                'file' => [
-                    'name' => $file->getName(),
-                    'type' => $file->getType(),
-                    'tmp_name' => $file->getTempName(),
-                    'error' => $file->getError(),
-                    'size' => $file->getSize(),
-                ]
-            ]);
-
-            /**
-             * @todo figure out why this failes
-             */
-            if (!defined('API_TESTS')) {
-                if (count($errors)) {
-                    foreach ($errors as $error) {
-                        throw new UnprocessableEntityException((string) $error);
-                    }
-                }
-            }
-
             $fileSystem = Helper::upload($file);
 
             //add settings

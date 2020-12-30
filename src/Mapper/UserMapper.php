@@ -94,13 +94,16 @@ class UserMapper extends CustomMapper
         $userDto->user_activation_email = $user->user_activation_email;
         $userDto->welcome = $user->welcome;
         $userDto->photo = $user->photo;
+        $userDto->countries = $user->countries ?: null;
+        $userDto->states = $user->states ?: null;
+        $userDto->cities = $user->cities ?: null;
 
         /**
          * Properties we need to overwrite base on the
          * current app and company the user is running.
          */
         $userDto->default_company = $user->getDefaultCompany()->getId();
-        $userDto->default_company_branch = $user->getDefaultCompany()->defaultBranch->getId();
+        $userDto->default_company_branch = $user->currentBranchId();
         $userDto->roles_id = $user->getPermission()->roles_id;
         $userDto->access_list = [];
 
@@ -108,7 +111,7 @@ class UserMapper extends CustomMapper
 
         if (!empty($userDto->roles)) {
             if (isset($userDto->roles[0])) {
-                $this->accesList($userDto);
+                $this->accessList($userDto);
             }
         }
 
@@ -122,16 +125,16 @@ class UserMapper extends CustomMapper
      *
      * @return void
      */
-    protected function accesList(object $userDto) : void
+    protected function accessList(object $userDto) : void
     {
         $app = Di::getDefault()->getApp();
-        $accesList = AccessList::find([
+        $accessList = AccessList::find([
             'conditions' => 'roles_name = ?0 and apps_id in (?1, ?2) and allowed = 0',
             'bind' => [$userDto->roles[0]->name, $app->getId(), $app::CANVAS_DEFAULT_APP_ID]
         ]);
 
-        if (count($accesList) > 0) {
-            foreach ($accesList as $access) {
+        if (count($accessList) > 0) {
+            foreach ($accessList as $access) {
                 $userDto->access_list[strtolower($access->resources_name)][$access->access_name] = 0;
             }
         }

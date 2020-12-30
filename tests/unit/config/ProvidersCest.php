@@ -11,7 +11,7 @@ use Canvas\Providers\ModelsMetadataProvider;
 use Canvas\Providers\RequestProvider;
 use Canvas\Providers\RouterProvider;
 use UnitTester;
-use function Canvas\Core\appPath;
+use function Baka\appPath;
 
 class ProvidersCest
 {

@@ -4,25 +4,15 @@ declare(strict_types=1);
 
 namespace Canvas\Api\Controllers;
 
-use Canvas\Http\Exception\NotFoundException;
-use Phalcon\Cashier\Traits\StripeWebhookHandlersTrait;
-use Phalcon\Http\Response;
-use Canvas\Models\Users;
-use Canvas\Models\Subscription;
+use Baka\Contracts\Cashier\StripeWebhookHandlersTrait;
+use Baka\Http\Exception\NotFoundException;
 use Canvas\Models\CompaniesSettings;
+use Canvas\Models\Subscription;
+use Canvas\Models\Users;
 use Canvas\Template;
 use Phalcon\Di;
+use Phalcon\Http\Response;
 
-/**
- * Class PaymentsController.
- *
- * Class to handle payment webhook from our cashier library
- *
- * @package Canvas\Api\Controllers
- * @property Log $log
- * @property App $app
- *
- */
 class PaymentsController extends BaseController
 {
     /**
@@ -31,13 +21,13 @@ class PaymentsController extends BaseController
     use StripeWebhookHandlersTrait;
 
     /**
-     * Handle stripe webhoook calls.
+     * Handle stripe webhook calls.
      *
      * @return Response
      */
-    public function handleWebhook(): Response
+    public function handleWebhook() : Response
     {
-        //we cant processs if we dont find the stripe header
+        //we cant process's if we don't find the stripe header
         if (!$this->request->hasHeader('Stripe-Signature')) {
             throw new NotFoundException('Route not found for this call');
         }
@@ -60,9 +50,10 @@ class PaymentsController extends BaseController
      * Handle customer subscription updated.
      *
      * @param  array $payload
+     *
      * @return Response
      */
-    protected function handleCustomerSubscriptionUpdated(array $payload, string $method): Response
+    protected function handleCustomerSubscriptionUpdated(array $payload, string $method) : Response
     {
         $user = Users::findFirstByStripeId($payload['data']['object']['customer']);
         if ($user) {
@@ -76,9 +67,10 @@ class PaymentsController extends BaseController
      * Handle customer subscription cancellation.
      *
      * @param  array $payload
+     *
      * @return Response
      */
-    protected function handleCustomerSubscriptionDeleted(array $payload, string $method): Response
+    protected function handleCustomerSubscriptionDeleted(array $payload, string $method) : Response
     {
         $user = Users::findFirstByStripeId($payload['data']['object']['customer']);
         if ($user) {
@@ -93,9 +85,10 @@ class PaymentsController extends BaseController
      * Handle customer subscription free trial ending.
      *
      * @param  array $payload
+     *
      * @return Response
      */
-    protected function handleCustomerSubscriptionTrialwillend(array $payload, string $method): Response
+    protected function handleCustomerSubscriptionTrialwillend(array $payload, string $method) : Response
     {
         $user = Users::findFirstByStripeId($payload['data']['object']['customer']);
         if ($user) {
@@ -110,9 +103,10 @@ class PaymentsController extends BaseController
      * Handle sucessfull payment.
      *
      * @param array $payload
+     *
      * @return Response
      */
-    protected function handleChargeSucceeded(array $payload, string $method): Response
+    protected function handleChargeSucceeded(array $payload, string $method) : Response
     {
         $user = Users::findFirstByStripeId($payload['data']['object']['customer']);
         if ($user) {
@@ -127,6 +121,7 @@ class PaymentsController extends BaseController
      * Handle bad payment.
      *
      * @param array $payload
+     *
      * @return Response
      */
     protected function handleChargeFailed(array $payload, string $method) : Response
@@ -144,6 +139,7 @@ class PaymentsController extends BaseController
      * Handle pending payments.
      *
      * @param array $payload
+     *
      * @return Response
      */
     protected function handleChargePending(array $payload, string $method) : Response
@@ -158,12 +154,14 @@ class PaymentsController extends BaseController
 
     /**
      * Send webhook related emails to user.
+     *
      * @param Users $user
      * @param array $payload
      * @param string $method
+     *
      * @return void
      */
-    protected function sendWebhookResponseEmail(Users $user, array $payload, string $method): void
+    protected function sendWebhookResponseEmail(Users $user, array $payload, string $method) : void
     {
         $templateName = '';
         $title = null;
@@ -216,19 +214,30 @@ class PaymentsController extends BaseController
 
     /**
      * Updates subscription payment status depending on charge event.
+     *
      * @param $user
      * @param $payload
+     *
      * @return void
      */
-    public function updateSubscriptionPaymentStatus(Users $user, array $payload): void
+    public function updateSubscriptionPaymentStatus(Users $user, array $payload) : void
     {
-        $chargeDate = date('Y-m-d H:i:s', $payload['data']['object']['created']);
+        // Identify if payload comes from mobile payments
+        if ($payload['is_mobile']) {
+            $chargeDate = $payload['receipt_creation_date'];
+            $paidStatus = $payload['paid_status'];
+            $subscriptionStatus = $payload['subscription_status'];
+        } else {
+            $chargeDate = date('Y-m-d H:i:s', (int) $payload['data']['object']['created']);
+            $paidStatus = $payload['data']['object']['paid'];
+            $subscriptionStatus = $payload['data']['object']['status'];
+        }
 
         //Fetch current user subscription
         $subscription = Subscription::getByDefaultCompany($user);
 
         if (is_object($subscription)) {
-            $subscription->paid = $payload['data']['object']['paid'] ? 1 : 0;
+            $subscription->paid = $paidStatus ?? 0;
             $subscription->charge_date = $chargeDate;
 
             $subscription->validateByGracePeriod();
@@ -239,12 +248,12 @@ class PaymentsController extends BaseController
             }
 
             //Paid status is false if plan has been canceled
-            if ($payload['data']['object']['status'] == 'canceled') {
+            if ($subscriptionStatus == 'canceled') {
                 $subscription->paid = 0;
                 $subscription->charge_date = null;
             }
 
-            if ($subscription->update()) {
+            if ($subscription->updateOrFail()) {
                 //Update companies setting
                 $paidSetting = CompaniesSettings::findFirst([
                     'conditions' => "companies_id = ?0 and name = 'paid' and is_deleted = 0",
@@ -252,9 +261,9 @@ class PaymentsController extends BaseController
                 ]);
 
                 $paidSetting->value = (string) $subscription->paid;
-                $paidSetting->update();
+                $paidSetting->updateOrFail();
             }
-            $this->log->info("User with id: {$user->id} charged status was {$payload['data']['object']['paid']} \n");
+            $this->log->info("User with id: {$user->id} charged status was {$paidStatus} \n");
         } else {
             $this->log->error("Subscription not found\n");
         }

@@ -1,6 +1,10 @@
 <?php
 
-(new Dotenv\Dotenv(__DIR__))->load();
+use function Baka\appPath;
+use Dotenv\Dotenv;
+
+$dotenv = Dotenv::createImmutable(appPath());
+$dotenv->load();
 
 return [
     'paths' => [

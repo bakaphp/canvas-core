@@ -8,47 +8,10 @@ use Phalcon\Validation\Validator\Uniqueness;
 
 class UserRoles extends AbstractModel
 {
-    /**
-     *
-     * @var integer
-     */
-    public $users_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $apps_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $roles_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $companies_id;
-
-    /**
-     *
-     * @var string
-     */
-    public $created_at;
-
-    /**
-     *
-     * @var string
-     */
-    public $updated_at;
-
-    /**
-     *
-     * @var integer
-     */
-    public $is_deleted;
+    public int $users_id;
+    public int $apps_id;
+    public int $roles_id;
+    public int $companies_id;
 
     /**
      * Initialize method for model.
@@ -87,18 +50,8 @@ class UserRoles extends AbstractModel
     }
 
     /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
+     * Validations and business logic.
      */
-    public function getSource(): string
-    {
-        return 'user_roles';
-    }
-
-    /**
-    * Validations and business logic.
-    */
     public function validation()
     {
         $validator = new Validation();

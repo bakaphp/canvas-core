@@ -3,12 +3,12 @@
 namespace Canvas\Tests\unit\library\Dto;
 
 use Canvas\Exception\HttpException;
-use Canvas\Http\Exception\BadRequestException;
-use Canvas\Http\Exception\ForbiddenException;
-use Canvas\Http\Exception\InternalServerErrorException;
-use Canvas\Http\Exception\NotFoundException;
-use Canvas\Http\Exception\UnauthorizedException;
-use Canvas\Http\Exception\UnprocessableEntityException;
+use Baka\Http\Exception\BadRequestException;
+use Baka\Http\Exception\ForbiddenException;
+use Baka\Http\Exception\InternalServerErrorException;
+use Baka\Http\Exception\NotFoundException;
+use Baka\Http\Exception\UnauthorizedException;
+use Baka\Http\Exception\UnprocessableEntityException;
 use UnitTester;
 
 class ExceptionsCest

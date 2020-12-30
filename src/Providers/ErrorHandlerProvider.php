@@ -8,7 +8,7 @@ use Monolog\Logger;
 use Canvas\ErrorHandler;
 use Phalcon\Config;
 use Phalcon\Di\ServiceProviderInterface;
-use Phalcon\DiInterface;
+use Phalcon\Di\DiInterface;
 use Canvas\Constants\Flags;
 
 class ErrorHandlerProvider implements ServiceProviderInterface
@@ -18,7 +18,7 @@ class ErrorHandlerProvider implements ServiceProviderInterface
      *
      * @param DiInterface $container
      */
-    public function register(DiInterface $container)
+    public function register(DiInterface $container) : void
     {
         /** @var Logger $logger */
         $logger = $container->getShared('log');

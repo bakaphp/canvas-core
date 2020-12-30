@@ -3,7 +3,7 @@
 namespace Gewaer\Tests\integration\library\Jobs;
 
 use Canvas\Auth\App;
-use Canvas\Hashing\Password;
+use Baka\Hashing\Password;
 use Canvas\Models\Apps;
 use Canvas\Models\Companies;
 use Canvas\Models\Users;
@@ -11,7 +11,6 @@ use Exception;
 use IntegrationTester;
 use Page\Data;
 use Phalcon\Security\Random;
-use PhpParser\Node\Expr\Instanceof_;
 
 class AppCest
 {
@@ -24,13 +23,14 @@ class AppCest
      */
     public function onContruct()
     {
-        $this->app = Apps::getACLApp(Apps::CANVAS_DEFAULT_APP_NAME);
+        $this->app = Apps::findFirst();
     }
 
     /**
      * Register a new Company.
      *
      * @param IntegrationTester $I
+     *
      * @return void
      */
     public function setCompanyTest(IntegrationTester $I)
@@ -53,6 +53,7 @@ class AppCest
      * not specific login.
      *
      * @param IntegrationTester $I
+     *
      * @return void
      */
     public function cantLoginToSpecificApp(IntegrationTester $I)
@@ -114,6 +115,7 @@ class AppCest
      * we run it after updateuserpass to make sure we have the correct pass for this speciifc app.
      *
      * @param IntegrationTester $I
+     *
      * @return boolean
      */
     public function canLoginToSpecificApp(IntegrationTester $I)

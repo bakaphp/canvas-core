@@ -4,36 +4,23 @@ declare(strict_types=1);
 
 namespace Canvas\Traits;
 
+use function Baka\getShortClassName;
+use Canvas\Exception\SubscriptionPlanLimitException;
+use Baka\Http\Exception\InternalServerErrorException;
 use Canvas\Models\Subscription;
 use Canvas\Models\UserCompanyAppsActivities;
-use Canvas\Exception\SubscriptionPlanLimitException;
-use Canvas\Http\Exception\InternalServerErrorException;
-use ReflectionClass;
 use Phalcon\Di;
 
-/**
- * Trait ResponseTrait.
- *
- * @package Canvas\Traits
- *
- * @property Users $user
- * @property AppsPlans $appPlan
- * @property CompanyBranches $branches
- * @property Companies $company
- * @property UserCompanyApps $app
- * @property \Phalcon\Di $di
- *
- */
 trait SubscriptionPlanLimitTrait
 {
     /**
-     * Get the key for the subscriptoin plan limit.
+     * Get the key for the subscription plan limit.
      *
      * @return string
      */
-    private function getSubcriptionPlanLimitModelKey() : string
+    private function getSubscriptionPlanLimitModelKey() : string
     {
-        $key = $this->subscriptionPlanLimitKey ?? (new ReflectionClass($this))->getShortName();
+        $key = $this->subscriptionPlanLimitKey ?? getShortClassName($this);
         return strtolower($key) . '_total';
     }
 
@@ -41,6 +28,7 @@ trait SubscriptionPlanLimitTrait
      * Validate if the current module for this app is at the limit of the paid plan.
      *
      * @throws SubscriptionPlanLimitException
+     *
      * @return boolean
      */
     public function isAtLimit() : bool
@@ -50,24 +38,24 @@ trait SubscriptionPlanLimitTrait
         }
 
         //if its not a subscription based app top this
-        if (!Di::getDefault()->get('app')->subscriptioBased()) {
+        if (!Di::getDefault()->get('app')->subscriptionBased()) {
             return false;
         }
 
-        $subcription = Subscription::getActiveForThisApp();
-        $appPlan = $subcription->appPlan;
+        $subscription = Subscription::getActiveForThisApp();
+        $appPlan = $subscription->appPlan;
 
         if (is_object($appPlan)) {
             //get the current module limit for this plan
-            $appPlanLimit = $appPlan->get($this->getSubcriptionPlanLimitModelKey());
+            $appPlanLimit = $appPlan->get($this->getSubscriptionPlanLimitModelKey());
 
             if (!is_null($appPlanLimit)) {
                 //get tht total activity of the company current plan
-                $currentCompanyAppActivityTotal = UserCompanyAppsActivities::get($this->getSubcriptionPlanLimitModelKey());
+                $currentCompanyAppActivityTotal = UserCompanyAppsActivities::get($this->getSubscriptionPlanLimitModelKey());
 
                 if ($currentCompanyAppActivityTotal >= $appPlanLimit) {
                     throw new SubscriptionPlanLimitException(_(
-                        'This action cannot be performed ' . $subcription->company->name . ' has reach the limit of it current plan ' . $appPlan->name . ' please upgrade or contact support'
+                        'This action cannot be performed ' . $subscription->company->name . ' has reach the limit of it current plan ' . $appPlan->name . ' please upgrade or contact support'
                     ));
                 }
             }
@@ -80,6 +68,7 @@ trait SubscriptionPlanLimitTrait
      * Call at the afterCreate of all modules which are part of a plan activity.
      *
      * @throws InternalServerErrorException
+     *
      * @return boolean
      */
     public function updateAppActivityLimit() : bool
@@ -89,24 +78,26 @@ trait SubscriptionPlanLimitTrait
         }
 
         //if its not a subscription based app top this
-        if (!Di::getDefault()->get('app')->subscriptioBased()) {
+        if (!Di::getDefault()->get('app')->subscriptionBased()) {
             return false;
         }
 
         $companyAppActivityLimit = UserCompanyAppsActivities::findFirst([
             'conditions' => 'companies_id = ?0 and apps_id = ?1 and key = ?2',
-            'bind' => [Di::getDefault()->getUserData()->currentCompanyId(), Di::getDefault()->getApp()->getId(), $this->getSubcriptionPlanLimitModelKey()]
+            'bind' => [
+                Di::getDefault()->get('userData')->currentCompanyId(),
+                Di::getDefault()->get('app')->getId(),
+                $this->getSubscriptionPlanLimitModelKey()
+            ]
         ]);
 
         if (is_object($companyAppActivityLimit)) {
             //its a varchar so lets make sure we convert it to int
             $companyAppActivityLimit->value = (int)$companyAppActivityLimit->value + 1;
-            if (!$companyAppActivityLimit->save()) {
-                throw new InternalServerErrorException((string) current($companyAppActivityLimit->getMessages()));
-            }
+            $companyAppActivityLimit->saveOrFail();
         } else {
-            $userCopmanyAppsActivites = new UserCompanyAppsActivities();
-            $userCopmanyAppsActivites->set($this->getSubcriptionPlanLimitModelKey(), 1);
+            $userCompanyAppsActivities = new UserCompanyAppsActivities();
+            $userCompanyAppsActivities->set($this->getSubscriptionPlanLimitModelKey(), 1);
         }
 
         return true;

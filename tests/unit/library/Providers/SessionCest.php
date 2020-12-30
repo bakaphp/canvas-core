@@ -2,11 +2,11 @@
 
 namespace Canvas\Tests\unit\library\Providers;
 
-use Canvas\Providers\SessionProvider;
 use Canvas\Providers\ConfigProvider;
+use Canvas\Providers\SessionProvider;
 use Phalcon\Di\FactoryDefault;
+use Phalcon\Session\Manager;
 use UnitTester;
-use Phalcon\Session\Adapter\Redis;
 
 class SessionCest
 {
@@ -25,6 +25,7 @@ class SessionCest
         $I->assertTrue($diContainer->has('session'));
 
         $session = $diContainer->getShared('session');
-        $I->assertTrue($session instanceof Redis);
+
+        $I->assertTrue($session instanceof Manager);
     }
 }

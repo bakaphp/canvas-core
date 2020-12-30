@@ -6,58 +6,12 @@ namespace Canvas\Models;
 
 use Baka\Database\Exception\ModelNotFoundException;
 use Phalcon\Di;
-use Canvas\Exception\ModelException;
 
-/**
- * Class Resources.
- *
- * @package Canvas\Models
- *
- * @property \Phalcon\Di $di
- */
 class Resources extends AbstractModel
 {
-    /**
-     *
-     * @var integer
-     */
-    public $id;
-
-    /**
-     *
-     * @var string
-     */
-    public $name;
-
-    /**
-     *
-     * @var string
-     */
-    public $description;
-
-    /**
-     *
-     * @var integer
-     */
-    public $apps_id;
-
-    /**
-     *
-     * @var string
-     */
-    public $created_at;
-
-    /**
-     *
-     * @var string
-     */
-    public $updated_at;
-
-    /**
-     *
-     * @var integer
-     */
-    public $is_deleted;
+    public string $name;
+    public ?string $description = null;
+    public int $apps_id;
 
     /**
      * Initialize method for model.
@@ -83,16 +37,17 @@ class Resources extends AbstractModel
      * is this name a resource?
      *
      * @param string $resourceName
-     * @return boolean
+     *
+     * @return bool
      */
-    public static function isResource(string $resourceName) : bool
+    public static function isResource(string $resourceName, ?Apps $app = null) : bool
     {
+        $app = !is_null($app) ? $app : Di::getDefault()->get('acl')->getApp();
         return (bool) self::count([
-            'conditions' => 'name = ?0 AND apps_id in (?1, ?2)',
+            'conditions' => 'name = ?0 AND apps_id = ?1',
             'bind' => [
                 $resourceName,
-                Di::getDefault()->getApp()->getId(),
-                Apps::CANVAS_DEFAULT_APP_ID
+                $app->getId()
             ]
         ]);
     }
@@ -101,17 +56,21 @@ class Resources extends AbstractModel
      * Get a resource by it name.
      *
      * @param  string  $resourceName
+     *
      * @return Resources
      */
-    public static function getByName(string $resourceName) : Resources
+    public static function getByName(string $resourceName, ?Apps $app = null) : Resources
     {
+        $app = !is_null($app) ? $app : Di::getDefault()->get('acl')->getApp();
+
         $resource = self::findFirst([
             'conditions' => 'name = ?0 AND apps_id in (?1, ?2)',
             'bind' => [
                 $resourceName,
-                Di::getDefault()->getApp()->getId(),
+                $app->getId(),
                 Apps::CANVAS_DEFAULT_APP_ID
-            ]
+            ],
+            'order' => 'id desc'
         ]);
 
         if (!is_object($resource)) {
@@ -121,15 +80,5 @@ class Resources extends AbstractModel
         }
 
         return $resource;
-    }
-
-    /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource(): string
-    {
-        return 'resources';
     }
 }

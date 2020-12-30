@@ -4,62 +4,19 @@ declare(strict_types=1);
 
 namespace Canvas\Models;
 
-use Phalcon\Di;
-use Canvas\Exception\ModelException;
-use Baka\ASDecoder;
-use Canvas\Http\Exception\InternalServerErrorException;
+use Baka\Http\Exception\InternalServerErrorException;
+use Baka\Social\Apple\ASDecoder;
+use Baka\Auth\Models\Sources as BakaSource;
 
-
-/**
- * Class Resources
- *
- * @package Canvas\Models
- *
- * @property \Phalcon\Di $di
- */
-class Sources extends AbstractModel
+class Sources extends BakaSource
 {
-    /**
-     *
-     * @var integer
-     */
-    public $id;
+    public string $title;
+    public string $url;
+    public ?int $language_id = null;
 
-    /**
-     *
-     * @var string
-     */
-    public $title;
-
-    /**
-     *
-     * @var string
-     */
-    public $url;
-
-    /**
-     *
-     * @var integer
-     */
-    public $language_id;
-
-    /**
-     *
-     * @var string
-     */
-    public $created_at;
-
-    /**
-     *
-     * @var string
-     */
-    public $updated_at;
-
-    /**
-     *
-     * @var integer
-     */
-    public $is_deleted;
+    const APPLE = 'apple';
+    const FACEBOOK = 'facebook';
+    const GOOGLE = 'google';
 
     /**
      * Initialize method for model.
@@ -70,29 +27,21 @@ class Sources extends AbstractModel
     }
 
     /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
+     * Verify if source is Apple.
      */
-    public function getSource(): string
+    public function isApple() : bool
     {
-        return 'sources';
-    }
-
-    /**
-     * Verify if source is Apple
-     */
-    public function isApple(): bool
-    {
-        return $this->title == 'apple';
+        return $this->title == self::APPLE;
     }
 
     /**
      * Validate Apple User.
+     *
      * @param string $identityToken
+     *
      * @return object
      */
-    public function validateAppleUser(string $identityToken): object
+    public function validateAppleUser(string $identityToken) : object
     {
         $appleUserInfo = ASDecoder::getAppleSignInPayload($identityToken);
 
