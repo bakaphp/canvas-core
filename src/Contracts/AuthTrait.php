@@ -7,6 +7,7 @@ namespace Canvas\Contracts;
 use Canvas\Auth\Auth;
 use Canvas\Models\Sessions;
 use Canvas\Models\Users;
+use Phalcon\Http\Response;
 
 trait AuthTrait
 {
