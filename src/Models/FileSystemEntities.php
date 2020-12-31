@@ -10,7 +10,7 @@ use Phalcon\Validation\Validator\Uniqueness;
 class FileSystemEntities extends AbstractModel
 {
     public int $filesystem_id;
-    public string $entity_id;
+    public $entity_id;
     public int $system_modules_id;
     public int $companies_id;
     public string $field_name;
