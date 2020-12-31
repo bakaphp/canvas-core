@@ -18,7 +18,7 @@ class Data
     {
         return [
             'email' => 'nobody@baka.io',
-            'password' => 'bakatest123567',
+            'password' => self::$defaultPassword,
         ];
     }
 
@@ -28,8 +28,8 @@ class Data
     public static function loginJson()
     {
         return [
-            'email' => 'tes2t@baka.io',
-            'password' => 'bakatest123567',
+            'email' => self::$defaultEmail,
+            'password' => self::$defaultPassword,
         ];
     }
 }
