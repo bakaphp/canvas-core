@@ -13,10 +13,10 @@ use Baka\Validations\PasswordValidation;
 use Canvas\Auth\Auth;
 use Canvas\Auth\Factory;
 use Canvas\Exception\ModelException;
+use Canvas\Models\RegisterRoles;
 use Canvas\Models\Sources;
 use Canvas\Models\UserLinkedSources;
 use Canvas\Models\Users;
-use Canvas\Models\RegisterRoles;
 use Canvas\Notifications\PasswordUpdate;
 use Canvas\Notifications\ResetPassword;
 use Canvas\Notifications\Signup;
@@ -243,7 +243,7 @@ class AuthController extends \Baka\Auth\AuthController
         //validate this form for password
         $validation->validate($request);
 
-        $registerRole = RegisterRoles::getByUuid($request["roles_uuid"]);
+        $registerRole = RegisterRoles::getByUuid($request['roles_uuid']);
 
         $user->email = $validation->getValue('email');
         $user->firstname = $validation->getValue('firstname');
