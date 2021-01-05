@@ -108,21 +108,17 @@ jobs:
       - name: Phinx Migrate Kanvas Seed
         run: vendor/bin/phinx seed:run
 
-      # - name: Run Integration
-      #   if: success()
-      #   run: vendor/bin/codecept run integration
-
-      # - name: Run Unit
-      #   if: success()
-      #   run: vendor/bin/codecept run unit
-
-      # - name: Run Api
-      #   if: success()
-      #   run: vendor/bin/codecept run api
-
-      - name: Run All tests
+      - name: Run Integration
         if: success()
-        run: vendor/bin/codecept run --coverage --coverage-xml
+        run: vendor/bin/codecept run integration
+
+      - name: Run Unit
+        if: success()
+        run: vendor/bin/codecept run --ext DotReporter unit --coverage --coverage-xml
+
+      - name: Run Api
+        if: success()
+        run: vendor/bin/codecept run api
 
       - name: Code Coverage Percentage
         if: success()

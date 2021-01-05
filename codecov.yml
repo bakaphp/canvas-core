@@ -1,8 +1,9 @@
 codecov:
   require_ci_to_pass: yes
-  
+
 ignore:
   - "phinx.php"
   - "storage/*"
   - "tests/*"
   - "vendor/*"
+  - "src/Api/*"
