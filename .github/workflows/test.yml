@@ -118,7 +118,7 @@ jobs:
 
       - name: Run Api
         if: success()
-        run: vendor/bin/codecept run api
+        run: vendor/bin/codecept run api --xml
 
       - name: Code Coverage Percentage
         if: success()
@@ -126,3 +126,4 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           verbose: true
+          files: result.xml
