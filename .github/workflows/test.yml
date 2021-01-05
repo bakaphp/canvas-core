@@ -127,3 +127,4 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           verbose: true
           files: result.xml
+          directory: ./tests/_output/report.xml
