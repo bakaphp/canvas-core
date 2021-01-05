@@ -122,7 +122,7 @@ jobs:
 
       - name: Run All tests
         if: success()
-        run: vendor/bin/codecept run vendor/bin/codecept run --coverage --coverage-xml
+        run: vendor/bin/codecept run --coverage --coverage-xml
 
       - name: Code Coverage Percentage
         if: success()
