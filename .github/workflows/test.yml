@@ -122,7 +122,6 @@ jobs:
 
       - name: Code Coverage Percentage
         if: success()
-        uses: actions/checkout@master
         uses: codecov/codecov-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
