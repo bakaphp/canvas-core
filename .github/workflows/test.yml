@@ -114,11 +114,15 @@ jobs:
 
       - name: Run Unit
         if: success()
-        run: vendor/bin/codecept run --ext DotReporter unit --coverage --coverage-xml
+        run: vendor/bin/codecept run unit
 
       - name: Run Api
         if: success()
         run: vendor/bin/codecept run api
+
+      - name: Run All tests
+        if: success()
+        run: vendor/bin/codecept run vendor/bin/codecept run --coverage --coverage-xml
 
       - name: Code Coverage Percentage
         if: success()
