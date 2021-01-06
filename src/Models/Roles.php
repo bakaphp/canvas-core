@@ -16,7 +16,7 @@ use Phalcon\Validation\Validator\Uniqueness;
 class Roles extends AbstractModel
 {
     public string $name;
-    public ?string$description;
+    public ?string $description;
     public ?int $scope;
     public int $companies_id;
     public int $apps_id;
@@ -310,7 +310,7 @@ class Roles extends AbstractModel
         //if we deleted the role
         if ($this->is_deleted) {
             //delete
-            foreach ($this->accesList as $access) {
+            foreach ($this->accessList as $access) {
                 $access->softDelete();
             }
         }
