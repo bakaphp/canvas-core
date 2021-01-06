@@ -195,15 +195,11 @@ class UsersInviteController extends BaseController
         //move to DTO
         $newUser->password = null;
 
-        if (!defined('API_TESTS')) {
-            $usersInvite->softDelete();
+        $usersInvite->softDelete();
 
-            return $this->response([
-                'user' => $newUser,
-                'session' => $authInfo
-            ]);
-        }
-
-        return $this->response($newUser);
+        return $this->response([
+            'user' => $newUser,
+            'session' => $authInfo
+        ]);
     }
 }
