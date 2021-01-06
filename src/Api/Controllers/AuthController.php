@@ -6,6 +6,7 @@ namespace Canvas\Api\Controllers;
 
 use Baka\Auth\Models\Sessions;
 use Baka\Auth\Models\Users as BakaUsers;
+use Baka\Auth\UserProvider;
 use Baka\Http\Exception\InternalServerErrorException;
 use Baka\Http\Exception\NotFoundException;
 use Baka\Validation as CanvasValidation;
@@ -13,10 +14,10 @@ use Baka\Validations\PasswordValidation;
 use Canvas\Auth\Auth;
 use Canvas\Auth\Factory;
 use Canvas\Exception\ModelException;
+use Canvas\Models\RegisterRoles;
 use Canvas\Models\Sources;
 use Canvas\Models\UserLinkedSources;
 use Canvas\Models\Users;
-use Canvas\Models\RegisterRoles;
 use Canvas\Notifications\PasswordUpdate;
 use Canvas\Notifications\ResetPassword;
 use Canvas\Notifications\Signup;
@@ -127,7 +128,7 @@ class AuthController extends \Baka\Auth\AuthController
      */
     public function signup() : Response
     {
-        $user = $this->userModel;
+        $user = UserProvider::get();
 
         $request = $this->request->getPostData();
 
@@ -211,7 +212,7 @@ class AuthController extends \Baka\Auth\AuthController
      */
     public function signupByRegisterRole() : Response
     {
-        $user = $this->userModel;
+        $user = UserProvider::get();
 
         $request = $this->request->getPostData();
 
@@ -243,7 +244,7 @@ class AuthController extends \Baka\Auth\AuthController
         //validate this form for password
         $validation->validate($request);
 
-        $registerRole = RegisterRoles::getByUuid($request["roles_uuid"]);
+        $registerRole = RegisterRoles::getByUuid($request['roles_uuid']);
 
         $user->email = $validation->getValue('email');
         $user->firstname = $validation->getValue('firstname');
@@ -309,7 +310,7 @@ class AuthController extends \Baka\Auth\AuthController
         }
 
         //Check if both tokens relate to the same user's email
-        if ($accessToken->getClaim('sessionId') == $refreshToken->getClaim('sessionId')) {
+        if ($accessToken->getClaim('sessionId') === $refreshToken->getClaim('sessionId')) {
             $user = Users::getByEmail($accessToken->getClaim('email'));
         }
 
@@ -317,7 +318,11 @@ class AuthController extends \Baka\Auth\AuthController
             throw new NotFoundException(_('User not found'));
         }
 
-        $token = Sessions::restart($user, $refreshToken->getClaim('sessionId'), (string)$this->request->getClientAddress());
+        $token = Sessions::restart(
+            $user,
+            $refreshToken->getClaim('sessionId'),
+            (string)$this->request->getClientAddress()
+        );
 
         return $this->response([
             'token' => $token['token'],

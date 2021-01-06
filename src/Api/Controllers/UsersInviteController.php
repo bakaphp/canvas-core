@@ -107,13 +107,6 @@ class UsersInviteController extends BaseController
         //validate this form for password
         $validation->validate($request);
 
-        //Check if role is not a default one.
-        if (!Roles::existsById((int)$request['role_id'])->isDefault()) {
-            throw new UnprocessableEntityException(
-                "Can't create a new user with a default role."
-            );
-        }
-
         //Check if user was already was invited to current company and return message
         UsersInvite::isValid($request['email'], (int) $request['role_id']);
 
@@ -202,15 +195,11 @@ class UsersInviteController extends BaseController
         //move to DTO
         $newUser->password = null;
 
-        if (!defined('API_TESTS')) {
-            $usersInvite->softDelete();
+        $usersInvite->softDelete();
 
-            return $this->response([
-                'user' => $newUser,
-                'session' => $authInfo
-            ]);
-        }
-
-        return $this->response($newUser);
+        return $this->response([
+            'user' => $newUser,
+            'session' => $authInfo
+        ]);
     }
 }
