@@ -113,7 +113,7 @@ class UsersInvite extends AbstractModel
     /**
      * Given the form request return a new user invite.
      *
-     * @param array $requets
+     * @param array $request
      *
      * @return Users
      */
