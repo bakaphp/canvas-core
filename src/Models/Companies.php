@@ -228,10 +228,7 @@ class Companies extends AbstractModel
     public function getDefaultCompanyGroup() : CompaniesGroups
     {
         $companyGroup = $this->getCompanyGroups([
-            'conditions' => 'Canvas\Models\CompaniesGroups.apps_id = :apps_id: AND Canvas\Models\CompaniesGroups.is_default = 1',
-            'bind' => [
-                'apps_id' => Di::getDefault()->get('app')->getId()
-            ],
+            'conditions' => 'Canvas\Models\CompaniesGroups.is_default = 1',
             'limit' => 1
         ])->getFirst();
 
