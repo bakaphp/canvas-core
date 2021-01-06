@@ -93,6 +93,6 @@ class UsersInviteCest
         $response = $I->grabResponse();
         $data = json_decode($response, true);
 
-        $I->assertTrue($data['email'] == $testEmail);
+        $I->assertTrue($data['user']['email'] == $testEmail);
     }
 }
