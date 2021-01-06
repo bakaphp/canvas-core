@@ -51,6 +51,16 @@ class Roles extends AbstractModel
             'roles_id',
             ['alias' => 'accessList']
         );
+
+        $this->hasMany(
+            'id',
+            UserRoles::class,
+            'roles_id',
+            [
+                'alias' => 'users',
+                'conditions' => 'is_delete = 0'
+            ]
+        );
     }
 
     /**
