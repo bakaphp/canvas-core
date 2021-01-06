@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Canvas\Api\Controllers;
 
-use Canvas\Models\PaymentMethodsCreds;
+use Canvas\Models\PaymentMethodsCredentials;
 use Exception;
 use Phalcon\Http\Response;
 
@@ -14,7 +14,7 @@ use Phalcon\Http\Response;
  * @package Canvas\Api\Controllers
  *
  */
-class PaymentMethodsCredsController extends BaseController
+class PaymentMethodsCredentialsController extends BaseController
 {
     /*
      * fields we accept to create
@@ -37,7 +37,7 @@ class PaymentMethodsCredsController extends BaseController
      */
     public function onConstruct()
     {
-        $this->model = new PaymentMethodsCreds();
+        $this->model = new PaymentMethodsCredentials();
         $this->additionalSearchFields = [
             ['is_deleted', ':', '0'],
             ['users_id', ':', $this->userData->getId()],
@@ -51,7 +51,7 @@ class PaymentMethodsCredsController extends BaseController
      *
      * @return Response
      */
-    public function getCurrentPaymentMethodsCreds() : Response
+    public function getCurrentPaymentMethods() : Response
     {
         $paymentMethod = [];
 

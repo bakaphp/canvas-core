@@ -6,9 +6,8 @@ namespace Canvas\Models;
 use Phalcon\Di;
 use Stripe\Token as StripeToken;
 
-class PaymentMethodsCreds extends AbstractModel
+class PaymentMethodsCredentials extends AbstractModel
 {
-
     public int $users_id;
     public int $companies_id;
     public int $apps_id;
@@ -16,8 +15,6 @@ class PaymentMethodsCreds extends AbstractModel
     public string $payment_ending_numbers;
     public string $expiration_date;
     public ?string $zip_code = null;
-
-
 
     /**
      * Initialize method for model.
@@ -32,7 +29,7 @@ class PaymentMethodsCreds extends AbstractModel
      *
      * @return string
      */
-    public function getCurrentPaymentMethodCreds() : self
+    public function getDefaultPaymentMethod() : self
     {
         return self::findFirstOrFail([
             'conditions' => 'users_id = ?0 and companies_id = ?1 and apps_id = ?2 and is_deleted = 0',

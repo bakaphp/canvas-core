@@ -16,10 +16,12 @@ use Phalcon\Validation\Validator\Uniqueness;
 class Roles extends AbstractModel
 {
     public string $name;
-    public ?string$description;
+    public ?string $description;
     public ?int $scope;
     public int $companies_id;
     public int $apps_id;
+    public int $is_default = 0;
+    public int $is_active = 1;
 
     /**
      * Default ACL company.
@@ -237,7 +239,7 @@ class Roles extends AbstractModel
      */
     public function copy() : Roles
     {
-        $accesList = $this->accesList;
+        $accessList = $this->accessList;
 
         //remove id to create new record
         $this->name .= 'Copie';
@@ -247,7 +249,7 @@ class Roles extends AbstractModel
         $this->apps_id = $this->di->getApp()->getId();
         $this->save();
 
-        foreach ($accesList as $access) {
+        foreach ($accessList as $access) {
             $copyAccessList = new AccessList();
             $copyAccessList->apps_id = $this->apps_id;
             $copyAccessList->roles_id = $this->getId();
@@ -308,7 +310,7 @@ class Roles extends AbstractModel
         //if we deleted the role
         if ($this->is_deleted) {
             //delete
-            foreach ($this->accesList as $access) {
+            foreach ($this->accessList as $access) {
                 $access->softDelete();
             }
         }
@@ -361,5 +363,15 @@ class Roles extends AbstractModel
         }
 
         return true;
+    }
+
+    /**
+     * check if role is default or not.
+     *
+     * @return bool
+     */
+    public function isDefault() : bool
+    {
+        return (bool) $this->is_default;
     }
 }
