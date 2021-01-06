@@ -35,11 +35,28 @@ class RolesController extends BaseController
         $this->model = new Roles();
 
         //get the list of roes for the systems + my company
+        $companyTotalRoles = Roles::count([
+            'conditions' => 'apps_id = :apps_id: AND companies_id = :companies_id:',
+            'bind' => [
+                'apps_id' => $this->acl->getApp()->getId(),
+                'companies_id' => $this->userData->currentCompanyId(),
+            ]
+        ]);
+
         $this->additionalSearchFields = [
             ['is_deleted', ':', '0'],
-            ['apps_id', ':', Apps::CANVAS_DEFAULT_APP_ID . '|' . $this->acl->getApp()->getId()],
-            ['companies_id', ':', '1|' . $this->userData->currentCompanyId()],
+            ['apps_id', ':',  $this->acl->getApp()->getId()],
+            ['companies_id', ':',  $this->userData->currentCompanyId()],
         ];
+
+        if ($companyTotalRoles === 0) {
+            $this->additionalSearchFields = [
+                ['is_deleted', ':', '0'],
+                ['apps_id', ':', Apps::CANVAS_DEFAULT_APP_ID],
+                ['companies_id', ':', 1],
+                ['is_default', ':', 1],
+            ];
+        }
     }
 
     /**
