@@ -141,6 +141,18 @@ class Apps extends BakaApps
     }
 
     /**
+     * After Update function.
+     *
+     * @return void
+     */
+    public function afterUpdate() : void
+    {
+        foreach ($this->settings as $key => $value) {
+            $this->set($key, $value);
+        }
+    }
+
+    /**
      * Sets Apps settings.
      *
      * @param array $settings
