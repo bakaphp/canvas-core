@@ -66,11 +66,16 @@ class SystemModules extends BakaSystemModules
      */
     public static function getSystemModuleByModelName(string $modelName) : ModelInterface
     {
+        $app = Di::getDefault()->get('app');
         $module = SystemModules::findFirst([
             'conditions' => 'model_name = ?0 and apps_id = ?1',
             'bind' => [
                 $modelName,
-                Di::getDefault()->get('app')->getId()
+                $app->getId()
+            ],
+            'cache' => [
+                'key' => 'SYSTEM_MODULE_' . $app->getId() . '_' . $modelName,
+                'lifetime' => 386400
             ]
         ]);
 
