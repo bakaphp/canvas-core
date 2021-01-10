@@ -9,18 +9,20 @@ class PaymentsCest
     protected $model = 'payments';
 
     /**
-     * Get Stripe Signature
+     * Get Stripe Signature.
+     *
      * @return string
      */
-    public static function getStripeSignature(): string 
+    public static function getStripeSignature() : string
     {
         return 't=1492774577,v1=5257a869e7ecebeda32affa62cdca3fa51cad7e77a0e56ff536d0ce8e108d8bd,v0=6ffbb59b2300aae63f272406069a9788598b792a944a07aba816edb039989a39';
     }
 
     /**
-     * Pending Payment
+     * Pending Payment.
      *
      * @param ApiTester $I
+     *
      * @return void
      */
     public function pendingPayment(ApiTester $I) : void
@@ -47,9 +49,10 @@ class PaymentsCest
     }
 
     /**
-     * Failed Payment
+     * Failed Payment.
      *
      * @param ApiTester $I
+     *
      * @return void
      */
     public function failedPayment(ApiTester $I) : void
@@ -76,9 +79,10 @@ class PaymentsCest
     }
 
     /**
-     * Successful Payment
+     * Successful Payment.
      *
      * @param ApiTester $I
+     *
      * @return void
      */
     public function SucceededPayment(ApiTester $I) : void
