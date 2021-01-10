@@ -291,6 +291,7 @@ trait FileSystemModelTrait
     public function getAttachmentByName(string $fieldName)
     {
         $criteria = $this->searchCriteriaForFilesByName($fieldName);
+        $criteria['cache']['key'] .= '_find_one';
 
         return FileSystemEntities::findFirst([
             'conditions' => $criteria['conditions'],
