@@ -46,7 +46,7 @@ class CompaniesGroups extends AbstractModel
             'companies_groups_id',
             [
                 'alias' => 'subscription',
-                'reusable' => true
+                'reusable' => true,
                 'params' => [
                     'conditions' => 'apps_id = ' . $this->di->get('app')->getId() . ' AND is_deleted = 0',
                     'order' => 'id DESC'
