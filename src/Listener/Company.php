@@ -68,20 +68,21 @@ class Company
             'is_default' => 1
         ]);
 
-        //if the app is subscription based, create a free trial for this companyGroup and this app
-        if ($app->subscriptionBased()) {
-            $companiesGroup->startFreeTrial();
-        }
-
         /**
          * Let's associate companies and companies_groups.
          */
         $companiesAssoc = new CompaniesAssociations();
         $companiesAssoc->companies_id = $company->getId();
         $companiesAssoc->companies_groups_id = $companiesGroup->getId();
+        $companiesAssoc->is_default = 1;
         $companiesAssoc->saveOrFail();
 
         //assign role
         $company->user->assignRole(Roles::DEFAULT);
+
+        //if the app is subscription based, create a free trial for this companyGroup and this app
+        if ($app->subscriptionBased()) {
+            $companiesGroup->startFreeTrial();
+        }
     }
 }

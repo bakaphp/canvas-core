@@ -20,10 +20,8 @@ class UpdateCashierSubscriptionModel extends Phinx\Migration\AbstractMigration
                 'limit' => '10',
                 'after' => 'user_id',
             ])
-            ->removeColumn('companies_id')
-            ->removeIndexByName('companies_id')
             ->addIndex(['companies_groups_id'], [
-                'name' => 'companies_id',
+                'name' => 'companies_groups_ids',
                 'unique' => false,
             ])
             ->save();

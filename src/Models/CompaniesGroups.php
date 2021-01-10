@@ -40,6 +40,22 @@ class CompaniesGroups extends AbstractModel
             ['alias' => 'companies', 'reusable' => true]
         );
 
+        $this->hasManyToMany(
+            'id',
+            CompaniesAssociations::class,
+            'companies_groups_id',
+            'companies_id',
+            Companies::class,
+            'id',
+            [
+                'alias' => 'defaultCompany',
+                'reusable' => true,
+                'params' => [
+                    'conditions' => 'is_default = 1'
+                ]
+            ]
+        );
+
         $this->hasOne(
             'id',
             'Canvas\Models\Subscription',
