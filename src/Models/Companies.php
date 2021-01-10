@@ -54,14 +54,14 @@ class Companies extends AbstractModel
             'users_id',
             'Canvas\Models\Users',
             'id',
-            ['alias' => 'user']
+            ['alias' => 'user', 'reusable' => true, ]
         );
 
         $this->hasMany(
             'id',
             'Canvas\Models\CompaniesBranches',
             'companies_id',
-            ['alias' => 'branches']
+            ['alias' => 'branches', 'reusable' => true, ]
         );
 
         $this->hasOne(
@@ -94,14 +94,14 @@ class Companies extends AbstractModel
             'id',
             'Canvas\Models\UsersAssociatedCompanies',
             'companies_id',
-            ['alias' => 'UsersAssociatedCompanies']
+            ['alias' => 'UsersAssociatedCompanies', 'reusable' => true, ]
         );
 
         $this->hasMany(
             'id',
             'Canvas\Models\UsersAssociatedApps',
             'companies_id',
-            ['alias' => 'UsersAssociatedApps']
+            ['alias' => 'UsersAssociatedApps', 'reusable' => true, ]
         );
 
         $this->hasMany(
@@ -110,6 +110,7 @@ class Companies extends AbstractModel
             'companies_id',
             [
                 'alias' => 'UsersAssociatedByApps',
+                'reusable' => true,
                 'params' => [
                     'conditions' => 'apps_id = ' . $this->di->get('app')->getId()
                 ]
@@ -122,6 +123,7 @@ class Companies extends AbstractModel
             'companies_id',
             [
                 'alias' => 'branch',
+                'reusable' => true,
             ]
         );
 
@@ -143,6 +145,7 @@ class Companies extends AbstractModel
             'companies_id',
             [
                 'alias' => 'apps',
+                'reusable' => true,
                 'params' => [
                     'conditions' => 'apps_id = ' . $this->di->get('app')->getId()
                 ]
@@ -166,6 +169,7 @@ class Companies extends AbstractModel
             'id',
             [
                 'alias' => 'users',
+                'reusable' => true,
                 'params' => [
                     'conditions' => 'apps_id = ' . $this->di->get('app')->getId() . ' AND Canvas\Models\UsersAssociatedApps.is_deleted = 0',
                 ]

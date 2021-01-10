@@ -32,7 +32,10 @@ class FileSystemEntities extends AbstractModel
             'filesystem_id',
             FileSystem::class,
             'id',
-            ['alias' => 'file']
+            [
+                'alias' => 'file',
+                'reusable' => true
+            ]
         );
     }
 

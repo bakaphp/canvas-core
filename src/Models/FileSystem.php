@@ -13,16 +13,16 @@ class FileSystem extends AbstractModel
 {
     use HashTableTrait;
 
-    public int $companies_id;
-    public int $apps_id;
-    public int $users_id;
+    public int $companies_id = 0;
+    public int $apps_id = 0;
+    public int $users_id = 0;
     public int $system_modules_id = 0;
-    public int $entity_id;
-    public string $name;
-    public string $path;
-    public string $url;
-    public string $size;
-    public string $file_type;
+    public int $entity_id = 0;
+    public ?string $name = null;
+    public ?string $path = null;
+    public ?string $url = null;
+    public ?string $size = null;
+    public ?string $file_type = null;
 
     /**
      * Initialize method for model.

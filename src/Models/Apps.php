@@ -8,8 +8,8 @@ use Baka\Contracts\EventsManager\EventManagerAwareTrait;
 use Baka\Database\Apps as BakaApps;
 use Canvas\Cli\Jobs\Apps as JobsApps;
 use Canvas\Contracts\UsersAssociatedTrait;
-use Phalcon\Security\Random;
 use Phalcon\Di;
+use Phalcon\Security\Random;
 
 class Apps extends BakaApps
 {
