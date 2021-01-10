@@ -81,14 +81,14 @@ class Apps extends BakaApps
             'id',
             'Canvas\Models\UserWebhooks',
             'apps_id',
-            ['alias' => 'user-webhooks']
+            ['alias' => 'user-webhooks', 'reusable' => true]
         );
 
         $this->hasMany(
             'id',
             'Canvas\Models\AppsSettings',
             'apps_id',
-            ['alias' => 'settingsApp']
+            ['alias' => 'settingsApp', 'reusable' => true]
         );
     }
 

@@ -48,7 +48,7 @@ class Companies extends AbstractModel
         $this->keepSnapshots(true);
         $this->addBehavior(new Blameable());
 
-        $this->hasMany('id', CompaniesSettings::class, 'companies_id', ['alias' => 'settings']);
+        $this->hasMany('id', CompaniesSettings::class, 'companies_id', ['alias' => 'settings', 'reusable' => true]);
 
         $this->belongsTo(
             'users_id',
@@ -70,6 +70,7 @@ class Companies extends AbstractModel
             'companies_id',
             [
                 'alias' => 'defaultBranch',
+                'reusable' => true,
                 'params' => [
                     'conditions' => 'is_default = 1'
                 ]
@@ -80,14 +81,14 @@ class Companies extends AbstractModel
             'id',
             'Canvas\Models\CompaniesCustomFields',
             'companies_id',
-            ['alias' => 'fields']
+            ['alias' => 'fields', 'reusable' => true, ]
         );
 
         $this->hasMany(
             'id',
             'Canvas\CustomFields\CustomFields',
             'companies_id',
-            ['alias' => 'custom-fields']
+            ['alias' => 'custom-fields', 'reusable' => true, ]
         );
 
         $this->hasMany(
@@ -133,6 +134,7 @@ class Companies extends AbstractModel
             'companies_id',
             [
                 'alias' => 'app',
+                'reusable' => true,
                 'params' => [
                     'conditions' => 'apps_id = ' . $this->di->get('app')->getId()
                 ]
@@ -156,7 +158,7 @@ class Companies extends AbstractModel
             'id',
             CompaniesAssociations::class,
             'companies_id',
-            ['alias' => 'companiesAssoc']
+            ['alias' => 'companiesAssoc', 'reusable' => true, ]
         );
 
         //users associated with this company app
@@ -185,6 +187,7 @@ class Companies extends AbstractModel
             'id',
             [
                 'alias' => 'companyGroups',
+                'reusable' => true,
             ]
         );
 
@@ -192,7 +195,7 @@ class Companies extends AbstractModel
             'id',
             'Canvas\Models\UserWebhooks',
             'companies_id',
-            ['alias' => 'user-webhooks']
+            ['alias' => 'user-webhooks', 'reusable' => true, ]
         );
 
         $systemModule = SystemModules::getByModelName(self::class);
@@ -202,6 +205,7 @@ class Companies extends AbstractModel
             'entity_id',
             [
                 'alias' => 'files',
+                'reusable' => true,
                 'params' => [
                     'conditions' => 'system_modules_id = ?0',
                     'bind' => [$systemModule->getId()]
