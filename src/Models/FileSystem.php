@@ -35,49 +35,49 @@ class FileSystem extends AbstractModel
             'apps_id',
             'Canvas\Models\Apps',
             'id',
-            ['alias' => 'app']
+            ['alias' => 'app', 'reusable' => true]
         );
 
         $this->belongsTo(
             'users_id',
             'Canvas\Models\Users',
             'id',
-            ['alias' => 'user']
+            ['alias' => 'user', 'reusable' => true]
         );
 
         $this->belongsTo(
             'companies_id',
             'Canvas\Models\Companies',
             'id',
-            ['alias' => 'company']
+            ['alias' => 'company', 'reusable' => true]
         );
 
         $this->belongsTo(
             'system_modules_id',
             'Canvas\Models\SystemModules',
             'id',
-            ['alias' => 'systemModules']
+            ['alias' => 'systemModules', 'reusable' => true]
         );
 
         $this->hasMany(
             'id',
             'Canvas\Models\FileSystemSettings',
             'filesystem_id',
-            ['alias' => 'attributes']
+            ['alias' => 'attributes', 'reusable' => true]
         );
 
         $this->hasOne(
             'id',
             'Canvas\Models\FileSystemSettings',
             'filesystem_id',
-            ['alias' => 'attribute']
+            ['alias' => 'attribute', 'reusable' => true]
         );
 
         $this->hasMany(
             'id',
             'Canvas\Models\FileSystemEntities',
             'filesystem_id',
-            ['alias' => 'entities']
+            ['alias' => 'entities', 'reusable' => true]
         );
     }
 

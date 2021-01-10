@@ -205,7 +205,8 @@ class Users extends AbstractModel implements UserInterface
                 'alias' => 'files',
                 'params' => [
                     'conditions' => 'system_modules_id = ?0',
-                    'bind' => [$systemModule->getId()]
+                    'bind' => [$systemModule->getId()],
+                    'reusable' => true
                 ]
             ]
         );

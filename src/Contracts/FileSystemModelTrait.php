@@ -296,6 +296,7 @@ trait FileSystemModelTrait
             'conditions' => $criteria['conditions'],
             'order' => 'id desc',
             'bind' => $criteria['bind'],
+            'cache' => $criteria['cache']
         ]);
     }
 
@@ -309,11 +310,13 @@ trait FileSystemModelTrait
     public function getAttachmentsByName(string $fieldName)
     {
         $criteria = $this->searchCriteriaForFilesByName($fieldName);
+        $criteria['cache']['key'] .= '_find_all';
 
         return FileSystemEntities::find([
             'conditions' => $criteria['conditions'],
             'order' => 'id desc',
             'bind' => $criteria['bind'],
+            'cache' => $criteria['cache']
         ]);
     }
 
@@ -414,9 +417,15 @@ trait FileSystemModelTrait
                             AND companies_id = :company_id:';
         }
 
+        $cacheKey = self::generateCacheKey($bindParams);
+
         return [
             'bind' => $bindParams,
-            'conditions' => $condition
+            'conditions' => $condition,
+            'cache' => [
+                'key' => $cacheKey,
+                'lifetime' => 386400
+            ]
         ];
     }
 

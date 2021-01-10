@@ -54,7 +54,7 @@ class Apps extends BakaApps
             'default_apps_plan_id',
             'Canvas\Models\AppsPlans',
             'id',
-            ['alias' => 'plan']
+            ['alias' => 'plan', 'reusable' => true]
         );
 
         $this->hasOne(
@@ -63,6 +63,7 @@ class Apps extends BakaApps
             'apps_id',
             [
                 'alias' => 'defaultPlan',
+                'reusable' => true,
                 'params' => [
                     'conditions' => 'Canvas\Models\AppsPlans.is_default = 1',
                 ]
@@ -73,7 +74,7 @@ class Apps extends BakaApps
             'id',
             'Canvas\Models\AppsPlans',
             'apps_id',
-            ['alias' => 'plans']
+            ['alias' => 'plans', 'reusable' => true]
         );
 
         $this->hasMany(
