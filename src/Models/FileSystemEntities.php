@@ -69,7 +69,7 @@ class FileSystemEntities extends AbstractModel
      */
     public static function getByIdWithSystemModule(int $id, SystemModules $systemModules, bool $isDeleted = false)
     {
-        $app = Di::getDefault()->getApp();
+        $app = Di::getDefault()->get('app');
         $addCompanySql = null;
 
         $bind = [
@@ -78,8 +78,8 @@ class FileSystemEntities extends AbstractModel
             'apps_id' => $app->getId(),
         ];
 
-        if (!(bool) Di::getDefault()->getApp()->get('public_images')) {
-            $companyId = Di::getDefault()->getUserData()->currentCompanyId();
+        if (!(bool) $app->get('public_images')) {
+            $companyId = Di::getDefault()->get('userData')->currentCompanyId();
             $addCompanySql = 'AND companies_id = :companies_id:';
             $bind['companies_id'] = $companyId;
         }
@@ -101,7 +101,7 @@ class FileSystemEntities extends AbstractModel
      */
     public static function getById(int $id) : FileSystemEntities
     {
-        $app = Di::getDefault()->getApp();
+        $app = Di::getDefault()->get('app');
 
         $addCompanySql = null;
 
@@ -110,8 +110,8 @@ class FileSystemEntities extends AbstractModel
             'apps_id' => $app->getId(),
         ];
 
-        if (!(bool) Di::getDefault()->getApp()->get('public_images')) {
-            $companyId = Di::getDefault()->getUserData()->currentCompanyId();
+        if (!(bool) Di::getDefault()->get('app')->get('public_images')) {
+            $companyId = Di::getDefault()->get('userData')->currentCompanyId();
             $addCompanySql = 'AND companies_id = :companies_id:';
             $bind['companies_id'] = $companyId;
         }
@@ -133,7 +133,7 @@ class FileSystemEntities extends AbstractModel
      */
     public static function getByEntityId(int $id) : FileSystemEntities
     {
-        $app = Di::getDefault()->getApp();
+        $app = Di::getDefault()->get('app');
 
         $addCompanySql = null;
 
@@ -142,8 +142,8 @@ class FileSystemEntities extends AbstractModel
             'apps_id' => $app->getId(),
         ];
 
-        if (!(bool) Di::getDefault()->getApp()->get('public_images')) {
-            $companyId = Di::getDefault()->getUserData()->currentCompanyId();
+        if (!(bool) Di::getDefault()->get('app')->get('public_images')) {
+            $companyId = Di::getDefault()->get('userData')->currentCompanyId();
             $addCompanySql = 'AND companies_id = :companies_id:';
             $bind['companies_id'] = $companyId;
         }
