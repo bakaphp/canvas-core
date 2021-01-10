@@ -4,17 +4,21 @@ declare(strict_types=1);
 
 namespace Canvas\Contracts;
 
+use Canvas\Contracts\Models\CacheKeys;
 use Canvas\Dto\Files;
 use Canvas\Mapper\FileMapper;
 use Canvas\Models\FileSystem;
 use Canvas\Models\FileSystemEntities;
 use Canvas\Models\FileSystemSettings;
 use Canvas\Models\SystemModules;
+use Phalcon\Di;
 use Phalcon\Mvc\Model\Resultset\Simple as Resultset;
 use RuntimeException;
 
 trait FileSystemModelTrait
 {
+    use CacheKeys;
+
     public $uploadedFiles = [];
 
     /**
@@ -171,6 +175,7 @@ trait FileSystemModelTrait
     public function attach(array $files) : bool
     {
         $systemModule = SystemModules::getByModelName(self::class);
+        $upload = false;
 
         foreach ($files as $file) {
             //im looking for the file inside an array
@@ -201,10 +206,15 @@ trait FileSystemModelTrait
             $fileSystemEntities->field_name = $file['field_name'] ?? null;
             $fileSystemEntities->is_deleted = 0;
             $fileSystemEntities->saveOrFail();
+            $upload = true;
 
             if (!is_null($this->filesNewAttachedPath())) {
                 $file['file']->move($this->filesNewAttachedPath());
             }
+        }
+
+        if ($upload) {
+            $this->clearCache();
         }
 
         return true;
@@ -397,7 +407,11 @@ trait FileSystemModelTrait
             $condition = 'system_modules_id = :system_module_id: AND entity_id = :entity_id: AND is_deleted = :is_deleted: and field_name = :field_name: ';
         } else {
             $bindParams['company_id'] = $this->di->getUserData()->currentCompanyId();
-            $condition = 'system_modules_id = :system_module_id: AND entity_id = :entity_id: AND is_deleted = :is_deleted: and field_name = :field_name: and companies_id = :company_id:';
+            $condition = 'system_modules_id = :system_module_id: 
+                            AND entity_id = :entity_id: 
+                            AND is_deleted = :is_deleted: 
+                            AND field_name = :field_name: 
+                            AND companies_id = :company_id:';
         }
 
         return [
@@ -440,7 +454,11 @@ trait FileSystemModelTrait
             )';
         } else {
             $bindParams['company_id'] = $this->di->getUserData()->currentCompanyId();
-            $condition = 'system_modules_id = :system_module_id: AND entity_id = :entity_id: AND is_deleted = :is_deleted: and field_name = :field_name: and companies_id = :company_id: 
+            $condition = 'system_modules_id = :system_module_id: 
+                            AND entity_id = :entity_id: 
+                            AND is_deleted = :is_deleted: 
+                            AND field_name = :field_name: 
+                            AND companies_id = :company_id: 
             AND filesystem_id IN (
                 SELECT s.filesystem_id FROM 
                     ' . FileSystemSettings::class . ' s 
@@ -464,6 +482,8 @@ trait FileSystemModelTrait
      */
     public function getAttachments(string $fileType = null) : Resultset
     {
+        $redis = Di::getDefault()->get('redis');
+
         $systemModule = SystemModules::getByModelName(self::class);
         $appPublicImages = (bool) $this->di->get('app')->get('public_images');
 
@@ -510,12 +530,37 @@ trait FileSystemModelTrait
             ORDER BY e.id DESC
         ';
 
-        $fileSystemEntities = new FileSystemEntities();
-        // Execute the query
-        return new Resultset(
-            null,
-            $fileSystemEntities,
-            $fileSystemEntities->getReadConnection()->query($sql, $bindParams)
-        );
+        $key = self::generateCacheKey($bindParams);
+        if (!$resultSet = $redis->get($key)) {
+            $fileSystemEntities = new FileSystemEntities();
+            // Execute the query
+            $resultSet = new Resultset(
+                null,
+                $fileSystemEntities,
+                $fileSystemEntities->getReadConnection()->query($sql, $bindParams)
+            );
+
+            $redis->set($key, $resultSet);
+        }
+
+        return $resultSet;
+    }
+
+    /**
+     * Clear the cache by the key.
+     *
+     * @return int
+     */
+    protected function clearCache() : int
+    {
+        $systemModule = SystemModules::getByModelName(self::class);
+
+        $bindParams = [
+            'system_module_id' => $systemModule->getId(),
+            'entity_id' => $this->getId(),
+        ];
+
+        $key = self::generateCacheKey($bindParams) . '*';
+        return self::clearCacheByKeyPattern($key);
     }
 }

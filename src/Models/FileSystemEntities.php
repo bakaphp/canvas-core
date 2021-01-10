@@ -9,7 +9,7 @@ use Phalcon\Validation\Validator\Uniqueness;
 
 class FileSystemEntities extends AbstractModel
 {
-    public int $filesystem_id;
+    public int $filesystem_id = 0;
 
     /**
      * @todo for php 8.1 update type
@@ -17,9 +17,9 @@ class FileSystemEntities extends AbstractModel
      * @var int|string
      */
     public $entity_id;
-    public int $system_modules_id;
-    public int $companies_id;
-    public string $field_name;
+    public int $system_modules_id = 0;
+    public int $companies_id = 0;
+    public ?string $field_name = null;
 
     /**
      * Initialize method for model.
