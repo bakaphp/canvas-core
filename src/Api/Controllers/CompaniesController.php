@@ -19,7 +19,7 @@ use Phalcon\Http\Response;
  */
 class CompaniesController extends BaseController
 {
-    #use CrudCustomFieldsBehaviorTrait;
+    //use CrudCustomFieldsBehaviorTrait;
 
     /*
      * fields we accept to create
@@ -66,13 +66,15 @@ class CompaniesController extends BaseController
     {
         $this->model = new Companies();
 
-        $this->model->users_id = $this->userData->getId();
+        if ($this->userData) {
+            $this->model->users_id = $this->userData->getId();
 
-        //my list of avaiable companies
-        $this->additionalSearchFields = [
-            ['id', ':', implode('|', $this->userData->getAssociatedCompanies())],
-            ['is_deleted', ':', '0']
-        ];
+            //my list of avaiable companies
+            $this->additionalSearchFields = [
+                ['id', ':', implode('|', $this->userData->getAssociatedCompanies())],
+                ['is_deleted', ':', '0']
+            ];
+        }
     }
 
     /**
