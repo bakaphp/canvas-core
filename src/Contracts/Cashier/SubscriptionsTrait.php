@@ -2,6 +2,7 @@
 
 namespace Canvas\Contracts\Cashier;
 
+use Baka\Http\Exception\InternalServerErrorException;
 use Canvas\Cashier\SubscriptionBuilder;
 use Canvas\Models\AppsPlans;
 use Canvas\Models\Subscription;
@@ -30,7 +31,13 @@ trait SubscriptionsTrait
      */
     public function subscription() : Subscription
     {
-        return $this->subscription;
+        $subscription = $this->subscription;
+
+        if (!$subscription) {
+            throw new InternalServerErrorException('No Active Subscription for Company Group ' . $this->getId());
+        }
+
+        return $subscription;
     }
 
     /**
