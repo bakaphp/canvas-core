@@ -17,10 +17,10 @@ class ChangeEntityIdToVarcharOnFilesystemEntities extends Phinx\Migration\Abstra
                 'comment' => '',
                 'row_format' => 'DYNAMIC',
             ])
-            ->changeColumn('entity_id', 'string', [
+            ->changeColumn('entity_id', 'char', [
                 'null' => false,
                 'default' => '',
-                'limit' => 190,
+                'limit' => 36,
                 'collation' => 'utf8mb4_unicode_ci',
                 'encoding' => 'utf8mb4',
                 'after' => 'filesystem_id',
