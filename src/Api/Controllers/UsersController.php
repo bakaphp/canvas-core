@@ -246,15 +246,15 @@ class UsersController extends BaseController
         return $this->response($userAssociatedToApp);
     }
 
-
     /**
      * unsubscribe from notification
      *
+     * @param int $id
      * @throws InternalServerErrorException
      *
      * @return Response
      */
-    public function unsubscribe($id) : Response
+    public function unsubscribe(int $id) : Response
     {
         $request = $this->request->getPostData();
 
@@ -277,7 +277,7 @@ class UsersController extends BaseController
             $systemModulesId = $notificationType ? $notificationType->system_modules_id : -1;
             Notifications::unsubscribe($user, $typeId, $systemModulesId);
         }
-        
+
         return $this->response(['success']);
     }
 }
