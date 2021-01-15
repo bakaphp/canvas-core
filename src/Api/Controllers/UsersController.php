@@ -11,6 +11,8 @@ use Canvas\Dto\User as UserDto;
 use Baka\Http\Exception\InternalServerErrorException;
 use Canvas\Mapper\UserMapper;
 use Canvas\Models\Users;
+use Canvas\Models\NotificationType;
+use Canvas\Models\Notifications;
 use Canvas\Models\UsersAssociatedApps;
 use Phalcon\Http\Response;
 use Phalcon\Validation\Validator\PresenceOf;
@@ -177,7 +179,7 @@ class UsersController extends BakaUsersController
             unset($request['default_company'], $request['default_company_branch']);
         }
 
-        if(isset($request['roles_id'])){
+        if (isset($request['roles_id'])) {
             $user->assignRoleById((int)$request['roles_id']);
         }
 
@@ -243,5 +245,40 @@ class UsersController extends BakaUsersController
         $userAssociatedToApp->user_active = $userAssociatedToApp->user_active ? 0 : 1;
         $userAssociatedToApp->updateOrFail();
         return $this->response($userAssociatedToApp);
+    }
+
+    /**
+     * unsubscribe from notification
+     *
+     * @param int $id
+     * @throws InternalServerErrorException
+     *
+     * @return Response
+     */
+    public function unsubscribe(int $id) : Response
+    {
+        $request = $this->request->getPostData();
+
+        if (!isset($request['notification_types'])) {
+            throw new Exception("Error Processing Request", 1);
+        }
+        
+        //none admin users can only edit themselves
+        if (!$this->userData->hasRole('Default.Admins')) {
+            $id = $this->userData->getId();
+        }
+
+        $user = $this->model->findFirstOrFail([
+            'id = ?0 AND is_deleted = 0',
+            'bind' => [$id],
+        ]);
+
+        foreach ($request['notification_types'] as $typeId) {
+            $notificationType = NotificationType::findFirst($typeId);
+            $systemModulesId = $notificationType ? $notificationType->system_modules_id : -1;
+            Notifications::unsubscribe($user, $typeId, $systemModulesId);
+        }
+
+        return $this->response(['success']);
     }
 }
