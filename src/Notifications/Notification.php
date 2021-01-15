@@ -235,7 +235,7 @@ class Notification implements NotificationInterface
         $notification->saveOrFail();
 
         $toMail = $this->toMail();
-        if ($toMail instanceof Message) {
+        if ($toMail instanceof Message && !$notification->isUnsubscribe()) {
             $this->fire('notification:sendMail', $toMail);
         }
 
