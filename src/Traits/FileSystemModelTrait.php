@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Canvas\Contracts;
+namespace Canvas\Traits;
 
 use Canvas\Contracts\Models\CacheKeys;
 use Canvas\Dto\Files;
