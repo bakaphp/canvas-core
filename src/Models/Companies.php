@@ -449,4 +449,41 @@ class Companies extends AbstractModel
     {
         //reactive the user from a company app, not delete
     }
+
+    /**
+     * Create a branch for this company.
+     *
+     * @param string|null $name
+     *
+     * @return CompaniesBranches
+     */
+    public function createBranch(?string $name = null) : CompaniesBranches
+    {
+        $branch = new CompaniesBranches();
+        $branch->companies_id = $this->getId();
+        $branch->users_id = $this->user->getId();
+        $branch->name = empty($name) ? $this->name : $name;
+        $branch->is_default = 1;
+        $branch->saveOrFail();
+
+        return $branch;
+    }
+
+    /**
+     * Register this company to the the following app.
+     *
+     * @param Apps $app
+     *
+     * @return bool
+     */
+    public function registerInApp(Apps $app) : bool
+    {
+        $companyApps = new UserCompanyApps();
+        $companyApps->companies_id = $this->getId();
+        $companyApps->apps_id = $app->getId();
+        $companyApps->created_at = date('Y-m-d H:i:s');
+        $companyApps->is_deleted = 0;
+
+        return $companyApps->saveOrFail();
+    }
 }

@@ -80,4 +80,23 @@ class CompaniesGroups extends AbstractModel
             ]
         );
     }
+
+    /**
+     * Associate a company to this company Group.
+     *
+     * @param Companies $company
+     * @param int $isDefault
+     *
+     * @return CompaniesAssociations
+     */
+    public function associate(Companies $company, int $isDefault = 1) : CompaniesAssociations
+    {
+        $companiesAssoc = new CompaniesAssociations();
+        $companiesAssoc->companies_id = $company->getId();
+        $companiesAssoc->companies_groups_id = $this->getId();
+        $companiesAssoc->is_default = $isDefault;
+        $companiesAssoc->saveOrFail();
+
+        return $companiesAssoc;
+    }
 }

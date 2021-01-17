@@ -108,7 +108,6 @@ class Subscription extends AbstractModel
             'subscription_id',
             [
                 'alias' => 'plans',
-                'reusable' => true,
             ]
         );
     }

@@ -6,7 +6,6 @@ use Baka\Database\Exception\ModelNotProcessedException;
 use Canvas\Cashier\Cashier;
 use Canvas\Models\Apps;
 use Canvas\Models\AppsPlans;
-use Canvas\Models\CompaniesAssociations;
 use Canvas\Models\CompaniesGroups;
 use Canvas\Models\Subscription;
 use Canvas\Models\SubscriptionItems;
@@ -87,11 +86,7 @@ class UpgradeTask extends PhTask
                         'is_default' => 1
                     ]);
 
-                    $companiesAssoc = new CompaniesAssociations();
-                    $companiesAssoc->companies_id = $subscription->company->getId();
-                    $companiesAssoc->companies_groups_id = $companiesGroup->getId();
-                    $companiesAssoc->is_default = 1;
-                    $companiesAssoc->saveOrFail();
+                    $companiesGroup->associate($subscription->company);
 
                     echo $e->getMessage() . PHP_EOL;
                     echo 'Fail ' . $subscription->getId() . PHP_EOL;
