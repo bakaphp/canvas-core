@@ -171,6 +171,8 @@ class InitGewaer extends AbstractSeed
                 'scope' => 0,
                 'companies_id' => 1,
                 'apps_id' => 1,
+                'is_default' => 1,
+                'is_active' => 1,
                 'created_at' => date('Y-m-d H:i:s'),
                 'is_deleted' => 0
             ], [
@@ -179,6 +181,8 @@ class InitGewaer extends AbstractSeed
                 'scope' => 0,
                 'companies_id' => 1,
                 'apps_id' => 1,
+                'is_default' => 1,
+                'is_active' => 1,
                 'created_at' => date('Y-m-d H:i:s'),
                 'is_deleted' => 0
             ], [
@@ -187,6 +191,8 @@ class InitGewaer extends AbstractSeed
                 'scope' => 0,
                 'companies_id' => 1,
                 'apps_id' => 1,
+                'is_default' => 1,
+                'is_active' => 1,
                 'created_at' => date('Y-m-d H:i:s'),
                 'is_deleted' => 0
             ]

@@ -4,20 +4,18 @@ declare(strict_types=1);
 
 namespace Canvas\Api\Controllers;
 
-use Canvas\Models\AppsPlans;
-use Stripe\Token as StripeToken;
-use Phalcon\Http\Response;
-use Stripe\Customer as StripeCustomer;
-use Phalcon\Validation\Validator\PresenceOf;
 use Baka\Http\Exception\NotFoundException;
-use Baka\Http\Exception\UnauthorizedException;
 use Baka\Http\Exception\UnprocessableEntityException;
-use Canvas\Models\Subscription as CanvasSubscription;
-use Phalcon\Cashier\Subscription;
-use Canvas\Models\UserCompanyApps;
-use function Baka\paymentGatewayIsActive;
 use Baka\Validation as CanvasValidation;
-use Canvas\Models\PaymentMethodsCreds;
+use Canvas\Models\AppsPlans;
+use Canvas\Models\PaymentMethodsCredentials;
+use Canvas\Models\Subscription as CanvasSubscription;
+use Canvas\Models\UserCompanyApps;
+use Phalcon\Cashier\Subscription;
+use Phalcon\Http\Response;
+use Phalcon\Validation\Validator\PresenceOf;
+use Stripe\Customer as StripeCustomer;
+use Stripe\Token as StripeToken;
 
 /**
  * Class LanguagesController.
@@ -70,6 +68,7 @@ class AppsPlansController extends BaseController
      * Update a given subscription.
      *
      * @param string $stripeId
+     *
      * @return Response
      */
     public function edit($stripeId) : Response
@@ -127,9 +126,10 @@ class AppsPlansController extends BaseController
      * Cancel a given subscription.
      *
      * @param string $stripeId
+     *
      * @return Response
      */
-    public function delete($stripeId): Response
+    public function delete($stripeId) : Response
     {
         $appPlan = $this->model->findFirstByStripeId($stripeId);
 
@@ -154,9 +154,10 @@ class AppsPlansController extends BaseController
      * Reactivate a given subscription.
      *
      * @param string $stripeId
+     *
      * @return Response
      */
-    public function reactivateSubscription($stripeId): Response
+    public function reactivateSubscription($stripeId) : Response
     {
         $appPlan = $this->model->findFirstByStripeId($stripeId);
 
@@ -179,10 +180,12 @@ class AppsPlansController extends BaseController
 
     /**
      * Update payment method.
-     * @param integer $id
+     *
+     * @param int $id
+     *
      * @return Response
      */
-    public function updatePaymentMethod(string $id): Response
+    public function updatePaymentMethod(string $id) : Response
     {
         if (empty($this->request->hasPut('card_token'))) {
             $validation = new CanvasValidation();
@@ -235,9 +238,8 @@ class AppsPlansController extends BaseController
         }
 
         if (is_object($stripeCustomer) && $stripeCustomer instanceof StripeCustomer) {
-
             //We now create a partially persist the payment method data
-            PaymentMethodsCreds::createByStripeToken($token);
+            PaymentMethodsCredentials::createByStripeToken($token);
             return $this->response($subscription);
         }
         return $this->response('Card could not be updated');
