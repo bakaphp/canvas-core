@@ -4,8 +4,6 @@ class ChangeEntityIdToVarcharOnFilesystemEntities extends Phinx\Migration\Abstra
 {
     public function change()
     {
-        $this->execute("ALTER DATABASE CHARACTER SET 'utf8';");
-        $this->execute("ALTER DATABASE COLLATE='utf8_general_mysql500_ci';");
         $this->table('filesystem_entities', [
             'id' => false,
             'primary_key' => ['id'],

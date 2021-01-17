@@ -91,6 +91,8 @@ $privateRoutes = [
     Route::crud('/menus-links')->controller('MenusLinksController'),
     Route::put('/users/{usersId}/activate')->controller('UsersAssociatedAppsController')->action('changeUserActiveStatus'),
     Route::crud('/register-roles')->controller('RegisterRolesController'),
+    Route::get('/sources')->controller('SourcesController')->action('index'),
+    Route::get('/sources/{id}')->controller('SourcesController')->action('getById'),
 ];
 
 $privateSubscriptionRoutes = [
