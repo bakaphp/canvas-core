@@ -15,10 +15,11 @@ class UpdateCashierSubscriptionModel extends Phinx\Migration\AbstractMigration
             'comment' => '',
             'row_format' => 'DYNAMIC',
         ])
+            ->renameColumn('user_id', 'users_id')
             ->addColumn('companies_groups_id', 'integer', [
                 'null' => false,
                 'limit' => '10',
-                'after' => 'user_id',
+                'after' => 'companies_id',
             ])
             ->addIndex(['companies_groups_id'], [
                 'name' => 'companies_groups_ids',

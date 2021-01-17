@@ -34,6 +34,13 @@ class Apps extends BakaApps
     const APP_DEFAULT_ROLE_SETTING = 'default_admin_role';
 
     /**
+     * Kanvas Core App Version.
+     *
+     * @var string
+     */
+    const VERSION = 0.3;
+
+    /**
      * Users Associated Trait.
      */
     use UsersAssociatedTrait;
