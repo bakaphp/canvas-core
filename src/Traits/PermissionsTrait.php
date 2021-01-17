@@ -22,7 +22,7 @@ trait PermissionsTrait
      *
      * @param string $role
      *
-     * @return boolean
+     * @return bool
      */
     public function assignRole(string $role) : bool
     {
@@ -67,7 +67,7 @@ trait PermissionsTrait
      *
      * @param int $id
      *
-     * @return boolean
+     * @return bool
      */
     public function assignRoleById(int $id) : bool
     {
@@ -76,18 +76,18 @@ trait PermissionsTrait
         $userRole = UserRoles::findFirstOrCreate([
             'conditions' => 'users_id = :users_id: and apps_id = :apps_id: and companies_id = :companies_id: and is_deleted = 0',
             'bind' => [
-                "users_id" => $this->getId(),
-                "apps_id" => $role->apps_id,
-                "companies_id" => $this->currentCompanyId()
-            ]],[
-                "users_id" => $this->getId(),
-                "roles_id" => $role->getId(),
-                "apps_id" => $role->apps_id,
-                "companies_id" => $this->currentCompanyId()
-        ]);
+                'users_id' => $this->getId(),
+                'apps_id' => $role->apps_id,
+                'companies_id' => $this->currentCompanyId()
+            ]], [
+                'users_id' => $this->getId(),
+                'roles_id' => $role->getId(),
+                'apps_id' => $role->apps_id,
+                'companies_id' => $this->currentCompanyId()
+            ]);
 
         $userRole->roles_id = $role->getId();
-        
+
         return $userRole->saveOrFail();
     }
 
@@ -97,7 +97,7 @@ trait PermissionsTrait
      *
      * @param string $role
      *
-     * @return boolean
+     * @return bool
      */
     public function removeRole(string $role) : bool
     {
@@ -125,7 +125,7 @@ trait PermissionsTrait
      *
      * @param string $role
      *
-     * @return boolean
+     * @return bool
      */
     public function hasRole(string $role) : bool
     {
@@ -152,7 +152,7 @@ trait PermissionsTrait
      * @param string $action
      * @param bool $throwException
      *
-     * @return boolean
+     * @return bool
      */
     public function can(string $action, bool $throwException = false) : bool
     {
@@ -182,14 +182,14 @@ trait PermissionsTrait
     }
 
     /**
-     * Check whether a role is an Admin or not
+     * Check whether a role is an Admin or not.
      *
      * @return bool
      */
-    public function isAdmin(): bool
+    public function isAdmin() : bool
     {
         if (!$this->hasRole("{$this->app->name}.Admins")) {
-            throw new UnauthorizedException("Current user does not have Admins role");
+            throw new UnauthorizedException('Current user does not have Admins role');
         }
 
         return true;

@@ -6,6 +6,7 @@ namespace Canvas\Api\Controllers;
 
 use Baka\Auth\Models\Sessions;
 use Baka\Auth\Models\Users as BakaUsers;
+use Baka\Auth\UserProvider;
 use Baka\Http\Exception\InternalServerErrorException;
 use Baka\Http\Exception\NotFoundException;
 use Baka\Validation as CanvasValidation;
@@ -13,6 +14,7 @@ use Baka\Validations\PasswordValidation;
 use Canvas\Auth\Auth;
 use Canvas\Auth\Factory;
 use Canvas\Exception\ModelException;
+use Canvas\Models\RegisterRoles;
 use Canvas\Models\Sources;
 use Canvas\Models\UserLinkedSources;
 use Canvas\Models\Users;
@@ -126,7 +128,7 @@ class AuthController extends \Baka\Auth\AuthController
      */
     public function signup() : Response
     {
-        $user = $this->userModel;
+        $user = UserProvider::get();
 
         $request = $this->request->getPostData();
 
@@ -201,6 +203,94 @@ class AuthController extends \Baka\Auth\AuthController
     }
 
     /**
+     * User Signup.
+     *
+     * @method POST
+     * @url /v1/users
+     *
+     * @return Response
+     */
+    public function signupByRegisterRole() : Response
+    {
+        $user = UserProvider::get();
+
+        $request = $this->request->getPostData();
+
+        //Ok let validate user password
+        $validation = new CanvasValidation();
+        $validation->add('password', new PresenceOf(['message' => _('The password is required.')]));
+        $validation->add('roles_uuid', new PresenceOf(['message' => _('roles_uuid is required.')]));
+        $validation->add('email', new EmailValidator(['message' => _('The email is not valid.')]));
+
+        $validation->add(
+            'password',
+            new StringLength([
+                'min' => 8,
+                'messageMinimum' => _('Password is too short. Minimum 8 characters.'),
+            ])
+        );
+
+        $validation->add('password', new Confirmation([
+            'message' => _('Password and confirmation do not match.'),
+            'with' => 'verify_password',
+        ]));
+
+        $validation->setFilters('password', 'trim');
+        $validation->setFilters('firstname', 'trim');
+        $validation->setFilters('lastname', 'trim');
+        $validation->setFilters('displayname', 'trim');
+        $validation->setFilters('default_company', 'trim');
+
+        //validate this form for password
+        $validation->validate($request);
+
+        $registerRole = RegisterRoles::getByUuid($request['roles_uuid']);
+
+        $user->email = $validation->getValue('email');
+        $user->firstname = $validation->getValue('firstname');
+        $user->lastname = $validation->getValue('lastname');
+        $user->password = $validation->getValue('password');
+        $user->displayname = !empty($validation->getValue('displayname')) ? $validation->getValue('displayname') : $user->generateDefaultDisplayname();
+        $userIp = !defined('API_TESTS') ? $this->request->getClientAddress() : '127.0.0.1'; //help getting the client ip on scrutinizer :(
+        $user->defaultCompanyName = $validation->getValue('default_company');
+        $user->roles_id = $registerRole->roles_id;
+
+        //user registration
+        try {
+            $this->db->begin();
+
+            $user = Auth::signUp($user->toArray());
+
+            $this->db->commit();
+        } catch (Exception $e) {
+            $this->db->rollback();
+
+            throw new Exception($e->getMessage());
+        }
+
+        $token = $user->getToken();
+
+        //start session
+        $session = new Sessions();
+        $session->start($user, $token['sessionId'], $token['token'], $userIp, 1);
+
+        $authSession = [
+            'token' => $token['token'],
+            'time' => date('Y-m-d H:i:s'),
+            'expires' => date('Y-m-d H:i:s', time() + $this->config->jwt->payload->exp),
+            'id' => $user->getId(),
+        ];
+
+        $user->password = '';
+        $user->notify(new Signup($user));
+
+        return $this->response([
+            'user' => $user,
+            'session' => $authSession
+        ]);
+    }
+
+    /**
      * Refresh user auth.
      *
      * @return Response
@@ -220,7 +310,7 @@ class AuthController extends \Baka\Auth\AuthController
         }
 
         //Check if both tokens relate to the same user's email
-        if ($accessToken->getClaim('sessionId') == $refreshToken->getClaim('sessionId')) {
+        if ($accessToken->getClaim('sessionId') === $refreshToken->getClaim('sessionId')) {
             $user = Users::getByEmail($accessToken->getClaim('email'));
         }
 
@@ -228,7 +318,11 @@ class AuthController extends \Baka\Auth\AuthController
             throw new NotFoundException(_('User not found'));
         }
 
-        $token = Sessions::restart($user, $refreshToken->getClaim('sessionId'), (string)$this->request->getClientAddress());
+        $token = Sessions::restart(
+            $user,
+            $refreshToken->getClaim('sessionId'),
+            (string)$this->request->getClientAddress()
+        );
 
         return $this->response([
             'token' => $token['token'],

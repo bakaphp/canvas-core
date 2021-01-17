@@ -186,7 +186,7 @@ class Manager extends AbstractAdapter
         if (!RolesDB::exist($role)) {
             $rolesDB = new RolesDB();
             $rolesDB->name = $role->getName();
-            $rolesDB->description = $role->getDescription() ?? $role->getName();
+            $rolesDB->description = $role->getDescription() ?: $role->getName();
             $rolesDB->companies_id = $this->getCompany()->getId();
             $rolesDB->apps_id = $this->getApp()->getId();
             $rolesDB->scope = $scope;
