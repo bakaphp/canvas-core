@@ -264,7 +264,7 @@ class UsersController extends BakaUsersController
         }
         
         //none admin users can only edit themselves
-        if (!$this->userData->hasRole('Default.Admins')) {
+        if (!$this->userData->hasRole('Default.Admins') && $id != 0) {
             $id = $this->userData->getId();
         }
 
