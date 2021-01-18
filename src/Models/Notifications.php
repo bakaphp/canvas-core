@@ -89,9 +89,10 @@ class Notifications extends AbstractModel
      * Verify that the user is unsubscribed
      * @return bool
      */
-    public function isUnsubscribe() : bool
+    public function isUnsubscribe(?Users $user) : bool
     {
-        return NotificationsUnsubscribe::isUnsubscribe($this->user, $this->notification_type_id);
+        $user = is_null($user) ? $this->user : $user;
+        return NotificationsUnsubscribe::isUnsubscribe($user, $this->notification_type_id);
     }
 
     /**
