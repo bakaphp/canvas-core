@@ -119,7 +119,7 @@ trait FileManagementTrait
     protected function processFiles() : array
     {
         $allFields = $this->request->getPostData();
-        $downloadable = array_key_exists('downloadable', $allFields) && $allFields['downloadable'] ? $allFields['downloadable'] : 0;
+        $downloadable = isset($allFields['downloadable']) ? $allFields['downloadable'] : 0;
 
         $files = [];
         $options = [];
