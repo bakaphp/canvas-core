@@ -138,14 +138,17 @@ class Users extends AbstractModel implements UserInterface
             'default_company',
             'Canvas\Models\Companies',
             'id',
-            ['alias' => 'defaultCompany']
+            [
+                'alias' => 'defaultCompany',
+                'reusable' => true,
+            ]
         );
 
         $this->hasOne(
             'default_company',
             'Canvas\Models\Companies',
             'id',
-            ['alias' => 'currentCompany']
+            ['alias' => 'currentCompany', 'reusable' => true]
         );
 
         $this->hasMany(
@@ -154,6 +157,7 @@ class Users extends AbstractModel implements UserInterface
             'users_id',
             [
                 'alias' => 'companies',
+                'reusable' => true,
                 'params' => [
                     'conditions' => 'apps_id = ?0',
                     'bind' => [$this->getDI()->get('app')->getId()],
@@ -167,6 +171,7 @@ class Users extends AbstractModel implements UserInterface
             'users_id',
             [
                 'alias' => 'apps',
+                'reusable' => true,
             ]
         );
 
@@ -176,6 +181,7 @@ class Users extends AbstractModel implements UserInterface
             'users_id',
             [
                 'alias' => 'app',
+                'reusable' => true,
                 'params' => [
                     'conditions' => 'apps_id = ?0',
                     'bind' => [Di::getDefault()->getApp()->getId()]
@@ -199,7 +205,8 @@ class Users extends AbstractModel implements UserInterface
                 'alias' => 'files',
                 'params' => [
                     'conditions' => 'system_modules_id = ?0',
-                    'bind' => [$systemModule->getId()]
+                    'bind' => [$systemModule->getId()],
+                    'reusable' => true
                 ]
             ]
         );
@@ -225,6 +232,7 @@ class Users extends AbstractModel implements UserInterface
             'id',
             [
                 'alias' => 'roles',
+                'reusable' => true,
                 'params' => [
                     'limit' => 1,
                     'conditions' => 'Canvas\Models\UserRoles.apps_id = ' . $this->getDI()->get('app')->getId() . ' AND Canvas\Models\UserRoles.companies_id = ' . $this->currentCompanyId(),
@@ -239,6 +247,7 @@ class Users extends AbstractModel implements UserInterface
             'users_id',
             [
                 'alias' => 'userRole',
+                'reusable' => true,
                 'params' => [
                     'limit' => 1,
                     'conditions' => 'Canvas\Models\UserRoles.apps_id in (?0, ?1) AND Canvas\Models\UserRoles.companies_id = ' . $this->currentCompanyId(),
@@ -254,6 +263,7 @@ class Users extends AbstractModel implements UserInterface
             'users_id',
             [
                 'alias' => 'permissions',
+                'reusable' => true,
                 'params' => [
                     'conditions' => 'Canvas\Models\UserRoles.apps_id = ' . $this->getDI()->get('app')->getId() . ' AND Canvas\Models\UserRoles.companies_id = ' . $this->currentCompanyId(),
                 ]

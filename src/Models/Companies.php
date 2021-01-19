@@ -48,20 +48,20 @@ class Companies extends AbstractModel
         $this->keepSnapshots(true);
         $this->addBehavior(new Blameable());
 
-        $this->hasMany('id', CompaniesSettings::class, 'companies_id', ['alias' => 'settings']);
+        $this->hasMany('id', CompaniesSettings::class, 'companies_id', ['alias' => 'settings', 'reusable' => true]);
 
         $this->belongsTo(
             'users_id',
             'Canvas\Models\Users',
             'id',
-            ['alias' => 'user']
+            ['alias' => 'user', 'reusable' => true, ]
         );
 
         $this->hasMany(
             'id',
             'Canvas\Models\CompaniesBranches',
             'companies_id',
-            ['alias' => 'branches']
+            ['alias' => 'branches', 'reusable' => true, ]
         );
 
         $this->hasOne(
@@ -70,6 +70,7 @@ class Companies extends AbstractModel
             'companies_id',
             [
                 'alias' => 'defaultBranch',
+                'reusable' => true,
                 'params' => [
                     'conditions' => 'is_default = 1'
                 ]
@@ -80,28 +81,28 @@ class Companies extends AbstractModel
             'id',
             'Canvas\Models\CompaniesCustomFields',
             'companies_id',
-            ['alias' => 'fields']
+            ['alias' => 'fields', 'reusable' => true, ]
         );
 
         $this->hasMany(
             'id',
             'Canvas\CustomFields\CustomFields',
             'companies_id',
-            ['alias' => 'custom-fields']
+            ['alias' => 'custom-fields', 'reusable' => true, ]
         );
 
         $this->hasMany(
             'id',
             'Canvas\Models\UsersAssociatedCompanies',
             'companies_id',
-            ['alias' => 'UsersAssociatedCompanies']
+            ['alias' => 'UsersAssociatedCompanies', 'reusable' => true, ]
         );
 
         $this->hasMany(
             'id',
             'Canvas\Models\UsersAssociatedApps',
             'companies_id',
-            ['alias' => 'UsersAssociatedApps']
+            ['alias' => 'UsersAssociatedApps', 'reusable' => true, ]
         );
 
         $this->hasMany(
@@ -110,6 +111,7 @@ class Companies extends AbstractModel
             'companies_id',
             [
                 'alias' => 'UsersAssociatedByApps',
+                'reusable' => true,
                 'params' => [
                     'conditions' => 'apps_id = ' . $this->di->get('app')->getId()
                 ]
@@ -122,6 +124,7 @@ class Companies extends AbstractModel
             'companies_id',
             [
                 'alias' => 'branch',
+                'reusable' => true,
             ]
         );
 
@@ -131,6 +134,7 @@ class Companies extends AbstractModel
             'companies_id',
             [
                 'alias' => 'app',
+                'reusable' => true,
                 'params' => [
                     'conditions' => 'apps_id = ' . $this->di->get('app')->getId()
                 ]
@@ -143,6 +147,7 @@ class Companies extends AbstractModel
             'companies_id',
             [
                 'alias' => 'apps',
+                'reusable' => true,
                 'params' => [
                     'conditions' => 'apps_id = ' . $this->di->get('app')->getId()
                 ]
@@ -153,7 +158,7 @@ class Companies extends AbstractModel
             'id',
             CompaniesAssociations::class,
             'companies_id',
-            ['alias' => 'companiesAssoc']
+            ['alias' => 'companiesAssoc', 'reusable' => true, ]
         );
 
         //users associated with this company app
@@ -166,6 +171,7 @@ class Companies extends AbstractModel
             'id',
             [
                 'alias' => 'users',
+                'reusable' => true,
                 'params' => [
                     'conditions' => 'apps_id = ' . $this->di->get('app')->getId() . ' AND Canvas\Models\UsersAssociatedApps.is_deleted = 0',
                 ]
@@ -181,6 +187,7 @@ class Companies extends AbstractModel
             'id',
             [
                 'alias' => 'companyGroups',
+                'reusable' => true,
             ]
         );
 
@@ -188,7 +195,7 @@ class Companies extends AbstractModel
             'id',
             'Canvas\Models\UserWebhooks',
             'companies_id',
-            ['alias' => 'user-webhooks']
+            ['alias' => 'user-webhooks', 'reusable' => true, ]
         );
 
         $systemModule = SystemModules::getByModelName(self::class);
@@ -198,6 +205,7 @@ class Companies extends AbstractModel
             'entity_id',
             [
                 'alias' => 'files',
+                'reusable' => true,
                 'params' => [
                     'conditions' => 'system_modules_id = ?0',
                     'bind' => [$systemModule->getId()]
@@ -440,5 +448,42 @@ class Companies extends AbstractModel
     public function reactiveUser(Users $user)
     {
         //reactive the user from a company app, not delete
+    }
+
+    /**
+     * Create a branch for this company.
+     *
+     * @param string|null $name
+     *
+     * @return CompaniesBranches
+     */
+    public function createBranch(?string $name = null) : CompaniesBranches
+    {
+        $branch = new CompaniesBranches();
+        $branch->companies_id = $this->getId();
+        $branch->users_id = $this->user->getId();
+        $branch->name = empty($name) ? $this->name : $name;
+        $branch->is_default = 1;
+        $branch->saveOrFail();
+
+        return $branch;
+    }
+
+    /**
+     * Register this company to the the following app.
+     *
+     * @param Apps $app
+     *
+     * @return bool
+     */
+    public function registerInApp(Apps $app) : bool
+    {
+        $companyApps = new UserCompanyApps();
+        $companyApps->companies_id = $this->getId();
+        $companyApps->apps_id = $app->getId();
+        $companyApps->created_at = date('Y-m-d H:i:s');
+        $companyApps->is_deleted = 0;
+
+        return $companyApps->saveOrFail();
     }
 }

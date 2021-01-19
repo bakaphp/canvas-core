@@ -24,6 +24,7 @@ class Subscription extends AbstractModel
 
     public int $users_id;
     public int $companies_groups_id;
+    public int $companies_id;
     public int $apps_id;
     public ?string $name = null;
     public string $stripe_id;
@@ -61,20 +62,44 @@ class Subscription extends AbstractModel
     {
         $this->setSource('subscriptions');
 
-        $this->belongsTo('users_id', 'Canvas\Models\Users', 'id', ['alias' => 'user']);
+        $this->belongsTo(
+            'users_id',
+            Users::class,
+            'id',
+            [
+                'alias' => 'user',
+                'reusable' => true,
+            ]
+        );
 
         $this->belongsTo(
             'companies_groups_id',
-            'Canvas\Models\CompaniesGroups',
+            CompaniesGroups::class,
             'id',
-            ['alias' => 'companyGroup']
+            [
+                'alias' => 'companyGroup',
+                'reusable' => true,
+            ]
+        );
+
+        $this->belongsTo(
+            'companies_id',
+            Companies::class,
+            'id',
+            [
+                'alias' => 'company',
+                'reusable' => true,
+            ]
         );
 
         $this->belongsTo(
             'apps_id',
-            'Canvas\Models\Apps',
+            Apps::class,
             'id',
-            ['alias' => 'app']
+            [
+                'alias' => 'app',
+                'reusable' => true,
+            ]
         );
 
         $this->hasMany(
@@ -82,7 +107,7 @@ class Subscription extends AbstractModel
             SubscriptionItems::class,
             'subscription_id',
             [
-                'alias' => 'plans'
+                'alias' => 'plans',
             ]
         );
     }

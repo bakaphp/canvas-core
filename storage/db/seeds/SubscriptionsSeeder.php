@@ -9,6 +9,7 @@ class SubscriptionsSeeder extends AbstractSeed
         $data = [
             [
                 'users_id' => 1,
+                'companies_id' => 1,
                 'companies_groups_id' => 1,
                 'apps_id' => 1,
                 'name' => 'example',

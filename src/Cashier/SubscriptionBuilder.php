@@ -6,6 +6,7 @@ namespace Canvas\Cashier;
 
 use Canvas\Models\Apps;
 use Canvas\Models\AppsPlans;
+use Canvas\Models\CompaniesGroups;
 use Canvas\Models\Subscription;
 use Canvas\Models\SubscriptionItems;
 use Carbon\Carbon;
@@ -66,12 +67,12 @@ class SubscriptionBuilder
     /**
      * Create a new Subscription.
      *
-     * @param ModelInterface $entity
+     * @param CompaniesGroups $entity
      * @param string $name
      * @param string $plan
      * @param Apps $apps
      */
-    public function __construct(ModelInterface $entity, AppsPlans $appPlan, Apps $apps)
+    public function __construct(CompaniesGroups $entity, AppsPlans $appPlan, Apps $apps)
     {
         $this->entity = $entity;
         $this->name = $appPlan->name;
@@ -253,6 +254,7 @@ class SubscriptionBuilder
         $subscription->stripe_status = $stripeSubscription->status;
         $subscription->quantity = $stripeSubscription->quantity;
         $subscription->trial_ends_at = $trialEndsAt->toDateTimeString();
+        $subscription->companies_id = $options['companies_id'] ?? $this->entity->defaultCompany->getFirst()->getId();
         $subscription->companies_groups_id = $this->entity->getId();
         $subscription->apps_id = $this->apps->getId();
         $subscription->payment_frequency_id = $this->apps->getDefaultPlan()->payment_frequencies_id;

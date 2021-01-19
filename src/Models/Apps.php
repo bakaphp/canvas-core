@@ -8,8 +8,8 @@ use Baka\Contracts\EventsManager\EventManagerAwareTrait;
 use Baka\Database\Apps as BakaApps;
 use Canvas\Cli\Jobs\Apps as JobsApps;
 use Canvas\Contracts\UsersAssociatedTrait;
-use Phalcon\Security\Random;
 use Phalcon\Di;
+use Phalcon\Security\Random;
 
 class Apps extends BakaApps
 {
@@ -34,6 +34,13 @@ class Apps extends BakaApps
     const APP_DEFAULT_ROLE_SETTING = 'default_admin_role';
 
     /**
+     * Kanvas Core App Version.
+     *
+     * @var string
+     */
+    const VERSION = 0.3;
+
+    /**
      * Users Associated Trait.
      */
     use UsersAssociatedTrait;
@@ -54,7 +61,7 @@ class Apps extends BakaApps
             'default_apps_plan_id',
             'Canvas\Models\AppsPlans',
             'id',
-            ['alias' => 'plan']
+            ['alias' => 'plan', 'reusable' => true]
         );
 
         $this->hasOne(
@@ -63,6 +70,7 @@ class Apps extends BakaApps
             'apps_id',
             [
                 'alias' => 'defaultPlan',
+                'reusable' => true,
                 'params' => [
                     'conditions' => 'Canvas\Models\AppsPlans.is_default = 1',
                 ]
@@ -73,21 +81,21 @@ class Apps extends BakaApps
             'id',
             'Canvas\Models\AppsPlans',
             'apps_id',
-            ['alias' => 'plans']
+            ['alias' => 'plans', 'reusable' => true]
         );
 
         $this->hasMany(
             'id',
             'Canvas\Models\UserWebhooks',
             'apps_id',
-            ['alias' => 'user-webhooks']
+            ['alias' => 'user-webhooks', 'reusable' => true]
         );
 
         $this->hasMany(
             'id',
             'Canvas\Models\AppsSettings',
             'apps_id',
-            ['alias' => 'settingsApp']
+            ['alias' => 'settingsApp', 'reusable' => true]
         );
     }
 

@@ -27,7 +27,7 @@ class CompaniesGroups extends AbstractModel
             'id',
             CompaniesAssociations::class,
             'companies_groups_id',
-            ['alias' => 'companiesAssoc']
+            ['alias' => 'companiesAssoc', 'reusable' => true]
         );
 
         $this->hasManyToMany(
@@ -37,7 +37,23 @@ class CompaniesGroups extends AbstractModel
             'companies_id',
             Companies::class,
             'id',
-            ['alias' => 'companies']
+            ['alias' => 'companies', 'reusable' => true]
+        );
+
+        $this->hasManyToMany(
+            'id',
+            CompaniesAssociations::class,
+            'companies_groups_id',
+            'companies_id',
+            Companies::class,
+            'id',
+            [
+                'alias' => 'defaultCompany',
+                'reusable' => true,
+                'params' => [
+                    'conditions' => 'is_default = 1'
+                ]
+            ]
         );
 
         $this->hasOne(
@@ -46,6 +62,7 @@ class CompaniesGroups extends AbstractModel
             'companies_groups_id',
             [
                 'alias' => 'subscription',
+                'reusable' => true,
                 'params' => [
                     'conditions' => 'apps_id = ' . $this->di->get('app')->getId() . ' AND is_deleted = 0',
                     'order' => 'id DESC'
@@ -58,8 +75,28 @@ class CompaniesGroups extends AbstractModel
             Users::class,
             'id',
             [
-                'alias' => 'users'
+                'alias' => 'users',
+                'reusable' => true
             ]
         );
+    }
+
+    /**
+     * Associate a company to this company Group.
+     *
+     * @param Companies $company
+     * @param int $isDefault
+     *
+     * @return CompaniesAssociations
+     */
+    public function associate(Companies $company, int $isDefault = 1) : CompaniesAssociations
+    {
+        $companiesAssoc = new CompaniesAssociations();
+        $companiesAssoc->companies_id = $company->getId();
+        $companiesAssoc->companies_groups_id = $this->getId();
+        $companiesAssoc->is_default = $isDefault;
+        $companiesAssoc->saveOrFail();
+
+        return $companiesAssoc;
     }
 }

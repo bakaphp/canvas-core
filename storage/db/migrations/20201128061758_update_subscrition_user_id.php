@@ -13,12 +13,6 @@ class UpdateSubscritionUserId extends Phinx\Migration\AbstractMigration
             'comment' => '',
             'row_format' => 'DYNAMIC',
         ])
-            ->addColumn('users_id', 'integer', [
-                'null' => false,
-                'limit' => '10',
-                'after' => 'id',
-            ])
-            ->removeColumn('user_id')
             ->removeIndexByName('user_id')
             ->addIndex(['users_id'], [
                 'name' => 'user_id',

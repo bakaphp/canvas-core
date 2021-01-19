@@ -28,21 +28,21 @@ class Notifications extends AbstractModel
             'users_id',
             'Canvas\Models\Users',
             'id',
-            ['alias' => 'user']
+            ['alias' => 'user', 'reusable' => true]
         );
 
         $this->belongsTo(
             'from_users_id',
             'Canvas\Models\Users',
             'id',
-            ['alias' => 'from']
+            ['alias' => 'from', 'reusable' => true]
         );
 
         $this->belongsTo(
             'notification_type_id',
             'Canvas\Models\NotificationType',
             'id',
-            ['alias' => 'type']
+            ['alias' => 'type', 'reusable' => true]
         );
     }
 

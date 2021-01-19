@@ -19,7 +19,7 @@ use Phalcon\Http\Response;
  */
 class CompaniesController extends BaseController
 {
-    #use CrudCustomFieldsBehaviorTrait;
+    //use CrudCustomFieldsBehaviorTrait;
 
     /*
      * fields we accept to create

@@ -42,14 +42,14 @@ class Roles extends AbstractModel
             'id',
             'Canvas\Models\AccessList',
             'roles_id',
-            ['alias' => 'accesList']
+            ['alias' => 'accesList', 'reusable' => true]
         );
 
         $this->hasMany(
             'id',
             'Canvas\Models\AccessList',
             'roles_id',
-            ['alias' => 'accessList']
+            ['alias' => 'accessList', 'reusable' => true]
         );
 
         $this->hasMany(
@@ -58,7 +58,8 @@ class Roles extends AbstractModel
             'roles_id',
             [
                 'alias' => 'users',
-                'conditions' => 'is_delete = 0'
+                'conditions' => 'is_delete = 0',
+                'reusable' => true
             ]
         );
     }

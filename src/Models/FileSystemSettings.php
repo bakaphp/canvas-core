@@ -20,7 +20,7 @@ class FileSystemSettings extends AbstractModel
             'filesystem_id',
             'Canvas\Models\Filesystem',
             'id',
-            ['alias' => 'file']
+            ['alias' => 'file', 'reusable' => true]
         );
     }
 }
