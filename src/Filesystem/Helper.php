@@ -22,7 +22,7 @@ class Helper extends FilesystemHelper
      *
      * @return FileSystem
      */
-    public static function upload(FileInterface $file) : FileSystem
+    public static function upload(FileInterface $file, array $options = []) : FileSystem
     {
         FileValidation::validate($file);
 
@@ -46,7 +46,7 @@ class Helper extends FilesystemHelper
          *
          * @todo change this to determine type of file and recreate it if its a image
          */
-        $di->get('filesystem')->writeStream($uploadFileNameWithPath, fopen($file->getTempName(), 'r'));
+        $di->get('filesystem')->writeStream($uploadFileNameWithPath, fopen($file->getTempName(), 'r'), $options);
 
         $fileSystem = new FileSystem();
         $fileSystem->name = $file->getName();

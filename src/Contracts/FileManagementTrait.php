@@ -119,10 +119,13 @@ trait FileManagementTrait
     protected function processFiles() : array
     {
         $allFields = $this->request->getPostData();
+        $downloadable = isset($allFields['downloadable']) ? $allFields['downloadable'] : false;
 
         $files = [];
+        $options = [];
         foreach ($this->request->getUploadedFiles() as $file) {
-            $fileSystem = Helper::upload($file);
+            $options["ContentDisposition"] = $downloadable ? "attachment" : "inline";
+            $fileSystem = Helper::upload($file, $options);
 
             //add settings
             foreach ($allFields as $key => $settings) {
