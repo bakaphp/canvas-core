@@ -22,7 +22,7 @@ class Helper extends FilesystemHelper
      *
      * @return FileSystem
      */
-    public static function upload(FileInterface $file) : FileSystem
+    public static function upload(FileInterface $file, array $options = []) : FileSystem
     {
         FileValidation::validate($file);
 
@@ -41,11 +41,7 @@ class Helper extends FilesystemHelper
         $completeFilePath = $fileSystemConfig->path . DIRECTORY_SEPARATOR . $fileName;
         $uploadFileNameWithPath = $appSettingFileConfig === 'local' ? $fileName : $completeFilePath;
 
-        if ($appSettingFileConfig == 's3' && $fileSystemConfig->fileDownload) {
-            $di->get('filesystem')->writeStream($uploadFileNameWithPath, fopen($file->getTempName(), 'r'), ['ContentDisposition' => 'attachment']);
-        } else {
-            $di->get('filesystem')->writeStream($uploadFileNameWithPath, fopen($file->getTempName(), 'r'));
-        }
+        $di->get('filesystem')->writeStream($uploadFileNameWithPath, fopen($file->getTempName(), 'r'), $options);
         
         $fileSystem = new FileSystem();
         $fileSystem->name = $file->getName();

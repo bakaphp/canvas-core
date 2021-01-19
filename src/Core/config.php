@@ -61,7 +61,6 @@ return [
             'path' => envValue('S3_UPLOAD_DIR'),
             'bucket' => getenv('S3_BUCKET'),
             'cdn' => envValue('S3_CDN_URL'),
-            'fileDownload' => envValue('S3_FILE_DOWNLOAD'),
         ],
     ],
     'cache' => [
