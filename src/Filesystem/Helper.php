@@ -41,13 +41,12 @@ class Helper extends FilesystemHelper
         $completeFilePath = $fileSystemConfig->path . DIRECTORY_SEPARATOR . $fileName;
         $uploadFileNameWithPath = $appSettingFileConfig === 'local' ? $fileName : $completeFilePath;
 
-        /**
-         * upload file base on temp.
-         *
-         * @todo change this to determine type of file and recreate it if its a image
-         */
-        $di->get('filesystem')->writeStream($uploadFileNameWithPath, fopen($file->getTempName(), 'r'));
-
+        if ($appSettingFileConfig == 's3' && $fileSystemConfig->fileDownload) {
+            $di->get('filesystem')->writeStream($uploadFileNameWithPath, fopen($file->getTempName(), 'r'), ['ContentDisposition' => 'attachment']);
+        } else {
+            $di->get('filesystem')->writeStream($uploadFileNameWithPath, fopen($file->getTempName(), 'r'));
+        }
+        
         $fileSystem = new FileSystem();
         $fileSystem->name = $file->getName();
         $fileSystem->companies_id = $di->get('userData')->currentCompanyId();
