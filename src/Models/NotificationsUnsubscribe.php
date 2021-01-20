@@ -45,12 +45,12 @@ class NotificationsUnsubscribe extends AbstractModel
     public static function getByNotificationType(Users $user, int $notificationTypeId) : ?NotificationsUnsubscribe
     {
         return NotificationsUnsubscribe::findFirst([
-            'conditions' => 'users_id = ? AND companies_id = ? AND apps_id = ? AND notification_type_id = ? AND is_deleted = 0',
+            'conditions' => 'users_id = ?0 AND companies_id = ?1 AND apps_id = ?2 AND \notification_type_id = ?3 AND is_deleted = 0',
             'bind' => [
-                $user->getId(),
-                $user->currentCompanyId(),
-                Di::getDefault()->getApp()->getId(),
-                $notificationTypeId
+                0 => $user->getId(),
+                1 => $user->currentCompanyId(),
+                2 => Di::getDefault()->getApp()->getId(),
+                3 => $notificationTypeId
             ]
         ]);
     }
@@ -69,7 +69,7 @@ class NotificationsUnsubscribe extends AbstractModel
         if (!$userNotification) {
             $userNotification = NotificationsUnsubscribe::getByNotificationType($user, $notificationTypeId);
         }
-        
+
         return $userNotification ? true : false;
     }
 
@@ -93,7 +93,7 @@ class NotificationsUnsubscribe extends AbstractModel
             $userNotification->system_modules_id = $systemModulesId;
             $userNotification->email = $user->getEmail();
         }
-        
+
         $userNotification->is_deleted = 0;
         $userNotification->saveOrFail();
         return $userNotification;

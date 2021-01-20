@@ -841,4 +841,26 @@ class Users extends AbstractModel implements UserInterface
             current($this->getMessages())->getMessage()
         );
     }
+
+    /**
+     * Verify that the user is unsubscribed from email
+     * @param int $notificationTypeId
+     * @return bool
+     */
+    public function isUnsubscribe(int $notificationTypeId) : bool
+    {
+        return NotificationsUnsubscribe::isUnsubscribe($this, $notificationTypeId);
+    }
+
+    /**
+    * unsubscribe user for NotificationType
+    * @param int $notificationTypeId
+    * @return NotificationsUnsubscribe
+    */
+    public function unsubscribe(int $notificationTypeId) : NotificationsUnsubscribe
+    {
+        $notificationType = NotificationType::findFirst($notificationTypeId);
+        $systemModulesId = $notificationType ? $notificationType->system_modules_id : -1;
+        return Notifications::unsubscribe($this, (int) $notificationTypeId, (int) $systemModulesId);
+    }
 }

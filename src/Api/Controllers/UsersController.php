@@ -258,12 +258,13 @@ class UsersController extends BaseController
     {
         $request = $this->request->getPostData();
 
+
         if (!isset($request['notification_types'])) {
             throw new Exception("Error Processing Request", 1);
         }
-        
+
         //none admin users can only edit themselves
-        if (!$this->userData->hasRole('Default.Admins')) {
+        if (!$this->userData->hasRole('Default.Admins') || $id == 0) {
             $id = $this->userData->getId();
         }
 
@@ -271,13 +272,11 @@ class UsersController extends BaseController
             'id = ?0 AND is_deleted = 0',
             'bind' => [$id],
         ]);
-
+        $unsubscribe = [];
         foreach ($request['notification_types'] as $typeId) {
-            $notificationType = NotificationType::findFirst($typeId);
-            $systemModulesId = $notificationType ? $notificationType->system_modules_id : -1;
-            Notifications::unsubscribe($user, $typeId, $systemModulesId);
+            $unsubscribe[] = $user->unsubscribe((int) $typeId);
         }
 
-        return $this->response(['success']);
+        return $this->response($unsubscribe);
     }
 }
