@@ -28,6 +28,7 @@ $privateRoutes = [
     Route::crud('/apps-keys')->controller('AppsKeysController'),
     Route::post('/apps-keys/regenerate')->controller('AppsKeysController')->action('regenerateKeys'),
     Route::crud('/users')->notVia('post'),
+    Route::post('/users/{id}/unsubscribe')->controller('UsersController')->action('unsubscribe'),
     Route::crud('/companies'),
     Route::crud('/roles'),
     Route::crud('/locales'),
