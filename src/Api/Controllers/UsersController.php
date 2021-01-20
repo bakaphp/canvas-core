@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Canvas\Api\Controllers;
 
 use Baka\Auth\UsersController as BakaUsersController;
+use Baka\Http\Exception\InternalServerErrorException;
 use Baka\Validation as CanvasValidation;
 use Canvas\Contracts\Controllers\ProcessOutputMapperTrait;
 use Canvas\Dto\User as UserDto;
-use Baka\Http\Exception\InternalServerErrorException;
 use Canvas\Mapper\UserMapper;
 use Canvas\Models\Users;
 use Canvas\Models\NotificationType;

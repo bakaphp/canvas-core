@@ -101,9 +101,8 @@ class AppsController extends BaseController
     {
         //process the input
         $request = $this->processInput($request->getPutData());
-
         if (array_key_exists('settings', $request) && isJson($request['settings'])) {
-            $this->model->setSettings(json_decode($request['settings'], true));
+            $record->setSettings(json_decode($request['settings'], true));
         }
 
         $record->updateOrFail($request, $this->updateFields);
