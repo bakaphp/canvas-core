@@ -3,8 +3,6 @@
 namespace Canvas\Tests\api;
 
 use ApiTester;
-use Canvas\Models\AppsPlans;
-use Phalcon\Security\Random;
 
 class UsersCest
 {
