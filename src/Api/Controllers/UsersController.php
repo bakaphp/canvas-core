@@ -275,9 +275,7 @@ class UsersController extends BakaUsersController
         ]);
         $unsubscribe = [];
         foreach ($request['notification_types'] as $typeId) {
-            $notificationType = NotificationType::findFirst($typeId);
-            $systemModulesId = $notificationType ? $notificationType->system_modules_id : -1;
-            $unsubscribe[] = Notifications::unsubscribe($user, (int) $typeId, (int) $systemModulesId);
+            $user->unsubscribe($typeId);
         }
 
         return $this->response($unsubscribe);

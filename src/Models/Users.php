@@ -727,4 +727,26 @@ class Users extends BakUser implements UserInterface
             current($this->getMessages())->getMessage()
         );
     }
+
+    /**
+     * Verify that the user is unsubscribed from email
+     * @param int $notificationTypeId
+     * @return bool
+     */
+    public function isUnsubscribe(int $notificationTypeId) : bool
+    {
+        return NotificationsUnsubscribe::isUnsubscribe($this, $notificationTypeId);
+    }
+
+    /**
+    * unsubscribe user for NotificationType
+    * @param int $notificationTypeId
+    * @return void
+    */
+    public function unsubscribe(int $notificationTypeId) : void
+    {
+        $notificationType = NotificationType::findFirst($notificationTypeId);
+        $systemModulesId = $notificationType ? $notificationType->system_modules_id : -1;
+        $unsubscribe[] = Notifications::unsubscribe($this, (int) $typeId, (int) $systemModulesId);
+    }
 }
