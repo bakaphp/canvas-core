@@ -759,6 +759,6 @@ class Users extends BakUser implements UserInterface
     {
         $notificationType = NotificationType::findFirst($notificationTypeId);
         $systemModulesId = $notificationType ? $notificationType->system_modules_id : -1;
-        return Notifications::unsubscribe($this, (int) $typeId, (int) $systemModulesId);
+        return Notifications::unsubscribe($this, (int) $notificationTypeId, (int) $systemModulesId);
     }
 }
