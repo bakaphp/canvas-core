@@ -53,6 +53,7 @@ class AddCompaniesGroupsAndCompaniesAssociations extends AbstractMigration
                 'null' => false,
                 'limit' => MysqlAdapter::INT_BIG,
                 'identity' => 'enable',
+                'precision' => '20',
             ])
             ->addColumn('name', 'string', [
                 'null' => false,
