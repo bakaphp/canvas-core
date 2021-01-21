@@ -103,7 +103,7 @@ jobs:
         run: cp storage/ci/phinx.php.example phinx.php
         
       - name: Phinx Migrate Kanvas
-        run: vendor/bin/phinx migrate -e development
+        run: vendor/bin/phinx migrate -e development -vv
         
       - name: Phinx Migrate Kanvas Seed
         run: vendor/bin/phinx seed:run
