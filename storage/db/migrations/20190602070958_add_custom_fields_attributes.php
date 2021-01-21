@@ -20,6 +20,7 @@ class AddCustomFieldsAttributes extends AbstractMigration
                 'null' => false,
                 'limit' => MysqlAdapter::INT_BIG,
                 'identity' => 'enable',
+                'precision' => '20',
             ])
             ->addColumn('entity_id', 'char', [
                 'null' => false,
