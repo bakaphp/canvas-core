@@ -69,12 +69,11 @@ class AddAppCustomFields extends Phinx\Migration\AbstractMigration
                 'encoding' => 'utf8mb4',
                 'after' => 'users_id',
             ])
-            ->addColumn('entity_id', 'biginteger', [
+            ->addColumn('entity_id', 'char', [
                 'null' => false,
                 'default' => '0',
-                'limit' => MysqlAdapter::INT_BIG,
                 'after' => 'model_name',
-                'precision' => '20',
+                'limit' => '36',
             ])
             ->addColumn('name', 'string', [
                 'null' => false,
