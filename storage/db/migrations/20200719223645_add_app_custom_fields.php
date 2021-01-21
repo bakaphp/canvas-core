@@ -50,6 +50,7 @@ class AddAppCustomFields extends Phinx\Migration\AbstractMigration
                 'null' => false,
                 'limit' => MysqlAdapter::INT_BIG,
                 'identity' => 'enable',
+                'precision' => '20',
             ])
             ->addColumn('companies_id', 'integer', [
                 'null' => false,
@@ -73,6 +74,7 @@ class AddAppCustomFields extends Phinx\Migration\AbstractMigration
                 'default' => '0',
                 'limit' => MysqlAdapter::INT_BIG,
                 'after' => 'model_name',
+                'precision' => '20',
             ])
             ->addColumn('name', 'string', [
                 'null' => false,
@@ -164,7 +166,6 @@ class AddAppCustomFields extends Phinx\Migration\AbstractMigration
                 'unique' => false,
             ])
             ->create();
-
 
         $this->table('resources', [
             'id' => false,
