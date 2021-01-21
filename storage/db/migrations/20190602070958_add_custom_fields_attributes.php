@@ -19,7 +19,6 @@ class AddCustomFieldsAttributes extends AbstractMigration
             ->addColumn('id', 'biginteger', [
                 'null' => false,
                 'limit' => MysqlAdapter::INT_BIG,
-                'signed' => false,
                 'identity' => 'enable',
             ])
             ->addColumn('entity_id', 'char', [
