@@ -29,7 +29,7 @@ class Api extends AbstractBootstrap
     {
         try {
             $request = new Request();
-            $uri = rawurldecode($request->getServer('REQUEST_URI'));
+            $uri = rawurldecode($request->getServer('REQUEST_URI') ?? '');
             return $this->application->handle($uri);
         } catch (Throwable $e) {
             $response = new Response();
