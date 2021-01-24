@@ -400,7 +400,7 @@ class Setup
                 'companies_id' => 0,
                 'apps_id' => 0,
                 'name' => 'users-invite',
-                'template' => 'Hi {{entity[\'email\']} you have been invite to the app {{app.name}} to create you account please <a href=\'{{invitationUrl}}\'>click here</a> <br /><br />\r\n \n\n Thanks {{fromUser.firstname}} {{fromUser.lastname}} ( {{fromUser.getDefaultCompany().name}} )',
+                'template' => 'Hi {{entity[\'email\']}} you have been invite to the app {{app.name}} to create you account please <a href=\'{{invitationUrl}}\'>click here</a> <br /><br />\r\n \n\n Thanks {{fromUser.firstname}} {{fromUser.lastname}} ( {{fromUser.getDefaultCompany().name}} )',
                 'created_at' => date('Y-m-d H:i:s'),
             ], [
                 'users_id' => 1,
