@@ -7,11 +7,11 @@ namespace Canvas\App;
 use Canvas\Models\Apps;
 use Canvas\Models\AppsPlans;
 use Canvas\Models\Companies;
-use Canvas\Models\Roles;
-use Canvas\Models\SystemModules;
 use Canvas\Models\EmailTemplates;
 use Canvas\Models\Menus;
 use Canvas\Models\MenusLinks;
+use Canvas\Models\Roles;
+use Canvas\Models\SystemModules;
 use Canvas\Models\Users;
 use Phalcon\Di;
 
@@ -89,10 +89,10 @@ class Setup
     }
 
     /**
-    * Set the email templates.
-    *
-    * @return self
-    */
+     * Set the email templates.
+     *
+     * @return self
+     */
     public function emailTemplates() : self
     {
         echo("Setting default Email Templates...\n\n");
@@ -109,18 +109,18 @@ class Setup
     }
 
     /**
-    * Set the default menus.
-    *
-    * @return self
-    */
+     * Set the default menus.
+     *
+     * @return self
+     */
     public function defaultMenus() : self
     {
         echo("Setting default Menus..\n\n");
         //Create a new Menu with current app id
         $menu = new Menus();
         $menu->apps_id = $this->app->getId();
-        $menu->name = "main";
-        $menu->slug = "main";
+        $menu->name = 'main';
+        $menu->slug = 'main';
         $menu->saveOrFail();
 
         //Create default menu links
@@ -388,7 +388,7 @@ class Setup
     }
 
     /**
-     * Default email templates
+     * Default email templates.
      *
      * @return array
      */
@@ -400,7 +400,7 @@ class Setup
                 'companies_id' => 0,
                 'apps_id' => 0,
                 'name' => 'users-invite',
-                'template' => 'Hi {{entity[\'email\']} you have been invite to the app {{app.name}} to create you account please <a href=\'{{invitationUrl}}\'>click here</a> <br /><br />\r\n \n\n Thanks {{fromUser.firstname}} {{fromUser.lastname}} ( {{fromUser.getDefaultCompany().name}} )',
+                'template' => 'Hi {{entity[\'email\']}} you have been invite to the app {{app.name}} to create you account please <a href=\'{{invitationUrl}}\'>click here</a> <br /><br />\r\n \n\n Thanks {{fromUser.firstname}} {{fromUser.lastname}} ( {{fromUser.getDefaultCompany().name}} )',
                 'created_at' => date('Y-m-d H:i:s'),
             ], [
                 'users_id' => 1,
@@ -421,7 +421,7 @@ class Setup
     }
 
     /**
-     * Default email templates
+     * Default email templates.
      *
      * @return array
      */
@@ -432,7 +432,7 @@ class Setup
                 'menus_id' => 1,
                 'parent_id' => 0,
                 'system_modules_id' => 0,
-                'url' => "/",
+                'url' => '/',
                 'title' => 'Overview',
                 'position' => 0,
                 'icon_url' => null,
@@ -444,7 +444,7 @@ class Setup
                 'menus_id' => 1,
                 'parent_id' => 0,
                 'system_modules_id' => 1,
-                'url' => "/companies",
+                'url' => '/companies',
                 'title' => 'Companies',
                 'position' => 0,
                 'icon_url' => null,
@@ -456,7 +456,7 @@ class Setup
                 'menus_id' => 1,
                 'parent_id' => 0,
                 'system_modules_id' => 2,
-                'url' => "/users",
+                'url' => '/users',
                 'title' => 'Users',
                 'position' => 0,
                 'icon_url' => null,
