@@ -248,7 +248,7 @@ class Companies extends AbstractModel
         ])->getFirst();
 
         if (!$companyGroup) {
-            throw new InternalServerErrorException('No default Company Group Found');
+            throw new InternalServerErrorException('No default Company Group for Company - ' . $this->getId());
         }
 
         return $companyGroup;
