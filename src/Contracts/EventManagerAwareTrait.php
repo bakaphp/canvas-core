@@ -19,7 +19,7 @@ trait EventManagerAwareTrait
      *
      * @param EventsManager $eventsManager
      */
-    public function setEventsManager(EventsManager $manager)
+    public function setEventsManager(EventsManager $manager) : void
     {
         $this->eventsManager = $manager;
     }
