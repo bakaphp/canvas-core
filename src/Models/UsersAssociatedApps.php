@@ -4,8 +4,8 @@ declare(strict_types=1);
 namespace Canvas\Models;
 
 use Baka\Contracts\Auth\UserInterface;
-use Phalcon\Di;
 use Canvas\Notifications\UserInactiveConfirmation;
+use Phalcon\Di;
 
 class UsersAssociatedApps extends AbstractModel implements UserInterface
 {
@@ -65,7 +65,7 @@ class UsersAssociatedApps extends AbstractModel implements UserInterface
     }
 
     /**
-     * Checks whether or not a user is active on the current app's company
+     * Checks whether or not a user is active on the current app's company.
      *
      * @return bool
      */
@@ -75,20 +75,20 @@ class UsersAssociatedApps extends AbstractModel implements UserInterface
     }
 
     /**
-     * Get record by user's id
+     * Get record by user's id.
      *
      * @param int $userId
      *
      * @return UsersAssociatedApps
      */
-    public static function getByUserId(int $userId): self
+    public static function getByUserId(int $userId) : self
     {
         return self::findFirstOrFail([
-            "conditions" => "apps_id = :apps_id: and users_id = :users_id: and companies_id = :companies_id: and is_deleted = 0",
-            "bind" => [
-                "apps_id" => Di::getDefault()->getApp()->getId(),
-                "users_id" => $userId,
-                "companies_id" => Di::getDefault()->getUserData()->get(Companies::cacheKey())
+            'conditions' => 'apps_id = :apps_id: and users_id = :users_id: and companies_id = :companies_id: and is_deleted = 0',
+            'bind' => [
+                'apps_id' => Di::getDefault()->get('app')->getId(),
+                'users_id' => $userId,
+                'companies_id' => Di::getDefault()->get('userData')->get(Companies::cacheKey())
             ]
         ]);
     }
