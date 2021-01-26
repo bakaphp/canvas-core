@@ -472,7 +472,8 @@ class Companies extends AbstractModel
                 'bind' => [
                     'companies_id' => $this->getId(),
                     'users_id' => $this->user->getId()
-                ]],
+                ]
+            ],
             [
                 'companies_id' => $this->getId(),
                 'users_id' => $this->user->getId(),
