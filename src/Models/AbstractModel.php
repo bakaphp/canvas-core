@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Canvas\Models;
 
 use Baka\Database\Model as BakaModel;
+use Canvas\Cli\Jobs\CascadeSoftDelete;
 
 abstract class AbstractModel extends BakaModel
 {
@@ -14,6 +15,7 @@ abstract class AbstractModel extends BakaModel
      * @var string
      */
     protected $subscriptionPlanLimitKey = null;
+    public $cascadeSoftDelete = 1;
 
     /**
      * Get the primary id of this model.
@@ -23,5 +25,17 @@ abstract class AbstractModel extends BakaModel
     public function getId() : int
     {
         return (int) $this->id;
+    }
+
+    /**
+     * Execute an after softDelete
+     *
+     * @return void
+     */
+    public function beforeSoftDelete() : void
+    {
+        if($this->cascadeSoftDelete){
+            CascadeSoftDelete::dispatch($this);
+        }
     }
 }
