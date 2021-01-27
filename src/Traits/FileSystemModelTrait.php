@@ -192,7 +192,7 @@ trait FileSystemModelTrait
             }
 
             if (!$file['file'] instanceof FileSystem) {
-                throw new RuntimeException('Cant attach a none Filesytem to this entity');
+                throw new RuntimeException('Cant attach a none Filesystem to this entity');
             }
 
             $fileSystemEntities = null;
@@ -212,7 +212,8 @@ trait FileSystemModelTrait
 
             $fileSystemEntities->filesystem_id = $file['file']->getId();
             $fileSystemEntities->field_name = $file['field_name'] ?? null;
-            $fileSystemEntities->is_deleted = 0;
+            // Allow the frontend to dictate if the file is deleted or not
+            $fileSystemEntities->is_deleted = isset($file['is_deleted']) ? (int) $file['is_deleted'] : 0;
             $fileSystemEntities->saveOrFail();
 
             if (!is_null($this->filesNewAttachedPath())) {
