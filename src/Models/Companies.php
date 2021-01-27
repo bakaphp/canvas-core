@@ -49,7 +49,12 @@ class Companies extends AbstractModel
         $this->keepSnapshots(true);
         $this->addBehavior(new Blameable());
 
-        $this->hasMany('id', 'Baka\Auth\Models\CompanySettings', 'id', ['alias' => 'settings']);
+        $this->hasMany(
+            'id',
+            CompaniesSettings::class,
+            'companies_id',
+            ['alias' => 'settings']
+        );
 
         $this->belongsTo(
             'users_id',
@@ -347,8 +352,8 @@ class Companies extends AbstractModel
 
         //Lets create a new default subscription without payment method
         $this->user->newSubscription($defaultPlan->name, $defaultPlan->stripe_id, $this, $this->di->getApp())
-                ->trialDays($defaultPlan->free_trial_dates)
-                ->create();
+            ->trialDays($defaultPlan->free_trial_dates)
+            ->create();
 
         //ook for the subscription and update the missing info
         $subscription = $this->subscription;
