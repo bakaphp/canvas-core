@@ -204,7 +204,8 @@ trait FileSystemModelTrait
 
             $fileSystemEntities->filesystem_id = $file['file']->getId();
             $fileSystemEntities->field_name = $file['field_name'] ?? null;
-            $fileSystemEntities->is_deleted = 0;
+            // Allow the frontend to dictate if the file is deleted or not.
+            $fileSystemEntities->is_deleted = isset($file['is_deleted']) ? (int) $file['is_deleted'] : 0;
             $fileSystemEntities->saveOrFail();
             $upload = true;
 
