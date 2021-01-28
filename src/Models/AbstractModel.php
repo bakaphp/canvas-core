@@ -15,7 +15,7 @@ abstract class AbstractModel extends BakaModel
      * @var string
      */
     protected $subscriptionPlanLimitKey = null;
-    public $cascadeSoftDelete = 1;
+    public bool $cascadeSoftDelete = true;
 
     /**
      * Get the primary id of this model.
@@ -28,7 +28,7 @@ abstract class AbstractModel extends BakaModel
     }
 
     /**
-     * Execute an after softDelete
+     * Execute an before softDelete
      *
      * @return void
      */
