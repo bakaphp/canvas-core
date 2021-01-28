@@ -40,7 +40,8 @@ trait FileSystemModelTrait
                     $this->attach([[
                         'id' => $file['id'] ?: 0,
                         'file' => $fileSystem,
-                        'field_name' => $file['field_name'] ?? ''
+                        'field_name' => $file['field_name'] ?? '',
+                        'is_deleted' => $file['is_deleted'] ?? 0
                     ]]);
                 }
             }
