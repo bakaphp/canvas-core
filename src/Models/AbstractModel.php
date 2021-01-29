@@ -15,7 +15,7 @@ abstract class AbstractModel extends BakaModel
      * @var string
      */
     protected $subscriptionPlanLimitKey = null;
-    public bool $cascadeSoftDelete = true;
+    public bool $cascadeSoftDelete = false;
 
     /**
      * Get the primary id of this model.
