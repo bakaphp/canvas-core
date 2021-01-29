@@ -34,7 +34,6 @@ class CascadeSoftDelete extends Job implements QueueableJobInterface
             $log->info('Cascade Soft Delete ' . get_class($this->model) . ' Id: ' . $this->model->getId());
 
             $this->model->cascadeSoftDelete();
-
         } catch (Throwable $e) {
             $log->error($e->getTraceAsString());
         }
