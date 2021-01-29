@@ -28,13 +28,13 @@ abstract class AbstractModel extends BakaModel
     }
 
     /**
-     * Execute an before softDelete
+     * Execute an before softDelete.
      *
      * @return void
      */
     public function beforeSoftDelete() : void
     {
-        if($this->cascadeSoftDelete){
+        if ($this->cascadeSoftDelete) {
             CascadeSoftDelete::dispatch($this);
         }
     }
