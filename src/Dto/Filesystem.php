@@ -8,59 +8,59 @@ class Filesystem
      *
      * @var int
      */
-    public $id;
+    public int $id;
 
     /**
      *
      * @var int
      */
-    public $companies_id;
+    public int $companies_id;
 
     /**
      *
      * @var int
      */
-    public $apps_id;
+    public int $apps_id;
 
     /**
      *
      * @var int
      */
-    public $users_id;
+    public int $users_id;
 
     /**
      *
      * @var string
      */
-    public $name;
+    public string $name;
 
     /**
      *
      * @var string
      */
-    public $path;
+    public string $path;
 
     /**
      *
      * @var string
      */
-    public $url;
+    public string $url;
 
     /**
      *
      * @var string
      */
-    public $size;
+    public string $size;
 
     /**
      *
      * @var string
      */
-    public $file_type;
+    public string $file_type;
 
     /**
      *
      * @var array
      */
-    public $attributes;
+    public array $attributes;
 }
