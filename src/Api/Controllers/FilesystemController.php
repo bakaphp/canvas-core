@@ -9,7 +9,6 @@ use Canvas\Contracts\FileManagementTrait;
 use Baka\Contracts\Controllers\ProcessOutputMapperTrait;
 use Canvas\Dto\Filesystem as FilesystemDto;
 use Canvas\Mapper\FilesystemMapper;
-use Phalcon\Http\Response;
 
 class FilesystemController extends BaseController
 {
