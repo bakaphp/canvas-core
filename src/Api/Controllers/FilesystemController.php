@@ -7,12 +7,15 @@ namespace Canvas\Api\Controllers;
 use Canvas\Models\FileSystem;
 use Canvas\Contracts\FileManagementTrait;
 use Baka\Contracts\Controllers\ProcessOutputMapperTrait;
-use Canvas\Dto\Files as FilesDto;
+use Canvas\Dto\Filesystem as FilesystemDto;
 use Canvas\Mapper\FilesystemMapper;
+use Phalcon\Http\Response;
 
 class FilesystemController extends BaseController
 {
-    use FileManagementTrait;
+    use FileManagementTrait{
+        create as fileManagementCreate;
+    }
     use ProcessOutputMapperTrait;
 
     /*
@@ -43,7 +46,7 @@ class FilesystemController extends BaseController
     public function onConstruct()
     {
         $this->model = new FileSystem();
-        $this->dto = FilesDto::class;
+        $this->dto = FilesystemDto::class;
         $this->dtoMapper = new FilesystemMapper();
         $this->model->users_id = $this->userData->getId();
         $this->model->companies_id = $this->userData->currentCompanyId();
@@ -53,5 +56,24 @@ class FilesystemController extends BaseController
             ['companies_id', ':', $this->userData->currentCompanyId()],
             ['apps_id', ':', $this->app->getId()]
         ];
+    }
+
+    /**
+     * Add a new item.
+     *
+     * @method POST
+     * url /v1/filesystem
+     *
+     * @return \Phalcon\Http\Response
+     *
+     * @throws Exception
+     */
+    public function create() : Response
+    {
+        if (!$this->request->hasFiles()) {
+            throw new UnprocessableEntityException('No files to upload');
+        }
+
+        return $this->response($this->processOutput($this->processFiles()));
     }
 }
