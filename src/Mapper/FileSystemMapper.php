@@ -9,7 +9,7 @@ use Canvas\Dto\Filesystem;
 
 // You can either extend the CustomMapper, or just implement the MapperInterface
 // directly.
-class FilesystemMapper extends CustomMapper
+class FileSystemMapper extends CustomMapper
 {
     /**
      * @param Canvas\Models\FileSystem $file
