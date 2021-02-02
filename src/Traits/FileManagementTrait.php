@@ -9,10 +9,13 @@ use Canvas\Filesystem\Helper;
 use Canvas\Models\FileSystem;
 use Canvas\Models\FileSystemEntities;
 use Canvas\Models\FileSystemSettings;
+use Baka\Contracts\Controllers\ProcessOutputMapperTrait;
 use Phalcon\Http\Response;
 
 trait FileManagementTrait
 {
+    use ProcessOutputMapperTrait;
+
     /**
      * Add a new item.
      *
@@ -29,7 +32,7 @@ trait FileManagementTrait
             throw new UnprocessableEntityException('No files to upload');
         }
 
-        return $this->response($this->processFiles());
+        return $this->response($this->processOutput($this->processFiles()));
     }
 
     /**
