@@ -8,7 +8,7 @@ use Canvas\Models\FileSystem;
 use Canvas\Contracts\FileManagementTrait;
 use Baka\Contracts\Controllers\ProcessOutputMapperTrait;
 use Canvas\Dto\Filesystem as FilesystemDto;
-use Canvas\Mapper\FilesystemMapper;
+use Canvas\Mapper\FileSystemMapper;
 
 class FilesystemController extends BaseController
 {
@@ -44,7 +44,7 @@ class FilesystemController extends BaseController
     {
         $this->model = new FileSystem();
         $this->dto = FilesystemDto::class;
-        $this->dtoMapper = new FilesystemMapper();
+        $this->dtoMapper = new FileSystemMapper();
         $this->model->users_id = $this->userData->getId();
         $this->model->companies_id = $this->userData->currentCompanyId();
 
