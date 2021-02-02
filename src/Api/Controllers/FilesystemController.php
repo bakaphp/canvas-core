@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Canvas\Api\Controllers;
 
 use Canvas\Models\FileSystem;
-use Canvas\Contracts\FileManagementTrait;
+use Canvas\Traits\FileManagementTrait;
 use Baka\Contracts\Controllers\ProcessOutputMapperTrait;
 use Canvas\Dto\Filesystem as FilesystemDto;
 use Canvas\Mapper\FilesystemMapper;
