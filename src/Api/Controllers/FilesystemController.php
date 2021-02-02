@@ -13,9 +13,7 @@ use Phalcon\Http\Response;
 
 class FilesystemController extends BaseController
 {
-    use FileManagementTrait{
-        create as fileManagementCreate;
-    }
+    use FileManagementTrait;
     use ProcessOutputMapperTrait;
 
     /*
@@ -56,24 +54,5 @@ class FilesystemController extends BaseController
             ['companies_id', ':', $this->userData->currentCompanyId()],
             ['apps_id', ':', $this->app->getId()]
         ];
-    }
-
-    /**
-     * Add a new item.
-     *
-     * @method POST
-     * url /v1/filesystem
-     *
-     * @return \Phalcon\Http\Response
-     *
-     * @throws Exception
-     */
-    public function create() : Response
-    {
-        if (!$this->request->hasFiles()) {
-            throw new UnprocessableEntityException('No files to upload');
-        }
-
-        return $this->response($this->processOutput($this->processFiles()));
     }
 }
