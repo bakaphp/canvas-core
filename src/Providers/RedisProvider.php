@@ -25,9 +25,15 @@ class RedisProvider implements ServiceProviderInterface
                     $redis->setOption(Redis::OPT_PREFIX, $app . ':'); // use custom prefix on all keys
                 }
 
+                $serializeEngine = Redis::SERIALIZER_PHP;
+
                 //igbinary serialization is faster than PHP internal
-                $serializeEngine = !extension_loaded('igbinary') ? Redis::SERIALIZER_PHP : Redis::SERIALIZER_IGBINARY;
+                if (extension_loaded('igbinary') && envValue('REDIS_SERIALIZER', 'igbinary') === 'igbinary') {
+                    $serializeEngine = Redis::SERIALIZER_IGBINARY;
+                }
+
                 $redis->setOption(Redis::OPT_SERIALIZER, $serializeEngine);
+
                 return $redis;
             }
         );
