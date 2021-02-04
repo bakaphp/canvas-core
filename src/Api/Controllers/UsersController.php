@@ -70,6 +70,7 @@ class UsersController extends BakaUsersController
         'default_company',
         'default_company_branch',
         'cell_phone_number',
+        'phone_number',
         'country_id',
         'location',
         'user_active'
