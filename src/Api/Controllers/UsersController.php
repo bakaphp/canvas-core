@@ -68,6 +68,7 @@ class UsersController extends BakaUsersController
         'default_company',
         'default_company_branch',
         'cell_phone_number',
+        'phone_number',
         'country_id',
         'location',
         'user_active'
@@ -177,7 +178,7 @@ class UsersController extends BakaUsersController
             unset($request['default_company'], $request['default_company_branch']);
         }
 
-        if(isset($request['roles_id'])){
+        if (isset($request['roles_id'])) {
             $user->assignRoleById((int)$request['roles_id']);
         }
 
