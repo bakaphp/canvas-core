@@ -15,7 +15,7 @@ class CompaniesBranches extends AbstractModel
     public ?string $phone = null;
     public int $companies_id;
     public int $users_id;
-    public int $is_default;
+    public int $is_default = 0;
 
     /**
      * Initialize method for model.
