@@ -250,6 +250,7 @@ class Setup
      */
     public function acl() : self
     {
+        echo("Configuring ACL..\n\n");
         $acl = Di::getDefault()->get('acl');
         $acl->setApp($this->app);
 
@@ -299,6 +300,7 @@ class Setup
         ];
 
         foreach ($defaultResources as $resource) {
+            echo("Setting {$resource} resource and permissions \n");
             $acl->addComponent(
                 $resource,
                 [
@@ -333,6 +335,7 @@ class Setup
             ]
         );
 
+        echo("Done!\n\n");
         return $this;
     }
 

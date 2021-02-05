@@ -9,6 +9,7 @@ use Baka\Database\Apps as BakaApps;
 use Canvas\Cli\Jobs\Apps as JobsApps;
 use Canvas\Traits\UsersAssociatedTrait;
 use Phalcon\Security\Random;
+use Canvas\App\Setup;
 
 class Apps extends BakaApps
 {
@@ -103,8 +104,13 @@ class Apps extends BakaApps
             $this->set($key, $value);
         }
 
-        //send job to finish app creation
-        JobsApps::dispatch($this);
+        //Configure additional apps settings
+        $setup = new Setup($app);
+        $setup->plans()
+            ->acl()
+            ->systemModules()
+            ->emailTemplates()
+            ->defaultMenus();
     }
 
     /**
