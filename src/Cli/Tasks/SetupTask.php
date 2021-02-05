@@ -60,6 +60,14 @@ class SetupTask extends PhTask
         $app->is_public = 1;
         $app->saveOrFail();
 
+        $setup = new Setup($app);
+        $setup->settings()
+            ->plans()
+            ->acl()
+            ->systemModules()
+            ->emailTemplates()
+            ->defaultMenus();
+
         echo 'App Create ' . $app->name . PHP_EOL;
     }
 }

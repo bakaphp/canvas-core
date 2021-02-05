@@ -65,8 +65,6 @@ class SetupCest
      */
     public function createDefaultPlans(IntegrationTester $I)
     {
-        $setup = new Setup($this->app);
-        $setup->plans();
         $appPlans = AppsPlans::findOrFail([
             'conditions' => 'apps_id = :apps_id: and is_deleted = 0',
             'bind' => ['apps_id' => $this->app->getId()]
@@ -84,9 +82,6 @@ class SetupCest
      */
     public function createDefaultAcl(IntegrationTester $I)
     {
-        $setup = new Setup($this->app);
-        $setup->acl();
-
         //Check number of roles
         $roles = Roles::findOrFail([
             'conditions' => 'apps_id = :apps_id: and is_deleted = 0',
@@ -121,8 +116,6 @@ class SetupCest
      */
     public function createDefaultSystemModules(IntegrationTester $I)
     {
-        $setup = new Setup($this->app);
-        $setup->systemModules();
         $systemModules = SystemModules::findOrFail([
             'conditions' => 'apps_id = :apps_id: and is_deleted = 0',
             'bind' => ['apps_id' => $this->app->getId()]
@@ -140,8 +133,6 @@ class SetupCest
      */
     public function createDefaultEmailTemplates(IntegrationTester $I)
     {
-        $setup = new Setup($this->app);
-        $setup->emailTemplates();
         $emailTemplates = SystemModules::findOrFail([
             'conditions' => 'apps_id = :apps_id: and is_deleted = 0',
             'bind' => ['apps_id' => $this->app->getId()]
@@ -159,9 +150,6 @@ class SetupCest
      */
     public function createDefaultMenus(IntegrationTester $I)
     {
-        $setup = new Setup($this->app);
-        $setup->defaultMenus();
-
         $menu = Menus::findFirstOrFail([
             'conditions' => 'apps_id = :apps_id: and is_deleted = 0',
             'bind' => ['apps_id' => $this->app->getId()]
