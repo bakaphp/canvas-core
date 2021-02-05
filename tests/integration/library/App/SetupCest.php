@@ -50,6 +50,8 @@ class SetupCest
      */
     public function createDefaultSettings(IntegrationTester $I)
     {
+        $setup = new Setup($this->app);
+        $setup->settings();
         $appSettings = AppsSettings::findOrFail($this->app->getId());
         $I->assertTrue(count($appSettings) == AppsSettings::APP_DEFAULT_SETTINGS_NUMBER);
     }
