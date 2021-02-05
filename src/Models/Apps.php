@@ -1,4 +1,4 @@
-src/Models/Apps.php<?php
+<?php
 declare(strict_types=1);
 
 namespace Canvas\Models;
