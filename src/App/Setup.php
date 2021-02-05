@@ -14,6 +14,8 @@ use Canvas\Models\Menus;
 use Canvas\Models\MenusLinks;
 use Canvas\Models\Users;
 use Phalcon\Di;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 
 class Setup
 {
@@ -28,6 +30,7 @@ class Setup
      */
     public function __construct(Apps $app)
     {
+        Di::getDefault()->get('log')->pushHandler(new StreamHandler('php://stdout', Logger::INFO));
         $this->app = $app;
     }
 
