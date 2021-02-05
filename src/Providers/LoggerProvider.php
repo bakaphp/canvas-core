@@ -28,7 +28,7 @@ class LoggerProvider implements ServiceProviderInterface
 
         $container->setShared(
             'log',
-            function () use ($config) {
+            function (array $options = null) use ($config) {
                 /** @var string $logName */
                 $logName = envValue('LOGGER_DEFAULT_FILENAME', 'api.log');
                 /** @var string $logPath */
@@ -57,6 +57,10 @@ class LoggerProvider implements ServiceProviderInterface
                 }
 
                 $logger->pushHandler($handler);
+
+                if ($options['LOG_INFO_TO_CONSOLE']) {
+                    $logger->pushHandler(new StreamHandler('php://stdout', Logger::INFO));
+                }
 
                 return $logger;
             }
