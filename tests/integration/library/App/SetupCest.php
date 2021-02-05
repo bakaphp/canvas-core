@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Canvas\Tests\integration\library\App;
 
 use Canvas\App\Setup;
