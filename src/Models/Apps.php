@@ -106,7 +106,7 @@ class Apps extends BakaApps
         }
 
         //Configure additional apps settings
-        $setup = new Setup($app);
+        $setup = new Setup($this);
         $setup->plans()
             ->acl()
             ->systemModules()
