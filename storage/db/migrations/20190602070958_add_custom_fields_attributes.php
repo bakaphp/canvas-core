@@ -21,10 +21,11 @@ class AddCustomFieldsAttributes extends AbstractMigration
                 'limit' => MysqlAdapter::INT_BIG,
                 'signed' => false,
                 'identity' => 'enable',
+                'precision' => '20',
             ])
-            ->addColumn('entity_id', 'string', [
+            ->addColumn('entity_id', 'char', [
                 'null' => false,
-                'limit' => '255',
+                'limit' => '36',
                 'collation' => 'utf8mb4_general_ci',
                 'encoding' => 'utf8mb4',
                 'after' => 'id',
@@ -100,12 +101,14 @@ class AddCustomFieldsAttributes extends AbstractMigration
                 'limit' => MysqlAdapter::INT_BIG,
                 'signed' => false,
                 'identity' => 'enable',
+                'precision' => '20',
             ])
             ->addColumn('audits_id', 'biginteger', [
                 'null' => false,
                 'limit' => MysqlAdapter::INT_BIG,
                 'signed' => false,
                 'after' => 'id',
+                'precision' => '20',
             ])
             ->addColumn('field_name', 'string', [
                 'null' => false,

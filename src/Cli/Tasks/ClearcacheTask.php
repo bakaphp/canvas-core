@@ -19,11 +19,11 @@ class ClearcacheTask extends PhTask
     }
 
     /**
-     * Clear all data from the application
+     * Clear all data from the application.
      *
      * @return void
      */
-    public function allAction() :  void
+    public function allAction() : void
     {
         $this->mainAction();
         $this->clearRedisCache();
@@ -34,7 +34,7 @@ class ClearcacheTask extends PhTask
      */
     protected function clearFileCache() : void
     {
-        echo PHP_EOL.'Clearing Cache folders' . PHP_EOL;
+        echo PHP_EOL . 'Clearing Cache folders' . PHP_EOL;
 
         $fileList = [];
         $whitelist = ['.', '..', '.gitignore'];
@@ -68,9 +68,9 @@ class ClearcacheTask extends PhTask
      */
     protected function clearRedisCache() : void
     {
-        echo PHP_EOL.'Clearing data cache' . PHP_EOL;
+        echo PHP_EOL . 'Clearing data cache' . PHP_EOL;
 
-        $keys = $this->di->get('redis', [true])->keys('*');
+        $keys = $this->di->get('redis', [false])->keys('*');
         echo sprintf('Found %s keys', count($keys)) . PHP_EOL;
         foreach ($keys as $key) {
             $this->redis->del($key);
@@ -80,18 +80,18 @@ class ClearcacheTask extends PhTask
     }
 
     /**
-     * Clear all model schema cache
+     * Clear all model schema cache.
      *
      * @return void
      */
     protected function clearModelRedisCache() : void
     {
-        echo PHP_EOL.'Clearing Model data cache' . PHP_EOL;
+        echo PHP_EOL . 'Clearing Model data cache' . PHP_EOL;
 
         $cache = $this->di->get('config')->get('cache')->toArray();
         $options = $cache['metadata']['prod']['options'];
 
-        $keys = $this->di->get('redisUnSerialize', [false])->keys($options['prefix'].'*');
+        $keys = $this->di->get('redisUnSerialize', [false])->keys($options['prefix'] . '*');
 
         echo sprintf('Found %s Models keys', count($keys)) . PHP_EOL;
         foreach ($keys as $key) {
