@@ -10,6 +10,7 @@ use Canvas\Cli\Jobs\Apps as JobsApps;
 use Canvas\Contracts\UsersAssociatedTrait;
 use Phalcon\Di;
 use Phalcon\Security\Random;
+use Canvas\App\Setup;
 
 class Apps extends BakaApps
 {
