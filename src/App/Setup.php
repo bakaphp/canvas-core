@@ -14,12 +14,17 @@ use Canvas\Models\Roles;
 use Canvas\Models\SystemModules;
 use Canvas\Models\Users;
 use Phalcon\Di;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
+
 
 class Setup
 {
     protected Apps $app;
 
     protected $systemModulesIds = [];
+
+    protected Logger $log;
 
     /**
      * Construct.
@@ -28,6 +33,8 @@ class Setup
      */
     public function __construct(Apps $app)
     {
+        $this->log = Di::getDefault()->get('log');
+        $this->log->pushHandler(new StreamHandler('php://stdout', Logger::INFO));
         $this->app = $app;
     }
 
@@ -36,15 +43,15 @@ class Setup
      */
     public function settings() : self
     {
-        echo("Setting default App Settings...\n\n");
+        $this->log->info("Setting default App Settings...\n\n");
         if (!$this->app->hasSettings()) {
             foreach ($this->SettingsData() as $key => $value) {
-                echo("set default app setting: {$value['name']} \n");
+                $this->log->info("set default app setting: {$value['name']} \n");
                 $this->app->set($value['name'], $value['value']);
             }
         }
 
-        echo("Done!\n\n");
+        $this->log->info("Done!\n\n");
         return $this;
     }
 
@@ -53,16 +60,16 @@ class Setup
      */
     public function plans() : self
     {
-        echo("Setting default Plans...\n\n");
+        $this->log->info("Setting default Plans...\n\n");
         foreach ($this->plansData() as $plan) {
-            echo("set default plan: {$plan['name']} \n");
+            $this->log->info("set default plan: {$plan['name']} \n");
             $appPlans = new AppsPlans();
             $appPlans->assign($plan);
             $appPlans->apps_id = $this->app->getId();
             $appPlans->saveOrFail();
         }
 
-        echo("Done!\n\n");
+        $this->log->info("Done!\n\n");
         return $this;
     }
 
@@ -73,9 +80,9 @@ class Setup
      */
     public function systemModules() : self
     {
-        echo("Setting default System Modules...\n\n");
+        $this->log->info("Setting default System Modules...\n\n");
         foreach ($this->systemModulesData() as $module) {
-            echo("set default system module: {$module['name']} \n");
+            $this->log->info("set default system module: {$module['name']} \n");
             $systemModule = new SystemModules();
             $systemModule->assign($module);
             $systemModule->apps_id = $this->app->getId();
@@ -84,7 +91,7 @@ class Setup
             $this->systemModulesIds[$systemModule->name] = $systemModule->id;
         }
 
-        echo("Done!\n\n");
+        $this->log->info("Done!\n\n");
         return $this;
     }
 
@@ -95,16 +102,16 @@ class Setup
      */
     public function emailTemplates() : self
     {
-        echo("Setting default Email Templates...\n\n");
+        $this->log->info("Setting default Email Templates...\n\n");
         foreach ($this->emailTemplatesData() as $template) {
-            echo("set default template: {$template['name']} \n");
+            $this->log->info("set default template: {$template['name']} \n");
             $emailTemplate = new EmailTemplates();
             $emailTemplate->assign($template);
             $emailTemplate->apps_id = $this->app->getId();
             $emailTemplate->saveOrFail();
         }
 
-        echo("Done!\n\n");
+        $this->log->info("Done!\n\n");
         return $this;
     }
 
@@ -115,7 +122,7 @@ class Setup
      */
     public function defaultMenus() : self
     {
-        echo("Setting default Menus..\n\n");
+        $this->log->info("Setting default Menus..\n\n");
         //Create a new Menu with current app id
         $menu = new Menus();
         $menu->apps_id = $this->app->getId();
@@ -125,7 +132,7 @@ class Setup
 
         //Create default menu links
         foreach ($this->MenusLinkData() as $link) {
-            echo("set default menu: {$link['title']} \n");
+            $this->log->info("set default menu: {$link['title']} \n");
             $menusLink = new MenusLinks();
             $menusLink->assign($link);
             $menusLink->menus_id = (int)$menu->id;
@@ -133,7 +140,7 @@ class Setup
             $menusLink->saveOrFail();
         }
 
-        echo("Done!\n\n");
+        $this->log->info("Done!\n\n");
         return $this;
     }
 
@@ -250,6 +257,7 @@ class Setup
      */
     public function acl() : self
     {
+        $this->log->info("Configuring ACL..\n\n");
         $acl = Di::getDefault()->get('acl');
         $acl->setApp($this->app);
 
@@ -299,6 +307,7 @@ class Setup
         ];
 
         foreach ($defaultResources as $resource) {
+            $this->log->info("Setting {$resource} resource and permissions \n");
             $acl->addComponent(
                 $resource,
                 [
@@ -333,6 +342,7 @@ class Setup
             ]
         );
 
+        $this->log->info("Done!\n\n");
         return $this;
     }
 
