@@ -33,7 +33,8 @@ class Setup
      */
     public function __construct(Apps $app)
     {
-        $this->log = Di::getDefault()->get('log',["LOG_INFO_TO_CONSOLE"=> true]);
+        $this->log = Di::getDefault()->get('log');
+        $this->log->pushHandler(new StreamHandler('php://stdout', Logger::INFO));
         $this->app = $app;
     }
 
