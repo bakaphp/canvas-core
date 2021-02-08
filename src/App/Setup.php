@@ -24,7 +24,7 @@ class Setup
 
     protected $systemModulesIds = [];
 
-    protected $log;
+    protected Logger $log;
 
     /**
      * Construct.
