@@ -9,6 +9,7 @@ use Baka\Database\Apps as BakaApps;
 use Canvas\Cli\Jobs\Apps as JobsApps;
 use Canvas\Traits\UsersAssociatedTrait;
 use Phalcon\Security\Random;
+use Canvas\App\Setup;
 use Phalcon\Di;
 
 class Apps extends BakaApps
@@ -104,6 +105,14 @@ class Apps extends BakaApps
             $this->set($key, $value);
         }
 
+        //Configure additional apps settings
+        $setup = new Setup($this);
+        $setup->plans()
+            ->acl()
+            ->systemModules()
+            ->emailTemplates()
+            ->defaultMenus();
+      
         //Create a new UserAssociatedApps record
         $userAssociatedApp = new UsersAssociatedApps();
         $userAssociatedApp->users_id = Di::getDefault()->getUserData()->getId();
@@ -113,9 +122,6 @@ class Apps extends BakaApps
         $userAssociatedApp->user_active = 1;
         $userAssociatedApp->user_role = (string)Di::getDefault()->getUserData()->roles_id;
         $userAssociatedApp->saveOrFail();
-
-        //send job to finish app creation
-        JobsApps::dispatch($this);
     }
 
     /**
