@@ -24,9 +24,8 @@ class Swoole extends AbstractBootstrap
      */
     public function run()
     {
-        return $this->application->handle(
-            $this->container->getRequest()->getServer('request_uri', null, '/')
-        );
+        $uri = rawurldecode($this->container->getRequest()->getServer('REQUEST_URI') ?? '');
+        return $this->application->handle($uri);
     }
 
     /**
