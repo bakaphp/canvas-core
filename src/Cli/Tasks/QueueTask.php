@@ -28,7 +28,7 @@ class QueueTask extends PhTask
      */
     public function eventsAction()
     {
-        $callback = function ($msg) {
+        $callback = function ($msg) : void {
             //check the db before running anything
             if (!$this->isDbConnected('db')) {
                 return ;
@@ -66,7 +66,7 @@ class QueueTask extends PhTask
      */
     public function notificationsAction()
     {
-        $callback = function ($msg) {
+        $callback = function ($msg) : void {
             //check the db before running anything
             if (!$this->isDbConnected('db')) {
                 return ;
@@ -129,7 +129,7 @@ class QueueTask extends PhTask
     {
         $queue = is_null($queueName) ? QUEUE::JOBS : $queueName;
 
-        $callback = function ($msg) {
+        $callback = function ($msg) : void {
             //check the db before running anything
             if (!$this->isDbConnected('db')) {
                 return ;
@@ -195,7 +195,7 @@ class QueueTask extends PhTask
     /**
      * Confirm if the db is connected.
      *
-     * @return boolean
+     * @return bool
      */
     protected function isDbConnected(string $dbProvider) : bool
     {
