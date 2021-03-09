@@ -61,13 +61,14 @@ class SystemModules extends BakaSystemModules
      * @deprecated v2
      *
      * @param string $model_name
+     * @param bool $cache
      *
      * @return ModelInterface
      */
-    public static function getSystemModuleByModelName(string $modelName) : ModelInterface
+    public static function getSystemModuleByModelName(string $modelName, bool $cache = true) : ModelInterface
     {
         $app = Di::getDefault()->get('app');
-        $module = SystemModules::findFirst([
+        $params = [
             'conditions' => 'model_name = ?0 and apps_id = ?1',
             'bind' => [
                 $modelName,
@@ -77,7 +78,13 @@ class SystemModules extends BakaSystemModules
                 'key' => 'SYSTEM_MODULE_' . $app->getId() . '_' . $modelName,
                 'lifetime' => 386400
             ]
-        ]);
+        ];
+
+        if (!$cache) {
+            unset($params['cache']);
+        }
+        
+        $module = SystemModules::findFirst($params);
 
         if (!is_object($module)) {
             throw new InternalServerErrorException('No system module for ' . $modelName);
