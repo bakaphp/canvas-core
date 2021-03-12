@@ -34,6 +34,13 @@ class Notification implements NotificationInterface
     protected bool $useQueue = false;
 
     /**
+     * Send this notification only to pusher
+     * 
+     * @var bool
+     */
+    protected bool $toPusher = false;
+
+    /**
      *
      * @var Baka\Mail\Manager
      */
@@ -188,6 +195,11 @@ class Notification implements NotificationInterface
             return true; //send it to the queue
         }
 
+        if($this->toPusher) {
+            $this->toPusher();
+            return true;
+        }
+
         $this->trigger();
 
         return true;
@@ -244,6 +256,21 @@ class Notification implements NotificationInterface
             $this->fire('notification:sendPushNotification', $toPushNotification);
         }
 
+        $toRealtime = $this->toRealtime();
+        if ($toRealtime instanceof PusherNotification) {
+            $this->fire('notification:sendRealtime', $toRealtime);
+        }
+
+        return true;
+    }
+
+    /**
+     * Send to pusher the notification
+     *
+     * @return boolean
+     */
+    public function toPusher() : bool
+    {
         $toRealtime = $this->toRealtime();
         if ($toRealtime instanceof PusherNotification) {
             $this->fire('notification:sendRealtime', $toRealtime);
