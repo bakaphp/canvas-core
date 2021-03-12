@@ -6,6 +6,7 @@ namespace Canvas\Models;
 use Baka\Database\Exception\ModelNotFoundException;
 use Canvas\Traits\SubscriptionPlanLimitTrait;
 use Phalcon\Di;
+use Baka\Support\Random;
 
 class UsersInvite extends AbstractModel
 {
@@ -122,7 +123,7 @@ class UsersInvite extends AbstractModel
         $user = new Users();
         $user->firstname = $request['firstname'];
         $user->lastname = $request['lastname'];
-        $user->displayname = $request['displayname'];
+        $user->displayname = $request['displayname'] ?? Random::generateDisplayName($this->email);
         $user->password = $request['password'];
         $user->email = $this->email;
         $user->user_active = 1;
