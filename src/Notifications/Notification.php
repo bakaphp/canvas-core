@@ -34,11 +34,32 @@ class Notification implements NotificationInterface
     protected bool $useQueue = false;
 
     /**
-     * Send this notification only to pusher
+     * Save the notifications into the db
+     *
+     * @var bool
+     */
+    protected bool $saveNotification = true;
+
+    /**
+     * Send this notification to pusher
      * 
      * @var bool
      */
-    protected bool $toPusher = false;
+    protected bool $toPusher = true;
+
+    /**
+     * Send this notification to mail
+     * 
+     * @var bool
+     */
+    protected bool $toMail = true;
+
+    /**
+     * Send this notification to push notification
+     * 
+     * @var bool
+     */
+    protected bool $toPushNotification = true;
 
     /**
      *
@@ -200,6 +221,11 @@ class Notification implements NotificationInterface
             return true;
         }
 
+        if($this->toMail) {
+            $this->toMail();
+            return true;
+        }
+
         $this->trigger();
 
         return true;
@@ -223,12 +249,7 @@ class Notification implements NotificationInterface
         return Queue::send(Queue::NOTIFICATIONS, serialize($notificationData));
     }
 
-    /**
-     * Send the noficiatino to the places the user defined.
-     *
-     * @return bool
-     */
-    public function trigger() : bool
+    public function saveNotification(): bool
     {
         $content = $this->message();
         $app = Di::getDefault()->getApp();
@@ -246,19 +267,30 @@ class Notification implements NotificationInterface
         $notification->read = 0;
         $notification->saveOrFail();
 
-        $toMail = $this->toMail();
-        if ($toMail instanceof Message) {
-            $this->fire('notification:sendMail', $toMail);
+        return true;
+    }
+
+    /**
+     * Send the noficiatino to the places the user defined.
+     *
+     * @return bool
+     */
+    public function trigger() : bool
+    {
+        if($this->saveNotification) {
+            $this->saveNotification();
         }
 
-        $toPushNotification = $this->toPushNotification();
-        if ($toPushNotification instanceof PushNotification) {
-            $this->fire('notification:sendPushNotification', $toPushNotification);
+        if($this->toPusher) {
+            $this->toPusher();
         }
 
-        $toRealtime = $this->toRealtime();
-        if ($toRealtime instanceof PusherNotification) {
-            $this->fire('notification:sendRealtime', $toRealtime);
+        if($this->toMail) {
+            $this->toMail();
+        }
+
+        if($this->toPushNotification) {
+            $this->toSendPushNotification();
         }
 
         return true;
@@ -274,6 +306,36 @@ class Notification implements NotificationInterface
         $toRealtime = $this->toRealtime();
         if ($toRealtime instanceof PusherNotification) {
             $this->fire('notification:sendRealtime', $toRealtime);
+        }
+
+        return true;
+    }
+
+    /**
+     * Send notification to mail
+     *
+     * @return boolean
+     */
+    public function toMailNotification() : bool
+    {
+        $toMail = $this->toMail();
+        if ($toMail instanceof Message) {
+            $this->fire('notification:sendMail', $toMail);
+        }
+
+        return true;
+    }
+
+    /**
+     * Send Push notification
+     *
+     * @return boolean
+     */
+    public function toSendPushNotification() : bool
+    {
+        $toPushNotification = $this->toPushNotification();
+        if ($toPushNotification instanceof PushNotification) {
+            $this->fire('notification:sendPushNotification', $toPushNotification);
         }
 
         return true;
