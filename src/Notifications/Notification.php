@@ -190,6 +190,46 @@ class Notification implements NotificationInterface
     }
 
     /**
+     * Disable saving the notification.
+     *
+     * @return void
+     */
+    public function disableSaveNotification() : void
+    {
+        $this->saveNotification = false;
+    }
+
+    /**
+     * Disable send to pusher notification.
+     *
+     * @return void
+     */
+    public function disableToPusher() : void
+    {
+        $this->toPusher = false;
+    }
+
+    /**
+     * Disable send to mail.
+     *
+     * @return void
+     */
+    public function disableToMail() : void
+    {
+        $this->toMail = false;
+    }
+
+    /**
+     * Disable send Push notification.
+     *
+     * @return void
+     */
+    public function disablePushNotification() : void
+    {
+        $this->toPushNotification = false;
+    }
+
+    /**
      * Process the notification
      *  - handle the db
      *  - trigger the notification
@@ -271,7 +311,7 @@ class Notification implements NotificationInterface
     }
 
     /**
-     * Send the noficiatino to the places the user defined.
+     * Send the notification to the places the user defined.
      *
      * @return bool
      */
