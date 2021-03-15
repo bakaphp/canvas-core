@@ -20,7 +20,7 @@ class PushNotifications extends Job implements QueueableJobInterface
 {
     protected Users $users;
     protected string $message;
-
+    protected string $title;
     /**
      * Realtime params.
      *
@@ -38,6 +38,7 @@ class PushNotifications extends Job implements QueueableJobInterface
         $this->users = $pushNotification->to;
         $this->message = $pushNotification->message;
         $this->params = $pushNotification->params;
+        $this->title = $pushNotification->title;
     }
 
     /**
@@ -61,6 +62,9 @@ class PushNotifications extends Job implements QueueableJobInterface
         $pushBody = [
             'contents' => [
                 'en' => $this->message
+            ],
+            'headings' => [
+                'en' => $this->title
             ]
         ];
 
