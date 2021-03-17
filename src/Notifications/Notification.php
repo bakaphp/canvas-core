@@ -279,6 +279,11 @@ class Notification implements NotificationInterface
         return Queue::send(Queue::NOTIFICATIONS, serialize($notificationData));
     }
 
+    /**
+     * Save the notification used to the database
+     *
+     * @return boolean
+     */
     public function saveNotification(): bool
     {
         $content = $this->message();
