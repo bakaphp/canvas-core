@@ -256,16 +256,6 @@ class Notification implements NotificationInterface
             return true; //send it to the queue
         }
 
-        if($this->toPusher) {
-            $this->toPusher();
-            return true;
-        }
-
-        if($this->toMail) {
-            $this->toMail();
-            return true;
-        }
-
         $this->trigger();
 
         return true;
