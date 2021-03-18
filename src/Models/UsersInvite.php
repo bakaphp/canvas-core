@@ -123,9 +123,9 @@ class UsersInvite extends AbstractModel
         $user = new Users();
         $user->firstname = $request['firstname'];
         $user->lastname = $request['lastname'];
-        $user->displayname = $request['displayname'] ?? Random::generateDisplayName($this->email);
         $user->password = $request['password'];
         $user->email = $this->email;
+        $user->displayname = $request['displayname'] ?? Random::generateDisplayName($user->email);
         $user->user_active = 1;
         $user->roles_id = $this->role_id;
         $user->created_at = date('Y-m-d H:m:s');
