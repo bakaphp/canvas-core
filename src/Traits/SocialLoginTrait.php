@@ -121,17 +121,16 @@ trait SocialLoginTrait
         $userObj = new Users();
         //Create a new User
 
-        $newUser = UserProvider::get();
-        $newUser->firstname = $userInfo['firstname'];
-        $newUser->lastname = $userInfo['lastname'];
-        $newUser->displayname = $userObj->generateDefaultDisplayname();
-        $newUser->password = $password;
-        $newUser->email = $userInfo['email'];
-        $newUser->user_active = 1;
-        $newUser->roles_id = 1;
-        $newUser->created_at = date('Y-m-d H:m:s');
-        $newUser->defaultCompanyName = $userInfo['default_company'] ?? $newUser->displayname . ' Company';
-
+        $newUser['firstname'] = $userInfo['firstname'];
+        $newUser['lastname'] = $userInfo['lastname'];
+        $newUser['displayname'] = $userObj->generateDefaultDisplayname();
+        $newUser['password'] = $password;
+        $newUser['email'] = $userInfo['email'];
+        $newUser['user_active'] = 1;
+        $newUser['roles_id'] = 1;
+        $newUser['created_at'] = date('Y-m-d H:m:s');
+        $newUser['defaultCompanyName'] = $userInfo['default_company'] ?? $newUser['displayname'] . ' Company';
+        
         try {
             $this->db->begin();
 
