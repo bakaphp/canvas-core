@@ -58,7 +58,7 @@ trait SocialLoginTrait
             $userLinkedSource = UserLinkedSources::findFirst([
                 'conditions' => 'users_id = ?0 and source_id = ?1 and source_users_id_text = ?2 and is_deleted = 0',
                 'bind' => [
-                    $existingUser->id,
+                    $existingUser->getId(),
                     $source->getId(),
                     $identifier
                 ]
