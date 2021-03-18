@@ -45,11 +45,11 @@ trait SocialLoginTrait
      */
     protected function providerLogin(Sources $source, string $identifier, array $userInfo) : array
     {
+        $random = new Random();
         $existingUser = Users::findFirst([
             'conditions' => 'email = ?0 and is_deleted = 0 and status = 1',
             'bind' => [$userInfo['email']]
         ]);
-        $random = new Random();
 
         if ($existingUser) {
             /**
