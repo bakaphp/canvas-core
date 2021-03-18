@@ -49,6 +49,7 @@ trait SocialLoginTrait
             'conditions' => 'email = ?0 and is_deleted = 0 and status = 1',
             'bind' => [$userInfo['email']]
         ]);
+        $random = new Random();
 
         if ($existingUser) {
             /**
@@ -89,7 +90,6 @@ trait SocialLoginTrait
         /**
          * Here if there is no link and no user then lets create a new user and link.
          */
-        $random = new Random();
         $password = $random->base58();
 
         $newUser = $this->createUser(
@@ -126,7 +126,7 @@ trait SocialLoginTrait
         $newUser->user_active = 1;
         $newUser->roles_id = 1;
         $newUser->created_at = date('Y-m-d H:m:s');
-        $newUser->defaultCompanyName = $newUser->displayname . ' Company';
+        $newUser->defaultCompanyName = $userInfo['default_company'] ?? $newUser->displayname . ' Company';
 
         try {
             $this->db->begin();
