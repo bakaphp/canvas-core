@@ -54,6 +54,7 @@ trait SocialLoginTrait
             'bind' => [$userInfo['email']]
         ]);
 
+        $random = new Random();
         if ($existingUser) {
             /**
              * Lets find if user has a linked source by social network id.
@@ -93,7 +94,6 @@ trait SocialLoginTrait
         /**
          * Here if there is no link and no user then lets create a new user and link.
          */
-        $random = new Random();
         $password = $random->base58();
 
         $newUser = $this->createUser(
