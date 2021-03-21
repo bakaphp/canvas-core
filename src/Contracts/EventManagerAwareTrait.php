@@ -4,50 +4,16 @@ declare(strict_types=1);
 
 namespace Canvas\Contracts;
 
+use Baka\Contracts\EventsManager\EventManagerAwareTrait as EventsManagerEventManagerAwareTrait;
+use Baka\Queue\Queue;
 use Phalcon\Di;
-use Phalcon\Events\ManagerInterface as EventsManager;
 
 trait EventManagerAwareTrait
 {
-    /**
-     * @var EventsManager
-     */
-    protected $eventsManager = null;
+    use EventsManagerEventManagerAwareTrait;
 
     /**
-     * set event manager.
-     *
-     * @param EventsManager $eventsManager
-     */
-    public function setEventsManager(EventsManager $manager) : void
-    {
-        $this->eventsManager = $manager;
-    }
-
-    /**
-     * return event manager.
-     *
-     * @return EventsManager | null
-     */
-    public function getEventsManager() : ?EventsManager
-    {
-        $di = Di::getDefault();
-
-        if (!empty($this->eventsManager)) {
-            $manager = $this->eventsManager;
-        } elseif ($di->has('eventsManager')) {
-            $manager = $di->get('eventsManager');
-        }
-
-        if (isset($manager) && $manager instanceof EventsManager) {
-            return $manager;
-        }
-
-        return null;
-    }
-
-    /**
-     * Checking if event manager is defined - fire event.
+     * Checking if event manager is defined - fire event to the event queue.
      *
      * @param string $event
      * @param object $source
@@ -55,10 +21,27 @@ trait EventManagerAwareTrait
      * @param bool $cancelable
      *
      */
-    public function fire($event, $source, $data = null, $cancelable = true)
+    public function fireToQueue($event, $source, $data = null, $cancelable = true)
     {
-        if ($manager = $this->getEventsManager()) {
-            $manager->fire($event, $source, $data, $cancelable);
+        if ($this->getEventsManager()) {
+            //specific data structure for canvas core queue
+            $queueData = [
+                'event' => $event,
+                'source' => $source,
+                'data' => $data,
+            ];
+
+            /**
+             * do we know who ran this function?
+             * this is important , sometimes on the event we will need the user data
+             * or any company related info.
+             */
+            if (Di::getDefault()->has('userData')) {
+                $queueData['userData'] = Di::getDefault()->get('userData');
+            }
+
+            //send to queue
+            Queue::send(Queue::EVENTS, serialize($queueData));
         }
     }
 }
