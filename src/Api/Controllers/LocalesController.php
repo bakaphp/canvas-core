@@ -17,7 +17,8 @@ class LocalesController extends BaseController
      * @var array
      */
     protected $createFields = [
-        'name'
+        'name',
+        'code'
     ];
 
     /*
@@ -26,7 +27,8 @@ class LocalesController extends BaseController
      * @var array
      */
     protected $updateFields = [
-        'name'
+        'name',
+        'code'
     ];
 
     /**
