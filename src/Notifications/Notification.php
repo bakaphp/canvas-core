@@ -25,6 +25,7 @@ class Notification implements NotificationInterface
     protected ?UserInterface $fromUser = null;
     protected $type = null;
     protected ?ModelInterface $entity = null;
+    protected string $message = '';
 
     /**
      * Send this notification to the queue?
@@ -100,7 +101,19 @@ class Notification implements NotificationInterface
      */
     public function message() : string
     {
-        return $this->type->template ?: '';
+        return $this->type->template ?: $this->message;
+    }
+
+    /**
+     * setMessage.
+     *
+     * @param  string $message
+     *
+     * @return void
+     */
+    public function setMessage(string $message) : void
+    {
+        $this->message = $message;
     }
 
     /**
