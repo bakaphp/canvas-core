@@ -73,7 +73,7 @@ class Notification implements NotificationInterface
      */
     public function message() : string
     {
-        return $this->type->template ?: '';
+        return $this->type->template ?: $message;
     }
 
     /**
