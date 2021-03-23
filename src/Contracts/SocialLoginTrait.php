@@ -118,8 +118,8 @@ trait SocialLoginTrait
         //Create a new User
 
         $newUser = UserProvider::get();
-        $newUser->firstname = $userInfo['firstname'];
-        $newUser->lastname = $userInfo['lastname'];
+        $newUser->firstname = $userInfo['firstname'] ?? '';
+        $newUser->lastname = $userInfo['lastname'] ?? '';
         $newUser->displayname = $userObj->generateDefaultDisplayname();
         $newUser->password = $password;
         $newUser->email = $userInfo['email'];
