@@ -6,11 +6,10 @@ namespace Canvas\Models;
 use Baka\Contracts\Database\HashTableTrait;
 use Baka\Contracts\EventsManager\EventManagerAwareTrait;
 use Baka\Database\Apps as BakaApps;
-use Canvas\Cli\Jobs\Apps as JobsApps;
+use Canvas\App\Setup;
 use Canvas\Contracts\UsersAssociatedTrait;
 use Phalcon\Di;
 use Phalcon\Security\Random;
-use Canvas\App\Setup;
 
 class Apps extends BakaApps
 {
@@ -33,6 +32,7 @@ class Apps extends BakaApps
     const CANVAS_DEFAULT_APP_ID = 1;
     const CANVAS_DEFAULT_APP_NAME = 'Default';
     const APP_DEFAULT_ROLE_SETTING = 'default_admin_role';
+    const APP_DEFAULT_COUNTRY = 'default_user_country';
 
     /**
      * Kanvas Core App Version.

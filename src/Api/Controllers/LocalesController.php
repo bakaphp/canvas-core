@@ -4,13 +4,10 @@ declare(strict_types=1);
 
 namespace Canvas\Api\Controllers;
 
-use Canvas\Models\Locales;
+use Canvas\Models\Locations\Countries;
 
 /**
- * Class LanguagesController.
- *
- * @package Canvas\Api\Controllers
- *
+ * @deprecated version 0.4
  */
 class LocalesController extends BaseController
 {
@@ -20,7 +17,8 @@ class LocalesController extends BaseController
      * @var array
      */
     protected $createFields = [
-        'name'
+        'name',
+        'code'
     ];
 
     /*
@@ -29,7 +27,8 @@ class LocalesController extends BaseController
      * @var array
      */
     protected $updateFields = [
-        'name'
+        'name',
+        'code'
     ];
 
     /**
@@ -39,7 +38,7 @@ class LocalesController extends BaseController
      */
     public function onConstruct()
     {
-        $this->model = new Locales();
+        $this->model = new Countries();
         $this->additionalSearchFields = [
             ['is_deleted', ':', '0'],
         ];

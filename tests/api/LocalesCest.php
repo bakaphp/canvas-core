@@ -10,9 +10,10 @@ class LocalesCest extends BakaRestTest
     protected $model = 'locales';
 
     /**
-     * Create
+     * Create.
      *
      * @param ApiTester $I
+     *
      * @return void
      */
     public function create(ApiTester $I) : void
@@ -23,7 +24,8 @@ class LocalesCest extends BakaRestTest
 
         $I->haveHttpHeader('Authorization', $userData->token);
         $I->sendPost('/v1/' . $this->model, [
-            'name' => $localeName
+            'name' => $localeName,
+            'code' => 'bz'
         ]);
 
         $I->seeResponseIsSuccessful();
@@ -34,9 +36,10 @@ class LocalesCest extends BakaRestTest
     }
 
     /**
-     * update
+     * update.
      *
      * @param ApiTester $I
+     *
      * @return void
      */
     public function update(ApiTester $I) : void
