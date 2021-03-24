@@ -321,7 +321,7 @@ class Notification implements NotificationInterface
         }
 
         if($this->toMail) {
-            $this->toMail();
+            $this->toMailNotification();
         }
 
         if($this->toPushNotification) {
