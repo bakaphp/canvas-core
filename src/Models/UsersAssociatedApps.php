@@ -101,7 +101,7 @@ class UsersAssociatedApps extends AbstractModel implements UserInterface
      * 
      * @return void
      */
-    public static function disassociateUserFromApp(Users $users, Companies $companies) : void
+    public static function disassociateUserFromApp(Users $users, Companies $companies) : bool
     {
         $userAssociatedApp = UsersAssociatedApps::findFirstOrFail([
             "conditions" => "users_id = :users_id: and companies_id = :companies_id: and user_active = 1 and is_deleted = 0",
@@ -112,6 +112,6 @@ class UsersAssociatedApps extends AbstractModel implements UserInterface
         ]);
 
         $userAssociatedApp->is_deleted = 1;
-        $userAssociatedApp->saveOrFail();
+        return $userAssociatedApp->saveOrFail();
     }
 }
