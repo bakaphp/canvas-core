@@ -873,23 +873,4 @@ class Users extends AbstractModel implements UserInterface
         $systemModulesId = $notificationType ? $notificationType->system_modules_id : -1;
         return Notifications::unsubscribe($this, (int) $notificationTypeId, (int) $systemModulesId);
     }
-
-    /**
-     * Desassociated a user from an app
-     * 
-     * @return bool
-     */
-    public function disassociateFromApp() : bool
-    {
-        $userAssociatedApp = UsersAssociatedApps::findFirstOrFail([
-            "conditions" => "users_id = :users_id: and companies_id = :companies_id: and user_active = 1 and is_deleted = 0",
-            "bind" => [
-                "users_id" => $this->getId(),
-                "companies_id" => $this->currentCompanyId()
-            ]
-        ]);
-
-        $userAssociatedApp->is_deleted = 1;
-        return $userAssociatedApp->saveOrFail();
-    }
 }
