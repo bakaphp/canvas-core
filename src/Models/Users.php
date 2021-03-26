@@ -890,8 +890,6 @@ class Users extends AbstractModel implements UserInterface
         ]);
 
         $userAssociatedApp->is_deleted = 1;
-        $userAssociatedApp->saveOrFail();
-
-        return true;
+        return $userAssociatedApp->saveOrFail();
     }
 }
