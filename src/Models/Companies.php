@@ -113,7 +113,7 @@ class Companies extends AbstractModel
                 'alias' => 'UsersAssociatedByApps',
                 'reusable' => true,
                 'params' => [
-                    'conditions' => 'apps_id = ' . $this->di->get('app')->getId()
+                    'conditions' => "apps_id = {$this->di->get('app')->getId()} and is_deleted = 0"
                 ]
             ]
         );
