@@ -1,13 +1,8 @@
+
 <?php
 declare(strict_types=1);
 
-namespace Canvas\Models;
-
-use Baka\Contracts\Auth\UserInterface;
-use Canvas\Notifications\UserInactiveConfirmation;
-use Phalcon\Di;
-
-class UsersAssociatedApps extends AbstractModel implements UserInterface
+namespace Canvas\Models;src/Models/UsersAssociatedApps.phpractModel implements UserInterface
 {
     public int $users_id;
     public int $apps_id;
@@ -91,5 +86,27 @@ class UsersAssociatedApps extends AbstractModel implements UserInterface
                 'companies_id' => Di::getDefault()->get('userData')->get(Companies::cacheKey())
             ]
         ]);
+    }
+
+     /**
+     * Desassociated a user from an app
+     * 
+     * @param Users $users
+     * @param Users $companies
+     * 
+     * @return void
+     */
+    public static function disassociateUserFromApp(Users $users, Companies $companies) : void
+    {
+        $userAssociatedApp = UsersAssociatedApps::findFirstOrFail([
+            "conditions" => "users_id = :users_id: and companies_id = :companies_id: and user_active = 1 and is_deleted = 0",
+            "bind" => [
+                "users_id" => $users->getId(),
+                "companies_id" => $companies->getId()
+            ]
+        ]);
+
+        $userAssociatedApp->is_deleted = 1;
+        $userAssociatedApp->saveOrFail();
     }
 }
