@@ -2,7 +2,13 @@
 <?php
 declare(strict_types=1);
 
-namespace Canvas\Models;src/Models/UsersAssociatedApps.phpractModel implements UserInterface
+namespace Canvas\Models;
+
+use Baka\Contracts\Auth\UserInterface;
+use Canvas\Notifications\UserInactiveConfirmation;
+use Phalcon\Di;
+
+class UsersAssociatedApps extends AbstractModel implements UserInterface
 {
     public int $users_id;
     public int $apps_id;
