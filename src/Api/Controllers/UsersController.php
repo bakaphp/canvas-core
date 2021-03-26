@@ -222,6 +222,8 @@ class UsersController extends BaseController
             );
         }
 
+        $this->userData->disassociateFromApp();
+
         return parent::delete($id);
     }
 
