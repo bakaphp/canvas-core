@@ -111,7 +111,6 @@ class UsersAssociatedApps extends AbstractModel implements UserInterface
             ]
         ]);
 
-        $userAssociatedApp->is_deleted = 1;
-        return $userAssociatedApp->saveOrFail();
+        return $userAssociatedApp->softDelete();
     }
 }
