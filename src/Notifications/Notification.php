@@ -25,6 +25,7 @@ class Notification implements NotificationInterface
     protected ?UserInterface $fromUser = null;
     protected $type = null;
     protected ?ModelInterface $entity = null;
+    protected string $message = '';
 
     /**
      * Send this notification to the queue?
@@ -100,7 +101,19 @@ class Notification implements NotificationInterface
      */
     public function message() : string
     {
-        return $this->type->template ?: '';
+        return $this->type->template ?: $this->message;
+    }
+
+    /**
+     * setMessage.
+     *
+     * @param  string $message
+     *
+     * @return void
+     */
+    public function setMessage(string $message) : void
+    {
+        $this->message = $message;
     }
 
     /**
@@ -280,7 +293,7 @@ class Notification implements NotificationInterface
     }
 
     /**
-     * Saved the used notification to the database
+     * Save the notification used to the database
      *
      * @return boolean
      */
@@ -354,7 +367,8 @@ class Notification implements NotificationInterface
     public function toMailNotification() : bool
     {
         $toMail = $this->toMail();
-        if ($toMail instanceof Message && !$this->toUser->isUnsubscribe($notification->notification_type_id)) {
+        if ($toMail instanceof Message && !$this->toUser->isUnsubscribe($this->type->getId())) {
+
             $this->fire('notification:sendMail', $toMail);
         }
 
