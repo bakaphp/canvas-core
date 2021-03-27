@@ -365,7 +365,7 @@ class Users extends BakUser implements UserInterface
         }
 
         $role = Roles::getByName('Admins');
-        $this->roles_id = $role->getId();
+        $this->roles_id = $this->roles_id ?? $role->getId();
     }
 
     /**
@@ -378,6 +378,17 @@ class Users extends BakUser implements UserInterface
     {
         $defaultCompanyId = $this->get(Companies::cacheKey());
         return !is_null($defaultCompanyId) ? (int) $defaultCompanyId : (int) $this->default_company;
+    }
+
+    /**
+     * Whats the current default branch of the current company.
+     *
+     * @return int
+     */
+    public function currentBranchId() : int
+    {
+        $defaultBranch = $this->get($this->getDefaultCompany()->branchCacheKey());
+        return !is_null($defaultBranch) ? (int) $defaultBranch : (int) $this->default_company_branch;
     }
 
     /**
@@ -546,8 +557,9 @@ class Users extends BakUser implements UserInterface
                 if ($branch->company->userAssociatedToCompany($this)) {
                     $this->default_company = $branch->company->getId();
                     $this->default_company_branch = $branch->getId();
-                    //set the default company id per the specific app , we do this so we can have multip default companies per diff apps
+                    //set the default company id per the specific app , we do this so we can have multi default companies per diff apps
                     $this->set(Companies::cacheKey(), $this->default_company);
+                    $this->set($branch->company->branchCacheKey(), $branch->getId());
                 }
             }
         }
@@ -726,5 +738,27 @@ class Users extends BakUser implements UserInterface
         throw new ModelNotProcessedException(
             current($this->getMessages())->getMessage()
         );
+    }
+
+    /**
+     * Verify that the user is unsubscribed from email
+     * @param int $notificationTypeId
+     * @return bool
+     */
+    public function isUnsubscribe(int $notificationTypeId) : bool
+    {
+        return NotificationsUnsubscribe::isUnsubscribe($this, $notificationTypeId);
+    }
+
+    /**
+    * unsubscribe user for NotificationType
+    * @param int $notificationTypeId
+    * @return NotificationsUnsubscribe
+    */
+    public function unsubscribe(int $notificationTypeId) : NotificationsUnsubscribe
+    {
+        $notificationType = NotificationType::findFirst($notificationTypeId);
+        $systemModulesId = $notificationType ? $notificationType->system_modules_id : -1;
+        return Notifications::unsubscribe($this, (int) $notificationTypeId, (int) $systemModulesId);
     }
 }

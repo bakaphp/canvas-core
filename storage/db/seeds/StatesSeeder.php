@@ -4877,184 +4877,196 @@ class StatesSeeder extends AbstractSeed
                 "countries_id"=> 54
             ],
             [
-                "id"=> 811,
-                "name"=> "Sanchez Ramirez",
-                "code"=> "21",
-                "countries_id"=> 55
-            ],
-            [
-                "id"=> 812,
-                "name"=> "Espaillat",
-                "code"=> "08",
-                "countries_id"=> 55
-            ],
-            [
-                "id"=> 813,
-                "name"=> "Duarte",
-                "code"=> "06",
-                "countries_id"=> 55
-            ],
-            [
-                "id"=> 814,
-                "name"=> "Samana",
-                "code"=> "20",
-                "countries_id"=> 55
-            ],
-            [
-                "id"=> 815,
-                "name"=> "Maria Trinidad Sanchez",
-                "code"=> "14",
-                "countries_id"=> 55
-            ],
-            [
-                "id"=> 816,
-                "name"=> "La Romana",
-                "code"=> "12",
-                "countries_id"=> 55
-            ],
-            [
-                "id"=> 817,
-                "name"=> "Azua",
-                "code"=> "01",
-                "countries_id"=> 55
-            ],
-            [
-                "id"=> 818,
-                "name"=> "San Cristobal",
-                "code"=> "33",
-                "countries_id"=> 55
-            ],
-            [
-                "id"=> 819,
-                "name"=> "El Seibo",
-                "code"=> "28",
-                "countries_id"=> 55
-            ],
-            [
-                "id"=> 820,
-                "name"=> "Monte Plata",
-                "code"=> "32",
-                "countries_id"=> 55
-            ],
-            [
-                "id"=> 821,
+                "id" => 811,
                 "name"=> "Distrito Nacional",
-                "code"=> "05",
-                "countries_id"=> 55
+                "code"=> "01",
+                "countries_id"=> 55   
             ],
             [
-                "id"=> 822,
-                "name"=> "Elias Pina",
-                "code"=> "11",
-                "countries_id"=> 55
+                "id" => 812,
+                "name"=> "Azua",
+                "code"=> "02",
+                "countries_id"=> 55   
             ],
             [
-                "id"=> 823,
-                "name"=> "Santiago",
-                "code"=> "25",
-                "countries_id"=> 55
+                "id" => 813,
+                "name"=> "Baoruco",
+                "code"=> "03",
+                "countries_id"=> 55   
             ],
             [
-                "id"=> 824,
-                "name"=> "Santiago Rodriguez",
-                "code"=> "26",
-                "countries_id"=> 55
-            ],
-            [
-                "id"=> 825,
-                "name"=> "Peravia",
-                "code"=> "17",
-                "countries_id"=> 55
-            ],
-            [
-                "id"=> 826,
-                "name"=> "Monte Cristi",
-                "code"=> "15",
-                "countries_id"=> 55
-            ],
-            [
-                "id"=> 827,
-                "name"=> "Salcedo",
-                "code"=> "19",
-                "countries_id"=> 55
-            ],
-            [
-                "id"=> 828,
-                "name"=> "Puerto Plata",
-                "code"=> "18",
-                "countries_id"=> 55
-            ],
-            [
-                "id"=> 829,
-                "name"=> "San Pedro De Macoris",
-                "code"=> "24",
-                "countries_id"=> 55
-            ],
-            [
-                "id"=> 830,
-                "name"=> "Pedernales",
-                "code"=> "16",
-                "countries_id"=> 55
-            ],
-            [
-                "id"=> 831,
-                "name"=> "Independencia",
-                "code"=> "09",
-                "countries_id"=> 55
-            ],
-            [
-                "id"=> 832,
-                "name"=> "La Vega",
-                "code"=> "30",
-                "countries_id"=> 55
-            ],
-            [
-                "id"=> 833,
-                "name"=> "Dajabon",
-                "code"=> "04",
-                "countries_id"=> 55
-            ],
-            [
-                "id"=> 834,
-                "name"=> "Hato Mayor",
-                "code"=> "29",
-                "countries_id"=> 55
-            ],
-            [
-                "id"=> 835,
+                "id" => 814,
                 "name"=> "Barahona",
                 "code"=> "03",
-                "countries_id"=> 55
+                "countries_id"=> 55   
             ],
             [
-                "id"=> 836,
-                "name"=> "San Juan",
-                "code"=> "23",
-                "countries_id"=> 55
+                "id" => 815,
+                "name"=> "Dajabon",
+                "code"=> "05",
+                "countries_id"=> 55   
             ],
             [
-                "id"=> 837,
-                "name"=> "La Altagracia",
+                "id" => 816,
+                "name"=> "Duarte",
+                "code"=> "06",
+                "countries_id"=> 55   
+            ],
+            [
+                "id" => 817,
+                "name"=> "Elias Piña",
+                "code"=> "07",
+                "countries_id"=> 55   
+            ],
+            [
+                "id" => 818,
+                "name"=> "El Seibo",
+                "code"=> "08",
+                "countries_id"=> 55   
+            ],
+            [
+                "id" => 819,
+                "name"=> "Espaillat",
+                "code"=> "09",
+                "countries_id"=> 55   
+            ],
+            [
+                "id" => 820,
+                "name"=> "Independencia",
                 "code"=> "10",
-                "countries_id"=> 55
+                "countries_id"=> 55   
             ],
             [
-                "id"=> 838,
+                "id" => 821,
+                "name"=> "La Altagracia",
+                "code"=> "11",
+                "countries_id"=> 55   
+            ],
+            [
+                "id" => 822,
+                "name"=> "La Romana",
+                "code"=> "12",
+                "countries_id"=> 55   
+            ],
+            [
+                "id" => 823,
+                "name"=> "La Vega",
+                "code"=> "13",
+                "countries_id"=> 55   
+            ],
+            [
+                "id" => 824,
+                "name"=> "Maria Trinidad Sanchez",
+                "code"=> "14",
+                "countries_id"=> 55   
+            ],
+            [
+                "id" => 825,
+                "name"=> "Monte Cristi",
+                "code"=> "15",
+                "countries_id"=> 55   
+            ],
+            [
+                "id" => 826,
+                "name"=> "Pedernales",
+                "code"=> "16",
+                "countries_id"=> 55   
+            ],
+            [
+                "id" => 827,
+                "name"=> "Peravia",
+                "code"=> "15",
+                "countries_id"=> 55   
+            ],
+            [
+                "id" => 828,
+                "name"=> "Puerto Plata",
+                "code"=> "18",
+                "countries_id"=> 55   
+            ],
+            [
+                "id" => 829,
+                "name"=> "Hermanas Mirabal",
+                "code"=> "19",
+                "countries_id"=> 55   
+            ],
+            [
+                "id" => 830,
+                "name"=> "Samana",
+                "code"=> "20",
+                "countries_id"=> 55   
+            ],
+            [
+                "id" => 831,
+                "name"=> "San Cristobal",
+                "code"=> "21",
+                "countries_id"=> 55   
+            ],
+            [
+                "id" => 832,
+                "name"=> "San Juan",
+                "code"=> "22",
+                "countries_id"=> 55   
+            ],
+            [
+                "id" => 833,
+                "name"=> "San Pedro de Macoris",
+                "code"=> "23",
+                "countries_id"=> 55   
+            ],
+            [
+                "id" => 834,
+                "name"=> "Sanchez Ramirez",
+                "code"=> "24",
+                "countries_id"=> 55   
+            ],
+            [
+                "id" => 835,
+                "name"=> "Santiago",
+                "code"=> "25",
+                "countries_id"=> 55   
+            ],
+            [
+                "id" => 836,
+                "name"=> "Santiago Rodriguez",
+                "code"=> "26",
+                "countries_id"=> 55   
+            ],
+            [
+                "id" => 837,
                 "name"=> "Valverde",
                 "code"=> "27",
-                "countries_id"=> 55
+                "countries_id"=> 55   
             ],
             [
-                "id"=> 839,
-                "name"=> "Baoruco",
-                "code"=> "02",
-                "countries_id"=> 55
+                "id" => 838,
+                "name"=> "Monseñor Nouel",
+                "code"=> "28",
+                "countries_id"=> 55   
             ],
             [
-                "id"=> 840,
-                "name"=> "Monsenor Nouel",
+                "id" => 839,
+                "name"=> "Monte Plata",
+                "code"=> "29",
+                "countries_id"=> 55   
+            ],
+            [
+                "id" => 840,
+                "name"=> "Hato Mayor",
+                "code"=> "30",
+                "countries_id"=> 55   
+            ],
+            [
+                "id" => 3889,
+                "name"=> "San Jose de Ocoa",
                 "code"=> "31",
-                "countries_id"=> 55
+                "countries_id"=> 55   
+            ],
+            [
+                "id" => 3890,
+                "name"=> "Santo Domingo",
+                "code"=> "32",
+                "countries_id"=> 55   
             ],
             [
                 "id"=> 841,

@@ -87,6 +87,18 @@ class IndexController extends BaseController
             $response['errors']['db'] = "The database isn't working.";
         }
 
+        if ($this->di->has('dbLocal')) {
+            try {
+                $this->dbLocal->connect();
+            } catch (PDOException $e) {
+                $this->log->error($e->getMessage(), $e->getTrace());
+                $response['errors']['dbLocal'] = $e->getMessage();
+            } catch (Exception $e) {
+                $this->log->error("The database isn't working. {$e->getMessage()}", $e->getTrace());
+                $response['errors']['dbLocal'] = "The database isn't working.";
+            }
+        }
+
         if (!count($response)) {
             return $this->response(['OK']);
         }

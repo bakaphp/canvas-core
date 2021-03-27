@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Canvas\Api\Controllers;
 
 use Baka\Http\Exception\NotFoundException;
+use Baka\Http\Exception\UnprocessableEntityException;
 use Baka\Validation as CanvasValidation;
 use Canvas\Auth\Auth;
-use Baka\Http\Exception\UnprocessableEntityException;
 use Canvas\Models\Roles;
 use Canvas\Models\Users;
 use Canvas\Models\UsersInvite;
@@ -195,15 +195,11 @@ class UsersInviteController extends BaseController
         //move to DTO
         $newUser->password = null;
 
-        if (!defined('API_TESTS')) {
-            $usersInvite->softDelete();
+        $usersInvite->softDelete();
 
-            return $this->response([
-                'user' => $newUser,
-                'session' => $authInfo
-            ]);
-        }
-
-        return $this->response($newUser);
+        return $this->response([
+            'user' => $newUser,
+            'session' => $authInfo
+        ]);
     }
 }

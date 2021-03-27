@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace Canvas\Api\Controllers;
 
 use Baka\Auth\UsersController as BakaUsersController;
+use Baka\Http\Exception\InternalServerErrorException;
 use Baka\Validation as CanvasValidation;
 use Canvas\Contracts\Controllers\ProcessOutputMapperTrait;
 use Canvas\Dto\User as UserDto;
-use Baka\Http\Exception\InternalServerErrorException;
 use Canvas\Mapper\UserMapper;
 use Canvas\Models\Users;
+use Canvas\Models\NotificationType;
+use Canvas\Models\Notifications;
 use Canvas\Models\UsersAssociatedApps;
 use Phalcon\Http\Response;
 use Phalcon\Validation\Validator\PresenceOf;
@@ -68,6 +70,7 @@ class UsersController extends BakaUsersController
         'default_company',
         'default_company_branch',
         'cell_phone_number',
+        'phone_number',
         'country_id',
         'location',
         'user_active'
@@ -177,7 +180,7 @@ class UsersController extends BakaUsersController
             unset($request['default_company'], $request['default_company_branch']);
         }
 
-        if(isset($request['roles_id'])){
+        if (isset($request['roles_id'])) {
             $user->assignRoleById((int)$request['roles_id']);
         }
 
@@ -243,5 +246,39 @@ class UsersController extends BakaUsersController
         $userAssociatedToApp->user_active = $userAssociatedToApp->user_active ? 0 : 1;
         $userAssociatedToApp->updateOrFail();
         return $this->response($userAssociatedToApp);
+    }
+
+    /**
+     * unsubscribe from notification
+     *
+     * @param int $id
+     * @throws InternalServerErrorException
+     *
+     * @return Response
+     */
+    public function unsubscribe(int $id) : Response
+    {
+        $request = $this->request->getPostData();
+
+        
+        if (!isset($request['notification_types'])) {
+            throw new Exception("Error Processing Request", 1);
+        }
+        
+        //none admin users can only edit themselves
+        if (!$this->userData->hasRole('Default.Admins') || $id == 0) {
+            $id = $this->userData->getId();
+        }
+
+        $user = $this->model->findFirstOrFail([
+            'id = ?0 AND is_deleted = 0',
+            'bind' => [$id],
+        ]);
+        $unsubscribe = [];
+        foreach ($request['notification_types'] as $typeId) {
+            $unsubscribe[] = $user->unsubscribe((int) $typeId);
+        }
+
+        return $this->response($unsubscribe);
     }
 }

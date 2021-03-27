@@ -6,10 +6,14 @@ namespace Canvas\Api\Controllers;
 
 use Canvas\Models\FileSystem;
 use Canvas\Traits\FileManagementTrait;
+use Baka\Contracts\Controllers\ProcessOutputMapperTrait;
+use Canvas\Dto\Filesystem as FilesystemDto;
+use Canvas\Mapper\FileSystemMapper;
 
 class FilesystemController extends BaseController
 {
     use FileManagementTrait;
+    use ProcessOutputMapperTrait;
 
     /*
         * fields we accept to create
@@ -39,6 +43,8 @@ class FilesystemController extends BaseController
     public function onConstruct()
     {
         $this->model = new FileSystem();
+        $this->dto = FilesystemDto::class;
+        $this->dtoMapper = new FileSystemMapper();
         $this->model->users_id = $this->userData->getId();
         $this->model->companies_id = $this->userData->currentCompanyId();
 
