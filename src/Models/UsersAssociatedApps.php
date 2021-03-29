@@ -92,4 +92,25 @@ class UsersAssociatedApps extends AbstractModel implements UserInterface
             ]
         ]);
     }
+
+     /**
+     * Desassociated a user from an app
+     * 
+     * @param Users $users
+     * @param Users $companies
+     * 
+     * @return void
+     */
+    public static function disassociateUserFromApp(Users $users, Companies $companies) : bool
+    {
+        $userAssociatedApp = UsersAssociatedApps::findFirstOrFail([
+            "conditions" => "users_id = :users_id: and companies_id = :companies_id: and user_active = 1 and is_deleted = 0",
+            "bind" => [
+                "users_id" => $users->getId(),
+                "companies_id" => $companies->getId()
+            ]
+        ]);
+
+        return $userAssociatedApp->softDelete();
+    }
 }
