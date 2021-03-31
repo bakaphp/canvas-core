@@ -71,6 +71,7 @@ class NotificationType extends AbstractModel
                 'system_modules_id' => $systemModule->getId(),
                 'name' => get_class($model),
                 'key' => $key,
+                'with_realtime' => 0
             ]
         );
     }
