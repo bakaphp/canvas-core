@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Canvas\Models;
 
 use Baka\Database\Model;
-use Baka\Database\SystemModules;
 use Phalcon\Di;
 
 class NotificationType extends AbstractModel
@@ -58,7 +57,7 @@ class NotificationType extends AbstractModel
     public static function getByKeyOrCreate(string $key, Model $model = null) : NotificationType
     {
         $app = Di::getDefault()->getApp();
-        $systemModule = SystemModules::getSystemModuleByModelName(get_class($model));
+        $systemModule = SystemModules::getByModelName(get_class($model));
         
         return self::findFirstOrCreate([
             'conditions' => 'apps_id in (?0, ?1) AND key = ?2',
