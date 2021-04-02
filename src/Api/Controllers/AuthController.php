@@ -14,11 +14,11 @@ use Canvas\Auth\Factory;
 use Canvas\Contracts\AuthTrait;
 use Canvas\Contracts\Jwt\TokenTrait;
 use Canvas\Contracts\SocialLoginTrait;
+use Canvas\Models\RegisterRoles;
 use Canvas\Models\Sessions;
 use Canvas\Models\Sources;
 use Canvas\Models\UserLinkedSources;
 use Canvas\Models\Users;
-use Canvas\Models\RegisterRoles;
 use Canvas\Notifications\PasswordUpdate;
 use Canvas\Notifications\ResetPassword;
 use Canvas\Notifications\Signup;
@@ -231,7 +231,7 @@ class AuthController extends BaseController
         //validate this form for password
         $validation->validate($request);
 
-        $registerRole = RegisterRoles::getByUuid($request["roles_uuid"]);
+        $registerRole = RegisterRoles::getByUuid($request['roles_uuid']);
 
         $user->email = $validation->getValue('email');
         $user->firstname = $validation->getValue('firstname');
@@ -312,8 +312,10 @@ class AuthController extends BaseController
 
         return $this->response([
             'token' => $token['token'],
+            'refresh_token' => $token['token'],
             'time' => date('Y-m-d H:i:s'),
             'expires' => date('Y-m-d H:i:s', time() + $this->config->jwt->payload->exp),
+            'refresh_token_expires' => date('Y-m-d H:i:s', time() + 31536000),
             'id' => $user->getId(),
         ]);
     }

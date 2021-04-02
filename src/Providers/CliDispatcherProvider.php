@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Canvas\Providers;
 
 use Phalcon\Cli\Dispatcher;
-use Phalcon\Di\ServiceProviderInterface;
 use Phalcon\Di\DiInterface;
+use Phalcon\Di\ServiceProviderInterface;
 
 class CliDispatcherProvider implements ServiceProviderInterface
 {
@@ -15,11 +15,11 @@ class CliDispatcherProvider implements ServiceProviderInterface
      */
     public function register(DiInterface $container) : void
     {
-        $config = $container->getShared('config');
-
         $container->setShared(
             'dispatcher',
-            function () use ($config) {
+            function () use ($container) {
+                $config = $container->getShared('config');
+
                 $dispatcher = new Dispatcher();
                 $dispatcher->setDefaultNamespace(ucfirst($config->app->namespaceName) . '\Cli\Tasks');
 

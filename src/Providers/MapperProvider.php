@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Canvas\Providers;
 
-use Phalcon\Di\DiInterface;
-use Phalcon\Di\ServiceProviderInterface;
 use AutoMapperPlus\AutoMapper;
 use AutoMapperPlus\Configuration\AutoMapperConfig;
+use Phalcon\Di\DiInterface;
+use Phalcon\Di\ServiceProviderInterface;
 
 class MapperProvider implements ServiceProviderInterface
 {
@@ -22,7 +22,7 @@ class MapperProvider implements ServiceProviderInterface
             function () {
                 $config = new AutoMapperConfig();
                 $config->getOptions()->dontSkipConstructor();
-        
+
                 return $config;
             }
         );

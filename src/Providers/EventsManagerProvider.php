@@ -2,13 +2,13 @@
 
 namespace Canvas\Providers;
 
-use Phalcon\Di\ServiceProviderInterface;
-use Phalcon\Di\DiInterface;
-use Canvas\Listener\Subscription;
 use Canvas\EventsManager;
-use Canvas\Listener\User;
-use Canvas\Listener\Notification;
 use Canvas\Listener\Company;
+use Canvas\Listener\Notification;
+use Canvas\Listener\Subscription;
+use Canvas\Listener\User;
+use Phalcon\Di\DiInterface;
+use Phalcon\Di\ServiceProviderInterface;
 
 class EventsManagerProvider implements ServiceProviderInterface
 {
@@ -54,9 +54,10 @@ class EventsManagerProvider implements ServiceProviderInterface
      *
      * @param DiInterface $container
      * @param array $listeners
+     *
      * @return void
      */
-    protected function attachEvents(DiInterface $container, array $listeners): bool
+    protected function attachEvents(DiInterface $container, array $listeners) : bool
     {
         if (empty($listeners)) {
             return false;
