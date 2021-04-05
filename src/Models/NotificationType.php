@@ -54,7 +54,7 @@ class NotificationType extends AbstractModel
      * @param Model $model
      * @return NotificationType
      */
-    public static function getByKeyOrCreate(string $key, Model $model = null) : NotificationType
+    public static function getByKeyOrCreate(string $key, ?Model $model = null) : NotificationType
     {
         $app = Di::getDefault()->getApp();
         $systemModule = SystemModules::getByModelName(get_class($model));
