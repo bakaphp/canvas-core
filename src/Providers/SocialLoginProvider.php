@@ -2,10 +2,9 @@
 
 namespace Canvas\Providers;
 
-use Phalcon\Di\ServiceProviderInterface;
-use Phalcon\Di\DiInterface;
-use function Baka\envValue;
 use Hybridauth\Hybridauth;
+use Phalcon\Di\DiInterface;
+use Phalcon\Di\ServiceProviderInterface;
 
 class SocialLoginProvider implements ServiceProviderInterface
 {
@@ -14,22 +13,21 @@ class SocialLoginProvider implements ServiceProviderInterface
      */
     public function register(DiInterface $container) : void
     {
-        $config = $container->getShared('config');
-
         $container->setShared(
             'socialLogin',
-            function () use ($config) {
+            function () use ($container) {
+                $config = $container->getShared('config');
 
                 /**
                  * @todo Change the way provider information is handled
                  */
                 $providers = [
-                    'callback'=> $config->social->callback,
-                    'providers'=>[
-                        'Facebook'=> [
-                            'enabled'=> true,
-                            'keys'=>['id'=>$config->social->facebook->id,
-                            'secret'=>$config->social->facebook->secret]
+                    'callback' => $config->social->callback,
+                    'providers' => [
+                        'Facebook' => [
+                            'enabled' => true,
+                            'keys' => ['id' => $config->social->facebook->id,
+                                'secret' => $config->social->facebook->secret]
                         ]
                     ]
                 ];

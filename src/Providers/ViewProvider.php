@@ -17,12 +17,12 @@ class ViewProvider implements ServiceProviderInterface
      */
     public function register(DiInterface $container) : void
     {
-        $config = $container->get('config');
-
         /**
          * Setting up the view component.
          */
-        $container->set('view', function () use ($config, $container) {
+        $container->set('view', function () use ($container) {
+            $config = $container->get('config');
+
             $view = new SimpleView();
             $view->setViewsDir($config->filesystem->local->path . '/view/');
             $view->registerEngines([

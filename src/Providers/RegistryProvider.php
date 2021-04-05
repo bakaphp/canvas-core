@@ -2,8 +2,8 @@
 
 namespace Canvas\Providers;
 
-use Phalcon\Di\ServiceProviderInterface;
 use Phalcon\Di\DiInterface;
+use Phalcon\Di\ServiceProviderInterface;
 use Phalcon\Registry;
 
 class RegistryProvider implements ServiceProviderInterface

@@ -7,7 +7,6 @@ use Baka\Router\RouteGroup;
 $publicRoutes = [
     Route::get('/')->controller('IndexController'),
     Route::post('/auth')->controller('AuthController')->action('login'),
-    Route::post('/refresh-token')->controller('AuthController')->action('refresh'),
     Route::post('/users')->controller('AuthController')->action('signup'),
     Route::post('/users/custom-registration')->controller('AuthController')->action('signupByRegisterRole'),
     Route::post('/auth/forgot')->controller('AuthController')->action('recover'),
@@ -28,6 +27,7 @@ $privateRoutes = [
     Route::crud('/apps-keys')->controller('AppsKeysController'),
     Route::post('/apps-keys/regenerate')->controller('AppsKeysController')->action('regenerateKeys'),
     Route::crud('/users')->notVia('post'),
+    Route::post('/refresh-token')->controller('AuthController')->action('refresh'),
     Route::post('/users/{id}/unsubscribe')->controller('UsersController')->action('unsubscribe'),
     Route::crud('/companies'),
     Route::crud('/roles'),

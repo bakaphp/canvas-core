@@ -15,11 +15,11 @@ class AclProvider implements ServiceProviderInterface
     public function register(DiInterface $container) : void
     {
         //$config = $container->getShared('config');
-        $db = $container->getShared('db');
 
         $container->setShared(
             'acl',
-            function () use ($db) {
+            function () use ($container) {
+                $db = $container->getShared('db');
                 $acl = new AclManager(
                     [
                         'db' => $db,

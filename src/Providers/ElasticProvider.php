@@ -2,9 +2,9 @@
 
 namespace Canvas\Providers;
 
-use Phalcon\Di\ServiceProviderInterface;
-use Phalcon\Di\DiInterface;
 use Elasticsearch\ClientBuilder;
+use Phalcon\Di\DiInterface;
+use Phalcon\Di\ServiceProviderInterface;
 
 class ElasticProvider implements ServiceProviderInterface
 {
@@ -13,11 +13,11 @@ class ElasticProvider implements ServiceProviderInterface
      */
     public function register(DiInterface $container) : void
     {
-        $config = $container->getShared('config');
-
         $container->setShared(
             'elastic',
-            function () use ($config) {
+            function () use ($container) {
+                $config = $container->getShared('config');
+
                 $hosts = $config->elasticSearch->hosts->toArray();
 
                 $client = ClientBuilder::create()

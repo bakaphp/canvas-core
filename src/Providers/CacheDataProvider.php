@@ -17,12 +17,13 @@ class CacheDataProvider implements ServiceProviderInterface
      */
     public function register(DiInterface $container) : void
     {
-        $config = $container->getShared('config');
         $app = envValue('GEWAER_APP_ID', 1);
 
         $container->setShared(
             'cache',
-            function () use ($config, $app) {
+            function () use ($container, $app) {
+                $config = $container->getShared('config');
+
                 //Connect to redis
                 $cache = $config->get('cache')->toArray();
                 $adapter = $cache['adapter'];

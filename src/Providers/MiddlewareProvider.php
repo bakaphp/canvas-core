@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Canvas\Providers;
 
-use Canvas\Middleware\NotFoundMiddleware;
 use Baka\Router\Providers\MiddlewareProvider as BakaMiddlewareProvider;
-use Canvas\Middleware\AuthenticationMiddleware;
 use Canvas\Middleware\AclMiddleware;
-use Canvas\Middleware\AnonymousMiddleware;
-use Canvas\Middleware\SubscriptionMiddleware;
 use Canvas\Middleware\ActiveStatusMiddleware;
-use Phalcon\Mvc\Micro;
+use Canvas\Middleware\AnonymousMiddleware;
+use Canvas\Middleware\AuthenticationMiddleware;
+use Canvas\Middleware\NotFoundMiddleware;
+use Canvas\Middleware\SubscriptionMiddleware;
 use Phalcon\Events\Manager;
+use Phalcon\Mvc\Micro;
 
 class MiddlewareProvider extends BakaMiddlewareProvider
 {
