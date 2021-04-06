@@ -254,7 +254,7 @@ class Notification implements NotificationInterface
     {
         //if the user didn't provide the type get it based on the class name
         if (is_null($this->type)) {
-            $this->setType(NotificationType::getByKey(static::class));
+            $this->setType(NotificationType::getByKeyOrCreate(static::class, $this->entity));
         } elseif (is_string($this->type)) {
             //not great but for now lets use it
             $this->setType(NotificationType::getByKey($this->type));
