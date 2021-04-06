@@ -453,6 +453,23 @@ class InitGewaer extends AbstractSeed
                 'mobile_component_type' => null,
                 'mobile_navigation_type' => null,
                 'mobile_tab_index' => '0'
+            ],
+            [
+                'name' => 'Users Invite',
+                'slug' => 'users-invite',
+                'model_name' => 'Canvas\\Models\\UsersInvite',
+                'apps_id' => '1',
+                'parents_id' => '0',
+                'menu_order' => null,
+                'show' => '0',
+                'use_elastic' => '0',
+                'browse_fields' => '[{"name":"email","title":"Email","sortField":"email","filterable":true,"searchable":true},{"name":"roles.0.name","title":"Roles","sortField":"roles_id","filterable":true}]',
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => null,
+                'is_deleted' => '0',
+                'mobile_component_type' => null,
+                'mobile_navigation_type' => null,
+                'mobile_tab_index' => '0'
             ]
         ];
 
