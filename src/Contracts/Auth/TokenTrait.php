@@ -28,12 +28,15 @@ trait TokenTrait
         $sessionId = $random->uuid();
 
         $token = self::createJwtToken($sessionId, $this->getEmail());
-        $refreshToken = self::createJwtToken($sessionId, $this->getEmail());
+        $monthInHours = ceil((Di::getDefault()->get('config')->jwt->payload->refresh_exp ?? 2628000) / 3600);
+        $refreshToken = self::createJwtToken($sessionId, $this->getEmail(), $monthInHours);
 
         return [
             'sessionId' => $sessionId,
             'token' => $token['token'],
-            'refresh_token' => $refreshToken['token']
+            'refresh_token' => $refreshToken['token'],
+            'refresh_token_expiration' => $refreshToken['expiration']->format('Y-m-d H:i:s'),
+            'token_expiration' => $token['expiration']->format('Y-m-d H:i:s'),
         ];
     }
 
@@ -78,12 +81,12 @@ trait TokenTrait
      *
      * @return array
      */
-    public static function createJwtToken(string $sessionId, string $email) : array
+    public static function createJwtToken(string $sessionId, string $email, float $expirationAt = 0) : array
     {
         $now = new DateTimeImmutable();
         $config = Jwt::getConfig();
         //get the expiration in hours
-        $expiration = ceil((Di::getDefault()->get('config')->jwt->payload->exp ?? 604800) / 3600);
+        $expiration = $expirationAt == 0 ? ceil((Di::getDefault()->get('config')->jwt->payload->exp ?? 604800) / 3600) : $expirationAt;
 
         //https://lcobucci-jwt.readthedocs.io/en/latest/issuing-tokens/
         $token = $config->builder()
@@ -100,7 +103,8 @@ trait TokenTrait
 
         return [
             'sessionId' => $sessionId,
-            'token' => $token->toString()
+            'token' => $token->toString(),
+            'expiration' => $token->claims()->get('exp')
         ];
     }
 }

@@ -99,8 +99,8 @@ class AuthController extends BaseController
             'token' => $token['token'],
             'refresh_token' => $token['refresh_token'],
             'time' => date('Y-m-d H:i:s'),
-            'expires' => date('Y-m-d H:i:s', time() + $this->config->jwt->payload->exp),
-            'refresh_token_expires' => date('Y-m-d H:i:s', time() + 31536000),
+            'expires' => $token['token_expiration'],
+            'refresh_token_expires' => $token['refresh_token_expiration'],
             'id' => $userData->getId()
         ]);
     }
@@ -291,13 +291,16 @@ class AuthController extends BaseController
         $refreshToken = $this->getToken($request['refresh_token']);
         $user = null;
 
-        if (time() != $accessToken->getClaim('exp')) {
+        if ($accessToken->isExpired() || $refreshToken->isExpired()) {
             throw new InternalServerErrorException('Issued Access Token has not expired');
         }
 
         //Check if both tokens relate to the same user's email
-        if ($accessToken->getClaim('sessionId') === $refreshToken->getClaim('sessionId')) {
-            $user = Users::getByEmail($accessToken->getClaim('email'));
+        if ($accessToken->claims()->get('sessionId') === $refreshToken->claims()->get('sessionId') && !is_null($accessToken->claims()->get('email'))) {
+            /**
+             * @todo confirm the refresh token exist and is valid from the DB
+             */
+            $user = Users::getByEmail($accessToken->claims()->get('email'));
         }
 
         if (!$user) {
@@ -306,16 +309,14 @@ class AuthController extends BaseController
 
         $token = Sessions::restart(
             $user,
-            $refreshToken->getClaim('sessionId'),
+            $refreshToken->claims()->get('sessionId'),
             (string)$this->request->getClientAddress()
         );
 
         return $this->response([
             'token' => $token['token'],
-            'refresh_token' => $token['token'],
             'time' => date('Y-m-d H:i:s'),
-            'expires' => date('Y-m-d H:i:s', time() + $this->config->jwt->payload->exp),
-            'refresh_token_expires' => date('Y-m-d H:i:s', time() + 31536000),
+            'expires' => $token['expiration']->format('Y-m-d H:i:s'),
             'id' => $user->getId(),
         ]);
     }
