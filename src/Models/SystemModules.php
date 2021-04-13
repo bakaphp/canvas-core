@@ -37,21 +37,21 @@ class SystemModules extends BakaSystemModules
             'companies_id',
             'Canvas\Models\Companies',
             'id',
-            ['alias' => 'company']
+            ['alias' => 'company', 'reusable' => true]
         );
 
         $this->belongsTo(
             'apps_id',
             'Canvas\Models\Apps',
             'id',
-            ['alias' => 'app']
+            ['alias' => 'app', 'reusable' => true]
         );
 
         $this->belongsTo(
             'company_branches_id',
             'Canvas\Models\CompanyBranches',
             'id',
-            ['alias' => 'companyBranch']
+            ['alias' => 'companyBranch', 'reusable' => true]
         );
     }
 
@@ -66,11 +66,16 @@ class SystemModules extends BakaSystemModules
      */
     public static function getSystemModuleByModelName(string $modelName) : ModelInterface
     {
+        $app = Di::getDefault()->get('app');
         $module = SystemModules::findFirst([
             'conditions' => 'model_name = ?0 and apps_id = ?1',
             'bind' => [
                 $modelName,
-                Di::getDefault()->get('app')->getId()
+                $app->getId()
+            ],
+            'cache' => [
+                'key' => 'SYSTEM_MODULE_' . $app->getId() . '_' . $modelName,
+                'lifetime' => 386400
             ]
         ]);
 
