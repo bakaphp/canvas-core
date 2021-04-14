@@ -73,16 +73,8 @@ class SystemModules extends BakaSystemModules
             'bind' => [
                 $modelName,
                 $app->getId()
-            ],
-            'cache' => [
-                'key' => 'SYSTEM_MODULE_' . $app->getId() . '_' . $modelName,
-                'lifetime' => 386400
             ]
         ];
-
-        if (!$cache) {
-            unset($params['cache']);
-        }
         
         $module = SystemModules::findFirst($params);
 
