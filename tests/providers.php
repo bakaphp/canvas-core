@@ -46,5 +46,4 @@ return [
     MapperProvider::class,
     ElasticProvider::class,
     RegistryProvider::class,
-    ModelsCacheProvider::class
 ];
