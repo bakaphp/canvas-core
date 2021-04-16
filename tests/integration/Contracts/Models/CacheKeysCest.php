@@ -27,7 +27,7 @@ class CacheKeysCest
 
     public function validateClearCacheByKey(IntegrationTester $I)
     {
-        $redis = Di::getDefault()->get('modelCache');
+        $redis = Di::getDefault()->get('modelsCache');
         $key = 'mc_test_something_';
         $redis->set($key . time(), 'test');
 
