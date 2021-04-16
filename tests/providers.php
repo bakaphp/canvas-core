@@ -31,6 +31,7 @@ return [
     ErrorHandlerProvider::class,
     DatabaseProvider::class,
     ModelsMetadataProvider::class,
+    ModelsCacheProvider::class,
     RequestProvider::class,
     CacheDataProvider::class,
     SessionProvider::class,
