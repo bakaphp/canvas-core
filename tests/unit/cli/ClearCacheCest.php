@@ -6,6 +6,7 @@ use function Baka\appPath;
 use Canvas\Cli\Tasks\ClearcacheTask;
 use Canvas\Providers\CacheDataProvider;
 use Canvas\Providers\ConfigProvider;
+use Canvas\Providers\ModelsCacheProvider;
 use Canvas\Providers\RedisProvider;
 use function fclose;
 use FilesystemIterator;
@@ -31,6 +32,8 @@ class ClearCacheCest
         $redis->register($container);
         $cache = new CacheDataProvider();
         $cache->register($container);
+        $modelCache = new ModelsCacheProvider();
+        $cache->register($modelCache);
         $task = new ClearcacheTask();
         $task->setDI($container);
 
