@@ -33,7 +33,7 @@ class ClearCacheCest
         $cache = new CacheDataProvider();
         $cache->register($container);
         $modelCache = new ModelsCacheProvider();
-        $cache->register($modelCache);
+        $modelCache->register($container);
         $task = new ClearcacheTask();
         $task->setDI($container);
 
