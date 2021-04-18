@@ -4,6 +4,7 @@ namespace Canvas\Tests\unit\cli;
 
 use function Baka\appPath;
 use Canvas\Cli\Tasks\ClearcacheTask;
+use Canvas\Providers\AppProvider;
 use Canvas\Providers\CacheDataProvider;
 use Canvas\Providers\ConfigProvider;
 use Canvas\Providers\ModelsCacheProvider;
@@ -28,6 +29,8 @@ class ClearCacheCest
         $container = new Cli();
         $config = new ConfigProvider();
         $config->register($container);
+        $appProvider = new AppProvider();
+        $appProvider->register($container);
         $redis = new RedisProvider();
         $redis->register($container);
         $cache = new CacheDataProvider();
