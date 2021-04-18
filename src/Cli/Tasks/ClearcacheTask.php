@@ -71,7 +71,7 @@ class ClearcacheTask extends PhTask
      */
     protected function clearRedisCache() : void
     {
-        echo 'Are you sure you want delete your FULL REDIS DB?  [y/N]'.PHP_EOL;
+        echo 'Are you sure you want delete your FULL REDIS DB?  [y/N]' . PHP_EOL;
 
         //read user input
         $confirmation = trim(fgets(STDIN));
