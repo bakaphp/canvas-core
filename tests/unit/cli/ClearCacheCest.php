@@ -7,6 +7,7 @@ use Canvas\Cli\Tasks\ClearcacheTask;
 use Canvas\Providers\AppProvider;
 use Canvas\Providers\CacheDataProvider;
 use Canvas\Providers\ConfigProvider;
+use Canvas\Providers\DatabaseProvider;
 use Canvas\Providers\ModelsCacheProvider;
 use Canvas\Providers\RedisProvider;
 use function fclose;
@@ -31,6 +32,8 @@ class ClearCacheCest
         $config->register($container);
         $appProvider = new AppProvider();
         $appProvider->register($container);
+        $database = new DatabaseProvider();
+        $database->register($container);
         $redis = new RedisProvider();
         $redis->register($container);
         $cache = new CacheDataProvider();
