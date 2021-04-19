@@ -3,12 +3,15 @@
 namespace Canvas\Cli\Tasks;
 
 use function Baka\appPath;
+use Canvas\Contracts\Models\CacheKeys;
 use Phalcon\Cli\Task as PhTask;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 
 class ClearcacheTask extends PhTask
 {
+    use CacheKeys;
+
     /**
      * Clears the data cache from the application.
      */
@@ -68,6 +71,15 @@ class ClearcacheTask extends PhTask
      */
     protected function clearRedisCache() : void
     {
+        echo 'Are you sure you want delete your FULL REDIS DB?  [y/N]' . PHP_EOL;
+
+        //read user input
+        $confirmation = trim(fgets(STDIN));
+        if ($confirmation !== 'y') {
+            // The user did not say 'y'.
+            return;
+        }
+
         echo PHP_EOL . 'Clearing data cache' . PHP_EOL;
 
         $keys = $this->di->get('redis', [false])->keys('*');
@@ -93,10 +105,12 @@ class ClearcacheTask extends PhTask
 
         $keys = $this->di->get('redisUnSerialize', [false])->keys($options['prefix'] . '*');
 
-        echo sprintf('Found %s Models keys', count($keys)) . PHP_EOL;
+        echo sprintf('Found %s Models Schema Cache', count($keys)) . PHP_EOL;
         foreach ($keys as $key) {
             $this->redisUnSerialize->del($key);
         }
+
+        echo sprintf('Found %s Models Cache', $this->clearCacheByKeyPattern('')) . PHP_EOL;
 
         echo  'Cleared Model schema cache' . PHP_EOL;
     }

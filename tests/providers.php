@@ -32,6 +32,7 @@ return [
     DatabaseProvider::class,
     ModelsMetadataProvider::class,
     RequestProvider::class,
+    ModelsCacheProvider::class,
     CacheDataProvider::class,
     SessionProvider::class,
     QueueProvider::class,
@@ -45,5 +46,4 @@ return [
     MapperProvider::class,
     ElasticProvider::class,
     RegistryProvider::class,
-    ModelsCacheProvider::class
 ];

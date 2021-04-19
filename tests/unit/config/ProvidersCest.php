@@ -2,16 +2,14 @@
 
 namespace Canvas\Tests\unit\config;
 
-use Canvas\Providers\CliDispatcherProvider;
+use function Baka\appPath;
 use Canvas\Providers\ConfigProvider;
 use Canvas\Providers\DatabaseProvider;
 use Canvas\Providers\ErrorHandlerProvider;
 use Canvas\Providers\LoggerProvider;
 use Canvas\Providers\ModelsMetadataProvider;
 use Canvas\Providers\RequestProvider;
-use Canvas\Providers\RouterProvider;
 use UnitTester;
-use function Baka\appPath;
 
 class ProvidersCest
 {

@@ -572,7 +572,7 @@ trait FileSystemModelTrait
             'entity_id' => $this->getId(),
         ];
 
-        $key = self::generateCacheKey($bindParams) . '*';
+        $key = self::generateCacheKey($bindParams);
         return self::clearCacheByKeyPattern($key);
     }
 }
