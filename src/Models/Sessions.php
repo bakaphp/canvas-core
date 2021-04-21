@@ -2,6 +2,7 @@
 
 namespace Canvas\Models;
 
+use Baka\Contracts\Auth\UserInterface;
 use Baka\Database\Model;
 use Canvas\Contracts\Auth\TokenTrait;
 use Exception;
@@ -190,7 +191,7 @@ class Sessions extends Model
      *
      * @param bool $daemon
      *
-     * @return void
+     * @return bool
      */
     public function clean() : bool
     {
@@ -243,13 +244,13 @@ class Sessions extends Model
     /**
      * Check auth session status and create a new one if there is none.
      *
-     * @param Users $user
+     * @param UserInterface $user
      * @param string $sessionId
      * @param string $clientAddress
      *
      * @return array
      */
-    public static function restart(Users $user, string $sessionId, string $clientAddress) : array
+    public static function restart(UserInterface $user, string $sessionId, string $clientAddress) : array
     {
         $session = new self();
         $session->check($user, $sessionId, $clientAddress, 1);
