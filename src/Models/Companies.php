@@ -395,7 +395,7 @@ class Companies extends AbstractModel
             return $users['users_id'];
         }, $this->getUsersAssociatedByApps([
             'columns' => 'users_id',
-            'conditions' => 'user_active = 1'
+            'conditions' => 'is_deleted = 0'
         ])->toArray());
     }
 
