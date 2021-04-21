@@ -222,7 +222,9 @@ class UsersController extends BaseController
             );
         }
 
-        UsersAssociatedApps::disassociateUserFromApp($this->userData, $this->userData->getCurrentCompany());
+        $user = Users::findFirstOrFail($id);
+
+        UsersAssociatedApps::disassociateUserFromApp($user, $this->userData->getCurrentCompany());
 
         return $this->response('Delete Successfully');
     }
