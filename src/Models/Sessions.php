@@ -252,9 +252,12 @@ class Sessions extends Model
      */
     public static function restart(UserInterface $user, string $sessionId, string $clientAddress) : array
     {
+        /**
+         * @todo end previous users sessions?
+         */
         $session = new self();
         $session->check($user, $sessionId, $clientAddress, 1);
-        $token = self::createJwtToken($sessionId, $user->getEmail());
+        $token = $user->getToken();
         $session->start($user, $token['sessionId'], $token['token'], $clientAddress, 1);
         return $token;
     }

@@ -11,6 +11,7 @@ use Canvas\Middleware\AnonymousMiddleware;
 use Canvas\Middleware\AuthenticationMiddleware;
 use Canvas\Middleware\NotFoundMiddleware;
 use Canvas\Middleware\SubscriptionMiddleware;
+use Canvas\Middleware\TokenExpirationMiddleware;
 use Phalcon\Events\Manager;
 use Phalcon\Mvc\Micro;
 
@@ -34,7 +35,8 @@ class MiddlewareProvider extends BakaMiddlewareProvider
         'auth.anonymous' => AnonymousMiddleware::class,
         'auth.acl' => AclMiddleware::class,
         'auth.subscription' => SubscriptionMiddleware::class,
-        'auth.activeStatus' => ActiveStatusMiddleware::class
+        'auth.activeStatus' => ActiveStatusMiddleware::class,
+        'auth.jwt.token.expiration' => TokenExpirationMiddleware::class
     ];
 
     /**

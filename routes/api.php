@@ -27,7 +27,6 @@ $privateRoutes = [
     Route::crud('/apps-keys')->controller('AppsKeysController'),
     Route::post('/apps-keys/regenerate')->controller('AppsKeysController')->action('regenerateKeys'),
     Route::crud('/users')->notVia('post'),
-    Route::post('/refresh-token')->controller('AuthController')->action('refresh'),
     Route::post('/users/{id}/unsubscribe')->controller('UsersController')->action('unsubscribe'),
     Route::crud('/companies'),
     Route::crud('/roles'),
@@ -96,6 +95,10 @@ $privateRoutes = [
     Route::get('/sources/{id}')->controller('SourcesController')->action('getById'),
 ];
 
+$privateRoutesRefresh = [
+    Route::post('/refresh-token')->controller('AuthController')->action('refresh'),
+];
+
 $privateSubscriptionRoutes = [
     Route::crud('/email-templates')->controller('EmailTemplatesController'),
     Route::crud('/companies-custom-fields')->controller('CompaniesCustomFieldsController'),
@@ -118,12 +121,17 @@ $publicRoutesGroup = RouteGroup::from($publicRoutes)
 
 $privateRoutesGroup = RouteGroup::from($privateRoutes)
                 ->defaultNamespace('Canvas\Api\Controllers')
+                ->addMiddlewares('auth.jwt@before', 'auth.jwt.token.expiration@before', 'auth.acl@before', 'auth.activeStatus@before')
+                ->defaultPrefix(envValue('API_VERSION', '/v1'));
+
+$privateRoutesRefreshGroup = RouteGroup::from($privateRoutesRefresh)
+                ->defaultNamespace('Canvas\Api\Controllers')
                 ->addMiddlewares('auth.jwt@before', 'auth.acl@before', 'auth.activeStatus@before')
                 ->defaultPrefix(envValue('API_VERSION', '/v1'));
 
 $subscriptionPrivateRoutes = RouteGroup::from($privateSubscriptionRoutes)
                 ->defaultNamespace('Canvas\Api\Controllers')
-                ->addMiddlewares('auth.jwt@before', 'auth.acl@before', 'auth.subscription@before')
+                ->addMiddlewares('auth.jwt@before', 'auth.jwt.token.expiration@before', 'auth.acl@before', 'auth.subscription@before')
                 ->defaultPrefix(envValue('API_VERSION', '/v1'));
 
 /**
@@ -132,5 +140,6 @@ $subscriptionPrivateRoutes = RouteGroup::from($privateSubscriptionRoutes)
 return array_merge(
     $publicRoutesGroup->toCollections(),
     $privateRoutesGroup->toCollections(),
+    $privateRoutesRefreshGroup->toCollections(),
     $subscriptionPrivateRoutes->toCollections()
 );
