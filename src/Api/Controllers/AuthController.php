@@ -176,7 +176,7 @@ class AuthController extends BaseController
         $authSession = [
             'token' => $token['token'],
             'time' => date('Y-m-d H:i:s'),
-            'expires' => date('Y-m-d H:i:s', time() + $this->config->jwt->payload->exp),
+            'expires' => $token['token_expiration'],
             'id' => $user->getId(),
         ];
 
@@ -264,7 +264,7 @@ class AuthController extends BaseController
         $authSession = [
             'token' => $token['token'],
             'time' => date('Y-m-d H:i:s'),
-            'expires' => date('Y-m-d H:i:s', time() + $this->config->jwt->payload->exp),
+            'expires' => $token['token_expiration'],
             'id' => $user->getId(),
         ];
 
@@ -291,8 +291,11 @@ class AuthController extends BaseController
         $refreshToken = $this->getToken($request['refresh_token']);
         $user = null;
 
-        if ($accessToken->isExpired() || $refreshToken->isExpired()) {
+        if (!$accessToken->isExpired()) {
             throw new InternalServerErrorException('Issued Access Token has not expired');
+        }
+        if ($refreshToken->isExpired()) {
+            throw new InternalServerErrorException('Refresh Token has expired');
         }
 
         //Check if both tokens relate to the same user's email
@@ -315,9 +318,11 @@ class AuthController extends BaseController
 
         return $this->response([
             'token' => $token['token'],
+            'refresh_token' => $token['refresh_token'],
             'time' => date('Y-m-d H:i:s'),
-            'expires' => $token['expiration']->format('Y-m-d H:i:s'),
-            'id' => $user->getId(),
+            'expires' => $token['token_expiration'],
+            'refresh_token_expires' => $token['refresh_token_expiration'],
+            'id' => $user->getId()
         ]);
     }
 

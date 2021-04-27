@@ -62,7 +62,7 @@ class AuthenticationMiddleware extends TokenBase
      *
      * @param Micro $api
      * @param Config $config
-     * @param string $token
+     * @param Token $token
      * @param RequestInterface $request
      *
      * @throws UnauthorizedException
@@ -78,18 +78,18 @@ class AuthenticationMiddleware extends TokenBase
                 $userData = UserProvider::get();
 
                 //all is empty and is dev, ok take use the first user
-                if (empty($token->getClaim('sessionId')) && strtolower($config->app->env) == Flags::DEVELOPMENT) {
+                if (empty($token->claims()->get('sessionId')) && strtolower($config->app->env) == Flags::DEVELOPMENT) {
                     return $userData->findFirst(1);
                 }
 
-                if (!empty($token->getClaim('sessionId'))) {
+                if (!empty($token->claims()->get('sessionId'))) {
                     //user
-                    if (!$user = $userData->getByEmail($token->getClaim('email'))) {
+                    if (!$user = $userData->getByEmail($token->claims()->get('email'))) {
                         throw new UnauthorizedException('User not found');
                     }
 
                     $ip = !defined('API_TESTS') ? $request->getClientAddress() : '127.0.0.1';
-                    return $session->check($user, $token->getClaim('sessionId'), (string) $ip, 1);
+                    return $session->check($user, $token->claims()->get('sessionId'), (string) $ip, 1);
                 } else {
                     throw new UnauthorizedException('User not found');
                 }
