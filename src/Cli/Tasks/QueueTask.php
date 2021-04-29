@@ -66,7 +66,7 @@ class QueueTask extends PhTask
      */
     public function notificationsAction()
     {
-        $callback = function ($msg) : void {
+        $callback = function (object $msg) : void {
             //check the db before running anything
             if (!$this->isDbConnected('db')) {
                 return ;
@@ -129,7 +129,7 @@ class QueueTask extends PhTask
     {
         $queue = is_null($queueName) ? QUEUE::JOBS : $queueName;
 
-        $callback = function ($msg) : void {
+        $callback = function (object $msg) : void {
             //check the db before running anything
             if (!$this->isDbConnected('db')) {
                 return ;
@@ -161,32 +161,22 @@ class QueueTask extends PhTask
                 return;
             }
 
-            try {
-                /**
-                 * swoole coroutine.
-                 */
-                go(function () use ($job, $msg) {
-                    //instance notification and pass the entity
-                    try {
-                        $result = $job['job']->handle();
+            go(function () use ($job, $msg) {
+                //instance notification and pass the entity
+                try {
+                    $result = $job['job']->handle();
 
-                        $this->log->info(
-                            "Job ({$job['class']}) ran for {$job['userData']->getEmail()} - Process ID " . $msg->delivery_info['consumer_tag'],
-                            [$result]
-                        );
-                    } catch (Throwable $e) {
-                        $this->log->info(
-                            $e->getMessage(),
-                            [$e->getTraceAsString()]
-                        );
-                    }
-                });
-            } catch (Throwable $e) {
-                $this->log->info(
-                    $e->getMessage(),
-                    [$e->getTraceAsString()]
-                );
-            }
+                    $this->log->info(
+                        "Job ({$job['class']}) ran for {$job['userData']->getEmail()} - Process ID " . $msg->delivery_info['consumer_tag'],
+                        [$result]
+                    );
+                } catch (Throwable $e) {
+                    $this->log->info(
+                        $e->getMessage(),
+                        [$e->getTraceAsString()]
+                    );
+                }
+            });
         };
 
         Queue::process($queue, $callback);

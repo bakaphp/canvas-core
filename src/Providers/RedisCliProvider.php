@@ -3,11 +3,12 @@
 namespace Canvas\Providers;
 
 use function Baka\envValue;
+use Baka\Redis\Pool;
 use Phalcon\Di\DiInterface;
 use Phalcon\Di\ServiceProviderInterface;
 use Redis;
 
-class RedisProvider implements ServiceProviderInterface
+class RedisCliProvider implements ServiceProviderInterface
 {
     /**
      * @param DiInterface $container
@@ -16,11 +17,12 @@ class RedisProvider implements ServiceProviderInterface
     {
         $app = envValue('GEWAER_APP_ID', 1);
 
-        $container->setShared(
+        $container->set(
             'redis',
             function (bool $prefix = true) use ($app) {
-                $redis = new Redis();
-                $redis->connect(envValue('REDIS_HOST', '127.0.0.1'), (int) envValue('REDIS_PORT', 6379));
+                $redisPool = new Pool();
+                $redis = $redisPool->get();
+
                 if ($prefix) {
                     $redis->setOption(Redis::OPT_PREFIX, $app . ':'); // use custom prefix on all keys
                 }
@@ -42,10 +44,11 @@ class RedisProvider implements ServiceProviderInterface
          * Redis with no serialize
          * need for sort function.
          */
-        $container->setShared(
+        $container->set(
             'redisUnSerialize',
             function (bool $prefix = true) use ($app) {
-                $redis = new Redis();
+                $redisPool = new Pool();
+                $redis = $redisPool->get();
                 $redis->connect(
                     envValue('REDIS_HOST', '127.0.0.1'),
                     (int) envValue('REDIS_PORT', 6379)
