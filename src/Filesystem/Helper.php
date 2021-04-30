@@ -87,4 +87,51 @@ class Helper extends FilesystemHelper
             );
         }
     }
+
+    /**
+     * uploadFile.
+     *
+     * Upload local file to s3 bucket
+     *
+     * @param  string $fileName
+     * @param  int $fileName
+     * @param  int $fileName
+     * @param  array $options
+     *
+     * @return FileSystem
+     */
+    public static function uploadToS3(string $fileName, int $usersId, int $companiesId, array $options = []) : FileSystem
+    {
+        $di = Di::getDefault();
+        $config = $di->get('config');
+        $fileSystemConfig = $config->filesystem->s3;
+
+        $localPath = $config->filesystem->local->path . '/' . $fileName;
+        $completeFilePath = $fileSystemConfig->path . DIRECTORY_SEPARATOR . $fileName;
+        $uploadFileNameWithPath = $completeFilePath;
+        /**
+         * upload file base on temp.
+         *
+         * @todo change this to determine type of file and recreate it if its a image
+         */
+        $di->get('filesystem')->writeStream($uploadFileNameWithPath, fopen($localPath, 'r'), $options);
+
+        $fileSystem = new FileSystem();
+        $fileSystem->name = $fileName;
+        $fileSystem->companies_id = $companiesId;
+        $fileSystem->apps_id = $di->get('app')->getId();
+        $fileSystem->users_id = $usersId;
+        $fileSystem->path = Text::reduceSlashes($completeFilePath);
+        $fileSystem->url = Text::reduceSlashes($fileSystemConfig->cdn . DIRECTORY_SEPARATOR . $uploadFileNameWithPath);
+        $fileSystem->file_type = end(explode('.', $fileName));
+        $fileSystem->size = (string)filesize($localPath);
+
+        $fileSystem->saveOrFail();
+
+        //set the unique name we generate
+        $uniqueName = (bool) $di->get('app')->get('unique_name_separator') ? DIRECTORY_SEPARATOR . $uploadFileNameWithPath : $uploadFileNameWithPath;
+        $fileSystem->set('unique_name', Text::reduceSlashes($uniqueName));
+
+        return $fileSystem;
+    }
 }
