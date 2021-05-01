@@ -20,6 +20,7 @@ class DatabaseProvider implements ServiceProviderInterface
      */
     public function register(DiInterface $container) : void
     {
+        //cant run isCLI on github action
         $shared = defined('API_TESTS') || !isCLI() ? true : false;
 
         $container->set(
