@@ -20,7 +20,7 @@ class DatabaseProvider implements ServiceProviderInterface
      */
     public function register(DiInterface $container) : void
     {
-        $shared = !isCLI() ? true : false;
+        $shared = defined('API_TESTS') || !isCLI() ? true : false;
 
         $container->set(
             'db',
