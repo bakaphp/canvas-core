@@ -6,6 +6,7 @@ namespace Canvas\Providers;
 
 use function Baka\envValue;
 use Baka\Http\Exception\InternalServerErrorException;
+use function Baka\isCLI;
 use PDO;
 use PDOException;
 use Phalcon\Db\Adapter\Pdo\Mysql;
@@ -19,7 +20,9 @@ class DatabaseProvider implements ServiceProviderInterface
      */
     public function register(DiInterface $container) : void
     {
-        $container->setShared(
+        $shared = !isCLI() ? true : false;
+
+        $container->set(
             'db',
             function () {
                 $options = [
@@ -41,7 +44,8 @@ class DatabaseProvider implements ServiceProviderInterface
                 }
 
                 return $connection;
-            }
+            },
+            $shared
         );
     }
 }

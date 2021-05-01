@@ -19,7 +19,7 @@ class RedisCliProvider implements ServiceProviderInterface
 
         $container->set(
             'redis',
-            function (bool $prefix = true) use ($app) {
+            function (bool $prefix = true) use ($app) : Redis {
                 $redisPool = new Pool();
                 $redis = $redisPool->get();
 
@@ -46,7 +46,7 @@ class RedisCliProvider implements ServiceProviderInterface
          */
         $container->set(
             'redisUnSerialize',
-            function (bool $prefix = true) use ($app) {
+            function (bool $prefix = true) use ($app) : Redis {
                 $redisPool = new Pool();
                 $redis = $redisPool->get();
                 $redis->connect(

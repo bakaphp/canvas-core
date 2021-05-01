@@ -130,53 +130,64 @@ class QueueTask extends PhTask
         $queue = is_null($queueName) ? QUEUE::JOBS : $queueName;
 
         $callback = function (object $msg) : void {
-            //check the db before running anything
-            if (!$this->isDbConnected('db')) {
-                return ;
-            }
-
-            if ($this->di->has('dblocal')) {
-                if (!$this->isDbConnected('dblocal')) {
+            try {
+                //check the db before running anything
+                if (!$this->isDbConnected('db')) {
                     return ;
                 }
-            }
 
-            //we get the data from our event trigger and unserialize
-            $job = unserialize($msg->body);
-
-            //overwrite the user who is running this process
-            if ($job['userData'] instanceof Users) {
-                $this->di->setShared('userData', $job['userData']);
-            }
-
-            if (!class_exists($job['class'])) {
-                echo 'No Job class found' . PHP_EOL;
-                $this->log->error('No Job class found ' . $job['class']);
-                return;
-            }
-
-            if (!$job['job'] instanceof QueueableJobInterface) {
-                echo 'This Job is not queueable ' . $msg->delivery_info['consumer_tag'] ;
-                $this->log->error('This Job is not queueable ' . $msg->delivery_info['consumer_tag']);
-                return;
-            }
-
-            go(function () use ($job, $msg) {
-                //instance notification and pass the entity
-                try {
-                    $result = $job['job']->handle();
-
-                    $this->log->info(
-                        "Job ({$job['class']}) ran for {$job['userData']->getEmail()} - Process ID " . $msg->delivery_info['consumer_tag'],
-                        [$result]
-                    );
-                } catch (Throwable $e) {
-                    $this->log->info(
-                        $e->getMessage(),
-                        [$e->getTraceAsString()]
-                    );
+                if ($this->di->has('dblocal')) {
+                    if (!$this->isDbConnected('dblocal')) {
+                        return ;
+                    }
                 }
-            });
+
+                //we get the data from our event trigger and unserialize
+                $job = unserialize($msg->body);
+
+                //overwrite the user who is running this process
+                if ($job['userData'] instanceof Users) {
+                    $this->di->setShared('userData', $job['userData']);
+                }
+
+                if (!class_exists($job['class'])) {
+                    echo 'No Job class found' . PHP_EOL;
+                    $this->log->error('No Job class found ' . $job['class']);
+                    return;
+                }
+
+                if (!$job['job'] instanceof QueueableJobInterface) {
+                    echo 'This Job is not queueable ' . $msg->delivery_info['consumer_tag'] ;
+                    $this->log->error('This Job is not queueable ' . $msg->delivery_info['consumer_tag']);
+                    return;
+                }
+
+                go(function () use ($job, $msg) {
+                    //instance notification and pass the entity
+                    try {
+                        $result = $job['job']->handle();
+
+                        $this->log->info(
+                            "Job ({$job['class']}) ran for {$job['userData']->getEmail()} - Process ID " . $msg->delivery_info['consumer_tag'],
+                            [$result]
+                        );
+                    } catch (Throwable $e) {
+                        $this->log->info(
+                            $e->getMessage(),
+                            [
+                                $e->getTraceAsString()
+                            ]
+                        );
+                    }
+                });
+            } catch (Throwable $e) {
+                $this->log->info(
+                    $e->getMessage(),
+                    [
+                        $e->getTraceAsString()
+                    ]
+                );
+            }
         };
 
         Queue::process($queue, $callback);
