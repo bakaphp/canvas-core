@@ -69,9 +69,7 @@ trait AuthTrait
      */
     public function logout() : Response
     {
-        if ($this->userData->isLoggedIn()) {
-            $this->userData->logOut();
-        }
+        $this->userData->logOut();
 
         return $this->response(['Logged Out']);
     }
