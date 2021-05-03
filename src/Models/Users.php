@@ -43,6 +43,7 @@ class Users extends AbstractModel implements UserInterface
      */
     const ANONYMOUS = '-1';
 
+    public ?string $uuid = null;
     public ?string $email = null;
     public ?string $password = null;
     public ?string $firstname = null;
@@ -513,7 +514,7 @@ class Users extends AbstractModel implements UserInterface
         parent::beforeCreate();
         $random = new Random();
         $this->user_activation_email = $random->uuid();
-
+        $this->uuid = $random->uuid();
         //this is only empty when creating a new user
         if (!$this->isFirstSignup()) {
             //confirm if the app reach its limit
@@ -853,8 +854,10 @@ class Users extends AbstractModel implements UserInterface
     }
 
     /**
-     * Verify that the user is unsubscribed from email
+     * Verify that the user is unsubscribed from email.
+     *
      * @param int $notificationTypeId
+     *
      * @return bool
      */
     public function isUnsubscribe(int $notificationTypeId) : bool
@@ -863,10 +866,12 @@ class Users extends AbstractModel implements UserInterface
     }
 
     /**
-    * unsubscribe user for NotificationType
-    * @param int $notificationTypeId
-    * @return NotificationsUnsubscribe
-    */
+     * unsubscribe user for NotificationType.
+     *
+     * @param int $notificationTypeId
+     *
+     * @return NotificationsUnsubscribe
+     */
     public function unsubscribe(int $notificationTypeId) : NotificationsUnsubscribe
     {
         $notificationType = NotificationType::findFirst($notificationTypeId);
