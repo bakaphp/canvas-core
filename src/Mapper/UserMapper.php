@@ -42,6 +42,7 @@ class UserMapper extends CustomMapper
         }
 
         $userDto->id = $user->id;
+        $userDto->uuid = $user->uuid;
         $userDto->displayname = $user->displayname;
         $userDto->email = $user->email;
         $userDto->firstname = $user->firstname;

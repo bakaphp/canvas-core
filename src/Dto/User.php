@@ -11,6 +11,13 @@ class User
     public $id;
 
     /**
+     * uuid.
+     *
+     * @var string
+     */
+    public $uuid;
+
+    /**
      * @var array
      */
     public $access_list;
@@ -92,13 +99,12 @@ class User
      * @var string
      */
     public $firstname;
-    
+
     /**
      *
      * @var string
      */
     public $description;
-
 
     /**
      *
