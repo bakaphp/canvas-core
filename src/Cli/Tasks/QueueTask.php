@@ -66,7 +66,7 @@ class QueueTask extends PhTask
      */
     public function notificationsAction()
     {
-        $callback = function ($msg) : void {
+        $callback = function (object $msg) : void {
             //check the db before running anything
             if (!$this->isDbConnected('db')) {
                 return ;
@@ -129,42 +129,39 @@ class QueueTask extends PhTask
     {
         $queue = is_null($queueName) ? QUEUE::JOBS : $queueName;
 
-        $callback = function ($msg) : void {
-            //check the db before running anything
-            if (!$this->isDbConnected('db')) {
-                return ;
-            }
-
-            if ($this->di->has('dblocal')) {
-                if (!$this->isDbConnected('dblocal')) {
+        $callback = function (object $msg) : void {
+            try {
+                //check the db before running anything
+                if (!$this->isDbConnected('db')) {
                     return ;
                 }
-            }
 
-            //we get the data from our event trigger and unserialize
-            $job = unserialize($msg->body);
+                if ($this->di->has('dblocal')) {
+                    if (!$this->isDbConnected('dblocal')) {
+                        return ;
+                    }
+                }
 
-            //overwrite the user who is running this process
-            if ($job['userData'] instanceof Users) {
-                $this->di->setShared('userData', $job['userData']);
-            }
+                //we get the data from our event trigger and unserialize
+                $job = unserialize($msg->body);
 
-            if (!class_exists($job['class'])) {
-                echo 'No Job class found' . PHP_EOL;
-                $this->log->error('No Job class found ' . $job['class']);
-                return;
-            }
+                //overwrite the user who is running this process
+                if ($job['userData'] instanceof Users) {
+                    $this->di->setShared('userData', $job['userData']);
+                }
 
-            if (!$job['job'] instanceof QueueableJobInterface) {
-                echo 'This Job is not queueable ' . $msg->delivery_info['consumer_tag'] ;
-                $this->log->error('This Job is not queueable ' . $msg->delivery_info['consumer_tag']);
-                return;
-            }
+                if (!class_exists($job['class'])) {
+                    echo 'No Job class found' . PHP_EOL;
+                    $this->log->error('No Job class found ' . $job['class']);
+                    return;
+                }
 
-            try {
-                /**
-                 * swoole coroutine.
-                 */
+                if (!$job['job'] instanceof QueueableJobInterface) {
+                    echo 'This Job is not queueable ' . $msg->delivery_info['consumer_tag'] ;
+                    $this->log->error('This Job is not queueable ' . $msg->delivery_info['consumer_tag']);
+                    return;
+                }
+
                 go(function () use ($job, $msg) {
                     //instance notification and pass the entity
                     try {
@@ -177,14 +174,18 @@ class QueueTask extends PhTask
                     } catch (Throwable $e) {
                         $this->log->info(
                             $e->getMessage(),
-                            [$e->getTraceAsString()]
+                            [
+                                $e->getTraceAsString()
+                            ]
                         );
                     }
                 });
             } catch (Throwable $e) {
                 $this->log->info(
                     $e->getMessage(),
-                    [$e->getTraceAsString()]
+                    [
+                        $e->getTraceAsString()
+                    ]
                 );
             }
         };
