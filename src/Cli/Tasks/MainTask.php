@@ -10,7 +10,9 @@ use Canvas\Models\AppsPlans;
 use Canvas\Models\CompaniesGroups;
 use Canvas\Models\Subscription;
 use Canvas\Models\SubscriptionItems;
+use Canvas\Models\Users;
 use Phalcon\Cli\Task as PhTask;
+use Phalcon\Security\Random;
 use Stripe\Exception\ApiErrorException;
 use Stripe\Subscription as StripeSubscription;
 
@@ -122,6 +124,23 @@ EOF;
                     $subscription->updateOrFail();
                     echo $e->getMessage() . PHP_EOL;
                 }
+            }
+        }
+    }
+
+    /**
+     * uuidToUserAction.
+     *
+     * @return void
+     */
+    public function uuidToUserAction() : void
+    {
+        $random = new Random();
+        $users = Users::find();
+        foreach ($users as $user) {
+            if (!$user->uuid) {
+                $user->uuid = $random->uuid();
+                $user->saveOrFail();
             }
         }
     }

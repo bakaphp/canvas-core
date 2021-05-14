@@ -15,7 +15,7 @@ class User
      *
      * @var string
      */
-    public $uuid;
+    public string $uuid;
 
     /**
      * @var array
