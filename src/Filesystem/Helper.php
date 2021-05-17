@@ -48,23 +48,9 @@ class Helper extends FilesystemHelper
          */
         $di->get('filesystem')->writeStream($uploadFileNameWithPath, fopen($file->getTempName(), 'r'), $options);
 
-        $fileSystem = new FileSystem();
-        $fileSystem->name = $file->getName();
-        $fileSystem->companies_id = $di->get('userData')->currentCompanyId();
-        $fileSystem->apps_id = $di->get('app')->getId();
-        $fileSystem->users_id = $di->get('userData')->getId();
-        $fileSystem->path = Text::reduceSlashes($completeFilePath);
-        $fileSystem->url = Text::reduceSlashes($fileSystemConfig->cdn . DIRECTORY_SEPARATOR . $uploadFileNameWithPath);
-        $fileSystem->file_type = $file->getExtension();
-        $fileSystem->size = (string) $file->getSize();
+        $url = Text::reduceSlashes($fileSystemConfig->cdn . DIRECTORY_SEPARATOR . $uploadFileNameWithPath);
 
-        $fileSystem->saveOrFail();
-
-        //set the unique name we generate
-        $uniqueName = (bool) $di->get('app')->get('unique_name_separator') ? DIRECTORY_SEPARATOR . $uploadFileNameWithPath : $uploadFileNameWithPath;
-        $fileSystem->set('unique_name', Text::reduceSlashes($uniqueName));
-
-        return $fileSystem;
+        return (new self)->addToFilesystem($fileName, $companiesId, $di->get('app')->getId(), $usersId, Text::reduceSlashes($completeFilePath), $url, end(explode('.', $fileName)), (string)filesize($localPath));
     }
 
     /**
@@ -86,5 +72,71 @@ class Helper extends FilesystemHelper
                 $image->getHeight() > $image->getWidth() ? 'portrait' : 'landscape'
             );
         }
+    }
+
+    /**
+     * uploadFile.
+     *
+     * Upload local file to s3 bucket
+     *
+     * @param  string $fileName
+     * @param  int $fileName
+     * @param  int $fileName
+     * @param  array $options
+     *
+     * @return FileSystem
+     */
+    public static function uploadToS3(string $fileName, int $usersId, int $companiesId, array $options = []) : FileSystem
+    {
+        $di = Di::getDefault();
+        $config = $di->get('config');
+        $fileSystemConfig = $config->filesystem->s3;
+
+        $localPath = $config->filesystem->local->path . '/' . $fileName;
+        $completeFilePath = $fileSystemConfig->path . DIRECTORY_SEPARATOR . $fileName;
+        $uploadFileNameWithPath = $completeFilePath;
+        /**
+         * upload file base on temp.
+         *
+         * @todo change this to determine type of file and recreate it if its a image
+         */
+        $di->get('filesystem')->writeStream($uploadFileNameWithPath, fopen($localPath, 'r'), $options);
+
+        $url = Text::reduceSlashes($fileSystemConfig->cdn . DIRECTORY_SEPARATOR . $uploadFileNameWithPath);
+        return (new self)->addToFilesystem($fileName, $companiesId, $di->get('app')->getId(), $usersId, Text::reduceSlashes($completeFilePath), $url, end(explode('.', $fileName)), (string)filesize($localPath));
+    }
+
+    /**
+     * addToFilesystem.
+     *
+     * @param  string $name
+     * @param  int $companiesId
+     * @param  int $appId
+     * @param  int $userId
+     * @param  string $path
+     * @param  string $url
+     * @param  string $fileType
+     * @param  int $size
+     *
+     * @return FileSystem
+     */
+    public function addToFilesystem(string $name, int $companiesId, int $appId, int $userId, string $path, string $url, string $fileType, string $size) : FileSystem
+    {
+        $fileSystem = new FileSystem();
+        $fileSystem->name = $name;
+        $fileSystem->companies_id = $companiesId;
+        $fileSystem->apps_id = $appId;
+        $fileSystem->users_id = $userId;
+        $fileSystem->path = $path;
+        $fileSystem->url = $url;
+        $fileSystem->file_type = $fileType;
+        $fileSystem->size = $size;
+
+        $fileSystem->saveOrFail();
+
+        //set the unique name we generate
+        $uniqueName = (bool) Di::getDefault()->get('app')->get('unique_name_separator') ? DIRECTORY_SEPARATOR . $path : $path;
+        $fileSystem->set('unique_name', Text::reduceSlashes($uniqueName));
+        return $fileSystem;
     }
 }
