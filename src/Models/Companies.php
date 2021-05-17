@@ -37,6 +37,7 @@ class Companies extends AbstractModel
     const DEFAULT_COMPANY_APP = 'DefaulCompanyApp_';
     const PAYMENT_GATEWAY_CUSTOMER_KEY = 'payment_gateway_customer_id';
     const DEFAULT_COMPANY_BRANCH_APP = 'DefaultCompanyBranchApp_';
+    const GLOBAL_COMPANIES_ID = 0;
 
     /**
      * Initialize method for model.
