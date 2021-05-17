@@ -49,8 +49,16 @@ class Helper extends FilesystemHelper
         $di->get('filesystem')->writeStream($uploadFileNameWithPath, fopen($file->getTempName(), 'r'), $options);
 
         $url = Text::reduceSlashes($fileSystemConfig->cdn . DIRECTORY_SEPARATOR . $uploadFileNameWithPath);
-
-        return (new self)->addToFilesystem($fileName, $companiesId, $di->get('app')->getId(), $usersId, Text::reduceSlashes($completeFilePath), $url, end(explode('.', $fileName)), (string)filesize($localPath));
+        return (new self)->addToFilesystem(
+            $file->getName(),
+            $di->get('userData')->currentCompanyId(),
+            $di->get('app')->getId(),
+            $di->get('userData')->getId(),
+            Text::reduceSlashes($completeFilePath),
+            $url,
+            $file->getExtension(),
+            (string) $file->getSize()
+        );
     }
 
     /**
@@ -95,6 +103,7 @@ class Helper extends FilesystemHelper
         $localPath = $config->filesystem->local->path . '/' . $fileName;
         $completeFilePath = $fileSystemConfig->path . DIRECTORY_SEPARATOR . $fileName;
         $uploadFileNameWithPath = $completeFilePath;
+
         /**
          * upload file base on temp.
          *
@@ -103,7 +112,16 @@ class Helper extends FilesystemHelper
         $di->get('filesystem')->writeStream($uploadFileNameWithPath, fopen($localPath, 'r'), $options);
 
         $url = Text::reduceSlashes($fileSystemConfig->cdn . DIRECTORY_SEPARATOR . $uploadFileNameWithPath);
-        return (new self)->addToFilesystem($fileName, $companiesId, $di->get('app')->getId(), $usersId, Text::reduceSlashes($completeFilePath), $url, end(explode('.', $fileName)), (string)filesize($localPath));
+        return (new self)->addToFilesystem(
+            $fileName,
+            $companiesId,
+            $di->get('app')->getId(),
+            $usersId,
+            Text::reduceSlashes($completeFilePath),
+            $url,
+            end(explode('.', $fileName)),
+            (string)filesize($localPath)
+        );
     }
 
     /**
