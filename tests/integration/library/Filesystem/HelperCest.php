@@ -33,10 +33,9 @@ class HelperCest
             $I->assertTrue($file instanceof FileSystem);
         } catch (S3Exception $s) {
             //we expect you wont be able to upload a empty file
-            print_r($e->getMessages()[0]);
             $I->assertTrue(true);
         } catch (Exception $e) {
-            print_r($e->getMessages()[0]);
+            print_r($e->getMessage());
             $I->assertTrue(false);
         }
     }
