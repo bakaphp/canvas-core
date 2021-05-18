@@ -66,7 +66,7 @@ class AuthController extends BaseController
     {
         $request = $this->request->getPostData();
 
-        $userIp = !defined('API_TESTS') ? $this->request->getClientAddress() : '127.0.0.1'; //help getting the client ip on scrutinizer :(
+        $userIp = !defined('API_TESTS') ? $this->request->getClientAddress(true) : '127.0.0.1'; //help getting the client ip on scrutinizer :(
         $admin = 0;
         $remember = 1;
 

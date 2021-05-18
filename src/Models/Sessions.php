@@ -230,13 +230,61 @@ class Sessions extends Model
      * remove the corresponding auto-login key and reset the cookies.
      *
      * @param Users $user
+     * @param string|null $ip
      *
      * @return bool
      */
-    public function end(Users $user) : bool
+    public function end(Users $user, ?string $ip = null) : bool
     {
-        $this->find('users_id = ' . $user->getId())->delete();
-        SessionKeys::find('users_id = ' . $user->getId())->delete();
+        if (is_null($ip)) {
+            return $this->endAll($user);
+        }
+
+        $this->find([
+            'conditions' => 'users_id = :users_id: AND ip = :ip:',
+            'bind' => [
+                'users_id' => $user->getId(),
+                'ip' => $ip
+            ]
+        ])
+        ->delete();
+
+        SessionKeys::find([
+            'conditions' => 'users_id = :users_id: AND last_ip = :last_ip:',
+            'bind' => [
+                'users_id' => $user->getId(),
+                'last_ip' => $ip,
+            ]
+        ])
+        ->delete();
+
+        return true;
+    }
+
+    /**
+     * End all user Sessions from all devices and Ips.
+     *
+     * @param Users $user
+     *
+     * @return bool
+     */
+    public function endAll(Users $user) : bool
+    {
+        $this->find([
+            'conditions' => 'users_id = :users_id:',
+            'bind' => [
+                'users_id' => $user->getId(),
+            ]
+        ])
+        ->delete();
+
+        SessionKeys::find([
+            'conditions' => 'users_id = :users_id: ',
+            'bind' => [
+                'users_id' => $user->getId(),
+            ]
+        ])
+        ->delete();
 
         return true;
     }

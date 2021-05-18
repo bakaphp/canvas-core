@@ -27,7 +27,7 @@ trait AuthTrait
         $email = $this->request->getPost('email', 'string');
         $password = $this->request->getPost('password', 'string');
         $admin = $this->request->getPost('is_admin', 'int', 0);
-        $userIp = !defined('API_TESTS') ? $this->request->getClientAddress() : '127.0.0.1'; //help getting the client ip on scrutinizer :(
+        $userIp = !defined('API_TESTS') ? $this->request->getClientAddress(true) : '127.0.0.1'; //help getting the client ip on scrutinizer :(
         $remember = $this->request->getPost('remember', 'int', 1);
 
         //Ok let validate user password
@@ -69,7 +69,10 @@ trait AuthTrait
      */
     public function logout() : Response
     {
-        $this->userData->logOut();
+        $userIp = !defined('API_TESTS') ? $this->request->getClientAddress(true) : '127.0.0.1';
+        $data = $this->request->getPutData();
+        $allDevices = isset($data['all_devices']);
+        $this->userData->logOut(!$allDevices ? $userIp : null);
 
         return $this->response(['Logged Out']);
     }
