@@ -70,7 +70,9 @@ trait AuthTrait
     public function logout() : Response
     {
         $userIp = !defined('API_TESTS') ? $this->request->getClientAddress(true) : '127.0.0.1';
-        $this->userData->logOut($userIp);
+        $data = $this->request->getPutData();
+        $allDevices = isset($data['all_devices']);
+        $this->userData->logOut(!$allDevices ? $userIp : null);
 
         return $this->response(['Logged Out']);
     }
