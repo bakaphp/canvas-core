@@ -419,10 +419,10 @@ class Users extends AbstractModel implements UserInterface
      *
      * @return bool
      */
-    public function logOut() : bool
+    public function logOut(?string $ip = null) : bool
     {
         $session = new Sessions();
-        $session->end($this);
+        $session->end($this, $ip);
 
         return true;
     }
