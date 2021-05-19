@@ -543,7 +543,8 @@ trait FileSystemModelTrait
         ';
 
         $key = self::generateCacheKey($bindParams);
-        if (!$resultSet = $redis->get($key)) {
+        $resultSet = $redis->get($key);
+        if (!$resultSet || !$resultSet->count()) {
             $fileSystemEntities = new FileSystemEntities();
             // Execute the query
             $resultSet = new Resultset(
