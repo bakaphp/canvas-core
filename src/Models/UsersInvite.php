@@ -103,11 +103,7 @@ class UsersInvite extends AbstractModel
         ]);
 
         if (is_object($userExists)) {
-            $softDeleteCheck = UsersAssociatedApps::findFirst([
-                'conditions' => 'users_id = ?0 and companies_id = ?1 and is_deleted = 0',
-                'bind' => [$userExists->id, $userData->currentCompanyId()]
-            ]);
-            if ($userData->defaultCompany->userAssociatedToCompany($userExists) && !empty($softDeleteCheck)) {
+            if ($userData->defaultCompany->userAssociatedToCompany($userExists)) {
                 throw new ModelNotFoundException('User already is associated with this company app');
             }
         }
