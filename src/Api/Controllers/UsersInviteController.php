@@ -11,6 +11,7 @@ use Canvas\Auth\Auth;
 use Canvas\Contracts\AuthTrait;
 use Canvas\Models\Roles;
 use Canvas\Models\Users;
+use Canvas\Models\UsersAssociatedApps;
 use Canvas\Models\UsersInvite;
 use Canvas\Notifications\Invitation;
 use Exception;
@@ -168,7 +169,17 @@ class UsersInviteController extends BaseController
             //Check if user already exists
             $userExists = Users::getByEmail($usersInvite->email);
             $newUser = $userExists;
-            $this->userData->getDefaultCompany()->associate($userExists, $this->userData->getDefaultCompany());
+
+            $userAssociated = UsersAssociatedApps::findFirst([
+                'conditions' => 'users_id = ?0 and companies_id = ?1 and is_deleted = 1',
+                'bind' => [$userExists->id, $this->userData->currentCompanyId()]
+            ]);
+            if (!empty($userAssociated)) {
+                $userAssociated->is_deleted = 0;
+                $userAssociated->saveOrFail();
+            } else {
+                $this->userData->getDefaultCompany()->associate($userExists, $this->userData->getDefaultCompany());
+            }
         } catch (Exception $e) {
             try {
                 $newUser = $usersInvite->newUser($request);
