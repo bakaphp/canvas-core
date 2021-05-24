@@ -32,4 +32,26 @@ class UsersCest
         $I->assertTrue(isset($data[0]['notification_type_id']));
         $I->assertTrue($data[0]['notification_type_id'] == -1);
     }
+
+    /**
+     * unsubscribe from notification
+     *
+     * @param ApiTester
+     *
+     * @return void
+     */
+    public function getUsersByRole(ApiTester $I) : void
+    {
+        $role = 'admins'
+        $userData = $I->apiLogin();
+
+        $I->haveHttpHeader('Authorization', $userData->token);
+        $I->sendGet('/v1/users/' . $role);
+
+        $I->seeResponseIsSuccessful();
+        $response = $I->grabResponse();
+        $data = json_decode($response, true);
+
+        $I->assertTrue(!empty($data));
+    }
 }
