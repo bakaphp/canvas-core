@@ -42,7 +42,7 @@ class UsersCest
      */
     public function getUsersByRole(ApiTester $I) : void
     {
-        $role = 'admins'
+        $role = 'admins';
         $userData = $I->apiLogin();
 
         $I->haveHttpHeader('Authorization', $userData->token);
