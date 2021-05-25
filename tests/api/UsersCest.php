@@ -46,7 +46,7 @@ class UsersCest
         $userData = $I->apiLogin();
 
         $I->haveHttpHeader('Authorization', $userData->token);
-        $I->sendGet('/v1/users/' . $role);
+        $I->sendGet('/v1/users/' . $role . '/roles');
 
         $I->seeResponseIsSuccessful();
         $response = $I->grabResponse();

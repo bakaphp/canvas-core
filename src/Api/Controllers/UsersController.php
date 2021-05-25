@@ -299,9 +299,9 @@ class UsersController extends BaseController
     {
         $usersArray = [];
 
-        // if (!Roles::isRole($roleName)) {
-        //     throw new NotFoundException(_('Role does not exist'));
-        // }
+        if (!Roles::isRole($roleName)) {
+            throw new NotFoundException(_('Role does not exist'));
+        }
 
         $role = Roles::getByName(ucfirst($roleName));
 
