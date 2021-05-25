@@ -6,11 +6,14 @@ namespace Canvas\Api\Controllers;
 
 use Baka\Contracts\Controllers\ProcessOutputMapperTrait;
 use Baka\Http\Exception\InternalServerErrorException;
+use Baka\Http\Exception\NotFoundException;
 use Baka\Validation as CanvasValidation;
 use Canvas\Dto\User as UserDto;
 use Canvas\Mapper\UserMapper;
 use Canvas\Models\Notifications;
 use Canvas\Models\Users;
+use Canvas\Models\Roles;
+use Canvas\Models\UserRoles;
 use Canvas\Models\UsersAssociatedApps;
 use Phalcon\Http\Response;
 use Phalcon\Validation\Validator\PresenceOf;
@@ -283,5 +286,42 @@ class UsersController extends BaseController
         }
 
         return $this->response($unsubscribe);
+    }
+
+    /**
+     * Update a User Info.
+     *
+     * @param string $roleName
+     *
+     * @return Response
+     */
+    public function getUsersByRole(string $roleName) : Response
+    {
+        $usersArray = [];
+
+        if (!Roles::isRole($roleName)) {
+            throw new NotFoundException(_('Role does not exist'));
+        }
+
+        $role = Roles::getByName(ucfirst($roleName));
+
+        // Use table users role to get a list of all users with that role and belong to current company and app
+        $userRoles = UserRoles::findOrFail([
+            "conditions" => "apps_id = :apps_id: 
+                            and companies_id = :companies_id: 
+                            and roles_id = :roles_id: 
+                            and is_deleted = 0",
+            "bind" => [
+                'apps_id' => $this->app->getId(),
+                'companies_id' => $this->userData->getCurrentCompany()->getId(),
+                'roles_id' => $role->id
+            ]
+        ]);
+
+        foreach ($userRoles as $userRole) {
+            $usersArray[] = $userRole->user;
+        }
+
+        return $this->response($usersArray);
     }
 }
