@@ -27,7 +27,7 @@ class RedisProvider implements ServiceProviderInterface
                         (int) envValue('REDIS_PORT', 6379)
                     );
                 } else {
-                    $clusters = explode(',', envValue('REDIS_HOST', '127.0.0.1'));
+                    $clusters = explode(',', envValue('REDIS_CLUSTER_HOST', '127.0.0.1'));
                     $clusters = array_map('trim', $clusters);
 
                     $redis = new RedisCluster(null, $clusters, 1.5, 1.5);
@@ -63,7 +63,7 @@ class RedisProvider implements ServiceProviderInterface
                         (int) envValue('REDIS_PORT', 6379)
                     );
                 } else {
-                    $clusters = explode(',', envValue('REDIS_HOST', '127.0.0.1'));
+                    $clusters = explode(',', envValue('REDIS_CLUSTER_HOST', '127.0.0.1'));
                     $clusters = array_map('trim', $clusters);
 
                     $redis = new RedisCluster(null, $clusters, 1.5, 1.5);
