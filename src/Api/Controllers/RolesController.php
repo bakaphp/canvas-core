@@ -34,7 +34,7 @@ class RolesController extends BaseController
     {
         $this->model = new Roles();
 
-        //get the list of roes for the systems + my company
+        //get the list of roles for the systems + my company
         $companyTotalRoles = Roles::count([
             'conditions' => 'apps_id = :apps_id: AND companies_id = :companies_id: AND is_deleted = 0',
             'bind' => [
