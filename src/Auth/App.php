@@ -80,7 +80,9 @@ class App extends Auth
 
         $userApps = $user->getApps([
             'conditions' => 'apps_id = ?0',
-            'bind' => [$app->getId()]
+            'bind' => [
+                $app->getId()
+            ]
         ]);
 
         if (is_object($userApps)) {

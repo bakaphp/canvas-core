@@ -119,7 +119,7 @@ class Auth
 
         // If the last login is more than x minutes ago, then reset the login tries/time
         if ($user->user_last_login_try && $config->login_reset_time && $user->user_last_login_try < (time() - ($config->login_reset_time * 60))) {
-            $user->user_login_tries = 0; //turn back to 0 attems, succes
+            $user->user_login_tries = 0; //turn back to 0 attempt, success
             $user->user_last_login_try = 0;
             $user->updateOrFail();
         }

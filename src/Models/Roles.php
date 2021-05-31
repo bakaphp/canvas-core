@@ -199,7 +199,7 @@ class Roles extends AbstractModel
             'bind' => [
                 $id,
                 $companyId,
-                self::DEFAULT_ACL_COMPANY_ID,
+                Apps::CANVAS_DEFAULT_COMPANY_ID,
                 Di::getDefault()->get('acl')->getApp()->getId(),
                 Apps::CANVAS_DEFAULT_APP_ID
             ],
@@ -237,7 +237,7 @@ class Roles extends AbstractModel
                 $app->getId(),
                 self::DEFAULT_ACL_APP_ID,
                 $company->getId(),
-                self::DEFAULT_ACL_COMPANY_ID
+                Apps::CANVAS_DEFAULT_COMPANY_ID
             ],
             'order' => 'apps_id DESC'
         ]);
@@ -384,5 +384,22 @@ class Roles extends AbstractModel
     public function isDefault() : bool
     {
         return (bool) $this->is_default;
+    }
+
+    /**
+     * Get the roles App Id.
+     *
+     * @return int
+     */
+    public function getAppsId() : int
+    {
+        $app = $this->di->get('app');
+        $appId = $this->apps_id;
+
+        if ($app->getId() != Apps::CANVAS_DEFAULT_APP_ID && $this->apps_id === Apps::CANVAS_DEFAULT_APP_ID) {
+            $appId = $app->getId();
+        }
+
+        return (int) $appId;
     }
 }
