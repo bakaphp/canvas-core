@@ -391,7 +391,7 @@ class Roles extends AbstractModel
      *
      * @return int
      */
-    public function getAppsId()
+    public function getAppsId() : int
     {
         $app = $this->di->get('app');
         $appId = $this->apps_id;
