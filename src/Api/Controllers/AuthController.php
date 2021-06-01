@@ -101,7 +101,8 @@ class AuthController extends BaseController
             'time' => date('Y-m-d H:i:s'),
             'expires' => $token['token_expiration'],
             'refresh_token_expires' => $token['refresh_token_expiration'],
-            'id' => $userData->getId()
+            'id' => $userData->getId(),
+            'timezone' => $userData->timezone
         ]);
     }
 
