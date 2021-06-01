@@ -56,6 +56,7 @@ trait AuthTrait
             'time' => date('Y-m-d H:i:s'),
             'expires' => date('Y-m-d H:i:s', time() + $this->config->jwt->payload->exp),
             'id' => $userData->getId(),
+            'timezone' => $userData->timezone
         ]);
     }
 
