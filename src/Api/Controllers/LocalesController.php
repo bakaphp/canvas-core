@@ -39,8 +39,11 @@ class LocalesController extends BaseController
     public function onConstruct()
     {
         $this->model = new Countries();
+        unset($_GET['limit']);
         $this->additionalSearchFields = [
             ['is_deleted', ':', '0'],
         ];
+        $this->customSort = 'name ASC';
+        $this->customLimit = 250;
     }
 }
