@@ -39,7 +39,7 @@ trait FileSystemModelTrait
 
                 if ($fileSystem = FileSystem::getById($file['filesystem_id'])) {
                     $this->attach([[
-                        'id' => $file['id'] ?: 0,
+                        'id' => $file['id'] ?? 0,
                         'file' => $fileSystem,
                         'field_name' => $file['field_name'] ?? '',
                         'is_deleted' => $file['is_deleted'] ?? 0
