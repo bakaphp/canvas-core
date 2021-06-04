@@ -810,7 +810,8 @@ class Users extends AbstractModel implements UserInterface
      */
     public function generateForgotCode() : string
     {
-        $this->user_recover_code = sprintf("%06d", mt_rand(1, 999999));
+        $random = new Random();
+        $this->user_recover_code = sprintf("%06d", $random->number(999999));
         $this->updateOrFail();
 
         return $this->user_recover_code;
