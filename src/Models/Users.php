@@ -61,6 +61,7 @@ class Users extends AbstractModel implements UserInterface
     public ?int $city_id = 0;
     public ?int $state_id = 0;
     public ?int $country_id = 0;
+    public ?int $user_recover_code = 0;
     public int $welcome = 0;
     public int $user_active = 0;
     public ?string $user_activation_key = null;
@@ -800,6 +801,19 @@ class Users extends AbstractModel implements UserInterface
         $this->updateOrFail();
 
         return $this->user_activation_forgot;
+    }
+
+    /**
+     * Generate new forgot password code.
+     *
+     * @return string
+     */
+    public function generateForgotCode() : string
+    {
+        $this->user_recover_code = sprintf("%06d", mt_rand(1, 999999));
+        $this->updateOrFail();
+
+        return $this->user_recover_code;
     }
 
     /**
