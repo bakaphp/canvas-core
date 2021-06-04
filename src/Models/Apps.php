@@ -30,6 +30,7 @@ class Apps extends BakaApps
      * @var string
      */
     const CANVAS_DEFAULT_APP_ID = 1;
+    const CANVAS_DEFAULT_COMPANY_ID = 1;
     const CANVAS_DEFAULT_APP_NAME = 'Default';
     const APP_DEFAULT_ROLE_SETTING = 'default_admin_role';
     const APP_DEFAULT_COUNTRY = 'default_user_country';

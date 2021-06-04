@@ -45,7 +45,7 @@ trait PermissionsTrait
             $userRole = new UserRoles();
             $userRole->users_id = $this->getId();
             $userRole->roles_id = $role->getId();
-            $userRole->apps_id = $role->apps_id;
+            $userRole->apps_id = $role->getAppsId();
             $userRole->companies_id = $this->currentCompanyId();
         } else {
             $userRole->roles_id = $role->getId();
@@ -72,12 +72,12 @@ trait PermissionsTrait
             'conditions' => 'users_id = :users_id: and apps_id = :apps_id: and companies_id = :companies_id: and is_deleted = 0',
             'bind' => [
                 'users_id' => $this->getId(),
-                'apps_id' => $role->apps_id,
+                'apps_id' => $role->getAppsId(),
                 'companies_id' => $this->currentCompanyId()
             ]], [
                 'users_id' => $this->getId(),
                 'roles_id' => $role->getId(),
-                'apps_id' => $role->apps_id,
+                'apps_id' => $role->getAppsId(),
                 'companies_id' => $this->currentCompanyId()
             ]);
 

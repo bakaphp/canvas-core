@@ -49,7 +49,7 @@ class SystemModules extends BakaSystemModules
 
         $this->belongsTo(
             'company_branches_id',
-            'Canvas\Models\CompanyBranches',
+            'Canvas\Models\CompaniesBranches',
             'id',
             ['alias' => 'companyBranch', 'reusable' => true]
         );
