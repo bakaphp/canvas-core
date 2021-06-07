@@ -217,7 +217,7 @@ trait FileSystemModelTrait
                     $file['file']->move($this->filesNewAttachedPath());
                 }
             } catch (Exception $e) {
-                Di::getDefault()->get('log')->error($e->getMessage());
+                Di::getDefault()->get('log')->warning($e->getMessage());
                 //we wont stop operation but wont attach 2 images to the same entity
             }
         }
