@@ -176,9 +176,12 @@ class AuthController extends BaseController
 
         $authSession = [
             'token' => $token['token'],
+            'refresh_token' => $token['refresh_token'],
             'time' => date('Y-m-d H:i:s'),
             'expires' => $token['token_expiration'],
+            'refresh_token_expires' => $token['refresh_token_expiration'],
             'id' => $user->getId(),
+            'timezone' => $userData->timezone
         ];
 
         $user->password = '';
@@ -264,9 +267,12 @@ class AuthController extends BaseController
 
         $authSession = [
             'token' => $token['token'],
+            'refresh_token' => $token['refresh_token'],
             'time' => date('Y-m-d H:i:s'),
             'expires' => $token['token_expiration'],
+            'refresh_token_expires' => $token['refresh_token_expiration'],
             'id' => $user->getId(),
+            'timezone' => $userData->timezone
         ];
 
         $user->password = '';
