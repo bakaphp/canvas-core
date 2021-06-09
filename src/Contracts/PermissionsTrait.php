@@ -20,7 +20,7 @@ trait PermissionsTrait
      *
      * @return bool
      */
-    public function assignRole(string $role, Companies $company = null) : bool
+    public function assignRole(string $role, ?Companies $company = null) : bool
     {
         /**
          * check if we have a dot, that means it legacy and sending the app name
