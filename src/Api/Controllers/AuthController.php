@@ -152,7 +152,7 @@ class AuthController extends BaseController
         $user->lastname = $validation->getValue('lastname');
         $user->password = $validation->getValue('password');
         $user->displayname = !empty($validation->getValue('displayname')) ? $validation->getValue('displayname') : $user->generateDefaultDisplayname();
-        $userIp = !defined('API_TESTS') ? $this->request->getClientAddress() : '127.0.0.1'; //help getting the client ip on scrutinizer :(
+        $userIp = !defined('API_TESTS') ? $this->request->getClientAddress(true) : '127.0.0.1'; //help getting the client ip on scrutinizer :(
         $user->defaultCompanyName = $validation->getValue('default_company');
 
         //user registration
@@ -239,7 +239,7 @@ class AuthController extends BaseController
         $user->lastname = $validation->getValue('lastname');
         $user->password = $validation->getValue('password');
         $user->displayname = !empty($validation->getValue('displayname')) ? $validation->getValue('displayname') : $user->generateDefaultDisplayname();
-        $userIp = !defined('API_TESTS') ? $this->request->getClientAddress() : '127.0.0.1'; //help getting the client ip on scrutinizer :(
+        $userIp = !defined('API_TESTS') ? $this->request->getClientAddress(true) : '127.0.0.1'; //help getting the client ip on scrutinizer :(
         $user->defaultCompanyName = $validation->getValue('default_company');
         $user->roles_id = $registerRole->roles_id;
 
@@ -314,7 +314,7 @@ class AuthController extends BaseController
         $token = Sessions::restart(
             $user,
             $refreshToken->claims()->get('sessionId'),
-            (string)$this->request->getClientAddress()
+            (string)$this->request->getClientAddress(true)
         );
 
         return $this->response([
