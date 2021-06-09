@@ -4,6 +4,7 @@ namespace Canvas\Cli\Tasks;
 
 use Baka\Contracts\Queue\QueueableJobInterface;
 use Baka\Queue\Queue;
+use Baka\Support\Str;
 use Canvas\Models\Users;
 use Phalcon\Cli\Task as PhTask;
 use Phalcon\Mvc\Model;
@@ -30,15 +31,7 @@ class QueueTask extends PhTask
     {
         $callback = function ($msg) : void {
             //check the db before running anything
-            if (!$this->isDbConnected('db')) {
-                return ;
-            }
-
-            if ($this->di->has('dblocal')) {
-                if (!$this->isDbConnected('dblocal')) {
-                    return ;
-                }
-            }
+            $this->reconnectDb();
 
             //we get the data from our event trigger and unserialize
             $event = unserialize($msg->body);
@@ -68,15 +61,7 @@ class QueueTask extends PhTask
     {
         $callback = function (object $msg) : void {
             //check the db before running anything
-            if (!$this->isDbConnected('db')) {
-                return ;
-            }
-
-            if ($this->di->has('dblocal')) {
-                if (!$this->isDbConnected('dblocal')) {
-                    return ;
-                }
-            }
+            $this->reconnectDb();
 
             //we get the data from our event trigger and unserialize
             $notification = unserialize($msg->body);
@@ -132,15 +117,7 @@ class QueueTask extends PhTask
         $callback = function (object $msg) : void {
             try {
                 //check the db before running anything
-                if (!$this->isDbConnected('db')) {
-                    return ;
-                }
-
-                if ($this->di->has('dblocal')) {
-                    if (!$this->isDbConnected('dblocal')) {
-                        return ;
-                    }
-                }
+                $this->reconnectDb();
 
                 //we get the data from our event trigger and unserialize
                 $job = unserialize($msg->body);
@@ -165,6 +142,8 @@ class QueueTask extends PhTask
                 go(function () use ($job, $msg) {
                     //instance notification and pass the entity
                     try {
+                        $this->reconnectDb();
+
                         $result = $job['job']->handle();
 
                         $this->log->info(
@@ -194,6 +173,24 @@ class QueueTask extends PhTask
     }
 
     /**
+     * Reconnect to our db providers.
+     *
+     * @return void
+     */
+    protected function reconnectDb() : void
+    {
+        if (!$this->isDbConnected('db')) {
+            return ;
+        }
+
+        if ($this->di->has('dblocal')) {
+            if (!$this->isDbConnected('dblocal')) {
+                return ;
+            }
+        }
+    }
+
+    /**
      * Confirm if the db is connected.
      *
      * @return bool
@@ -203,7 +200,7 @@ class QueueTask extends PhTask
         try {
             $this->di->get($dbProvider)->fetchAll('SELECT 1');
         } catch (Throwable $e) {
-            if (strpos($e->getMessage(), 'MySQL server has gone away') !== false) {
+            if (Str::contains($this->getMessage(), 'MySQL server has gone away')) {
                 $this->di->get($dbProvider)->connect();
                 return true;
             }
