@@ -11,7 +11,6 @@ use Canvas\Models\Users;
 use Canvas\Notifications\ResetPassword;
 use Exception;
 use Phalcon\Http\Response;
-use Phalcon\Validation;
 use Phalcon\Validation\Validator\Confirmation;
 use Phalcon\Validation\Validator\Email as EmailValidator;
 use Phalcon\Validation\Validator\PresenceOf;
@@ -35,21 +34,16 @@ trait AuthTrait
         $email = $this->request->getPost('email', 'string');
         $password = $this->request->getPost('password', 'string');
         $admin = $this->request->getPost('is_admin', 'int', 0);
-        $userIp = !defined('API_TESTS') ? $this->request->getClientAddress(true) : '127.0.0.1'; //help getting the client ip on scrutinizer :(
+        $userIp = !defined('API_TESTS') ? $this->request->getClientAddress(truetrue) : '127.0.0.1'; //help getting the client ip on scrutinizer :(
         $remember = $this->request->getPost('remember', 'int', 1);
 
         //Ok let validate user password
-        $validation = new Validation();
+        $validation = new CanvasValidation();
         $validation->add('email', new PresenceOf(['message' => _('The email is required.')]));
         $validation->add('password', new PresenceOf(['message' => _('The password is required.')]));
 
         //validate this form for password
         $messages = $validation->validate($this->request->getPost());
-        if (count($messages)) {
-            foreach ($messages as $message) {
-                throw new Exception($message);
-            }
-        }
 
         $userData = Users::login($email, $password, $remember, $admin, $userIp);
 
@@ -80,7 +74,7 @@ trait AuthTrait
      */
     public function logout() : Response
     {
-        $userIp = !defined('API_TESTS') ? $this->request->getClientAddress(true) : '127.0.0.1';
+        $userIp = !defined('API_TESTS') ? $this->request->getClientAddress(truetrue) : '127.0.0.1';
         $data = $this->request->getPutData();
         $allDevices = isset($data['all_devices']);
         $this->userData->logOut(!$allDevices ? $userIp : null);
@@ -100,22 +94,18 @@ trait AuthTrait
     {
         $user = $this->userModel;
 
-        $request = $this->request->getPost();
-
-        if (empty($request)) {
-            $request = $this->request->getJsonRawBody(true);
-        }
+        $request = $this->request->getPostData();
 
         $user->email = $this->request->getPost('email', 'email');
         $user->firstname = ltrim(trim($this->request->getPost('firstname', 'string')));
         $user->lastname = ltrim(trim($this->request->getPost('lastname', 'string')));
         $user->password = ltrim(trim($this->request->getPost('password', 'string')));
-        $userIp = !defined('API_TESTS') ? $this->request->getClientAddress() : '127.0.0.1'; //help getting the client ip on scrutinizer :(
+        $userIp = !defined('API_TESTS') ? $this->request->getClientAddress(true) : '127.0.0.1'; //help getting the client ip on scrutinizer :(
         $user->displayname = ltrim(trim($this->request->getPost('displayname', 'string')));
         $user->defaultCompanyName = ltrim(trim($this->request->getPost('default_company', 'string')));
 
         //Ok let validate user password
-        $validation = new Validation();
+        $validation = new CanvasValidation();
         $validation->add('password', new PresenceOf(['message' => _('The password is required.')]));
         $validation->add('firstname', new PresenceOf(['message' => _('The firstname is required.')]));
         $validation->add('email', new EmailValidator(['message' => _('The email is not valid.')]));
@@ -135,11 +125,6 @@ trait AuthTrait
 
         //validate this form for password
         $messages = $validation->validate($this->request->getPost());
-        if (count($messages)) {
-            foreach ($messages as $message) {
-                throw new Exception($message);
-            }
-        }
 
         //user registration
         try {
@@ -227,7 +212,7 @@ trait AuthTrait
         $verifyPassword = trim($this->request->getPost('verify_password', 'string'));
 
         //Ok let validate user password
-        $validation = new Validation();
+        $validation = new CanvasValidation();
         $validation->add('new_password', new PresenceOf(['message' => _('The password is required.')]));
         $validation->add('new_password', new StringLength(['min' => 8, 'messageMinimum' => _('Password is too short. Minimum 8 characters.')]));
 
@@ -238,11 +223,6 @@ trait AuthTrait
 
         //validate this form for password
         $messages = $validation->validate($this->request->getPost());
-        if (count($messages)) {
-            foreach ($messages as $message) {
-                throw new Exception($message);
-            }
-        }
 
         // Check that they are the same
         if ($newPassword == $verifyPassword) {
@@ -313,7 +293,7 @@ trait AuthTrait
      */
     private function loginUsers(string $email, string $password) : array
     {
-        $userIp = !defined('API_TESTS') ? $this->request->getClientAddress() : '127.0.0.1';
+        $userIp = !defined('API_TESTS') ? $this->request->getClientAddress(true) : '127.0.0.1';
 
         $userData = Auth::login($email, $password, 1, 0, $userIp);
         $token = $userData->getToken();
@@ -324,9 +304,12 @@ trait AuthTrait
 
         return [
             'token' => $token['token'],
+            'refresh_token' => $token['refresh_token'],
             'time' => date('Y-m-d H:i:s'),
-            'expires' => date('Y-m-d H:i:s', time() + $this->config->jwt->payload->exp),
+            'expires' => $token['token_expiration'],
+            'refresh_token_expires' => $token['refresh_token_expiration'],
             'id' => $userData->getId(),
+            'timezone' => $userData->timezone
         ];
     }
 
@@ -339,7 +322,7 @@ trait AuthTrait
      */
     private function loginSocial(Users $user) : array
     {
-        $userIp = !defined('API_TESTS') ? $this->request->getClientAddress() : '127.0.0.1';
+        $userIp = !defined('API_TESTS') ? $this->request->getClientAddress(true) : '127.0.0.1';
 
         $user->lastvisit = date('Y-m-d H:i:s');
         $user->user_login_tries = 0;
@@ -354,9 +337,12 @@ trait AuthTrait
 
         return [
             'token' => $token['token'],
+            'refresh_token' => $token['refresh_token'],
             'time' => date('Y-m-d H:i:s'),
-            'expires' => date('Y-m-d H:i:s', time() + $this->config->jwt->payload->exp),
+            'expires' => $token['token_expiration'],
+            'refresh_token_expires' => $token['refresh_token_expiration'],
             'id' => $user->getId(),
+            'timezone' => $user->timezone
         ];
     }
 
