@@ -29,7 +29,7 @@ class ThrottleMiddleware extends Plugin implements MiddlewareInterface
     {
         /** @var ThrottlerInterface $throttler */
         $throttler = $this->getDI()->get('throttler');
-        $rateLimit = $throttler->consume($this->request->getClientAddress());
+        $rateLimit = $throttler->consume($this->request->getClientAddress(true));
 
         if ($rateLimit->isLimited()) {
             /**
