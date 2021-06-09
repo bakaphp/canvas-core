@@ -8,6 +8,7 @@ use Baka\Http\Exception\InternalServerErrorException;
 use Baka\Http\Exception\UnauthorizedException;
 use Canvas\Models\Roles;
 use Canvas\Models\UserRoles;
+use Canvas\Models\Companies;
 
 trait PermissionsTrait
 {
@@ -19,7 +20,7 @@ trait PermissionsTrait
      *
      * @return bool
      */
-    public function assignRole(string $role) : bool
+    public function assignRole(string $role, ?Companies $company = null) : bool
     {
         /**
          * check if we have a dot, that means it legacy and sending the app name
@@ -31,13 +32,14 @@ trait PermissionsTrait
         }
 
         $role = Roles::getByName($role);
+        $companyId = !is_null($company) ? $company->getId() : $this->currentCompanyId();
 
         $userRole = UserRoles::findFirst([
             'conditions' => 'users_id = ?0 and apps_id = ?1 and companies_id = ?2',
             'bind' => [
                 $this->getId(),
                 $role->apps_id,
-                $this->currentCompanyId()
+                $companyId
             ]
         ]);
 
@@ -46,7 +48,7 @@ trait PermissionsTrait
             $userRole->users_id = $this->getId();
             $userRole->roles_id = $role->getId();
             $userRole->apps_id = $role->getAppsId();
-            $userRole->companies_id = $this->currentCompanyId();
+            $userRole->companies_id = $companyId;
         } else {
             $userRole->roles_id = $role->getId();
         }
