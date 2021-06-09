@@ -59,7 +59,7 @@ class Company
         $companiesGroup->associate($company);
 
         //assign role
-        $company->user->assignRole(Roles::DEFAULT);
+        $company->user->assignRole(Roles::DEFAULT, $company);
 
         //if the app is subscription based, create a free trial for this companyGroup and this app
         if ($app->subscriptionBased()) {
