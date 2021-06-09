@@ -4,10 +4,18 @@ declare(strict_types=1);
 
 namespace Canvas\Contracts;
 
+use Baka\Validation as CanvasValidation;
 use Canvas\Auth\Auth;
 use Canvas\Models\Sessions;
 use Canvas\Models\Users;
+use Canvas\Notifications\ResetPassword;
+use Exception;
 use Phalcon\Http\Response;
+use Phalcon\Validation;
+use Phalcon\Validation\Validator\Confirmation;
+use Phalcon\Validation\Validator\Email as EmailValidator;
+use Phalcon\Validation\Validator\PresenceOf;
+use Phalcon\Validation\Validator\StringLength;
 
 trait AuthTrait
 {
@@ -53,8 +61,10 @@ trait AuthTrait
 
         return $this->response([
             'token' => $token['token'],
+            'refresh_token' => $token['refresh_token'],
             'time' => date('Y-m-d H:i:s'),
-            'expires' => date('Y-m-d H:i:s', time() + $this->config->jwt->payload->exp),
+            'expires' => $token['token_expiration'],
+            'refresh_token_expires' => $token['refresh_token_expiration'],
             'id' => $userData->getId(),
             'timezone' => $userData->timezone
         ]);
@@ -152,9 +162,12 @@ trait AuthTrait
 
         $authSession = [
             'token' => $token['token'],
+            'refresh_token' => $token['refresh_token'],
             'time' => date('Y-m-d H:i:s'),
             'expires' => date('Y-m-d H:i:s', time() + $this->config->jwt->payload->exp),
+            'refresh_token_expires' => $token['refresh_token_expiration'],
             'id' => $user->getId(),
+            'timezone' => $user->timezone
         ];
 
         $user->password = null;
@@ -204,7 +217,7 @@ trait AuthTrait
      */
     public function reset(string $key) : Response
     {
-        //is the key empty or does it existe?
+        //is the key empty or does it exists?
         if (empty($key) || !$userData = Users::findFirst(['user_activation_forgot = :key:', 'bind' => ['key' => $key]])) {
             throw new Exception(_('This Key to reset password doesn\'t exist'));
         }
@@ -264,7 +277,7 @@ trait AuthTrait
     public function activate(string $key) : Response
     {
         $userData = Users::findFirst(['user_activation_key = :key:', 'bind' => ['key' => $key]]);
-        //is the key empty or does it existe?
+        //is the key empty or does it exists?
         if (empty($key) || !$userData) {
             throw new Exception(_('This Key doesn\'t exist'));
         }
