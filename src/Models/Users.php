@@ -514,8 +514,8 @@ class Users extends AbstractModel implements UserInterface
     {
         parent::beforeCreate();
 
-        $this->phone_number = StringFormatter::sanitizePhoneNumber($this->phone_number);
-        $this->cell_phone_number = StringFormatter::sanitizePhoneNumber($this->cell_phone_number);
+        $this->phone_number = !empty($this->phone_number) ? StringFormatter::sanitizePhoneNumber($this->phone_number) : '';
+        $this->cell_phone_number = !empty($this->cell_phone_number) ? StringFormatter::sanitizePhoneNumber($this->cell_phone_number) : '';
 
         $random = new Random();
         $this->user_activation_email = $random->uuid();
@@ -537,8 +537,8 @@ class Users extends AbstractModel implements UserInterface
      */
     public function beforeSave()
     {
-        $this->phone_number = StringFormatter::sanitizePhoneNumber($this->phone_number);
-        $this->cell_phone_number = StringFormatter::sanitizePhoneNumber($this->cell_phone_number);
+        $this->phone_number = !empty($this->phone_number) ? StringFormatter::sanitizePhoneNumber($this->phone_number) : '';
+        $this->cell_phone_number = !empty($this->cell_phone_number) ? StringFormatter::sanitizePhoneNumber($this->cell_phone_number) : '';
     }
 
     /**
