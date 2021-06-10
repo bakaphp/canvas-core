@@ -27,6 +27,7 @@ use Phalcon\Validation;
 use Phalcon\Validation\Validator\Email;
 use Phalcon\Validation\Validator\PresenceOf;
 use Phalcon\Validation\Validator\Uniqueness;
+use Canvas\Utils\StringFormatter;
 
 class Users extends AbstractModel implements UserInterface
 {
@@ -513,8 +514,8 @@ class Users extends AbstractModel implements UserInterface
     {
         parent::beforeCreate();
 
-        $this->phone_number = preg_replace('/\D+/', '', $this->phone_number);
-        $this->cell_phone_number = preg_replace('/\D+/', '', $this->cell_phone_number);
+        $this->phone_number = StringFormatter::sanitizePhoneNumber($this->phone_number);
+        $this->cell_phone_number = StringFormatter::sanitizePhoneNumber($this->cell_phone_number);
 
         $random = new Random();
         $this->user_activation_email = $random->uuid();
@@ -536,8 +537,8 @@ class Users extends AbstractModel implements UserInterface
      */
     public function beforeSave()
     {
-        $this->phone_number = preg_replace('/\D+/', '', $this->phone_number);
-        $this->cell_phone_number = preg_replace('/\D+/', '', $this->cell_phone_number);
+        $this->phone_number = StringFormatter::sanitizePhoneNumber($this->phone_number);
+        $this->cell_phone_number = StringFormatter::sanitizePhoneNumber($this->cell_phone_number);
     }
 
     /**
