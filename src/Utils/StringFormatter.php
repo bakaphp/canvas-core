@@ -12,12 +12,12 @@ class StringFormatter
     /**
      * Return a sanitized version of a phone number.
      *
-     * @param string $phone
+     * @param null|string $phone
      *
      * @return string
      */
-    public static function sanitizePhoneNumber(string $phone) : string
+    public static function sanitizePhoneNumber(?string $phone) : string
     {
-        return preg_replace('/\D+/', '', $phone);
+        return $phone ? preg_replace('/\D+/', '', $phone) : '';
     }
 }

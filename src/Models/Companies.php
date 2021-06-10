@@ -324,7 +324,7 @@ class Companies extends AbstractModel
     public function beforeCreate()
     {
         parent::beforeCreate();
-        $this->phone = !empty($this->phone) ? StringFormatter::sanitizePhoneNumber($this->phone) : '';
+        $this->phone = StringFormatter::sanitizePhoneNumber($this->phone);
         $this->language = $this->di->get('app')->get('language');
         $this->timezone = $this->di->get('app')->get('timezone');
         $this->currency_id = Currencies::findFirstByCode($this->di->get('app')->get('currency'))->getId();
@@ -337,7 +337,7 @@ class Companies extends AbstractModel
      */
     public function beforeSave()
     {
-        $this->phone = !empty($this->phone) ? StringFormatter::sanitizePhoneNumber($this->phone) : '';
+        $this->phone = StringFormatter::sanitizePhoneNumber($this->phone);
     }
 
     /**
