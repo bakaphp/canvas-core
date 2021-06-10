@@ -14,6 +14,7 @@ use Exception;
 use Phalcon\Di;
 use Phalcon\Validation;
 use Phalcon\Validation\Validator\PresenceOf;
+use Canvas\Utils\StringFormatter;
 
 class Companies extends AbstractModel
 {
@@ -323,10 +324,20 @@ class Companies extends AbstractModel
     public function beforeCreate()
     {
         parent::beforeCreate();
-
+        $this->phone = StringFormatter::sanitizePhoneNumber($this->phone);
         $this->language = $this->di->get('app')->get('language');
         $this->timezone = $this->di->get('app')->get('timezone');
         $this->currency_id = Currencies::findFirstByCode($this->di->get('app')->get('currency'))->getId();
+    }
+
+    /**
+     * Before saving the company.
+     *
+     * @return void
+     */
+    public function beforeSave()
+    {
+        $this->phone = StringFormatter::sanitizePhoneNumber($this->phone);
     }
 
     /**
