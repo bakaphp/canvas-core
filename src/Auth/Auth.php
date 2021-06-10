@@ -10,8 +10,10 @@ use Baka\Exception\AuthException;
 use Baka\Hashing\Keys;
 use Baka\Hashing\Password;
 use Baka\Support\Random;
+use Canvas\Models\Sessions;
 use Canvas\Models\Users;
 use Exception;
+use Lcobucci\JWT\Token;
 use stdClass;
 
 class Auth
@@ -165,5 +167,23 @@ class Auth
         }
 
         return false;
+    }
+
+    /**
+     * Undocumented function.
+     *
+     * @param UserInterface $user
+     * @param Token $token
+     *
+     * @return bool
+     */
+    public static function logout(UserInterface $user, Token $token) : bool
+    {
+        $sessionId = $token->claims()->get('sessionId') ?? null;
+
+        $session = new Sessions();
+        $session->end($user, $sessionId);
+
+        return true;
     }
 }

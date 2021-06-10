@@ -234,26 +234,26 @@ class Sessions extends Model
      *
      * @return bool
      */
-    public function end(Users $user, ?string $ip = null) : bool
+    public function end(Users $user, ?string $sessionId = null) : bool
     {
-        if (is_null($ip)) {
+        if (is_null($sessionId)) {
             return $this->endAll($user);
         }
 
         $this->find([
-            'conditions' => 'users_id = :users_id: AND ip = :ip:',
+            'conditions' => 'users_id = :users_id: AND id = :id:',
             'bind' => [
                 'users_id' => $user->getId(),
-                'ip' => $ip
+                'id' => $sessionId
             ]
         ])
         ->delete();
 
         SessionKeys::find([
-            'conditions' => 'users_id = :users_id: AND last_ip = :last_ip:',
+            'conditions' => 'users_id = :users_id: AND sessions_id = :sessions_id:',
             'bind' => [
                 'users_id' => $user->getId(),
-                'last_ip' => $ip,
+                'sessions_id' => $sessionId,
             ]
         ])
         ->delete();

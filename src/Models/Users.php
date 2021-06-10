@@ -418,6 +418,8 @@ class Users extends AbstractModel implements UserInterface
     /**
      * Log a user out of the system.
      *
+     * @deprecated v0.4
+     *
      * @return bool
      */
     public function logOut(?string $ip = null) : bool
@@ -811,7 +813,7 @@ class Users extends AbstractModel implements UserInterface
     public function generateForgotCode() : string
     {
         $random = new Random();
-        $this->user_recover_code = sprintf("%06d", $random->number(999999));
+        $this->user_recover_code = sprintf('%06d', $random->number(999999));
         $this->updateOrFail();
 
         return $this->user_recover_code;
