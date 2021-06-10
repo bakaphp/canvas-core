@@ -512,6 +512,10 @@ class Users extends AbstractModel implements UserInterface
     public function beforeCreate()
     {
         parent::beforeCreate();
+
+        $this->phone_number = preg_replace('/\D+/', '', $this->phone_number);
+        $this->cell_phone_number = preg_replace('/\D+/', '', $this->cell_phone_number);
+
         $random = new Random();
         $this->user_activation_email = $random->uuid();
 
@@ -523,6 +527,17 @@ class Users extends AbstractModel implements UserInterface
 
         $role = Roles::getByName('Admins');
         $this->roles_id = $this->roles_id ?? $role->getId();
+    }
+
+    /**
+     * Before saving the user
+     *
+     * @return void
+     */
+    public function beforeSave()
+    {
+        $this->phone_number = preg_replace('/\D+/', '', $this->phone_number);
+        $this->cell_phone_number = preg_replace('/\D+/', '', $this->cell_phone_number);
     }
 
     /**

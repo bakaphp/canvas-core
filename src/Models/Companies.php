@@ -324,9 +324,20 @@ class Companies extends AbstractModel
     {
         parent::beforeCreate();
 
+        $this->phone = preg_replace('/\D+/', '', $this->phone);
         $this->language = $this->di->get('app')->get('language');
         $this->timezone = $this->di->get('app')->get('timezone');
         $this->currency_id = Currencies::findFirstByCode($this->di->get('app')->get('currency'))->getId();
+    }
+
+    /**
+     * Before saving the company.
+     *
+     * @return void
+     */
+    public function beforeSave()
+    {
+        $this->phone = preg_replace('/\D+/', '', $this->phone);
     }
 
     /**
