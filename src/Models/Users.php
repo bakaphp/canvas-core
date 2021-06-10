@@ -61,7 +61,7 @@ class Users extends AbstractModel implements UserInterface
     public ?int $city_id = 0;
     public ?int $state_id = 0;
     public ?int $country_id = 0;
-    public ?int $user_recover_code = 0;
+    public ?string $user_recover_code = null;
     public int $welcome = 0;
     public int $user_active = 0;
     public ?string $user_activation_key = null;
