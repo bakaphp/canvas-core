@@ -63,7 +63,7 @@ class AuthController extends BaseController
     {
         $request = $this->request->getPostData();
 
-        $userIp = $this->request->getClientAddress(true) ?? '';
+        $userIp = is_string($this->request->getClientAddress(true)) ? $this->request->getClientAddress(true) : '127.0.0.1';
         $admin = 0;
         $remember = 1;
 
@@ -141,7 +141,7 @@ class AuthController extends BaseController
         $user->lastname = $lastname;
         $user->password = $password;
         $user->displayname = !empty($displayname) ? $displayname : $user->generateDefaultDisplayname();
-        $userIp = $this->request->getClientAddress(true) ?? '';
+        $userIp = is_string($this->request->getClientAddress(true)) ? $this->request->getClientAddress(true) : '127.0.0.1';
         $user->defaultCompanyName = $defaultCompany;
 
         //user registration
@@ -219,7 +219,7 @@ class AuthController extends BaseController
         $user->lastname = $lastname;
         $user->password = $password;
         $user->displayname = !empty($displayname) ? $displayname : $user->generateDefaultDisplayname();
-        $userIp = $this->request->getClientAddress(true) ?? '' ;
+        $userIp = is_string($this->request->getClientAddress(true)) ? $this->request->getClientAddress(true) : '127.0.0.1' ;
         $user->defaultCompanyName = $defaultCompany;
         $user->roles_id = $registerRole->roles_id;
 
@@ -304,7 +304,7 @@ class AuthController extends BaseController
         $token = Sessions::restart(
             $user,
             $refreshToken->claims()->get('sessionId'),
-            (string)$this->request->getClientAddress(true) ?? ''
+            (string)is_string($this->request->getClientAddress(true)) ? $this->request->getClientAddress(true) : '127.0.0.1'
         );
 
         return $this->response([
