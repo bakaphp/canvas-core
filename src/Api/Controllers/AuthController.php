@@ -124,12 +124,13 @@ class AuthController extends BaseController
             throw new Exception($e->getMessage());
         }
 
+        $sessionResponse = $this->authResponse($user);
         $user->password = '';
         $user->notify(new Signup($user));
 
         return $this->response([
             'user' => $user,
-            'session' => $this->authResponse($user)
+            'session' => $sessionResponse
         ]);
     }
 
@@ -206,12 +207,13 @@ class AuthController extends BaseController
             throw new Exception($e->getMessage());
         }
 
+        $sessionResponse = $this->authResponse($user);
         $user->password = '';
         $user->notify(new Signup($user));
 
         return $this->response([
             'user' => $user,
-            'session' => $this->authResponse($user)
+            'session' => $sessionResponse
         ]);
     }
 

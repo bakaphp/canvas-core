@@ -78,6 +78,7 @@ trait AuthTrait
         $session = new Sessions();
         $session->start($user, $tokenResponse['sessionId'], $tokenResponse['token'], $userIp, $pageId);
 
+        unset($tokenResponse['sessionId']);
         return $tokenResponse;
     }
 
