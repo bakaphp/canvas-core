@@ -7,7 +7,6 @@ namespace Canvas\Api\Controllers;
 use Baka\Auth\UserProvider;
 use Baka\Http\Exception\InternalServerErrorException;
 use Baka\Http\Exception\NotFoundException;
-use Baka\Validation as CanvasValidation;
 use Baka\Validations\PasswordValidation;
 use Canvas\Auth\Auth;
 use Canvas\Auth\TokenResponse;
@@ -25,7 +24,6 @@ use Canvas\Notifications\Signup;
 use Canvas\Notifications\UpdateEmail;
 use Exception;
 use Phalcon\Http\Response;
-use Phalcon\Validation\Validator\Confirmation;
 
 class AuthController extends BaseController
 {
@@ -104,14 +102,6 @@ class AuthController extends BaseController
         $password = $request['password'];
         $verifyPassword = $request['verify_password'];
         PasswordValidation::validate($password, $verifyPassword);
-
-        //Ok let validate user password
-        $validation = new CanvasValidation();
-
-        $validation->add('password', new Confirmation([
-            'message' => _('Password and confirmation do not match.'),
-            'with' => 'verify_password',
-        ]));
 
         $user->email = $email;
         $user->firstname = $firstname;
