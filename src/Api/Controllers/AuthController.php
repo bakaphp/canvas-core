@@ -10,7 +10,7 @@ use Baka\Http\Exception\NotFoundException;
 use Baka\Validation as CanvasValidation;
 use Baka\Validations\PasswordValidation;
 use Canvas\Auth\Auth;
-use Canvas\Auth\Factory;
+use Canvas\Auth\TokenResponse;
 use Canvas\Contracts\AuthTrait;
 use Canvas\Contracts\Jwt\TokenTrait;
 use Canvas\Contracts\SocialLoginTrait;
@@ -63,10 +63,6 @@ class AuthController extends BaseController
     {
         $request = $this->request->getPostData();
 
-        $userIp = is_string($this->request->getClientAddress(true)) ? $this->request->getClientAddress(true) : '127.0.0.1';
-        $admin = 0;
-        $remember = 1;
-
         $this->request->validate([
             'email' => 'required|email',
             'password' => 'required',
@@ -76,26 +72,7 @@ class AuthController extends BaseController
         $email = $request['email'];
         $password = $request['password'];
 
-        /**
-         * Login the user via ecosystem or app.
-         */
-        $auth = Factory::create($this->app->ecosystemAuth());
-        $userData = $auth::login($email, $password, $remember, $admin, $userIp);
-        $token = $userData->getToken();
-
-        //start session
-        $session = new Sessions();
-        $session->start($userData, $token['sessionId'], $token['token'], $userIp, 1);
-
-        return $this->response([
-            'token' => $token['token'],
-            'refresh_token' => $token['refresh_token'],
-            'time' => date('Y-m-d H:i:s'),
-            'expires' => $token['token_expiration'],
-            'refresh_token_expires' => $token['refresh_token_expiration'],
-            'id' => $userData->getId(),
-            'timezone' => $userData->timezone
-        ]);
+        return $this->response($this->loginUsers($email, $password));
     }
 
     /**
@@ -141,7 +118,7 @@ class AuthController extends BaseController
         $user->lastname = $lastname;
         $user->password = $password;
         $user->displayname = !empty($displayname) ? $displayname : $user->generateDefaultDisplayname();
-        $userIp = is_string($this->request->getClientAddress(true)) ? $this->request->getClientAddress(true) : '127.0.0.1';
+        $userIp = $this->getClientIp();
         $user->defaultCompanyName = $defaultCompany;
 
         //user registration
@@ -157,29 +134,33 @@ class AuthController extends BaseController
             throw new Exception($e->getMessage());
         }
 
-        $token = $user->getToken();
-
-        //start session
-        $session = new Sessions();
-        $session->start($user, $token['sessionId'], $token['token'], $userIp, 1);
-
-        $authSession = [
-            'token' => $token['token'],
-            'refresh_token' => $token['refresh_token'],
-            'time' => date('Y-m-d H:i:s'),
-            'expires' => $token['token_expiration'],
-            'refresh_token_expires' => $token['refresh_token_expiration'],
-            'id' => $user->getId(),
-            'timezone' => $userData->timezone
-        ];
-
         $user->password = '';
         $user->notify(new Signup($user));
 
         return $this->response([
             'user' => $user,
-            'session' => $authSession
+            'session' => $this->authResponse($user)
         ]);
+    }
+
+    /**
+     * User Login.
+     *
+     * @method POST
+     * @url /v1/login
+     *
+     * @return Response
+     */
+    public function logout() : Response
+    {
+        $data = $this->request->getPutData();
+        $allDevices = isset($data['all_devices']);
+        Auth::logout(
+            $this->userData,
+            !$allDevices ? $this->getToken($this->request->getBearerTokenFromHeader()) : null
+        );
+
+        return $this->response(['Logged Out']);
     }
 
     /**
@@ -219,7 +200,6 @@ class AuthController extends BaseController
         $user->lastname = $lastname;
         $user->password = $password;
         $user->displayname = !empty($displayname) ? $displayname : $user->generateDefaultDisplayname();
-        $userIp = is_string($this->request->getClientAddress(true)) ? $this->request->getClientAddress(true) : '127.0.0.1' ;
         $user->defaultCompanyName = $defaultCompany;
         $user->roles_id = $registerRole->roles_id;
 
@@ -236,28 +216,12 @@ class AuthController extends BaseController
             throw new Exception($e->getMessage());
         }
 
-        $token = $user->getToken();
-
-        //start session
-        $session = new Sessions();
-        $session->start($user, $token['sessionId'], $token['token'], $userIp, 1);
-
-        $authSession = [
-            'token' => $token['token'],
-            'refresh_token' => $token['refresh_token'],
-            'time' => date('Y-m-d H:i:s'),
-            'expires' => $token['token_expiration'],
-            'refresh_token_expires' => $token['refresh_token_expiration'],
-            'id' => $user->getId(),
-            'timezone' => $userData->timezone
-        ];
-
         $user->password = '';
         $user->notify(new Signup($user));
 
         return $this->response([
             'user' => $user,
-            'session' => $authSession
+            'session' => $this->authResponse($user)
         ]);
     }
 
@@ -304,17 +268,10 @@ class AuthController extends BaseController
         $token = Sessions::restart(
             $user,
             $refreshToken->claims()->get('sessionId'),
-            (string)is_string($this->request->getClientAddress(true)) ? $this->request->getClientAddress(true) : '127.0.0.1'
+            $this->getClientIp()
         );
 
-        return $this->response([
-            'token' => $token['token'],
-            'refresh_token' => $token['refresh_token'],
-            'time' => date('Y-m-d H:i:s'),
-            'expires' => $token['token_expiration'],
-            'refresh_token_expires' => $token['refresh_token_expiration'],
-            'id' => $user->getId()
-        ]);
+        return $this->response(TokenResponse::format($user, $token));
     }
 
     /**

@@ -162,7 +162,7 @@ class UsersInviteController extends BaseController
         $usersInvite = UsersInvite::getByHash($hash);
 
         //set userData as the user who is inviting the user
-        $this->setUserDataById((int)$usersInvite->users_id);
+        $this->overWriteUserDataProvider((int)$usersInvite->users_id);
 
         try {
             //Check if user already exists
