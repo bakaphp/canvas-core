@@ -31,6 +31,7 @@ class TokenResponse
     public static function format(UserInterface $user, array $token) : array
     {
         return [
+            'sessionId' => $token['sessionId'],
             'token' => $token['token'],
             'refresh_token' => $token['refresh_token'],
             'time' => date('Y-m-d H:i:s'),
