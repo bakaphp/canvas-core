@@ -65,7 +65,6 @@ class AuthController extends BaseController
             'email' => 'required|email',
             'password' => 'required',
         ]);
-        $this->request->enableSanitize();
 
         $email = $request['email'];
         $password = $request['password'];
@@ -165,7 +164,7 @@ class AuthController extends BaseController
     public function signupByRegisterRole() : Response
     {
         $user = $this->userModel;
-
+        $this->request->enableSanitize();
         $request = $this->request->getPostData();
 
         $this->request->validate([
@@ -173,7 +172,6 @@ class AuthController extends BaseController
             'password' => 'required|min:8',
             'roles_uuid' => 'required|uuid',
         ]);
-        $this->request->enableSanitize();
 
         $email = $request['email'];
         $firstname = $request['firstname'];
@@ -226,13 +224,13 @@ class AuthController extends BaseController
      */
     public function refresh() : Response
     {
+        $this->request->enableSanitize();
         $request = $this->request->getPostData();
 
         $this->request->validate([
             'access_token' => 'required',
             'refresh_token' => 'required',
         ]);
-        $this->request->enableSanitize();
 
         $accessToken = $this->getToken($request['access_token']);
         $refreshToken = $this->getToken($request['refresh_token']);
@@ -292,13 +290,13 @@ class AuthController extends BaseController
      */
     public function changeUserEmail(string $hash) : Response
     {
+        $this->request->enableSanitize();
         $request = $this->request->getPostData();
 
         $this->request->validate([
             'password' => 'required|min:8',
             'new_email' => 'required|email',
         ]);
-        $this->request->enableSanitize();
 
         $newEmail = $request['new_email'];
         $password = $request['password'];
@@ -327,6 +325,7 @@ class AuthController extends BaseController
      */
     public function loginBySocial() : Response
     {
+        $this->request->enableSanitize();
         $request = $this->request->getPostData();
 
         $this->request->validate([
@@ -334,7 +333,6 @@ class AuthController extends BaseController
             'email' => 'required|email',
             'provider' => 'required',
         ]);
-        $this->request->enableSanitize();
 
         $source = Sources::findFirstOrFail([
             'title = ?0 and is_deleted = 0',
@@ -367,13 +365,13 @@ class AuthController extends BaseController
             throw new Exception(_('This Key to reset password doesn\'t exist'));
         }
 
+        $this->request->enableSanitize();
         $request = $this->request->getPostData();
 
         $this->request->validate([
             'new_password' => 'required',
             'verify_password' => 'required',
         ]);
-        $this->request->enableSanitize();
 
         // Get the new password and the verify
         $newPassword = $request['new_password'];
@@ -404,12 +402,12 @@ class AuthController extends BaseController
      */
     public function recover() : Response
     {
+        $this->request->enableSanitize();
         $request = $this->request->getPostData();
 
         $this->request->validate([
             'email' => 'required|email',
         ]);
-        $this->request->enableSanitize();
 
         $email = $request['email'];
 
