@@ -501,7 +501,7 @@ trait FileSystemModelTrait
      */
     public function getAttachments(string $fileType = null) : Resultset
     {
-        $redis = Di::getDefault()->get('redis');
+        $redis = Di::getDefault()->get('modelsCache');
 
         $systemModule = SystemModules::getByModelName(self::class);
         $appPublicImages = (bool) $this->di->get('app')->get('public_images');

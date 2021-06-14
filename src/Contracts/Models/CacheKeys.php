@@ -45,7 +45,7 @@ trait CacheKeys
     {
         $redis = Di::getDefault()->get('modelsCache');
 
-        $redisKeysList = $redis->getKeys($key);
+        $redisKeysList = $redis->getKeys($key . '*');
         $total = 0;
 
         foreach ($redisKeysList as $redisKey) {
