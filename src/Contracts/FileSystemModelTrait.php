@@ -223,7 +223,7 @@ trait FileSystemModelTrait
         }
 
         if ($upload) {
-            $this->clearCache();
+            $this->clearFileSystemCache();
         }
 
         return true;
@@ -571,7 +571,7 @@ trait FileSystemModelTrait
      *
      * @return int
      */
-    protected function clearCache() : int
+    protected function clearFileSystemCache() : int
     {
         $systemModule = SystemModules::getByModelName(self::class);
 
