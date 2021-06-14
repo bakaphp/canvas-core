@@ -43,14 +43,14 @@ trait CacheKeys
      */
     public static function clearCacheByKeyPattern(string $key) : int
     {
-        $redis = Di::getDefault()->get('modelsCache');
+        $redis = Di::getDefault()->get('redis');
 
-        $redisKeysList = $redis->getKeys($key);
+        $redisKeysList = $redis->getKeys($key . '*');
         $total = 0;
 
         foreach ($redisKeysList as $redisKey) {
-            $redisKey = str_replace(Di::getDefault()->get('app')->key, '', $redisKey);
-            $total += $redis->delete($redisKey);
+            $redisKey = str_replace(Di::getDefault()->get('app')->key . ':', '', $redisKey);
+            $total += $redis->del($redisKey);
         }
 
         return $total;
