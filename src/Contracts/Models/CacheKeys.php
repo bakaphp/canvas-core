@@ -49,8 +49,8 @@ trait CacheKeys
         $total = 0;
 
         foreach ($redisKeysList as $redisKey) {
-            $redisKey = str_replace(Di::getDefault()->get('app')->key, '', $redisKey);
-            $total += $redis->delete($redisKey);
+            $redisKey = str_replace(Di::getDefault()->get('app')->key . ':', '', $redisKey);
+            $total += $redis->del($redisKey);
         }
 
         return $total;
