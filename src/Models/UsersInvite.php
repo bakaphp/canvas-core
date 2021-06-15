@@ -75,8 +75,6 @@ class UsersInvite extends AbstractModel
     /**
      * Validate if the current email is valid to invite.
      *
-     * @throws Exception
-     *
      * @param string $email
      *
      * @return bool
@@ -86,7 +84,7 @@ class UsersInvite extends AbstractModel
         $userData = Di::getDefault()->get('userData');
         $app = Di::getDefault()->get('app');
 
-        //check invests
+        //check invite
         $invitedUser = self::findFirst([
             'conditions' => 'email = ?0 and companies_id = ?1 and role_id = ?2 and apps_id = ?3 and is_deleted = 0',
             'bind' => [
