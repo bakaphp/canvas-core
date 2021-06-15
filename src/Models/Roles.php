@@ -6,6 +6,7 @@ namespace Canvas\Models;
 use Baka\Database\Exception\ModelNotFoundException;
 use Baka\Http\Exception\InternalServerErrorException;
 use Baka\Http\Exception\UnprocessableEntityException;
+use Baka\Support\Str;
 use Phalcon\Acl\Role as AclRole;
 use Phalcon\Di;
 use Phalcon\Validation;
@@ -217,7 +218,7 @@ class Roles extends AbstractModel
     public static function getByAppName(string $role, Companies $company) : Roles
     {
         //check if we have a dot , that means we are sending the specific app to use
-        if (strpos($role, '.') === false) {
+        if (!Str::contains($role, '.')) {
             throw new InternalServerErrorException('ACL - We are expecting the app for this role');
         }
 

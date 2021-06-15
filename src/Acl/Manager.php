@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Canvas\Acl;
 
 use BadMethodCallException;
+use Baka\Support\Str;
 use Canvas\Models\AccessList as AccessListDB;
 use Canvas\Models\Apps;
 use Canvas\Models\Companies;
@@ -218,7 +219,7 @@ class Manager extends AbstractAdapter
      */
     public function isRole($roleName) : bool
     {
-        return RolesDB::isRole($roleName);
+        return RolesDB::isRole($rcooleName);
     }
 
     /**
@@ -255,8 +256,8 @@ class Manager extends AbstractAdapter
      */
     protected function setAppByResource(string $resource) : string
     {
-        //check if we have a dot , taht means we are sending the specific app to use
-        if (strpos($resource, '.') !== false) {
+        //check if we have a dot , meaning we are sending the specific app to use
+        if (Str::contains($resource, '.')) {
             $appResource = explode('.', $resource);
             $resource = $appResource[1];
             $appName = $appResource[0];
@@ -280,7 +281,7 @@ class Manager extends AbstractAdapter
     protected function setAppByRole(string $role) : string
     {
         //check if we have a dot , that means we are sending the specific app to use
-        if (strpos($role, '.') !== false) {
+        if (Str::contains($role, '.')) {
             $appRole = explode('.', $role);
             $role = $appRole[1];
             $appName = $appRole[0];
