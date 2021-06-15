@@ -419,6 +419,8 @@ class Users extends AbstractModel implements UserInterface
     /**
      * Log a user out of the system.
      *
+     * @deprecated v0.4
+     *
      * @return bool
      */
     public function logOut(?string $ip = null) : bool
@@ -431,6 +433,8 @@ class Users extends AbstractModel implements UserInterface
 
     /**
      * Clean the user session from the system.
+     *
+     * @deprecated v0.4
      *
      * @return true
      */
@@ -709,7 +713,7 @@ class Users extends AbstractModel implements UserInterface
      */
     public static function getByUserActivationEmail(string $userActivationEmail) : Users
     {
-        return self::findFirst([
+        return self::findFirstOrFail([
             'conditions' => 'user_activation_email = ?0 and user_active =?1 and is_deleted = 0',
             'bind' => [$userActivationEmail, 1],
         ]);
@@ -718,7 +722,7 @@ class Users extends AbstractModel implements UserInterface
     /**
      * Overwrite the relationship.
      *
-     * @return void
+     * @return mixed
      */
     public function getPhoto()
     {

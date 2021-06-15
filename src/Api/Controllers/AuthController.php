@@ -7,10 +7,9 @@ namespace Canvas\Api\Controllers;
 use Baka\Auth\UserProvider;
 use Baka\Http\Exception\InternalServerErrorException;
 use Baka\Http\Exception\NotFoundException;
-use Baka\Validation as CanvasValidation;
 use Baka\Validations\PasswordValidation;
 use Canvas\Auth\Auth;
-use Canvas\Auth\Factory;
+use Canvas\Auth\TokenResponse;
 use Canvas\Contracts\AuthTrait;
 use Canvas\Contracts\Jwt\TokenTrait;
 use Canvas\Contracts\SocialLoginTrait;
@@ -25,10 +24,6 @@ use Canvas\Notifications\Signup;
 use Canvas\Notifications\UpdateEmail;
 use Exception;
 use Phalcon\Http\Response;
-use Phalcon\Validation\Validator\Confirmation;
-use Phalcon\Validation\Validator\Email as EmailValidator;
-use Phalcon\Validation\Validator\PresenceOf;
-use Phalcon\Validation\Validator\StringLength;
 
 class AuthController extends BaseController
 {
@@ -66,44 +61,15 @@ class AuthController extends BaseController
     {
         $request = $this->request->getPostData();
 
-        $userIp = !defined('API_TESTS') ? $this->request->getClientAddress(true) : '127.0.0.1'; //help getting the client ip on scrutinizer :(
-        $admin = 0;
-        $remember = 1;
-
-        //Ok let validate user password
-        $validation = new CanvasValidation();
-        $validation->add('email', new EmailValidator(['message' => _('The email is not valid')]));
-        $validation->add('password', new PresenceOf(['message' => _('The password is required.')]));
-
-        $validation->setFilters('name', 'trim');
-        $validation->setFilters('password', 'trim');
-
-        //validate this form for password
-        $validation->validate($request);
-
-        $email = $validation->getValue('email');
-        $password = $validation->getValue('password');
-
-        /**
-         * Login the user via ecosystem or app.
-         */
-        $auth = Factory::create($this->app->ecosystemAuth());
-        $userData = $auth::login($email, $password, $remember, $admin, $userIp);
-        $token = $userData->getToken();
-
-        //start session
-        $session = new Sessions();
-        $session->start($userData, $token['sessionId'], $token['token'], $userIp, 1);
-
-        return $this->response([
-            'token' => $token['token'],
-            'refresh_token' => $token['refresh_token'],
-            'time' => date('Y-m-d H:i:s'),
-            'expires' => $token['token_expiration'],
-            'refresh_token_expires' => $token['refresh_token_expiration'],
-            'id' => $userData->getId(),
-            'timezone' => $userData->timezone
+        $this->request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
         ]);
+
+        $email = $request['email'];
+        $password = $request['password'];
+
+        return $this->response($this->loginUsers($email, $password));
     }
 
     /**
@@ -120,40 +86,29 @@ class AuthController extends BaseController
 
         $request = $this->request->getPostData();
 
-        //Ok let validate user password
-        $validation = new CanvasValidation();
-        $validation->add('password', new PresenceOf(['message' => _('The password is required.')]));
-        $validation->add('email', new EmailValidator(['message' => _('The email is not valid.')]));
+        $this->request->validate([
+            'email' => 'required|email',
+            'password' => 'required|min:8',
+        ]);
 
-        $validation->add(
-            'password',
-            new StringLength([
-                'min' => 8,
-                'messageMinimum' => _('Password is too short. Minimum 8 characters.'),
-            ])
-        );
+        $this->request->enableSanitize();
 
-        $validation->add('password', new Confirmation([
-            'message' => _('Password and confirmation do not match.'),
-            'with' => 'verify_password',
-        ]));
+        $email = $request['email'];
+        $firstname = $request['firstname'];
+        $lastname = $request['lastname'];
+        $displayname = $request['displayname'];
+        $defaultCompany = $request['default_company'];
+        $password = $request['password'];
+        $verifyPassword = $request['verify_password'];
+        PasswordValidation::validate($password, $verifyPassword);
 
-        $validation->setFilters('password', 'trim');
-        $validation->setFilters('firstname', 'trim');
-        $validation->setFilters('lastname', 'trim');
-        $validation->setFilters('displayname', 'trim');
-        $validation->setFilters('default_company', 'trim');
-
-        //validate this form for password
-        $validation->validate($request);
-
-        $user->email = $validation->getValue('email');
-        $user->firstname = $validation->getValue('firstname');
-        $user->lastname = $validation->getValue('lastname');
-        $user->password = $validation->getValue('password');
-        $user->displayname = !empty($validation->getValue('displayname')) ? $validation->getValue('displayname') : $user->generateDefaultDisplayname();
-        $userIp = !defined('API_TESTS') ? $this->request->getClientAddress(true) : '127.0.0.1'; //help getting the client ip on scrutinizer :(
-        $user->defaultCompanyName = $validation->getValue('default_company');
+        $user->email = $email;
+        $user->firstname = $firstname;
+        $user->lastname = $lastname;
+        $user->password = $password;
+        $user->displayname = !empty($displayname) ? $displayname : $user->generateDefaultDisplayname();
+        $userIp = $this->getClientIp();
+        $user->defaultCompanyName = $defaultCompany;
 
         //user registration
         try {
@@ -168,29 +123,34 @@ class AuthController extends BaseController
             throw new Exception($e->getMessage());
         }
 
-        $token = $user->getToken();
-
-        //start session
-        $session = new Sessions();
-        $session->start($user, $token['sessionId'], $token['token'], $userIp, 1);
-
-        $authSession = [
-            'token' => $token['token'],
-            'refresh_token' => $token['refresh_token'],
-            'time' => date('Y-m-d H:i:s'),
-            'expires' => $token['token_expiration'],
-            'refresh_token_expires' => $token['refresh_token_expiration'],
-            'id' => $user->getId(),
-            'timezone' => $userData->timezone
-        ];
-
+        $sessionResponse = $this->authResponse($user);
         $user->password = '';
         $user->notify(new Signup($user));
 
         return $this->response([
             'user' => $user,
-            'session' => $authSession
+            'session' => $sessionResponse
         ]);
+    }
+
+    /**
+     * User Login.
+     *
+     * @method POST
+     * @url /v1/login
+     *
+     * @return Response
+     */
+    public function logout() : Response
+    {
+        $data = $this->request->getPutData();
+        $allDevices = isset($data['all_devices']);
+        Auth::logout(
+            $this->userData,
+            !$allDevices ? $this->getToken($this->request->getBearerTokenFromHeader()) : null
+        );
+
+        return $this->response(['Logged Out']);
     }
 
     /**
@@ -204,53 +164,39 @@ class AuthController extends BaseController
     public function signupByRegisterRole() : Response
     {
         $user = $this->userModel;
-
+        $this->request->enableSanitize();
         $request = $this->request->getPostData();
 
-        //Ok let validate user password
-        $validation = new CanvasValidation();
-        $validation->add('password', new PresenceOf(['message' => _('The password is required.')]));
-        $validation->add('roles_uuid', new PresenceOf(['message' => _('roles_uuid is required.')]));
-        $validation->add('email', new EmailValidator(['message' => _('The email is not valid.')]));
+        $this->request->validate([
+            'email' => 'required|email',
+            'password' => 'required|min:8',
+            'roles_uuid' => 'required|uuid',
+        ]);
 
-        $validation->add(
-            'password',
-            new StringLength([
-                'min' => 8,
-                'messageMinimum' => _('Password is too short. Minimum 8 characters.'),
-            ])
-        );
-
-        $validation->add('password', new Confirmation([
-            'message' => _('Password and confirmation do not match.'),
-            'with' => 'verify_password',
-        ]));
-
-        $validation->setFilters('password', 'trim');
-        $validation->setFilters('firstname', 'trim');
-        $validation->setFilters('lastname', 'trim');
-        $validation->setFilters('displayname', 'trim');
-        $validation->setFilters('default_company', 'trim');
-
-        //validate this form for password
-        $validation->validate($request);
+        $email = $request['email'];
+        $firstname = $request['firstname'];
+        $lastname = $request['lastname'];
+        $displayname = $request['displayname'];
+        $defaultCompany = $request['default_company'];
+        $password = $request['password'];
+        $verifyPassword = $request['verify_password'];
+        PasswordValidation::validate($password, $verifyPassword);
 
         $registerRole = RegisterRoles::getByUuid($request['roles_uuid']);
 
-        $user->email = $validation->getValue('email');
-        $user->firstname = $validation->getValue('firstname');
-        $user->lastname = $validation->getValue('lastname');
-        $user->password = $validation->getValue('password');
-        $user->displayname = !empty($validation->getValue('displayname')) ? $validation->getValue('displayname') : $user->generateDefaultDisplayname();
-        $userIp = !defined('API_TESTS') ? $this->request->getClientAddress(true) : '127.0.0.1'; //help getting the client ip on scrutinizer :(
-        $user->defaultCompanyName = $validation->getValue('default_company');
+        $user->email = $email;
+        $user->firstname = $firstname;
+        $user->lastname = $lastname;
+        $user->password = $password;
+        $user->displayname = !empty($displayname) ? $displayname : $user->generateDefaultDisplayname();
+        $user->defaultCompanyName = $defaultCompany;
         $user->roles_id = $registerRole->roles_id;
 
         //user registration
         try {
             $this->db->begin();
 
-            $user = Auth::signUp($user->toArray());
+            $user = Auth::signUp($user);
 
             $this->db->commit();
         } catch (Exception $e) {
@@ -259,28 +205,13 @@ class AuthController extends BaseController
             throw new Exception($e->getMessage());
         }
 
-        $token = $user->getToken();
-
-        //start session
-        $session = new Sessions();
-        $session->start($user, $token['sessionId'], $token['token'], $userIp, 1);
-
-        $authSession = [
-            'token' => $token['token'],
-            'refresh_token' => $token['refresh_token'],
-            'time' => date('Y-m-d H:i:s'),
-            'expires' => $token['token_expiration'],
-            'refresh_token_expires' => $token['refresh_token_expiration'],
-            'id' => $user->getId(),
-            'timezone' => $userData->timezone
-        ];
-
+        $sessionResponse = $this->authResponse($user);
         $user->password = '';
         $user->notify(new Signup($user));
 
         return $this->response([
             'user' => $user,
-            'session' => $authSession
+            'session' => $sessionResponse
         ]);
     }
 
@@ -293,7 +224,14 @@ class AuthController extends BaseController
      */
     public function refresh() : Response
     {
+        $this->request->enableSanitize();
         $request = $this->request->getPostData();
+
+        $this->request->validate([
+            'access_token' => 'required',
+            'refresh_token' => 'required',
+        ]);
+
         $accessToken = $this->getToken($request['access_token']);
         $refreshToken = $this->getToken($request['refresh_token']);
         $user = null;
@@ -320,17 +258,10 @@ class AuthController extends BaseController
         $token = Sessions::restart(
             $user,
             $refreshToken->claims()->get('sessionId'),
-            (string)$this->request->getClientAddress(true)
+            $this->getClientIp()
         );
 
-        return $this->response([
-            'token' => $token['token'],
-            'refresh_token' => $token['refresh_token'],
-            'time' => date('Y-m-d H:i:s'),
-            'expires' => $token['token_expiration'],
-            'refresh_token_expires' => $token['refresh_token_expiration'],
-            'id' => $user->getId()
-        ]);
+        return $this->response(TokenResponse::format($user, $token));
     }
 
     /**
@@ -359,35 +290,19 @@ class AuthController extends BaseController
      */
     public function changeUserEmail(string $hash) : Response
     {
+        $this->request->enableSanitize();
         $request = $this->request->getPostData();
 
-        //Ok let validate user password
-        $validation = new CanvasValidation();
-        $validation->add('password', new PresenceOf(['message' => _('The password is required.')]));
-        $validation->add('new_email', new EmailValidator(['message' => _('The email is not valid.')]));
+        $this->request->validate([
+            'password' => 'required|min:8',
+            'new_email' => 'required|email',
+        ]);
 
-        $validation->add(
-            'password',
-            new StringLength([
-                'min' => 8,
-                'messageMinimum' => _('Password is too short. Minimum 8 characters.'),
-            ])
-        );
-
-        //validate this form for password
-        $validation->setFilters('password', 'trim');
-        $validation->setFilters('default_company', 'trim');
-        $validation->validate($request);
-
-        $newEmail = $validation->getValue('new_email');
-        $password = $validation->getValue('password');
+        $newEmail = $request['new_email'];
+        $password = $request['password'];
 
         //Search user by key
         $user = Users::getByUserActivationEmail($hash);
-
-        if (!is_object($user)) {
-            throw new NotFoundException(_('User not found'));
-        }
 
         $this->db->begin();
 
@@ -410,7 +325,14 @@ class AuthController extends BaseController
      */
     public function loginBySocial() : Response
     {
+        $this->request->enableSanitize();
         $request = $this->request->getPostData();
+
+        $this->request->validate([
+            'social_id' => 'required',
+            'email' => 'required|email',
+            'provider' => 'required',
+        ]);
 
         $source = Sources::findFirstOrFail([
             'title = ?0 and is_deleted = 0',
@@ -443,11 +365,17 @@ class AuthController extends BaseController
             throw new Exception(_('This Key to reset password doesn\'t exist'));
         }
 
+        $this->request->enableSanitize();
         $request = $this->request->getPostData();
 
+        $this->request->validate([
+            'new_password' => 'required',
+            'verify_password' => 'required',
+        ]);
+
         // Get the new password and the verify
-        $newPassword = trim($request['new_password']);
-        $verifyPassword = trim($request['verify_password']);
+        $newPassword = $request['new_password'];
+        $verifyPassword = $request['verify_password'];
 
         //Ok let validate user password
         PasswordValidation::validate($newPassword, $verifyPassword);
@@ -474,13 +402,14 @@ class AuthController extends BaseController
      */
     public function recover() : Response
     {
+        $this->request->enableSanitize();
         $request = $this->request->getPostData();
 
-        $validation = new CanvasValidation();
-        $validation->add('email', new EmailValidator(['message' => _('The email is not valid.')]));
-        $validation->validate($request);
+        $this->request->validate([
+            'email' => 'required|email',
+        ]);
 
-        $email = $validation->getValue('email');
+        $email = $request['email'];
 
         $recoverUser = Users::getByEmail($email);
         $recoverUser->generateForgotHash();

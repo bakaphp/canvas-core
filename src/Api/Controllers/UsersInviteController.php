@@ -17,7 +17,6 @@ use Exception;
 use Phalcon\Http\Response;
 use Phalcon\Security\Random;
 use Phalcon\Validation\Validator\PresenceOf;
-use Phalcon\Validation\Validator\StringLength;
 
 class UsersInviteController extends BaseController
 {
@@ -140,29 +139,18 @@ class UsersInviteController extends BaseController
      */
     public function processUserInvite(string $hash) : Response
     {
+        $this->request->enableSanitize();
         $request = $this->request->getPostData();
-        $request['password'] = ltrim(trim($request['password']));
 
-        //Ok let validate user password
-        $validation = new CanvasValidation();
-        $validation->add('password', new PresenceOf(['message' => _('The password is required.')]));
-
-        $validation->add(
-            'password',
-            new StringLength([
-                'min' => 8,
-                'messageMinimum' => _('Password is too short. Minimum 8 characters.'),
-            ])
-        );
-
-        //validate this form for password
-        $validation->validate($request);
+        $this->request->validate([
+            'password' => 'required|min:8',
+        ]);
 
         //Lets find users_invite by hash on our database
         $usersInvite = UsersInvite::getByHash($hash);
 
         //set userData as the user who is inviting the user
-        $this->setUserDataById((int)$usersInvite->users_id);
+        $this->overWriteUserDataProvider((int)$usersInvite->users_id);
 
         try {
             //Check if user already exists
