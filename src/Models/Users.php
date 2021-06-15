@@ -20,6 +20,7 @@ use Canvas\Contracts\SubscriptionPlanLimitTrait;
 use Canvas\Models\Locations\Cities;
 use Canvas\Models\Locations\Countries;
 use Canvas\Models\Locations\States;
+use Canvas\Utils\StringFormatter;
 use Exception;
 use Phalcon\Di;
 use Phalcon\Security\Random;
@@ -27,7 +28,6 @@ use Phalcon\Validation;
 use Phalcon\Validation\Validator\Email;
 use Phalcon\Validation\Validator\PresenceOf;
 use Phalcon\Validation\Validator\Uniqueness;
-use Canvas\Utils\StringFormatter;
 
 class Users extends AbstractModel implements UserInterface
 {
@@ -531,7 +531,7 @@ class Users extends AbstractModel implements UserInterface
     }
 
     /**
-     * Before saving the user
+     * Before saving the user.
      *
      * @return void
      */
@@ -827,7 +827,7 @@ class Users extends AbstractModel implements UserInterface
     public function generateForgotCode() : string
     {
         $random = new Random();
-        $this->user_recover_code = sprintf("%06d", $random->number(999999));
+        $this->user_recover_code = sprintf('%06d', $random->number(999999));
         $this->updateOrFail();
 
         return $this->user_recover_code;
