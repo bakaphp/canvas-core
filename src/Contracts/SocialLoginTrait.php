@@ -25,7 +25,7 @@ trait SocialLoginTrait
     abstract public function loginSocial(Users $user) : array;
 
     /**
-     * Login user using stablished user credentials.
+     * Login user using established user credentials.
      *
      * @param string $email
      * @param string $password

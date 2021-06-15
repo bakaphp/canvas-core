@@ -94,7 +94,7 @@ trait TokenTrait
                 ->permittedFor(getenv('TOKEN_AUDIENCE'))
                 ->identifiedBy($sessionId)
                 ->issuedAt($now)
-                ->canOnlyBeUsedAfter($now->modify('+10 minute'))
+                ->canOnlyBeUsedAfter($now)
                 ->expiresAt($now->modify('+' . $expiration . ' hour'))
                 ->withClaim('sessionId', $sessionId)
                 ->withClaim('email', $email)
