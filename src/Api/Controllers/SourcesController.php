@@ -5,15 +5,7 @@ declare(strict_types=1);
 namespace Canvas\Api\Controllers;
 
 use Canvas\Models\Sources;
-use Phalcon\Http\Response;
 
-/**
- * Class SourcesController.
- *
- * @package Canvas\Api\Controllers
- * @property UserData $userData
- *
- */
 class SourcesController extends BaseController
 {
     /*

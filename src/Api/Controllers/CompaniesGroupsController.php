@@ -4,21 +4,11 @@ declare(strict_types=1);
 
 namespace Canvas\Api\Controllers;
 
-use Canvas\Models\CompaniesGroups;
 use Canvas\Contracts\Controllers\ProcessOutputMapperTrait;
 use Canvas\Dto\CompaniesGroups as CompaniesGroupsDto;
 use Canvas\Mapper\CompaniesGroupsMapper;
+use Canvas\Models\CompaniesGroups;
 
-/**
- * Class CompaniesGroupsController.
- *
- * @package Canvas\Api\Controllers
- *
- * @property Users $userData
- * @property Request $request
- * @property Config $config
- * @property Apps $app
- */
 class CompaniesGroupsController extends BaseController
 {
     use ProcessOutputMapperTrait;

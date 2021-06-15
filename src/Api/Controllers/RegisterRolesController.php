@@ -7,14 +7,6 @@ namespace Canvas\Api\Controllers;
 use Canvas\Models\RegisterRoles;
 use Canvas\Models\Roles;
 
-/**
- * Class AclResourcesController
- *
- * @package Canvas\Api\Controllers
- *
- * @property Users $userData
- * @property Apps $app
- */
 class RegisterRolesController extends BaseController
 {
     /*
@@ -22,17 +14,17 @@ class RegisterRolesController extends BaseController
      *
      * @var array
      */
-    protected $createFields = ["roles_id"];
+    protected $createFields = ['roles_id'];
 
     /*
      * fields we accept to create
      *
      * @var array
      */
-    protected $updateFields = ["roles_id"];
+    protected $updateFields = ['roles_id'];
 
     /**
-     * set objects
+     * set objects.
      *
      * @return void
      */
@@ -49,12 +41,13 @@ class RegisterRolesController extends BaseController
     }
 
     /**
-    * Process the input data.
-    *
-    * @param array $request
-    * @return array
-    */
-    protected function processInput(array $request): array
+     * Process the input data.
+     *
+     * @param array $request
+     *
+     * @return array
+     */
+    protected function processInput(array $request) : array
     {
         //Lets check if the role exists
         Roles::getById((int)$request['roles_id']);

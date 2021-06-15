@@ -6,12 +6,6 @@ namespace Canvas\Api\Controllers;
 
 use Canvas\Models\MenusLinks;
 
-/**
- * Class LanguagesController.
- *
- * @package Canvas\Api\Controllers
- *
- */
 class MenusLinksController extends BaseController
 {
     /*

@@ -6,13 +6,6 @@ namespace Canvas\Api\Controllers;
 
 use Canvas\Models\CompaniesAssociations;
 
-/**
- * Class RolesController.
- *
- * @package Canvas\Api\Controllers
- *
- * @property Users $userData
- */
 class CompaniesAssociationsController extends BaseController
 {
     /*
@@ -38,7 +31,7 @@ class CompaniesAssociationsController extends BaseController
     {
         $this->model = new CompaniesAssociations();
 
-        //get the list of roes for the systema + my company
+        //get the list of roes for the system + my company
         $this->additionalSearchFields = [
             ['is_deleted', ':', '0'],
             ['companies_id', ':', $this->userData->currentCompanyId()]

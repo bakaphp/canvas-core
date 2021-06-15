@@ -6,8 +6,8 @@ namespace Canvas\Api\Controllers;
 
 use Baka\Database\Exception\ModelNotFoundException;
 use function Baka\getShortClassName;
-use Baka\Validation as CanvasValidation;
 use Baka\Http\Exception\NotFoundException;
+use Baka\Validation as CanvasValidation;
 use Canvas\Models\AccessList;
 use Canvas\Models\Roles;
 use Phalcon\Acl\Role;

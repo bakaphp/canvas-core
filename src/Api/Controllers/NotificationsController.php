@@ -4,18 +4,12 @@ declare(strict_types=1);
 
 namespace Canvas\Api\Controllers;
 
-use Canvas\Models\Notifications;
+use Canvas\Contracts\Controllers\ProcessOutputMapperTrait;
 use Canvas\Dto\Notification as NotificationDto;
 use Canvas\Mapper\NotificationMapper;
-use Canvas\Contracts\Controllers\ProcessOutputMapperTrait;
+use Canvas\Models\Notifications;
 use Phalcon\Http\Response;
 
-/**
- * Class LanguagesController.
- *
- * @package Canvas\Api\Controllers
- *
- */
 class NotificationsController extends BaseController
 {
     use ProcessOutputMapperTrait{
@@ -59,7 +53,7 @@ class NotificationsController extends BaseController
      *
      * @return Response
      */
-    public function cleanAll(): Response
+    public function cleanAll() : Response
     {
         Notifications::markAsRead($this->userData);
 
@@ -70,6 +64,7 @@ class NotificationsController extends BaseController
      * Overwrite processOutput.
      *
      * @param mixed $results
+     *
      * @return mixed
      */
     protected function processOutput($results)

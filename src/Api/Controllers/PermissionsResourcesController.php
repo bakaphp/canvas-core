@@ -6,14 +6,6 @@ namespace Canvas\Api\Controllers;
 
 use Canvas\Models\Resources;
 
-/**
- * Class AclResourcesController
- *
- * @package Canvas\Api\Controllers
- *
- * @property Users $userData
- * @property Apps $app
- */
 class PermissionsResourcesController extends BaseController
 {
     /*
@@ -31,7 +23,7 @@ class PermissionsResourcesController extends BaseController
     protected $updateFields = [];
 
     /**
-     * set objects
+     * set objects.
      *
      * @return void
      */
@@ -39,7 +31,7 @@ class PermissionsResourcesController extends BaseController
     {
         $this->model = new Resources();
 
-        //get the list of roes for the systema + my company
+        //get the list of roes for the system + my company
         $this->additionalSearchFields = [
             ['is_deleted', ':', '0'],
             ['apps_id', ':', '0|' . $this->app->getId()],
