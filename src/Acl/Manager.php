@@ -219,7 +219,7 @@ class Manager extends AbstractAdapter
      */
     public function isRole($roleName) : bool
     {
-        return RolesDB::isRole($rcooleName);
+        return RolesDB::isRole($roleName);
     }
 
     /**
