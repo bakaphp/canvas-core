@@ -59,18 +59,11 @@ class User
         //Create new company associated company
         $user->getDefaultCompany()->associate($user, $user->getDefaultCompany());
 
-        //Insert record into user_roles
-        if (!$role = $user->getDI()->get('app')->get(Apps::APP_DEFAULT_ROLE_SETTING)) {
-            $role = $user->getDI()->get('app')->name . '.' . Roles::getById((int) $user->roles_id)->name;
-        }
-
         //assign default location
         if (!$defaultCountryId = $user->getDI()->get('app')->get(Apps::APP_DEFAULT_COUNTRY)) {
             $user->country_id = $defaultCountryId;
             $user->updateOrFail();
         }
-
-        $user->assignRole($role);
     }
 
     /**
