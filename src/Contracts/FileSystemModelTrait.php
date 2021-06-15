@@ -11,6 +11,7 @@ use Canvas\Models\FileSystem;
 use Canvas\Models\FileSystemEntities;
 use Canvas\Models\FileSystemSettings;
 use Canvas\Models\SystemModules;
+use Exception;
 use Phalcon\Di;
 use Phalcon\Mvc\Model\Resultset\Simple as Resultset;
 use RuntimeException;
@@ -38,7 +39,7 @@ trait FileSystemModelTrait
 
                 if ($fileSystem = FileSystem::getById($file['filesystem_id'])) {
                     $this->attach([[
-                        'id' => $file['id'] ?: 0,
+                        'id' => $file['id'] ?? 0,
                         'file' => $fileSystem,
                         'field_name' => $file['field_name'] ?? '',
                         'is_deleted' => $file['is_deleted'] ?? 0
@@ -195,28 +196,34 @@ trait FileSystemModelTrait
             }
 
             //new attachment
-            if (!is_object($fileSystemEntities)) {
-                $fileSystemEntities = new FileSystemEntities();
-                $fileSystemEntities->system_modules_id = $systemModule->getId();
-                $fileSystemEntities->companies_id = $file['file']->companies_id;
-                $fileSystemEntities->entity_id = $this->getId();
-                $fileSystemEntities->created_at = $file['file']->created_at;
-            }
+            try {
+                if (!is_object($fileSystemEntities)) {
+                    $fileSystemEntities = new FileSystemEntities();
+                    $fileSystemEntities->system_modules_id = $systemModule->getId();
+                    $fileSystemEntities->companies_id = $file['file']->companies_id;
+                    $fileSystemEntities->entity_id = $this->getId();
+                    $fileSystemEntities->created_at = $file['file']->created_at;
+                }
 
-            $fileSystemEntities->filesystem_id = $file['file']->getId();
-            $fileSystemEntities->field_name = $file['field_name'] ?? null;
-            // Allow the frontend to dictate if the file is deleted or not.
-            $fileSystemEntities->is_deleted = isset($file['is_deleted']) ? (int) $file['is_deleted'] : 0;
-            $fileSystemEntities->saveOrFail();
-            $upload = true;
+                $fileSystemEntities->filesystem_id = $file['file']->getId();
+                $fileSystemEntities->field_name = $file['field_name'] ?? null;
+                // Allow the frontend to dictate if the file is deleted or not.
+                $fileSystemEntities->is_deleted = isset($file['is_deleted']) ? (int) $file['is_deleted'] : 0;
+                $fileSystemEntities->saveOrFail();
 
-            if (!is_null($this->filesNewAttachedPath())) {
-                $file['file']->move($this->filesNewAttachedPath());
+                $upload = true;
+
+                if (!is_null($this->filesNewAttachedPath())) {
+                    $file['file']->move($this->filesNewAttachedPath());
+                }
+            } catch (Exception $e) {
+                Di::getDefault()->get('log')->warning($e->getMessage());
+                //we wont stop operation but wont attach 2 images to the same entity
             }
         }
 
         if ($upload) {
-            $this->clearCache();
+            $this->clearFileSystemCache();
         }
 
         return true;
@@ -564,7 +571,7 @@ trait FileSystemModelTrait
      *
      * @return int
      */
-    protected function clearCache() : int
+    protected function clearFileSystemCache() : int
     {
         $systemModule = SystemModules::getByModelName(self::class);
 

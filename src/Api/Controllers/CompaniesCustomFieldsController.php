@@ -6,13 +6,6 @@ namespace Canvas\Api\Controllers;
 
 use Canvas\Models\CompaniesCustomFields;
 
-/**
- * Class LanguagesController.
- *
- * @package Canvas\Api\Controllers
- * @property Users $userData
- *
- */
 class CompaniesCustomFieldsController extends BaseController
 {
     /*

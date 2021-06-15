@@ -6,13 +6,6 @@ namespace Canvas\Api\Controllers;
 
 use Canvas\Models\Subscription;
 
-/**
- * Class RolesController.
- *
- * @package Canvas\Api\Controllers
- *
- * @property Users $userData
- */
 class SubscriptionsController extends BaseController
 {
     /*

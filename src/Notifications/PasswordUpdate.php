@@ -13,7 +13,6 @@ use Throwable;
 class PasswordUpdate extends Notification implements NotificationInterface
 {
     protected $type = Notification::APPS;
-    //protected $useQueue = true;
 
     /**
      * Notification msg.

@@ -6,7 +6,6 @@ namespace Canvas\Api\Controllers;
 
 use Baka\Http\Exception\NotFoundException;
 use Baka\Http\Exception\UnprocessableEntityException;
-use Baka\Validation as CanvasValidation;
 use Canvas\Auth\Auth;
 use Canvas\Contracts\AuthTrait;
 use Canvas\Models\Roles;
@@ -16,8 +15,6 @@ use Canvas\Notifications\Invitation;
 use Exception;
 use Phalcon\Http\Response;
 use Phalcon\Security\Random;
-use Phalcon\Validation\Validator\PresenceOf;
-use Phalcon\Validation\Validator\StringLength;
 
 class UsersInviteController extends BaseController
 {
@@ -97,15 +94,14 @@ class UsersInviteController extends BaseController
      */
     public function insertInvite() : Response
     {
+        $this->request->enableSanitize();
         $request = $this->request->getPostData();
         $random = new Random();
 
-        $validation = new CanvasValidation();
-        $validation->add('email', new PresenceOf(['message' => _('The email is required.')]));
-        $validation->add('role_id', new PresenceOf(['message' => _('The role is required.')]));
-
-        //validate this form for password
-        $validation->validate($request);
+        $this->request->validate([
+            'email' => 'required|email',
+            'role_id' => 'required',
+        ]);
 
         //Check if user was already was invited to current company and return message
         UsersInvite::isValid($request['email'], (int) $request['role_id']);
@@ -119,10 +115,7 @@ class UsersInviteController extends BaseController
         $userInvite->email = $request['email'];
         $userInvite->invite_hash = $random->base58();
         $userInvite->created_at = date('Y-m-d H:m:s');
-
-        if (!$userInvite->save()) {
-            throw new UnprocessableEntityException((string) current($userInvite->getMessages()));
-        }
+        $userInvite->saveOrFail();
 
         //create temp invite users
         $tempUser = new Users();
@@ -140,29 +133,18 @@ class UsersInviteController extends BaseController
      */
     public function processUserInvite(string $hash) : Response
     {
+        $this->request->enableSanitize();
         $request = $this->request->getPostData();
-        $request['password'] = ltrim(trim($request['password']));
 
-        //Ok let validate user password
-        $validation = new CanvasValidation();
-        $validation->add('password', new PresenceOf(['message' => _('The password is required.')]));
-
-        $validation->add(
-            'password',
-            new StringLength([
-                'min' => 8,
-                'messageMinimum' => _('Password is too short. Minimum 8 characters.'),
-            ])
-        );
-
-        //validate this form for password
-        $validation->validate($request);
+        $this->request->validate([
+            'password' => 'required|min:8',
+        ]);
 
         //Lets find users_invite by hash on our database
         $usersInvite = UsersInvite::getByHash($hash);
 
         //set userData as the user who is inviting the user
-        $this->setUserDataById((int)$usersInvite->users_id);
+        $this->overWriteUserDataProvider((int)$usersInvite->users_id);
 
         try {
             //Check if user already exists

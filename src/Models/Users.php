@@ -20,6 +20,7 @@ use Canvas\Contracts\SubscriptionPlanLimitTrait;
 use Canvas\Models\Locations\Cities;
 use Canvas\Models\Locations\Countries;
 use Canvas\Models\Locations\States;
+use Canvas\Utils\StringFormatter;
 use Exception;
 use Phalcon\Di;
 use Phalcon\Security\Random;
@@ -61,6 +62,7 @@ class Users extends AbstractModel implements UserInterface
     public ?int $city_id = 0;
     public ?int $state_id = 0;
     public ?int $country_id = 0;
+    public ?string $user_recover_code = null;
     public int $welcome = 0;
     public int $user_active = 0;
     public ?string $user_activation_key = null;
@@ -417,6 +419,8 @@ class Users extends AbstractModel implements UserInterface
     /**
      * Log a user out of the system.
      *
+     * @deprecated v0.4
+     *
      * @return bool
      */
     public function logOut(?string $ip = null) : bool
@@ -429,6 +433,8 @@ class Users extends AbstractModel implements UserInterface
 
     /**
      * Clean the user session from the system.
+     *
+     * @deprecated v0.4
      *
      * @return true
      */
@@ -511,6 +517,10 @@ class Users extends AbstractModel implements UserInterface
     public function beforeCreate()
     {
         parent::beforeCreate();
+
+        $this->phone_number = StringFormatter::sanitizePhoneNumber($this->phone_number);
+        $this->cell_phone_number = StringFormatter::sanitizePhoneNumber($this->cell_phone_number);
+
         $random = new Random();
         $this->user_activation_email = $random->uuid();
 
@@ -522,6 +532,17 @@ class Users extends AbstractModel implements UserInterface
 
         $role = Roles::getByName('Admins');
         $this->roles_id = $this->roles_id ?? $role->getId();
+    }
+
+    /**
+     * Before saving the user.
+     *
+     * @return void
+     */
+    public function beforeSave()
+    {
+        $this->phone_number = StringFormatter::sanitizePhoneNumber($this->phone_number);
+        $this->cell_phone_number = StringFormatter::sanitizePhoneNumber($this->cell_phone_number);
     }
 
     /**
@@ -692,7 +713,7 @@ class Users extends AbstractModel implements UserInterface
      */
     public static function getByUserActivationEmail(string $userActivationEmail) : Users
     {
-        return self::findFirst([
+        return self::findFirstOrFail([
             'conditions' => 'user_activation_email = ?0 and user_active =?1 and is_deleted = 0',
             'bind' => [$userActivationEmail, 1],
         ]);
@@ -701,7 +722,7 @@ class Users extends AbstractModel implements UserInterface
     /**
      * Overwrite the relationship.
      *
-     * @return void
+     * @return mixed
      */
     public function getPhoto()
     {
@@ -800,6 +821,20 @@ class Users extends AbstractModel implements UserInterface
         $this->updateOrFail();
 
         return $this->user_activation_forgot;
+    }
+
+    /**
+     * Generate new forgot password code.
+     *
+     * @return string
+     */
+    public function generateForgotCode() : string
+    {
+        $random = new Random();
+        $this->user_recover_code = sprintf('%06d', $random->number(999999));
+        $this->updateOrFail();
+
+        return $this->user_recover_code;
     }
 
     /**

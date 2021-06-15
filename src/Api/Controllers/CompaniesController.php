@@ -9,14 +9,6 @@ use Baka\Http\Exception\UnauthorizedException;
 use Canvas\Models\Companies;
 use Phalcon\Http\Response;
 
-/**
- * Class CompaniesController.
- *
- * @package Canvas\Api\Controllers
- *
- * @property Users $userData
- * @property Request $request
- */
 class CompaniesController extends BaseController
 {
     //use CrudCustomFieldsBehaviorTrait;

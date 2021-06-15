@@ -71,7 +71,6 @@ class AppsController extends BaseController
      *
      * @return ModelInterface
      *
-     * @throws Exception
      */
     protected function processCreate(RequestInterface $request) : ModelInterface
     {
@@ -92,8 +91,6 @@ class AppsController extends BaseController
      *
      * @param RequestInterface $request
      * @param ModelInterface $record
-     *
-     * @throws Exception
      *
      * @return ModelInterface
      */
@@ -136,8 +133,6 @@ class AppsController extends BaseController
 
     /**
      * Delete a Record.
-     *
-     * @throws Exception
      *
      * @return Response
      */

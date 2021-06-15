@@ -8,16 +8,8 @@ use Canvas\Models\UsersAssociatedApps;
 use Phalcon\Di;
 use Phalcon\Http\Response;
 
-/**
- * Class RolesController.
- *
- * @package Canvas\Api\Controllers
- *
- * @property Users $userData
- */
 class UsersAssociatedAppsController extends BaseController
 {
-
     /*
      * fields we accept to create
      *
@@ -49,23 +41,23 @@ class UsersAssociatedAppsController extends BaseController
     }
 
     /**
-     * Change user's active status
+     * Change user's active status.
      *
      * @param int $usersId
      *
      * @return Response
      */
-    public function changeUserActiveStatus(int $usersId): Response
+    public function changeUserActiveStatus(int $usersId) : Response
     {
         //Verify is current user is admin
         $this->userData->isAdmin();
 
         $userAssociatedApp = $this->model->findFirstOrFail([
-            "conditions" => "apps_id = :apps_id: and users_id = :users_id: and companies_id = :companies_id: and is_deleted = 0",
-            "bind" => [
-                "apps_id" => Di::getDefault()->getApp()->getId(),
-                "users_id" => $usersId,
-                "companies_id" => Di::getDefault()->getUserData()->getCurrentCompany()->getId()
+            'conditions' => 'apps_id = :apps_id: and users_id = :users_id: and companies_id = :companies_id: and is_deleted = 0',
+            'bind' => [
+                'apps_id' => Di::getDefault()->getApp()->getId(),
+                'users_id' => $usersId,
+                'companies_id' => Di::getDefault()->getUserData()->getCurrentCompany()->getId()
             ]
         ]);
 

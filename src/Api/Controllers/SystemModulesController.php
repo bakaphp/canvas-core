@@ -7,12 +7,6 @@ namespace Canvas\Api\Controllers;
 use Canvas\Models\SystemModules;
 use Phalcon\Http\Response;
 
-/**
- * Class SystemModulesController.
- *
- * @package Canvas\Api\Controllers
- *
- */
 class SystemModulesController extends BaseController
 {
     /*
@@ -56,7 +50,7 @@ class SystemModulesController extends BaseController
             ['is_deleted', ':', '0'],
             ['apps_id', ':', $this->app->getId()],
         ];
-        $this->sort = 'menu_order|ASC';
+        $this->customSort = 'menu_order|ASC';
     }
 
     /**

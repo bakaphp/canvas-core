@@ -5,19 +5,7 @@ declare(strict_types=1);
 namespace Canvas\Api\Controllers;
 
 use Canvas\Models\FileSystemEntities;
-use Canvas\Contracts\FileManagementTrait;
 
-/**
- * Class BaseController.
- *
- * @package Canvas\Api\Controllers
- *
- * @property Users $userData
- * @property Request $request
- * @property Config $config
- * @property \Baka\Mail\Message $mail
- * @property Apps $app
- */
 class FilesystemEntitiesController extends BaseController
 {
     /*
@@ -25,14 +13,30 @@ class FilesystemEntitiesController extends BaseController
         *
         * @var array
         */
-    protected $createFields = ['id', 'filesystem_id', 'entity_id', 'system_modules_id', 'companies_id', 'field_name', 'created_at'];
+    protected $createFields = [
+        'id',
+        'filesystem_id',
+        'entity_id',
+        'system_modules_id',
+        'companies_id',
+        'field_name',
+        'created_at'
+    ];
 
     /*
      * fields we accept to create
      *
      * @var array
      */
-    protected $updateFields = ['id', 'filesystem_id', 'entity_id', 'system_modules_id', 'companies_id', 'field_name', 'created_at'];
+    protected $updateFields = [
+        'id',
+        'filesystem_id',
+        'entity_id',
+        'system_modules_id',
+        'companies_id',
+        'field_name',
+        'created_at'
+    ];
 
     /**
      * set objects.

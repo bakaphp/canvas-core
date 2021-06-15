@@ -58,8 +58,13 @@ class Company
          */
         $companiesGroup->associate($company);
 
-        //assign role
-        $company->user->assignRole(Roles::DEFAULT);
+        /**
+         * only assign a role to the user within the company if its not a new signup
+         * but the creation of a new company to a already user of the app.
+         */
+        if (!$company->user->isFirstSignup()) {
+            $company->user->assignRole(Roles::DEFAULT, $company);
+        }
 
         //if the app is subscription based, create a free trial for this companyGroup and this app
         if ($app->subscriptionBased()) {

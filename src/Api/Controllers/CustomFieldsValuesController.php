@@ -5,14 +5,7 @@ declare(strict_types=1);
 namespace Canvas\Api\Controllers;
 
 use Canvas\Models\CustomFieldsValues;
-/**
- * Class LanguagesController.
- *
- * @package Canvas\Api\Controllers
- * @property Users $userData
- * @property Apps $app
- *
- */
+
 class CustomFieldsValuesController extends BaseController
 {
     /*

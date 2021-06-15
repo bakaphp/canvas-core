@@ -6,12 +6,6 @@ namespace Canvas\Api\Controllers;
 
 use Canvas\Models\Languages;
 
-/**
- * Class LanguagesController
- *
- * @package Canvas\Api\Controllers
- *
- */
 class LanguagesController extends BaseController
 {
     /*
@@ -29,7 +23,7 @@ class LanguagesController extends BaseController
     protected $updateFields = [];
 
     /**
-     * set objects
+     * set objects.
      *
      * @return void
      */

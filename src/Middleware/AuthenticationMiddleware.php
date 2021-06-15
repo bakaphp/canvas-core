@@ -88,7 +88,7 @@ class AuthenticationMiddleware extends TokenBase
                         throw new UnauthorizedException('User not found');
                     }
 
-                    $ip = !defined('API_TESTS') ? $request->getClientAddress() : '127.0.0.1';
+                    $ip = !defined('API_TESTS') ? $request->getClientAddress(true) : '127.0.0.1';
                     return $session->check($user, $token->claims()->get('sessionId'), (string) $ip, 1);
                 } else {
                     throw new UnauthorizedException('User not found');

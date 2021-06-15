@@ -6,14 +6,6 @@ namespace Canvas\Api\Controllers;
 
 use Canvas\Models\ResourcesAccesses;
 
-/**
- * Class AclResourcesController.
- *
- * @package Canvas\Api\Controllers
- *
- * @property Users $userData
- * @property Apps $app
- */
 class PermissionsResourcesAccessController extends BaseController
 {
     /*
