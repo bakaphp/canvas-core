@@ -51,13 +51,13 @@ class User
      *
      * @var int
      */
-    public int $city_id;
+    public ?int $city_id;
 
     /**
      *
      * @var int
      */
-    public int $country_id;
+    public ?int $country_id;
 
     /**
      *
@@ -201,7 +201,7 @@ class User
      *
      * @var string
      */
-    public string $roles;
+    public array $roles;
 
     /**
      *
