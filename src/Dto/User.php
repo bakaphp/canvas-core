@@ -27,7 +27,7 @@ class User
      *
      * @var int
      */
-    public ?int $active_subscription_id;
+    public ?int $active_subscription_id = null;
 
     /**
      *
@@ -39,7 +39,7 @@ class User
      *
      * @var string
      */
-    public ?string $card_brand;
+    public ?string $card_brand = null;
 
     /**
      *
@@ -51,13 +51,13 @@ class User
      *
      * @var int
      */
-    public ?int $city_id;
+    public ?int $city_id = null;
 
     /**
      *
      * @var int
      */
-    public ?int $country_id;
+    public ?int $country_id = null;
 
     /**
      *
@@ -105,7 +105,7 @@ class User
      *
      * @var string
      */
-    public ?string $description;
+    public ?string $description = null;
 
     /**
      *
@@ -117,7 +117,7 @@ class User
      *
      * @var int
      */
-    public ?int $karma;
+    public ?int $karma = null;
 
     /**
      *
@@ -141,7 +141,7 @@ class User
      *
      * @var string
      */
-    public ?string $location;
+    public ?string $location = null;
 
     /**
      *
@@ -159,19 +159,19 @@ class User
      *
      * @var string
      */
-    public ?string $profile_header_mobile;
+    public ?string $profile_header_mobile = null;
 
     /**
      *
      * @var string
      */
-    public ?string $profile_image;
+    public ?string $profile_image = null;
 
     /**
      *
      * @var string
      */
-    public ?string $profile_image_mobile;
+    public ?string $profile_image_mobile = null;
 
     /**
      *
@@ -183,13 +183,13 @@ class User
      *
      * @var string
      */
-    public ?int $profile_privacy;
+    public ?int $profile_privacy = null;
 
     /**
      *
      * @var string
      */
-    public ?string $profile_remote_image;
+    public ?string $profile_remote_image = null;
 
     /**
      *
@@ -243,13 +243,13 @@ class User
      *
      * @var int
      */
-    public ?int $status;
+    public ?int $status = null;
 
     /**
      *
      * @var string
      */
-    public ?string $stripe_id;
+    public ?string $stripe_id = null;
 
     /**
      *
@@ -267,7 +267,7 @@ class User
      *
      * @var string
      */
-    public ?string $trial_ends_at;
+    public ?string $trial_ends_at = null;
 
     /**
      *
@@ -285,7 +285,7 @@ class User
      *
      * @var string
      */
-    public ?int $user_last_login_try;
+    public ?int $user_last_login_try = null;
 
     /**
      *
@@ -303,13 +303,13 @@ class User
      *
      * @var string
      */
-    public ?string $votes;
+    public ?string $votes = null;
 
     /**
      *
      * @var string
      */
-    public ?string $votes_points;
+    public ?string $votes_points = null;
 
     /**
      *
@@ -327,5 +327,5 @@ class User
      *
      * @var string
      */
-    public ?string $photo;
+    public ?string $photo = null;
 }
