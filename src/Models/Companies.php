@@ -10,11 +10,12 @@ use Baka\Contracts\EventsManager\EventManagerAwareTrait;
 use Baka\Http\Exception\InternalServerErrorException;
 use Canvas\Contracts\FileSystemModelTrait;
 use Canvas\Contracts\UsersAssociatedTrait;
+use Canvas\CustomFields\CustomFields;
+use Canvas\Utils\StringFormatter;
 use Exception;
 use Phalcon\Di;
 use Phalcon\Validation;
 use Phalcon\Validation\Validator\PresenceOf;
-use Canvas\Utils\StringFormatter;
 
 class Companies extends AbstractModel
 {
@@ -54,21 +55,21 @@ class Companies extends AbstractModel
 
         $this->belongsTo(
             'users_id',
-            'Canvas\Models\Users',
+            Users::class,
             'id',
             ['alias' => 'user', 'reusable' => true, ]
         );
 
         $this->hasMany(
             'id',
-            'Canvas\Models\CompaniesBranches',
+            CompaniesBranches::class,
             'companies_id',
             ['alias' => 'branches', 'reusable' => true, ]
         );
 
         $this->hasOne(
             'id',
-            'Canvas\Models\CompaniesBranches',
+            CompaniesBranches::class,
             'companies_id',
             [
                 'alias' => 'defaultBranch',
@@ -81,35 +82,41 @@ class Companies extends AbstractModel
 
         $this->hasMany(
             'id',
-            'Canvas\Models\CompaniesCustomFields',
+            CompaniesCustomFields::class,
             'companies_id',
             ['alias' => 'fields', 'reusable' => true, ]
         );
 
         $this->hasMany(
             'id',
-            'Canvas\CustomFields\CustomFields',
+            CustomFields::class,
             'companies_id',
             ['alias' => 'custom-fields', 'reusable' => true, ]
         );
 
         $this->hasMany(
             'id',
-            'Canvas\Models\UsersAssociatedCompanies',
+            UsersAssociatedCompanies::class,
             'companies_id',
             ['alias' => 'UsersAssociatedCompanies', 'reusable' => true, ]
         );
 
         $this->hasMany(
             'id',
-            'Canvas\Models\UsersAssociatedApps',
+            UsersAssociatedApps::class,
             'companies_id',
-            ['alias' => 'UsersAssociatedApps', 'reusable' => true, ]
+            [
+                'alias' => 'UsersAssociatedApps',
+                'reusable' => true,
+                'params' => [
+                    'conditions' => 'is_deleted = 0'
+                ]
+            ]
         );
 
         $this->hasMany(
             'id',
-            'Canvas\Models\UsersAssociatedApps',
+            UsersAssociatedApps::class,
             'companies_id',
             [
                 'alias' => 'UsersAssociatedByApps',
@@ -122,7 +129,7 @@ class Companies extends AbstractModel
 
         $this->hasOne(
             'id',
-            'Canvas\Models\CompaniesBranches',
+            CompaniesBranches::class,
             'companies_id',
             [
                 'alias' => 'branch',
@@ -132,7 +139,7 @@ class Companies extends AbstractModel
 
         $this->hasOne(
             'id',
-            'Canvas\Models\UserCompanyApps',
+            UserCompanyApps::class,
             'companies_id',
             [
                 'alias' => 'app',
@@ -145,7 +152,7 @@ class Companies extends AbstractModel
 
         $this->hasOne(
             'id',
-            'Canvas\Models\UserCompanyApps',
+            UserCompanyApps::class,
             'companies_id',
             [
                 'alias' => 'apps',
@@ -166,7 +173,7 @@ class Companies extends AbstractModel
         //users associated with this company app
         $this->hasManyToMany(
             'id',
-            'Canvas\Models\UsersAssociatedApps',
+            UsersAssociatedApps::class,
             'companies_id',
             'users_id',
             'Canvas\Models\Users',
@@ -182,10 +189,10 @@ class Companies extends AbstractModel
 
         $this->hasManyToMany(
             'id',
-            'Canvas\Models\CompaniesAssociations',
+            CompaniesAssociations::class,
             'companies_id',
             'companies_groups_id',
-            'Canvas\Models\CompaniesGroups',
+            CompaniesGroups::class,
             'id',
             [
                 'alias' => 'companyGroups',
@@ -195,7 +202,7 @@ class Companies extends AbstractModel
 
         $this->hasMany(
             'id',
-            'Canvas\Models\UserWebhooks',
+            UserWebhooks::class,
             'companies_id',
             ['alias' => 'user-webhooks', 'reusable' => true, ]
         );
@@ -203,7 +210,7 @@ class Companies extends AbstractModel
         $systemModule = SystemModules::getByModelName(self::class);
         $this->hasOne(
             'id',
-            'Canvas\Models\FileSystemEntities',
+            FileSystemEntities::class,
             'entity_id',
             [
                 'alias' => 'files',
