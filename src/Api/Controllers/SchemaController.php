@@ -4,20 +4,15 @@ declare(strict_types=1);
 
 namespace Canvas\Api\Controllers;
 
-use Canvas\Models\SystemModules;
-use Phalcon\Http\Response;
-use Canvas\Exception\ServerErrorHttpException;
 use Baka\Http\Api\BaseController as BakaBaseController;
 use Canvas\Dto\ListSchema;
+use Canvas\Exception\ServerErrorHttpException;
 use Canvas\Mapper\ListSchemaMapper;
+use Canvas\Models\SystemModules;
 use Phalcon\Db\Column;
+use Phalcon\Http\Response;
 
-/**
- * Class LanguagesController.
- *
- * @package Canvas\Api\Controllers
- *
- */
+
 class SchemaController extends BakaBaseController
 {
     /**
@@ -35,7 +30,7 @@ class SchemaController extends BakaBaseController
      *
      * @return Response
      */
-    public function index(): Response
+    public function index() : Response
     {
         return $this->response(['We cant list this apps schema']);
     }
@@ -44,9 +39,10 @@ class SchemaController extends BakaBaseController
      * Given the slug get the schema.
      *
      * @param string $slug
+     *
      * @return Response
      */
-    public function getBySlug(string $slug): Response
+    public function getBySlug(string $slug) : Response
     {
         $schema = SystemModules::getBySlug($slug);
 
@@ -62,9 +58,10 @@ class SchemaController extends BakaBaseController
      * this route is only meant to be run by an admin.
      *
      * @param string $slug
+     *
      * @return Response
      */
-    public function getModelDescription(string $slug): Response
+    public function getModelDescription(string $slug) : Response
     {
         //none admin users can only edit themselves
         if (!$this->userData->hasRole('Default.Admins')) {

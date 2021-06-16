@@ -6,13 +6,6 @@ namespace Canvas\Api\Controllers;
 
 use Canvas\Models\UserCompanyApps;
 
-/**
- * Class RolesController.
- *
- * @package Canvas\Api\Controllers
- *
- * @property Users $userData
- */
 class UserCompanyAppsController extends BaseController
 {
     /*

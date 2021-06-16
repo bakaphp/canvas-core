@@ -11,16 +11,6 @@ use Phalcon\Http\Response;
 use PhpAmqpLib\Exception\AMQPIOException;
 use RedisException;
 
-/**
- * Class IndexController.
- *
- * @package Canvas\Api\Controllers
- *
- * @property Redis $redis
- * @property Beanstalk $queue
- * @property Mysql $db
- * @property \Monolog\Logger $log
- */
 class IndexController extends BaseController
 {
     /**

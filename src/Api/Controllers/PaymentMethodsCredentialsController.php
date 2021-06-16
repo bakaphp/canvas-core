@@ -8,12 +8,6 @@ use Canvas\Models\PaymentMethodsCredentials;
 use Exception;
 use Phalcon\Http\Response;
 
-/**
- * Class LanguagesController.
- *
- * @package Canvas\Api\Controllers
- *
- */
 class PaymentMethodsCredentialsController extends BaseController
 {
     /*

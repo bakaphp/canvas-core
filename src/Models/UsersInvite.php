@@ -4,9 +4,9 @@ declare(strict_types=1);
 namespace Canvas\Models;
 
 use Baka\Database\Exception\ModelNotFoundException;
+use Baka\Support\Random;
 use Canvas\Contracts\SubscriptionPlanLimitTrait;
 use Phalcon\Di;
-use Baka\Support\Random;
 
 class UsersInvite extends AbstractModel
 {
@@ -33,14 +33,14 @@ class UsersInvite extends AbstractModel
 
         $this->belongsTo(
             'companies_id',
-            'Canvas\Models\Companies',
+            Companies::class,
             'id',
             ['alias' => 'company']
         );
 
         $this->belongsTo(
             'apps_id',
-            'Canvas\Models\Apps',
+            Apps::class,
             'id',
             ['alias' => 'app']
         );
@@ -75,8 +75,6 @@ class UsersInvite extends AbstractModel
     /**
      * Validate if the current email is valid to invite.
      *
-     * @throws Exception
-     *
      * @param string $email
      *
      * @return bool
@@ -86,10 +84,15 @@ class UsersInvite extends AbstractModel
         $userData = Di::getDefault()->get('userData');
         $app = Di::getDefault()->get('app');
 
-        //check inviste
+        //check invite
         $invitedUser = self::findFirst([
             'conditions' => 'email = ?0 and companies_id = ?1 and role_id = ?2 and apps_id = ?3 and is_deleted = 0',
-            'bind' => [$email, $userData->currentCompanyId(), $roleId, $app->getId()]
+            'bind' => [
+                $email,
+                $userData->currentCompanyId(),
+                $roleId,
+                $app->getId()
+            ]
         ]);
 
         if (is_object($invitedUser)) {

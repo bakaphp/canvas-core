@@ -6,9 +6,10 @@ namespace Canvas\Contracts;
 
 use Baka\Http\Exception\InternalServerErrorException;
 use Baka\Http\Exception\UnauthorizedException;
+use Baka\Support\Str;
+use Canvas\Models\Companies;
 use Canvas\Models\Roles;
 use Canvas\Models\UserRoles;
-use Canvas\Models\Companies;
 
 trait PermissionsTrait
 {
@@ -26,7 +27,7 @@ trait PermissionsTrait
          * check if we have a dot, that means it legacy and sending the app name
          * not needed any more so we remove it.
          */
-        if (strpos($role, '.') !== false) {
+        if (Str::contains($role, '.')) {
             $appRole = explode('.', $role);
             $role = $appRole[1];
         }
@@ -34,28 +35,25 @@ trait PermissionsTrait
         $role = Roles::getByName($role);
         $companyId = !is_null($company) ? $company->getId() : $this->currentCompanyId();
 
-        $userRole = UserRoles::findFirst([
+        $userRole = UserRoles::findFirstOrCreate([
             'conditions' => 'users_id = ?0 and apps_id = ?1 and companies_id = ?2',
             'bind' => [
                 $this->getId(),
                 $role->apps_id,
                 $companyId
             ]
+        ], [
+            'users_id' => $this->getId(),
+            'roles_id' => $role->getId(),
+            'apps_id' => $role->getAppsId(),
+            'companies_id' => $companyId,
         ]);
 
-        if (!is_object($userRole)) {
-            $userRole = new UserRoles();
-            $userRole->users_id = $this->getId();
-            $userRole->roles_id = $role->getId();
-            $userRole->apps_id = $role->getAppsId();
-            $userRole->companies_id = $companyId;
-        } else {
+        if ($userRole) {
             $userRole->roles_id = $role->getId();
         }
 
-        $userRole->saveOrFail();
-
-        return true;
+        return $userRole->saveOrFail();
     }
 
     /**
@@ -153,8 +151,8 @@ trait PermissionsTrait
      */
     public function can(string $action, bool $throwException = false) : bool
     {
-        //if we find the . then les
-        if (strpos($action, '.') === false) {
+        //we expect the can to have resource.action
+        if (!Str::contains($action, '.')) {
             throw new InternalServerErrorException('ACL - We are expecting the resource for this action');
         }
 
