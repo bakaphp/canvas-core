@@ -41,7 +41,7 @@ class UserMapper extends CustomMapper
             $user = Users::getById($user['id']);
         }
 
-        $userDto->id = $user->id;
+        $userDto->id = (int)$user->id;
         $userDto->uuid = $user->uuid;
         $userDto->displayname = $user->displayname;
         $userDto->email = $user->email;
@@ -75,9 +75,9 @@ class UserMapper extends CustomMapper
         $userDto->session_time = $user->session_time;
         $userDto->sex = $user->sex;
         $userDto->state_id = $user->state_id;
-        $userDto->status = $user->status;
+        $userDto->status = (int)$user->status;
         $userDto->stripe_id = $user->stripe_id;
-        $userDto->system_modules_id = $user->system_modules_id;
+        $userDto->system_modules_id = (int)$user->system_modules_id;
         $userDto->timezone = $user->timezone;
         $userDto->trial_ends_at = $user->trial_ends_at;
         $userDto->updated_at = $user->updated_at;
