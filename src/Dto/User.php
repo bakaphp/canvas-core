@@ -199,12 +199,6 @@ class User
 
     /**
      *
-     * @var string
-     */
-    public array $roles;
-
-    /**
-     *
      * @var int
      */
     public int $roles_id;
