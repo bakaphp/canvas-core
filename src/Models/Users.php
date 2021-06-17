@@ -111,7 +111,7 @@ class Users extends AbstractModel implements UserInterface
      *
      * @var string
      */
-    public ?string $active_subscription_id = null;
+    public ?int $active_subscription_id = null;
 
     /**
      * System Module Id.
