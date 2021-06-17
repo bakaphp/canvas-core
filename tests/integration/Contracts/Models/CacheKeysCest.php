@@ -11,6 +11,7 @@ class CacheKeysCest
     use CacheKeys{
         generateCacheKey as protected;
         clearCacheByKeyPattern as protected;
+        clearAllCacheByPattern as protected;
     }
 
     public function validateCacheKeyGenerator(IntegrationTester $I)
