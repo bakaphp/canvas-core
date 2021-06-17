@@ -110,7 +110,7 @@ class Roles extends AbstractModel
             'name',
             new ExclusionIn(
                 [
-                    'message' => 'Can\'t use roles name Admins, Users, Agents',
+                    'message' => 'Can\'t use the names Admins, Users, Agents',
                     'domain' => self::DEFAULT_ROLES_NAMES
                 ]
             )
