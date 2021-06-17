@@ -51,8 +51,8 @@ class UserMapper extends CustomMapper
         $userDto->active_subscription_id = $user->active_subscription_id;
         $userDto->card_brand = $user->card_brand;
         $userDto->cell_phone_number = $user->cell_phone_number;
-        $userDto->city_id = $user->city_id;
-        $userDto->country_id = $user->country_id;
+        $userDto->city_id = (int)$user->city_id;
+        $userDto->country_id = (int)$user->country_id;
         $userDto->created_at = $user->created_at;
         $userDto->dob = $user->dob;
         $userDto->interest = $user->interest;
