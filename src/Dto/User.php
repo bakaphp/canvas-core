@@ -255,7 +255,7 @@ class User
      *
      * @var string
      */
-    public int $system_modules_id;
+    public ?int $system_modules_id = 0;
 
     /**
      *
