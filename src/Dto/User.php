@@ -87,7 +87,7 @@ class User
      *
      * @var string
      */
-    public string $dob;
+    public ?string $dob;
 
     /**
      *
@@ -195,7 +195,7 @@ class User
      *
      * @var string
      */
-    public string $registered;
+    public ?string $registered = null;
 
     /**
      *
@@ -327,5 +327,5 @@ class User
      *
      * @var string
      */
-    public ?string $photo = null;
+    public ?Files $photo = null;
 }

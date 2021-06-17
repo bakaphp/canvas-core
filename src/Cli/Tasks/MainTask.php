@@ -133,7 +133,7 @@ EOF;
      *
      * @return void
      */
-    public function upgradeAddUuidToUsers() : void
+    public function upgradeAddUuidToUsersAction() : void
     {
         $random = new Random();
         $users = Users::find();
