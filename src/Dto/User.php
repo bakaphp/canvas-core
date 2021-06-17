@@ -301,15 +301,15 @@ class User
 
     /**
      *
-     * @var string
+     * @var int
      */
-    public ?string $votes = null;
+    public ?int $votes = null;
 
     /**
      *
      * @var string
      */
-    public ?string $votes_points = null;
+    public ?int $votes_points = null;
 
     /**
      *
