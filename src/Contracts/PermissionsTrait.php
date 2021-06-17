@@ -7,9 +7,11 @@ namespace Canvas\Contracts;
 use Baka\Http\Exception\InternalServerErrorException;
 use Baka\Http\Exception\UnauthorizedException;
 use Baka\Support\Str;
+use Canvas\Models\Apps;
 use Canvas\Models\Companies;
 use Canvas\Models\Roles;
 use Canvas\Models\UserRoles;
+use Phalcon\Di;
 
 trait PermissionsTrait
 {
@@ -34,18 +36,19 @@ trait PermissionsTrait
 
         $role = Roles::getByName($role);
         $companyId = !is_null($company) ? $company->getId() : $this->currentCompanyId();
+        $appId = $role->apps_id == Apps::CANVAS_DEFAULT_APP_ID ? Di::getDefault()->get('app')->getId() : $role->apps_id;
 
         $userRole = UserRoles::findFirstOrCreate([
             'conditions' => 'users_id = ?0 and apps_id = ?1 and companies_id = ?2',
             'bind' => [
                 $this->getId(),
-                $role->apps_id,
+                $appId,
                 $companyId
             ]
         ], [
             'users_id' => $this->getId(),
             'roles_id' => $role->getId(),
-            'apps_id' => $role->getAppsId(),
+            'apps_id' => $appId,
             'companies_id' => $companyId,
         ]);
 

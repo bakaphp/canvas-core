@@ -97,6 +97,6 @@ class User
          * @todo this is hackable , need to add use Roles::getById($usersInvite->role_id) , without
          * but we need the company info without been logged in
          */
-        $user->assignRole(Roles::findFirstOrFail($usersInvite->role_id)->name);
+        $user->assignRole(Roles::findFirstOrFail($usersInvite->role_id)->name, $usersInvite->company);
     }
 }
