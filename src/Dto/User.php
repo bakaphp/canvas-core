@@ -231,13 +231,13 @@ class User
      *
      * @var string
      */
-    public string $sex;
+    public ?string $sex = null;
 
     /**
      *
      * @var int
      */
-    public int $state_id;
+    public ?int $state_id = null;
 
     /**
      *
