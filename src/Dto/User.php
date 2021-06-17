@@ -321,7 +321,7 @@ class User
      *
      * @var string
      */
-    public string $user_activation_email;
+    public ?string $user_activation_email = null;
 
     /**
      *
