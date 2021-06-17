@@ -13,10 +13,9 @@ use Canvas\Models\MenusLinks;
 use Canvas\Models\Roles;
 use Canvas\Models\SystemModules;
 use Canvas\Models\Users;
-use Phalcon\Di;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
-
+use Phalcon\Di;
 
 class Setup
 {
@@ -261,8 +260,7 @@ class Setup
         $acl = Di::getDefault()->get('acl');
         $acl->setApp($this->app);
 
-        $acl->addRole($this->app->name . '.Admins');
-        $acl->addRole($this->app->name . '.Users');
+        $acl->addRole($this->app->name . '.Manager');
 
         $acl->addComponent(
             $this->app->name . '.Users',
@@ -276,7 +274,7 @@ class Setup
         );
 
         $acl->allow(
-            'Admins',
+            'Manager',
             $this->app->name . '.Users',
             [
                 'read',
@@ -320,7 +318,7 @@ class Setup
             );
 
             $acl->allow(
-                'Admins',
+                'Manager',
                 $resource,
                 [
                     'read',
@@ -333,7 +331,7 @@ class Setup
         }
 
         $acl->allow(
-            'Admins',
+            'Manager',
             $this->app->name . '.SettingsMenu',
             [
                 'company-settings',
