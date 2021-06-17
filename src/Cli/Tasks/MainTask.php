@@ -129,11 +129,11 @@ EOF;
     }
 
     /**
-     * uuidToUserAction.
+     * upgradeAddUuidToUsers.
      *
      * @return void
      */
-    public function uuidToUserAction() : void
+    public function upgradeAddUuidToUsers() : void
     {
         $random = new Random();
         $users = Users::find();

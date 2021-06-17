@@ -27,7 +27,7 @@ class User
      *
      * @var int
      */
-    public ?int $active_subscription_id = null;
+    public ?int $active_subscription_id = 0;
 
     /**
      *
@@ -51,13 +51,13 @@ class User
      *
      * @var int
      */
-    public ?int $city_id = null;
+    public ?int $city_id = 0;
 
     /**
      *
      * @var int
      */
-    public ?int $country_id = null;
+    public ?int $country_id = 0;
 
     /**
      *
