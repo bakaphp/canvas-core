@@ -72,10 +72,19 @@ trait CacheKeys
      */
     public static function clearCacheByKeyPattern(string $key) : int
     {
+        $app = Di::getDefault()->get('app');
         //redis provider
-        $total = self::clearAllCacheByPattern('redis', $key . '*', Di::getDefault()->get('app')->key . ':');
+        $total = self::clearAllCacheByPattern(
+            'redis',
+            $key . '*',
+            $app->key . ':'
+        );
         //model cache cache
-        $total += self::clearAllCacheByPattern('modelsCache', $key, Di::getDefault()->get('app')->key);
+        $total += self::clearAllCacheByPattern(
+            'modelsCache',
+            $key,
+            $app->key
+        );
 
         return $total;
     }

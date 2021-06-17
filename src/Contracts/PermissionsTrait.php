@@ -36,6 +36,7 @@ trait PermissionsTrait
 
         $role = Roles::getByName($role);
         $companyId = !is_null($company) ? $company->getId() : $this->currentCompanyId();
+        //if its not the default app , use the current app
         $appId = $role->apps_id == Apps::CANVAS_DEFAULT_APP_ID ? Di::getDefault()->get('app')->getId() : $role->apps_id;
 
         $userRole = UserRoles::findFirstOrCreate([
