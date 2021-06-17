@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Canvas\Dto;
 
@@ -8,271 +9,271 @@ class User
      *
      * @var int
      */
-    public $id;
+    public int $id;
+
+    /**
+     * uuid.
+     *
+     * @var string
+     */
+    public string $uuid;
 
     /**
      * @var array
      */
-    public $access_list;
+    public array $access_list;
 
     /**
      *
      * @var int
      */
-    public $active_subscription_id;
+    public ?int $active_subscription_id = 0;
 
     /**
      *
      * @var array
      */
-    //public $bypassRoutes;
+    public array $bypassRoutes;
 
     /**
      *
      * @var string
      */
-    public $card_brand;
+    public ?string $card_brand = null;
 
     /**
      *
      * @var string
      */
-    public $cell_phone_number;
+    public string $cell_phone_number;
 
     /**
      *
      * @var int
      */
-    public $city_id;
+    public ?int $city_id = 0;
 
     /**
      *
      * @var int
      */
-    public $country_id;
+    public ?int $country_id = 0;
 
     /**
      *
      * @var string
      */
-    public $created_at;
+    public string $created_at;
 
     /**
      *
      * @var int
      */
-    public $default_company;
+    public int $default_company;
 
     /**
      *
      * @var int
      */
-    public $default_company_branch;
+    public int $default_company_branch;
 
     /**
      *
      * @var string
      */
-    public $displayname;
+    public string $displayname;
 
     /**
      *
      * @var string
      */
-    public $dob;
+    public string $dob;
 
     /**
      *
      * @var string
      */
-    public $email;
+    public string $email;
 
     /**
      *
      * @var string
      */
-    public $firstname;
-    
-    /**
-     *
-     * @var string
-     */
-    public $description;
-
+    public string $firstname;
 
     /**
      *
      * @var string
      */
-    public $interest;
+    public ?string $description = null;
+
+    /**
+     *
+     * @var string
+     */
+    public string $interest;
 
     /**
      *
      * @var int
      */
-    public $karma;
+    public ?int $karma = null;
 
     /**
      *
      * @var string
      */
-    public $language;
+    public string $language;
 
     /**
      *
      * @var string
      */
-    public $lastname;
+    public string $lastname;
 
     /**
      *
      * @var string
      */
-    public $lastvisit;
+    public string $lastvisit;
 
     /**
      *
      * @var string
      */
-    public $location;
+    public ?string $location = null;
 
     /**
      *
      * @var string
      */
-    public $phone_number;
+    public string $phone_number;
 
     /**
      *
      * @var string
      */
-    public $profile_header;
+    public string $profile_header;
 
     /**
      *
      * @var string
      */
-    public $profile_header_mobile;
+    public ?string $profile_header_mobile = null;
 
     /**
      *
      * @var string
      */
-    public $profile_image;
+    public ?string $profile_image = null;
 
     /**
      *
      * @var string
      */
-    public $profile_image_mobile;
+    public ?string $profile_image_mobile = null;
 
     /**
      *
      * @var string
      */
-    public $profile_image_thumb;
+    public string $profile_image_thumb;
 
     /**
      *
      * @var string
      */
-    public $profile_privacy;
+    public ?int $profile_privacy = null;
 
     /**
      *
      * @var string
      */
-    public $profile_remote_image;
+    public ?string $profile_remote_image = null;
 
     /**
      *
      * @var string
      */
-    public $registered;
-
-    /**
-     *
-     * @var string
-     */
-    public $roles;
+    public string $registered;
 
     /**
      *
      * @var int
      */
-    public $roles_id;
+    public int $roles_id;
 
     /**
      *
      * @var string
      */
-    public $session_id;
+    public string $session_id;
 
     /**
      *
      * @var string
      */
-    public $session_key;
+    public string $session_key;
 
     /**
      *
      * @var int
      */
-    public $session_page;
+    public int $session_page;
 
     /**
      *
      * @var int
      */
-    public $session_time;
+    public int $session_time;
 
     /**
      *
      * @var string
      */
-    public $sex;
+    public string $sex;
 
     /**
      *
      * @var int
      */
-    public $state_id;
+    public int $state_id;
 
     /**
      *
      * @var int
      */
-    public $status;
+    public ?int $status = null;
 
     /**
      *
      * @var string
      */
-    public $stripe_id;
+    public ?string $stripe_id = null;
 
     /**
      *
      * @var string
      */
-    public $system_modules_id;
+    public int $system_modules_id;
 
     /**
      *
      * @var string
      */
-    public $timezone;
+    public string $timezone;
 
     /**
      *
      * @var string
      */
-    public $trial_ends_at;
+    public ?string $trial_ends_at = null;
 
     /**
      *
      * @var string
      */
-    public $updated_at;
+    public string $updated_at;
 
     /**
      *
@@ -284,47 +285,47 @@ class User
      *
      * @var string
      */
-    public $user_last_login_try;
+    public ?int $user_last_login_try = null;
 
     /**
      *
      * @var string
      */
-    public $user_level;
+    public int $user_level;
 
     /**
      *
      * @var string
      */
-    public $user_login_tries;
+    public int $user_login_tries;
 
     /**
      *
      * @var string
      */
-    public $votes;
+    public ?string $votes = null;
 
     /**
      *
      * @var string
      */
-    public $votes_points;
+    public ?string $votes_points = null;
 
     /**
      *
      * @var string
      */
-    public $welcome;
+    public int $welcome;
 
     /**
      *
      * @var string
      */
-    public $user_activation_email;
+    public string $user_activation_email;
 
     /**
      *
      * @var string
      */
-    public $photo;
+    public ?string $photo = null;
 }

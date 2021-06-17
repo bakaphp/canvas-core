@@ -65,6 +65,7 @@ class AuthCest
 
         $I->assertTrue(isset($data['user']['id']));
         $I->assertTrue(isset($data['user']['email']));
+        $I->assertTrue(isset($data['user']['uuid']));
     }
 
     /**

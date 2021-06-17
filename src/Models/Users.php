@@ -17,6 +17,7 @@ use Canvas\Contracts\Auth\TokenTrait;
 use Canvas\Contracts\FileSystemModelTrait;
 use Canvas\Contracts\PermissionsTrait;
 use Canvas\Contracts\SubscriptionPlanLimitTrait;
+use Canvas\Models\Behaviors\Uuid;
 use Canvas\Models\Locations\Cities;
 use Canvas\Models\Locations\Countries;
 use Canvas\Models\Locations\States;
@@ -26,7 +27,7 @@ use Phalcon\Di;
 use Phalcon\Security\Random;
 use Phalcon\Validation;
 use Phalcon\Validation\Validator\Email;
-use Phalcon\Validation\Validator\PresenceOf;
+use  Phalcon\Validation\Validator\PresenceOf;
 use Phalcon\Validation\Validator\Uniqueness;
 
 class Users extends AbstractModel implements UserInterface
@@ -44,6 +45,7 @@ class Users extends AbstractModel implements UserInterface
      */
     const ANONYMOUS = '-1';
 
+    public ?string $uuid = null;
     public ?string $email = null;
     public ?string $password = null;
     public ?string $firstname = null;
@@ -126,6 +128,7 @@ class Users extends AbstractModel implements UserInterface
     public function initialize()
     {
         $this->setSource('users');
+        $this->addBehavior(new Uuid());
 
         //overwrite parent relationships
         $this->hasOne('id', Sessions::class, 'users_id', ['alias' => 'session']);
@@ -523,7 +526,6 @@ class Users extends AbstractModel implements UserInterface
 
         $random = new Random();
         $this->user_activation_email = $random->uuid();
-
         //this is only empty when creating a new user
         if (!$this->isFirstSignup()) {
             //confirm if the app reach its limit
