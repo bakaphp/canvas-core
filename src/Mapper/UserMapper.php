@@ -51,8 +51,8 @@ class UserMapper extends CustomMapper
         $userDto->active_subscription_id = $user->active_subscription_id;
         $userDto->card_brand = $user->card_brand;
         $userDto->cell_phone_number = $user->cell_phone_number;
-        $userDto->city_id = $user->city_id;
-        $userDto->country_id = $user->country_id;
+        $userDto->city_id = (int)$user->city_id;
+        $userDto->country_id = (int)$user->country_id;
         $userDto->created_at = $user->created_at;
         $userDto->dob = $user->dob;
         $userDto->interest = $user->interest;
@@ -74,7 +74,7 @@ class UserMapper extends CustomMapper
         $userDto->session_page = $user->session_page;
         $userDto->session_time = $user->session_time;
         $userDto->sex = $user->sex;
-        $userDto->state_id = $user->state_id;
+        $userDto->state_id = (int)$user->state_id;
         $userDto->status = (int)$user->status;
         $userDto->stripe_id = $user->stripe_id;
         $userDto->system_modules_id = (int)$user->system_modules_id;
@@ -98,9 +98,9 @@ class UserMapper extends CustomMapper
          * Properties we need to overwrite base on the
          * current app and company the user is running.
          */
-        $userDto->default_company = $user->getDefaultCompany()->getId();
-        $userDto->default_company_branch = $user->currentBranchId();
-        $userDto->roles_id = $user->getPermission()->roles_id;
+        $userDto->default_company = (int)$user->getDefaultCompany()->getId();
+        $userDto->default_company_branch = (int)$user->currentBranchId();
+        $userDto->roles_id = (int)$user->getPermission()->roles_id;
         $userDto->access_list = [];
 
         $this->getRelationships($user, $userDto, $context);
