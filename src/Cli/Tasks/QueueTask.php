@@ -112,7 +112,7 @@ class QueueTask extends PhTask
      */
     public function jobsAction(?string $queueName = null)
     {
-        $queue = is_null($queueName) ? QUEUE::JOBS : $queueName;
+        $queue = $queueName ?? QUEUE::JOBS;
 
         $callback = function (object $msg) : void {
             try {
@@ -157,7 +157,16 @@ class QueueTask extends PhTask
                                 $e->getTraceAsString()
                             ]
                         );
+
+                        // requeue
+                        if ($job['job']->useRetry) {
+                            // TODO: Change the delay logic to use the plugin https://github.com/rabbitmq/rabbitmq-delayed-message-exchange/
+                            sleep($job['job']->retryDelay);
+                            return $msg->nack(true);
+                        }
                     }
+
+                    return $msg->ack();
                 });
             } catch (Throwable $e) {
                 $this->log->info(
