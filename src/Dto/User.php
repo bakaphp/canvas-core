@@ -16,7 +16,7 @@ class User
      *
      * @var string
      */
-    public string $uuid;
+    public ?string $uuid = null;
 
     /**
      * @var array
@@ -45,7 +45,7 @@ class User
      *
      * @var string
      */
-    public string $cell_phone_number;
+    public ?string $cell_phone_number = null;
 
     /**
      *
@@ -75,19 +75,19 @@ class User
      *
      * @var int
      */
-    public int $default_company_branch;
+    public ?int $default_company_branch = 0;
 
     /**
      *
      * @var string
      */
-    public string $displayname;
+    public ?string $displayname = null;
 
     /**
      *
      * @var string
      */
-    public ?string $dob;
+    public ?string $dob = null;
 
     /**
      *
@@ -99,7 +99,7 @@ class User
      *
      * @var string
      */
-    public string $firstname;
+    public ?string $firstname = null;
 
     /**
      *
@@ -123,19 +123,19 @@ class User
      *
      * @var string
      */
-    public string $language;
+    public ?string $language = null;
 
     /**
      *
      * @var string
      */
-    public string $lastname;
+    public ?string $lastname = null;
 
     /**
      *
      * @var string
      */
-    public string $lastvisit;
+    public ?string $lastvisit = null;
 
     /**
      *
@@ -147,13 +147,13 @@ class User
      *
      * @var string
      */
-    public string $phone_number;
+    public ?string $phone_number = null;
 
     /**
      *
      * @var string
      */
-    public string $profile_header;
+    public ?string $profile_header = null;
 
     /**
      *
@@ -219,13 +219,13 @@ class User
      *
      * @var int
      */
-    public int $session_page;
+    public ?int $session_page = 0;
 
     /**
      *
      * @var int
      */
-    public int $session_time;
+    public ?int $session_time = 0;
 
     /**
      *
@@ -261,7 +261,7 @@ class User
      *
      * @var string
      */
-    public string $timezone;
+    public ?string $timezone = null;
 
     /**
      *
@@ -297,7 +297,7 @@ class User
      *
      * @var string
      */
-    public int $user_login_tries;
+    public ?int $user_login_tries = 0;
 
     /**
      *
@@ -315,7 +315,7 @@ class User
      *
      * @var string
      */
-    public int $welcome;
+    public ?int $welcome = null;
 
     /**
      *
