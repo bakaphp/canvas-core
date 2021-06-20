@@ -21,35 +21,35 @@ class SystemModules extends BakaSystemModules
     {
         $this->hasMany(
             'id',
-            'Canvas\Models\EmailTemplatesVariables',
+            EmailTemplatesVariables::class,
             'system_modules_id',
             ['alias' => 'templateVariable']
         );
 
         $this->hasMany(
             'id',
-            'Canvas\Models\Webhooks',
+            Webhooks::class,
             'system_modules_id',
             ['alias' => 'webhook']
         );
 
         $this->belongsTo(
             'companies_id',
-            'Canvas\Models\Companies',
+            Companies::class,
             'id',
             ['alias' => 'company', 'reusable' => true]
         );
 
         $this->belongsTo(
             'apps_id',
-            'Canvas\Models\Apps',
+            Apps::class,
             'id',
             ['alias' => 'app', 'reusable' => true]
         );
 
         $this->belongsTo(
             'company_branches_id',
-            'Canvas\Models\CompaniesBranches',
+            CompaniesBranches::class,
             'id',
             ['alias' => 'companyBranch', 'reusable' => true]
         );
@@ -63,9 +63,21 @@ class SystemModules extends BakaSystemModules
      * @param string $model_name
      * @param bool $cache
      *
-     * @return ModelInterface
+     * @return SystemModules
      */
-    public static function getSystemModuleByModelName(string $modelName, bool $cache = true) : ModelInterface
+    public static function getSystemModuleByModelName(string $modelName, bool $cache = true) : self
+    {
+        return self::getByModelName($modelName);
+    }
+
+    /**
+     * Get System Module by its model_name.
+     *
+     * @param string $model_name
+     *
+     * @return SystemModules
+     */
+    public static function getByModelName(string $modelName) : self
     {
         $app = Di::getDefault()->get('app');
         $params = [
@@ -75,26 +87,14 @@ class SystemModules extends BakaSystemModules
                 $app->getId()
             ]
         ];
-        
-        $module = SystemModules::findFirst($params);
+
+        $module = self::findFirst($params);
 
         if (!is_object($module)) {
-            throw new InternalServerErrorException('No system module for ' . $modelName);
+            throw new InternalServerErrorException('No system module found for ' . $modelName);
         }
 
         return $module;
-    }
-
-    /**
-     * Get System Module by its model_name.
-     *
-     * @param string $model_name
-     *
-     * @return ModelInterface
-     */
-    public static function getByModelName(string $modelName) : ModelInterface
-    {
-        return self::getSystemModuleByModelName($modelName);
     }
 
     /**
