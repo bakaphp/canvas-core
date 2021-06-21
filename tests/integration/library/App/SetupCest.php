@@ -84,6 +84,10 @@ class SetupCest
      */
     public function createDefaultAcl(IntegrationTester $I)
     {
+        $defaultCountAppRoleCount = 1;
+        $defaultCountAppRolesEcosystem = 3;
+        $defaultCountAppResources = 9;
+        $defaultCountAccessList = 53;
         //check app roles
         $roles = Roles::findOrFail([
             'conditions' => 'apps_id = :apps_id: and is_deleted = 0',
@@ -92,7 +96,7 @@ class SetupCest
             ]
         ]);
 
-        $I->assertTrue(count($roles) == 1);
+        $I->assertTrue(count($roles) == $defaultCountAppRoleCount);
 
         //Check global roles
         $roles = Roles::findOrFail([
@@ -102,7 +106,7 @@ class SetupCest
             ]
         ]);
 
-        $I->assertTrue(count($roles) == 3);
+        $I->assertTrue(count($roles) == $defaultCountAppRolesEcosystem);
 
         //Check number of resources
         $resources = Resources::findOrFail([
@@ -110,7 +114,7 @@ class SetupCest
             'bind' => ['apps_id' => $this->app->getId()]
         ]);
 
-        $I->assertTrue(count($resources) == 9);
+        $I->assertTrue(count($resources) == $defaultCountAppResources);
 
         //Check Access List privileges
         $accessList = AccessList::findOrFail([
@@ -118,7 +122,7 @@ class SetupCest
             'bind' => ['apps_id' => $this->app->getId()]
         ]);
 
-        $I->assertTrue(count($accessList) == 54);
+        $I->assertTrue(count($accessList) == $defaultCountAccessList);
     }
 
     /**
