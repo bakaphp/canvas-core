@@ -170,7 +170,7 @@ class RolesCrudAccessListCest extends BakaRestTest
         $response = $I->grabResponse();
         $data = json_decode($response, true);
 
-        $I->assertTrue($currentName . 'Copie' == $data['name']);
+        $I->assertTrue($currentName . 'Copied' == $data['name']);
     }
 
     /**
