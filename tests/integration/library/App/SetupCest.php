@@ -84,16 +84,6 @@ class SetupCest
      */
     public function createDefaultAcl(IntegrationTester $I)
     {
-        //Check global roles
-        $roles = Roles::findOrFail([
-            'conditions' => 'apps_id = :apps_id: and is_deleted = 0',
-            'bind' => [
-                'apps_id' => Apps::CANVAS_DEFAULT_APP_ID
-            ]
-        ]);
-
-        $I->assertTrue(count($roles) == 3);
-
         //check app roles
         $roles = Roles::findOrFail([
             'conditions' => 'apps_id = :apps_id: and is_deleted = 0',
@@ -103,6 +93,16 @@ class SetupCest
         ]);
 
         $I->assertTrue(count($roles) == 1);
+
+        //Check global roles
+        $roles = Roles::findOrFail([
+            'conditions' => 'apps_id = :apps_id: and is_deleted = 0',
+            'bind' => [
+                'apps_id' => Apps::CANVAS_DEFAULT_APP_ID
+            ]
+        ]);
+
+        $I->assertTrue(count($roles) == 3);
 
         //Check number of resources
         $resources = Resources::findOrFail([
