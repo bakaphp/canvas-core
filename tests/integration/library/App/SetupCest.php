@@ -92,7 +92,7 @@ class SetupCest
             ]
         ]);
 
-        $I->assertTrue(count($roles) == 2);
+        $I->assertTrue(count($roles) == 3);
 
         //check app roles
         $roles = Roles::findOrFail([
