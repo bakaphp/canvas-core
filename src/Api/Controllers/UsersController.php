@@ -246,7 +246,11 @@ class UsersController extends BaseController
     {
         $userAssociatedToApp = UsersAssociatedApps::findFirstOrFail([
             'conditions' => 'users_id = ?0 and apps_id = ?1 and companies_id = ?2 and is_deleted = 0',
-            'bind' => [$id, $this->app->getId(), $this->userData->getDefaultCompany()->getId()]
+            'bind' => [
+                $id,
+                $this->app->getId(),
+                $this->userData->getDefaultCompany()->getId()
+            ]
         ]);
 
         $userAssociatedToApp->user_active = $userAssociatedToApp->user_active ? 0 : 1;
@@ -267,9 +271,9 @@ class UsersController extends BaseController
     {
         $request = $this->request->getPostData();
 
-        if (!isset($request['notification_types'])) {
-            throw new Exception('Error Processing Request', 1);
-        }
+        $this->request->validate([
+            'notification_types' => 'required|array'
+        ]);
 
         //none admin users can only edit themselves
         if (!$this->userData->hasRole('Default.Admins') || $id == 0) {
@@ -310,7 +314,8 @@ class UsersController extends BaseController
             'conditions' => 'apps_id = :apps_id: 
                             and companies_id = :companies_id: 
                             and roles_id = :roles_id: 
-                            and is_deleted = 0',
+                            and is_deleted = 0 
+                            AND users_id IN (select ' . Users::class . '.id from ' . Users::class . ' where ' . Users::class . '.is_deleted = 0)',
             'bind' => [
                 'apps_id' => $this->app->getId(),
                 'companies_id' => $this->userData->getCurrentCompany()->getId(),
