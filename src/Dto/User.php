@@ -325,7 +325,7 @@ class User
 
     /**
      *
-     * @var string
+     * @var mixed
      */
-    public ?Files $photo = null;
+    public $photo;
 }
