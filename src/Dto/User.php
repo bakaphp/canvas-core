@@ -5,7 +5,6 @@ namespace Canvas\Dto;
 
 class User
 {
-
     public int $id;
     public ?string $uuid = null;
     public array $access_list;
