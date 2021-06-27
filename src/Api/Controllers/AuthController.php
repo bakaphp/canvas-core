@@ -330,17 +330,15 @@ class AuthController extends BaseController
         $this->request->enableSanitize();
         $request = $this->request->getPostData();
 
-        $validation = [
+        $this->request->validate([
             'social_id' => 'required',
             'provider' => 'required',
-        ];
+        ]);
 
         $source = Sources::findFirstOrFail([
             'title = ?0 and is_deleted = 0',
             'bind' => [$request['provider']]
         ]);
-
-        $this->request->validate($validation);
 
         if ($source->isApple()) {
             $appleUserInfo = $source->validateAppleUser($request['social_id']);
