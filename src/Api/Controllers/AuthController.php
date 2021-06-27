@@ -337,7 +337,9 @@ class AuthController extends BaseController
 
         $source = Sources::findFirstOrFail([
             'title = ?0 and is_deleted = 0',
-            'bind' => [$request['provider']]
+            'bind' => [
+                $request['provider']
+            ]
         ]);
 
         if ($source->isApple()) {
