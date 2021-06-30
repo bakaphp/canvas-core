@@ -22,8 +22,10 @@ use Canvas\Notifications\PasswordUpdate;
 use Canvas\Notifications\ResetPassword;
 use Canvas\Notifications\Signup;
 use Canvas\Notifications\UpdateEmail;
+use Canvas\Validation;
 use Exception;
 use Phalcon\Http\Response;
+use Phalcon\Validation\Validator\Email;
 
 class AuthController extends BaseController
 {
@@ -330,13 +332,14 @@ class AuthController extends BaseController
 
         $this->request->validate([
             'social_id' => 'required',
-            'email' => 'required|email',
             'provider' => 'required',
         ]);
 
         $source = Sources::findFirstOrFail([
             'title = ?0 and is_deleted = 0',
-            'bind' => [$request['provider']]
+            'bind' => [
+                $request['provider']
+            ]
         ]);
 
         if ($source->isApple()) {
@@ -344,6 +347,15 @@ class AuthController extends BaseController
             $request['social_id'] = $appleUserInfo->sub;
             $request['email'] = $appleUserInfo->email;
         }
+
+        $emailValidation = new Validation();
+        $emailValidation->add(
+            'email',
+            new Email([
+                'The email is required'
+            ])
+        );
+        $emailValidation->validate($request);
 
         return $this->response(
             $this->providerLogin($source, $request['social_id'], $request)
