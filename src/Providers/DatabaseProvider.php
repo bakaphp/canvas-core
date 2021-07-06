@@ -31,7 +31,6 @@ class DatabaseProvider implements ServiceProviderInterface
                     'charset' => 'utf8',
                     'options' => [
                         PDO::ATTR_ERRMODE => PDO::ERRMODE_WARNING,
-                        PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => true
                     ]
                 ];
 
