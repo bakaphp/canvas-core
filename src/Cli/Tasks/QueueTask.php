@@ -179,15 +179,17 @@ class QueueTask extends PhTask
      */
     protected function reconnectDb() : void
     {
-        if (!$this->isDbConnected('db')) {
-            return ;
-        }
+        //list all of our di
+        $listOfServices = array_keys($this->di->getServices());
 
-        if ($this->di->has('dblocal')) {
-            if (!$this->isDbConnected('dblocal')) {
-                return ;
+        foreach ($listOfServices as $service) {
+            //find all db providers
+            if (Str::contains($service, 'db')) {
+                $this->isDbConnected($service);
             }
         }
+
+        return ;
     }
 
     /**
