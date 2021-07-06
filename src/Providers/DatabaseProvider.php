@@ -20,6 +20,12 @@ class DatabaseProvider implements ServiceProviderInterface
      */
     public function register(DiInterface $container) : void
     {
+        /* $shared = true;
+        //only when active do we run full async
+        if (envValue('SWOOLE_COROUTINE_SHARED_DB', false)) {
+            $shared = defined('API_TESTS') || !isCLI() ? true : false;
+        } */
+
         $container->setShared(
             'db',
             function () {
