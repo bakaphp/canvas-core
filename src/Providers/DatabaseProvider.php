@@ -20,10 +20,7 @@ class DatabaseProvider implements ServiceProviderInterface
      */
     public function register(DiInterface $container) : void
     {
-        //cant run isCLI on github action
-        $shared = defined('API_TESTS') || !isCLI() ? true : false;
-
-        $container->set(
+        $container->setShared(
             'db',
             function () {
                 $options = [
@@ -32,7 +29,10 @@ class DatabaseProvider implements ServiceProviderInterface
                     'password' => envValue('DATA_API_MYSQL_PASS', ''),
                     'dbname' => envValue('DATA_API_MYSQL_NAME', 'gonano'),
                     'charset' => 'utf8',
-                    'options' => [PDO::ATTR_ERRMODE => PDO::ERRMODE_WARNING]
+                    'options' => [
+                        PDO::ATTR_ERRMODE => PDO::ERRMODE_WARNING,
+                        PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => true
+                    ]
                 ];
 
                 try {
@@ -45,8 +45,7 @@ class DatabaseProvider implements ServiceProviderInterface
                 }
 
                 return $connection;
-            },
-            $shared
+            }
         );
     }
 }
