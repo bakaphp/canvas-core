@@ -184,7 +184,7 @@ class QueueTask extends PhTask
 
         foreach ($listOfServices as $service) {
             //find all db providers
-            if (Str::contains($service, 'db')) {
+            if (Str::contains(strtolower($service), 'db')) {
                 $this->isDbConnected($service);
             }
         }
