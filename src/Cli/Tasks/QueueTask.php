@@ -202,7 +202,8 @@ class QueueTask extends PhTask
         try {
             $this->di->get($dbProvider)->fetchAll('SELECT 1');
         } catch (Throwable $e) {
-            if (Str::contains($e->getMessage(), 'MySQL server has gone away')) {
+            if (Str::contains($e->getMessage(), 'MySQL server has gone away') ||
+                Str::contains($e->getMessage(), 'Connection timed out')) {
                 $this->di->get($dbProvider)->connect();
                 return true;
             }
