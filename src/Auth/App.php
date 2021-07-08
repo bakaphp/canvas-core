@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Canvas\Auth;
 
 use Baka\Contracts\Auth\UserInterface;
+use Baka\Exception\AuthException;
 use Baka\Hashing\Password;
 use Canvas\Models\Users;
 use Exception;
@@ -23,7 +24,7 @@ class App extends Auth
      *
      * @return UserInterface
      */
-    public static function login(string $email, string $password, int $autologin = 1, int $admin, string $userIp) : UserInterface
+    public static function login(string $email, string $password, int $autologin = 1, int $admin = 0, ?string $userIp = null) : UserInterface
     {
         //trim email
         $email = ltrim(trim($email));
@@ -34,7 +35,7 @@ class App extends Auth
 
         //first we find the user
         if (!$user) {
-            throw new Exception(_('Invalid email or password.'));
+            throw new AuthException(_('Invalid email or password.'));
         }
 
         self::loginAttemptsValidation($user);
@@ -43,7 +44,7 @@ class App extends Auth
         $currentAppUserInfo = $user->getApp();
 
         if (!is_object($currentAppUserInfo) || empty($currentAppUserInfo->password)) {
-            throw new Exception(_('Invalid email or password.'));
+            throw new AuthException(_('Invalid email or password.'));
         }
 
         //password verification
@@ -60,9 +61,9 @@ class App extends Auth
 
             throw new Exception(_('Invalid email or password.'));
         } elseif ($user->isBanned()) {
-            throw new Exception(_('User has not been banned, please check your email for the activation link.'));
+            throw new AuthException(_('User has been banned, please contact support.'));
         } else {
-            throw new Exception(_('User has not been activated, please check your email for the activation link.'));
+            throw new AuthException(_('User is not active, please contact support.'));
         }
     }
 
