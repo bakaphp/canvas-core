@@ -49,7 +49,7 @@ class User
     public ?int $system_modules_id = 0;
     public ?string $timezone = null;
     public ?string $trial_ends_at = null;
-    public string $updated_at;
+    public ?string $updated_at;
     public $user_active;
     public ?int $user_last_login_try = null;
     public int $user_level;
