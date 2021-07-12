@@ -8,9 +8,10 @@ use Baka\Blameable\BlameableTrait;
 use Baka\Contracts\Database\HashTableTrait;
 use Baka\Contracts\EventsManager\EventManagerAwareTrait;
 use Baka\Http\Exception\InternalServerErrorException;
-use Canvas\Traits\FileSystemModelTrait;
-use Canvas\Traits\UsersAssociatedTrait;
-use Carbon\Carbon;
+use Canvas\Contracts\FileSystemModelTrait;
+use Canvas\Contracts\UsersAssociatedTrait;
+use Canvas\CustomFields\CustomFields;
+use Canvas\Utils\StringFormatter;
 use Exception;
 use Phalcon\Di;
 use Phalcon\Validation;
@@ -37,6 +38,8 @@ class Companies extends AbstractModel
     const DEFAULT_COMPANY = 'DefaulCompany';
     const DEFAULT_COMPANY_APP = 'DefaulCompanyApp_';
     const PAYMENT_GATEWAY_CUSTOMER_KEY = 'payment_gateway_customer_id';
+    const DEFAULT_COMPANY_BRANCH_APP = 'DefaultCompanyBranchApp_';
+    const GLOBAL_COMPANIES_ID = 0;
 
     /**
      * Initialize method for model.
@@ -48,28 +51,29 @@ class Companies extends AbstractModel
         $this->keepSnapshots(true);
         $this->addBehavior(new Blameable());
 
-        $this->hasMany('id', 'Baka\Auth\Models\CompanySettings', 'id', ['alias' => 'settings']);
+        $this->hasMany('id', CompaniesSettings::class, 'companies_id', ['alias' => 'settings', 'reusable' => true]);
 
         $this->belongsTo(
             'users_id',
-            'Canvas\Models\Users',
+            Users::class,
             'id',
-            ['alias' => 'user']
+            ['alias' => 'user', 'reusable' => true, ]
         );
 
         $this->hasMany(
             'id',
-            'Canvas\Models\CompaniesBranches',
+            CompaniesBranches::class,
             'companies_id',
-            ['alias' => 'branches']
+            ['alias' => 'branches', 'reusable' => true, ]
         );
 
         $this->hasOne(
             'id',
-            'Canvas\Models\CompaniesBranches',
+            CompaniesBranches::class,
             'companies_id',
             [
                 'alias' => 'defaultBranch',
+                'reusable' => true,
                 'params' => [
                     'conditions' => 'is_default = 1'
                 ]
@@ -78,73 +82,83 @@ class Companies extends AbstractModel
 
         $this->hasMany(
             'id',
-            'Canvas\Models\CompaniesCustomFields',
+            CompaniesCustomFields::class,
             'companies_id',
-            ['alias' => 'fields']
+            ['alias' => 'fields', 'reusable' => true, ]
         );
 
         $this->hasMany(
             'id',
-            'Canvas\CustomFields\CustomFields',
+            CustomFields::class,
             'companies_id',
-            ['alias' => 'custom-fields']
+            ['alias' => 'custom-fields', 'reusable' => true, ]
         );
 
         $this->hasMany(
             'id',
-            'Canvas\Models\UsersAssociatedCompanies',
+            UsersAssociatedCompanies::class,
             'companies_id',
-            ['alias' => 'UsersAssociatedCompanies']
+            ['alias' => 'UsersAssociatedCompanies', 'reusable' => true, ]
         );
 
         $this->hasMany(
             'id',
-            'Canvas\Models\UsersAssociatedApps',
+            UsersAssociatedApps::class,
             'companies_id',
-            ['alias' => 'UsersAssociatedApps']
+            [
+                'alias' => 'UsersAssociatedApps',
+                'reusable' => true,
+                'params' => [
+                    'conditions' => 'is_deleted = 0'
+                ]
+            ]
         );
 
         $this->hasMany(
             'id',
-            'Canvas\Models\UsersAssociatedApps',
+            UsersAssociatedApps::class,
             'companies_id',
             [
                 'alias' => 'UsersAssociatedByApps',
+                'reusable' => true,
                 'params' => [
-                    'conditions' => 'apps_id = ' . $this->di->getApp()->getId()
+                    'conditions' => "apps_id = {$this->di->get('app')->getId()} and is_deleted = 0"
                 ]
             ]
         );
 
         $this->hasOne(
             'id',
-            'Canvas\Models\CompaniesBranches',
+            CompaniesBranches::class,
             'companies_id',
             [
                 'alias' => 'branch',
+                'reusable' => true,
             ]
         );
 
         $this->hasOne(
             'id',
-            'Canvas\Models\UserCompanyApps',
+            UserCompanyApps::class,
             'companies_id',
             [
                 'alias' => 'app',
+                'reusable' => true,
                 'params' => [
-                    'conditions' => 'apps_id = ' . $this->di->getApp()->getId()
+                    'conditions' => 'apps_id = ' . $this->di->get('app')->getId()
                 ]
             ]
         );
 
         $this->hasOne(
             'id',
-            'Canvas\Models\UserCompanyApps',
+            UserCompanyApps::class,
             'companies_id',
             [
                 'alias' => 'apps',
+                'reusable' => true,
                 'params' => [
-                    'conditions' => 'apps_id = ' . $this->di->getApp()->getId()
+                    'conditions' => 'apps_id = ' . $this->di->get('app')->getId()
                 ]
             ]
         );
@@ -153,71 +167,100 @@ class Companies extends AbstractModel
             'id',
             CompaniesAssociations::class,
             'companies_id',
-            ['alias' => 'companiesAssoc']
+            ['alias' => 'companiesAssoc', 'reusable' => true, ]
         );
 
         //users associated with this company app
         $this->hasManyToMany(
             'id',
-            'Canvas\Models\UsersAssociatedApps',
+            UsersAssociatedApps::class,
             'companies_id',
             'users_id',
             'Canvas\Models\Users',
             'id',
             [
                 'alias' => 'users',
+                'reusable' => true,
                 'params' => [
-                    'conditions' => 'apps_id = ' . $this->di->getApp()->getId() . ' AND Canvas\Models\UsersAssociatedApps.is_deleted = 0',
+                    'conditions' => 'apps_id = ' . $this->di->get('app')->getId() . ' AND Canvas\Models\UsersAssociatedApps.is_deleted = 0',
                 ]
             ]
         );
 
-        $this->hasOne(
+        $this->hasManyToMany(
             'id',
-            'Canvas\Models\Subscription',
+            CompaniesAssociations::class,
             'companies_id',
+            'companies_groups_id',
+            CompaniesGroups::class,
+            'id',
             [
-                'alias' => 'subscription',
-                'params' => [
-                    'conditions' => 'apps_id = ' . $this->di->getApp()->getId() . ' AND is_deleted = 0',
-                    'order' => 'id DESC'
-                ]
+                'alias' => 'companyGroups',
+                'reusable' => true,
             ]
         );
 
         $this->hasMany(
             'id',
-            'Canvas\Models\Subscription',
+            UserWebhooks::class,
             'companies_id',
-            [
-                'alias' => 'subscriptions',
-                'params' => [
-                    'conditions' => 'apps_id = ' . $this->di->getApp()->getId() . ' AND is_deleted = 0',
-                    'order' => 'id DESC'
-                ]
-            ]
+            ['alias' => 'user-webhooks', 'reusable' => true, ]
         );
 
-        $this->hasMany(
-            'id',
-            'Canvas\Models\UserWebhooks',
-            'companies_id',
-            ['alias' => 'user-webhooks']
-        );
-
-        $systemModule = SystemModules::getSystemModuleByModelName(self::class);
+        $systemModule = SystemModules::getByModelName(self::class);
         $this->hasOne(
             'id',
-            'Canvas\Models\FileSystemEntities',
+            FileSystemEntities::class,
             'entity_id',
             [
                 'alias' => 'files',
+                'reusable' => true,
                 'params' => [
                     'conditions' => 'system_modules_id = ?0',
                     'bind' => [$systemModule->getId()]
                 ]
             ]
         );
+    }
+
+    /**
+     * Get the subscription from company group
+     * used for relationship.
+     *
+     * @return Subscription
+     *
+     * @deprecated v0.3
+     */
+    public function getSubscription() : ?Subscription
+    {
+        /**
+         * @todo Frontend needs to all relationship if its a subscription app if not, ignore
+         * backend doesn't need to handle this logic on the model
+         */
+        if ($this->di->get('app')->subscriptionBased()) {
+            return $this->getDefaultCompanyGroup()->subscription();
+        }
+
+        return null;
+    }
+
+    /**
+     * Get the default company group for this company on the current app.
+     *
+     * @return CompaniesGroups
+     */
+    public function getDefaultCompanyGroup() : CompaniesGroups
+    {
+        $companyGroup = $this->getCompanyGroups([
+            'conditions' => 'Canvas\Models\CompaniesGroups.is_default = 1',
+            'limit' => 1
+        ])->getFirst();
+
+        if (!$companyGroup) {
+            throw new InternalServerErrorException('No default Company Group for Company - ' . $this->getId());
+        }
+
+        return $companyGroup;
     }
 
     /**
@@ -263,11 +306,11 @@ class Companies extends AbstractModel
      *
      * @param Users $user
      *
-     * @return boolean
+     * @return bool
      */
     public function userAssociatedToCompany(Users $user) : bool
     {
-        return $this->countUsersAssociatedCompanies('users_id =' . $user->getId()) > 0;
+        return $this->countUsersAssociatedApps('users_id =' . $user->getId() . ' and apps_id = ' . Di::getDefault()->get('app')->getId()) > 0;
     }
 
     /**
@@ -288,10 +331,20 @@ class Companies extends AbstractModel
     public function beforeCreate()
     {
         parent::beforeCreate();
+        $this->phone = StringFormatter::sanitizePhoneNumber($this->phone);
+        $this->language = $this->di->get('app')->get('language');
+        $this->timezone = $this->di->get('app')->get('timezone');
+        $this->currency_id = Currencies::findFirstByCode($this->di->get('app')->get('currency'))->getId();
+    }
 
-        $this->language = $this->di->getApp()->get('language');
-        $this->timezone = $this->di->getApp()->get('timezone');
-        $this->currency_id = Currencies::findFirstByCode($this->di->getApp()->get('currency'))->getId();
+    /**
+     * Before saving the company.
+     *
+     * @return void
+     */
+    public function beforeSave()
+    {
+        $this->phone = StringFormatter::sanitizePhoneNumber($this->phone);
     }
 
     /**
@@ -335,36 +388,6 @@ class Companies extends AbstractModel
     }
 
     /**
-     * Start a free trial for a new company.
-     *
-     * @return string //the customer id
-     */
-    public function startFreeTrial() : ?string
-    {
-        $defaultPlan = AppsPlans::getDefaultPlan();
-        $trialEndsAt = Carbon::now()->addDays($this->di->getApp()->plan->free_trial_dates);
-
-        //Lets create a new default subscription without payment method
-        $this->user->newSubscription($defaultPlan->name, $defaultPlan->stripe_id, $this, $this->di->getApp())
-                ->trialDays($defaultPlan->free_trial_dates)
-                ->create();
-
-        //ook for the subscription and update the missing info
-        $subscription = $this->subscription;
-        $subscription->apps_plans_id = $this->di->getApp()->default_apps_plan_id;
-        $subscription->trial_ends_days = $trialEndsAt->diffInDays(Carbon::now());
-        $subscription->is_freetrial = 1;
-        $subscription->is_active = 1;
-        $subscription->payment_frequency_id = 1;
-
-        if (!$subscription->save()) {
-            throw new InternalServerErrorException((string) 'Subscription for new company couldnt be created ' . current($this->getMessages()));
-        }
-
-        return $this->user->stripe_id;
-    }
-
-    /**
      * Upload Files.
      *
      * @todo move this to the baka class
@@ -391,7 +414,7 @@ class Companies extends AbstractModel
             return $users['users_id'];
         }, $this->getUsersAssociatedByApps([
             'columns' => 'users_id',
-            'conditions' => 'user_active = 1'
+            'conditions' => 'is_deleted = 0'
         ])->toArray());
     }
 
@@ -408,13 +431,25 @@ class Companies extends AbstractModel
     /**
      * Get the default company key for the current app
      * this is use to store in redis the default company id for the current
-     * user in session everytime they switch between companies on the diff apps.
+     * user in session every time they switch between companies on the diff apps.
      *
      * @return string
      */
     public static function cacheKey() : string
     {
-        return self::DEFAULT_COMPANY_APP . Di::getDefault()->getApp()->getId();
+        return self::DEFAULT_COMPANY_APP . Di::getDefault()->get('app')->getId();
+    }
+
+    /**
+     * Get the default company key for the current app
+     * this is use to store in redis the default company id for the current
+     * user in session every time they switch between companies on the diff apps.
+     *
+     * @return string
+     */
+    public function branchCacheKey() : string
+    {
+        return self::DEFAULT_COMPANY_BRANCH_APP . $this->getDI()->get('app')->getId() . '_' . $this->getId();
     }
 
     /**
@@ -439,5 +474,50 @@ class Companies extends AbstractModel
     public function reactiveUser(Users $user)
     {
         //reactive the user from a company app, not delete
+    }
+
+    /**
+     * Create a branch for this company.
+     *
+     * @param string|null $name
+     *
+     * @return CompaniesBranches
+     */
+    public function createBranch(?string $name = null) : CompaniesBranches
+    {
+        return  CompaniesBranches::findFirstOrCreate(
+            [
+                'conditions' => 'companies_id = :companies_id: AND users_id = :users_id: AND name = :name:',
+                'bind' => [
+                    'companies_id' => $this->getId(),
+                    'users_id' => $this->user->getId(),
+                    'name' => empty($name) ? $this->name : $name
+                ]
+            ],
+            [
+                'companies_id' => $this->getId(),
+                'users_id' => $this->user->getId(),
+                'name' => empty($name) ? $this->name : $name,
+                'is_default' => 1
+            ]
+        );
+    }
+
+    /**
+     * Register this company to the the following app.
+     *
+     * @param Apps $app
+     *
+     * @return bool
+     */
+    public function registerInApp(Apps $app) : bool
+    {
+        $companyApps = new UserCompanyApps();
+        $companyApps->companies_id = $this->getId();
+        $companyApps->apps_id = $app->getId();
+        $companyApps->created_at = date('Y-m-d H:i:s');
+        $companyApps->is_deleted = 0;
+
+        return $companyApps->saveOrFail();
     }
 }

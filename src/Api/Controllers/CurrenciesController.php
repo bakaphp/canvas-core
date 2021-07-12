@@ -6,12 +6,6 @@ namespace Canvas\Api\Controllers;
 
 use Canvas\Models\Currencies;
 
-/**
- * Class LanguagesController.
- *
- * @package Canvas\Api\Controllers
- *
- */
 class CurrenciesController extends BaseController
 {
     /*

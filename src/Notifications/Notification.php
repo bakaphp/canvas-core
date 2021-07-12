@@ -25,6 +25,7 @@ class Notification implements NotificationInterface
     protected ?UserInterface $fromUser = null;
     protected $type = null;
     protected ?ModelInterface $entity = null;
+    protected string $message = '';
 
     /**
      * Send this notification to the queue?
@@ -32,6 +33,34 @@ class Notification implements NotificationInterface
      * @var bool
      */
     protected bool $useQueue = false;
+
+    /**
+     * Save the notifications into the db
+     *
+     * @var bool
+     */
+    protected bool $saveNotification = true;
+
+    /**
+     * Send this notification to pusher
+     * 
+     * @var bool
+     */
+    protected bool $toPusher = true;
+
+    /**
+     * Send this notification to mail
+     * 
+     * @var bool
+     */
+    protected bool $toMail = true;
+
+    /**
+     * Send this notification to push notification
+     * 
+     * @var bool
+     */
+    protected bool $toPushNotification = true;
 
     /**
      *
@@ -72,7 +101,19 @@ class Notification implements NotificationInterface
      */
     public function message() : string
     {
-        return $this->type->template ?: '';
+        return $this->type->template ?: $this->message;
+    }
+
+    /**
+     * setMessage.
+     *
+     * @param  string $message
+     *
+     * @return void
+     */
+    public function setMessage(string $message) : void
+    {
+        $this->message = $message;
     }
 
     /**
@@ -162,6 +203,46 @@ class Notification implements NotificationInterface
     }
 
     /**
+     * Disable saving the notification.
+     *
+     * @return void
+     */
+    public function disableSaveNotification() : void
+    {
+        $this->saveNotification = false;
+    }
+
+    /**
+     * Disable send to pusher notification.
+     *
+     * @return void
+     */
+    public function disableToPusher() : void
+    {
+        $this->toPusher = false;
+    }
+
+    /**
+     * Disable send to mail.
+     *
+     * @return void
+     */
+    public function disableToMail() : void
+    {
+        $this->toMail = false;
+    }
+
+    /**
+     * Disable send Push notification.
+     *
+     * @return void
+     */
+    public function disablePushNotification() : void
+    {
+        $this->toPushNotification = false;
+    }
+
+    /**
      * Process the notification
      *  - handle the db
      *  - trigger the notification
@@ -173,7 +254,7 @@ class Notification implements NotificationInterface
     {
         //if the user didn't provide the type get it based on the class name
         if (is_null($this->type)) {
-            $this->setType(NotificationType::getByKey(static::class));
+            $this->setType(NotificationType::getByKeyOrCreate(static::class, $this->entity));
         } elseif (is_string($this->type)) {
             //not great but for now lets use it
             $this->setType(NotificationType::getByKey($this->type));
@@ -212,11 +293,11 @@ class Notification implements NotificationInterface
     }
 
     /**
-     * Send the noficiatino to the places the user defined.
+     * Save the notification used to the database
      *
-     * @return bool
+     * @return boolean
      */
-    public function trigger() : bool
+    public function saveNotification(): bool
     {
         $content = $this->message();
         $app = Di::getDefault()->getApp();
@@ -234,27 +315,75 @@ class Notification implements NotificationInterface
         $notification->read = 0;
         $notification->saveOrFail();
 
+        return true;
+    }
+
+    /**
+     * Send the notification to the places the user defined.
+     *
+     * @return bool
+     */
+    public function trigger() : bool
+    {
+        if($this->saveNotification) {
+            $this->saveNotification();
+        }
+
+        if($this->toPusher) {
+            $this->toPusher();
+        }
+
+        if($this->toMail) {
+            $this->toMailNotification();
+        }
+
+        if($this->toPushNotification) {
+            $this->toSendPushNotification();
+        }
+
+        return true;
+    }
+
+    /**
+     * Send to pusher the notification
+     *
+     * @return boolean
+     */
+    public function toPusher() : bool
+    {
+        $toRealtime = $this->toRealtime();
+        if ($toRealtime instanceof PusherNotification) {
+            $this->fire('notification:sendRealtime', $toRealtime);
+        }
+
+        return true;
+    }
+
+    /**
+     * Send notification to mail
+     *
+     * @return boolean
+     */
+    public function toMailNotification() : bool
+    {
         $toMail = $this->toMail();
-        if ($toMail instanceof Message) {
+        if ($toMail instanceof Message && !$this->toUser->isUnsubscribe($this->type->getId())) {
             $this->fire('notification:sendMail', $toMail);
         }
 
+        return true;
+    }
+
+    /**
+     * Send Push notification
+     *
+     * @return boolean
+     */
+    public function toSendPushNotification() : bool
+    {
         $toPushNotification = $this->toPushNotification();
         if ($toPushNotification instanceof PushNotification) {
             $this->fire('notification:sendPushNotification', $toPushNotification);
-        }
-
-        $toRealtime = $this->toRealtime();
-        if ($toRealtime instanceof PusherNotification) {
-            $this->fire('notification:sendRealtimeNotification', $toRealtime);
-        }
-
-        /**
-         * @todo send to push notification
-         */
-
-        if ($this->type->with_realtime) {
-            $this->fire('notification:sendRealtime', $this);
         }
 
         return true;

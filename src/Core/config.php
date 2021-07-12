@@ -85,7 +85,6 @@ return [
                 'options' => [
                     'host' => envValue('REDIS_HOST', '127.0.0.1'),
                     'port' => envValue('REDIS_PORT', 6379),
-                    'index' => 1,
                     'lifetime' => envValue('CACHE_LIFETIME', 86400),
                     'prefix' => 'metadatas-caches-'
                 ],
@@ -122,6 +121,7 @@ return [
         'secretKey' => envValue('APP_JWT_TOKEN'),
         'payload' => [
             'exp' => envValue('APP_JWT_SESSION_EXPIRATION', 1440),
+            'refresh_exp' => envValue('APP_JWT_REFRESH_EXPIRATION', 3440),
             'iss' => 'phalcon-jwt-auth',
         ],
     ],

@@ -7,8 +7,8 @@ use Baka\Router\RouteGroup;
 $publicRoutes = [
     Route::get('/')->controller('IndexController'),
     Route::post('/auth')->controller('AuthController')->action('login'),
-    Route::post('/refresh-token')->controller('AuthController')->action('refresh'),
     Route::post('/users')->controller('AuthController')->action('signup'),
+    Route::post('/users/custom-registration')->controller('AuthController')->action('signupByRegisterRole'),
     Route::post('/auth/forgot')->controller('AuthController')->action('recover'),
     Route::post('/auth/reset/{key}')->controller('AuthController')->action('reset'),
     Route::get('/users-invite/validate/{hash}')->controller('UsersInviteController')->action('getByHash'),
@@ -19,12 +19,16 @@ $publicRoutes = [
     Route::get('/countries')->controller('CountriesController')->action('index'),
     Route::get('/countries/{id}')->controller('CountriesController')->action('getById'),
     Route::get('/timezones')->controller('TimeZonesController'),
+    Route::get('/countries/{countriesId}/states')->controller('CountriesController')->action('getStates'),
+    Route::get('/countries/{countriesId}/states/{statesId}/regions')->controller('CountriesController')->action('getCities')
 ];
 
 $privateRoutes = [
     Route::crud('/apps-keys')->controller('AppsKeysController'),
     Route::post('/apps-keys/regenerate')->controller('AppsKeysController')->action('regenerateKeys'),
     Route::crud('/users')->notVia('post'),
+    Route::get('/users/{roleName}/roles')->controller('UsersController')->action('getUsersByRole'),
+    Route::post('/users/{id}/unsubscribe')->controller('UsersController')->action('unsubscribe'),
     Route::crud('/companies'),
     Route::crud('/roles'),
     Route::crud('/locales'),
@@ -58,7 +62,7 @@ $privateRoutes = [
     Route::post('/roles-accesslist/{id}/copy')->controller('RolesAccessListController')->action('copy'),
     Route::get('/custom-fields-modules/{id}/fields')->controller('CustomFieldsModulesController')->action('customFieldsByModulesId'),
     Route::put('/apps-plans/{id}/method')->controller('AppsPlansController')->action('updatePaymentMethod'),
-    Route::get('/apps-plans/{id}/method')->controller('PaymentMethodsCredsController')->action('getCurrentPaymentMethodsCreds'),
+    Route::get('/apps-plans/{id}/method')->controller('PaymentMethodsCredentialsController')->action('getCurrentPaymentMethods'),
     Route::get('/schema/{slug}')->controller('SchemaController')->action('getBySlug'),
     Route::get('/schema/{slug}/description')->controller('SchemaController')->action('getModelDescription'),
     Route::post('/users/{hash}/change-email')->controller('AuthController')->action('changeUserEmail'),
@@ -86,7 +90,14 @@ $privateRoutes = [
     Route::put('/menus/{menusId}/links/{id}')->controller('MenusLinksController')->action('edit'),
     Route::delete('/menus/{menusId}/links/{id}')->controller('MenusLinksController')->action('delete'),
     Route::crud('/menus-links')->controller('MenusLinksController'),
-    Route::post('/payments/apple')->controller('PaymentsController')->action('updateSubscriptionStatusMobilePayments'),
+    Route::put('/users/{usersId}/activate')->controller('UsersAssociatedAppsController')->action('changeUserActiveStatus'),
+    Route::crud('/register-roles')->controller('RegisterRolesController'),
+    Route::get('/sources')->controller('SourcesController')->action('index'),
+    Route::get('/sources/{id}')->controller('SourcesController')->action('getById'),
+];
+
+$privateRoutesRefresh = [
+    Route::post('/refresh-token')->controller('AuthController')->action('refresh'),
 ];
 
 $privateSubscriptionRoutes = [
@@ -111,12 +122,17 @@ $publicRoutesGroup = RouteGroup::from($publicRoutes)
 
 $privateRoutesGroup = RouteGroup::from($privateRoutes)
                 ->defaultNamespace('Canvas\Api\Controllers')
-                ->addMiddlewares('auth.jwt@before', 'auth.acl@before')
+                ->addMiddlewares('auth.jwt@before', 'auth.jwt.token.expiration@before', 'auth.acl@before', 'auth.activeStatus@before')
+                ->defaultPrefix(envValue('API_VERSION', '/v1'));
+
+$privateRoutesRefreshGroup = RouteGroup::from($privateRoutesRefresh)
+                ->defaultNamespace('Canvas\Api\Controllers')
+                ->addMiddlewares('auth.jwt@before', 'auth.acl@before', 'auth.activeStatus@before')
                 ->defaultPrefix(envValue('API_VERSION', '/v1'));
 
 $subscriptionPrivateRoutes = RouteGroup::from($privateSubscriptionRoutes)
                 ->defaultNamespace('Canvas\Api\Controllers')
-                ->addMiddlewares('auth.jwt@before', 'auth.acl@before', 'auth.subscription@before')
+                ->addMiddlewares('auth.jwt@before', 'auth.jwt.token.expiration@before', 'auth.acl@before', 'auth.subscription@before')
                 ->defaultPrefix(envValue('API_VERSION', '/v1'));
 
 /**
@@ -125,5 +141,6 @@ $subscriptionPrivateRoutes = RouteGroup::from($privateSubscriptionRoutes)
 return array_merge(
     $publicRoutesGroup->toCollections(),
     $privateRoutesGroup->toCollections(),
+    $privateRoutesRefreshGroup->toCollections(),
     $subscriptionPrivateRoutes->toCollections()
 );

@@ -10,11 +10,11 @@ use Baka\Router\Providers\RouterProvider as BakaRouterProvider;
 class RouterProvider extends BakaRouterProvider
 {
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      *
      * @return array
      */
-    protected function getCollections(): array
+    protected function getCollections() : array
     {
         $routerCollections = [];
 
@@ -30,9 +30,10 @@ class RouterProvider extends BakaRouterProvider
      *
      * @return array
      */
-    protected function getRoutes(): array
+    protected function getRoutes() : array
     {
-        $path = appPath('api/routes');
+        //when testing change the path of routes
+        $path = !defined('API_TESTS') ? appPath('api/routes') : appPath('routes');
 
         $routes = [
             'api' => $path . '/api.php',

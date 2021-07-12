@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Canvas\Api\Controllers;
 
 use Baka\Http\Api\BaseController as BakaBaseController;
-use Canvas\Models\Apps;
 use Canvas\Dto\AppsSettings;
+use Canvas\Models\Apps;
 use Phalcon\Http\Response;
 
 /**
@@ -45,6 +45,7 @@ class AppsSettingsController extends BakaBaseController
      * Format output.
      *
      * @param mixed $results
+     *
      * @return void
      */
     protected function processOutput($results)
@@ -74,7 +75,7 @@ class AppsSettingsController extends BakaBaseController
      *
      * @return \Phalcon\Http\Response
      */
-    public function getByKey($key = null): Response
+    public function getByKey($key = null) : Response
     {
         //find the info
         $record = $this->model->findFirstOrFail([

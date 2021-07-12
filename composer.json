@@ -9,7 +9,7 @@
     "require": {
         "php": ">=7.4",
         "ext-phalcon": ">=4",
-        "baka/baka": "0.6.x-dev",
+        "baka/baka": "0.7.x-dev",
         "dariuszp/cli-progress-bar": "^1.0",
         "elasticsearch/elasticsearch": "^7.5",
         "firebase/php-jwt": "^5.0",
@@ -32,7 +32,6 @@
         "pusher/pusher-php-server": "^4.1",
         "norkunas/onesignal-php-api": "^1.12",
         "sentry/sentry": "^2.4",
-        "phpstan/phpstan": "0.9.3",
         "phpunit/phpunit": "^9.1",
         "robmorgan/phinx": "^0.12",
         "sly/notification-pusher": "2.x",
@@ -47,7 +46,7 @@
         "symfony/dom-crawler": "3.4",
         "symfony/event-dispatcher": "^4.4",
         "symfony/filesystem": "^4.4",
-        "symfony/finder": "^4.4",
+        "symfony/finder": "^5.1",
         "symfony/process": "^4.4",
         "symfony/yaml": "3.4",
         "vlucas/phpdotenv": "^4.1",
@@ -62,7 +61,7 @@
         "codeception/module-phalcon": "^1.0",
         "codeception/module-phalcon4": "^1.0",
         "codeception/module-rest": "^1.2",
-        "phpstan/phpstan": "^0.9.2",
+        "phpstan/phpstan": "^0.12",
         "squizlabs/php_codesniffer": "^3.2"
     },
     "autoload": {

@@ -4,20 +4,23 @@ declare(strict_types=1);
 
 namespace Canvas\Api\Controllers;
 
-use Baka\Auth\UsersController as BakaUsersController;
-use Baka\Validation as CanvasValidation;
-use Canvas\Contracts\Controllers\ProcessOutputMapperTrait;
-use Canvas\Dto\User as UserDto;
+use Baka\Contracts\Controllers\ProcessOutputMapperTrait;
 use Baka\Http\Exception\InternalServerErrorException;
+use Baka\Http\Exception\NotFoundException;
+use Baka\Validation as CanvasValidation;
+use Canvas\Dto\User as UserDto;
 use Canvas\Mapper\UserMapper;
+use Canvas\Models\Notifications;
+use Canvas\Models\Roles;
 use Canvas\Models\Users;
 use Canvas\Models\UsersAssociatedApps;
 use Phalcon\Http\Response;
 use Phalcon\Validation\Validator\PresenceOf;
 
-class UsersController extends BakaUsersController
+class UsersController extends BaseController
 {
     use ProcessOutputMapperTrait;
+
     /*
      * fields we accept to create
      *
@@ -68,6 +71,7 @@ class UsersController extends BakaUsersController
         'default_company',
         'default_company_branch',
         'cell_phone_number',
+        'phone_number',
         'country_id',
         'location',
         'user_active'
@@ -85,7 +89,7 @@ class UsersController extends BakaUsersController
         $this->dtoMapper = new UserMapper();
 
         //if you are not a admin you cant see all the users
-        if (!$this->userData->hasRole('Defaults.Admins')) {
+        if (!$this->userData->hasRole('Defaults.Admins') && !$this->userData->can('Users.list')) {
             $this->additionalSearchFields = [
                 ['id', ':', $this->userData->getId()],
             ];
@@ -98,7 +102,7 @@ class UsersController extends BakaUsersController
     }
 
     /**
-     * Get Uer.
+     * Get User.
      *
      * @param mixed $id
      *
@@ -177,6 +181,10 @@ class UsersController extends BakaUsersController
             unset($request['default_company'], $request['default_company_branch']);
         }
 
+        if (isset($request['roles_id'])) {
+            $user->assignRoleById((int)$request['roles_id']);
+        }
+
         //update
 
         $user->updateOrFail($request, $this->updateFields);
@@ -204,7 +212,7 @@ class UsersController extends BakaUsersController
     /**
      * Delete a Record.
      *
-     * @throws Exception
+     * @throws InternalServerErrorException
      *
      * @return Response
      */
@@ -216,7 +224,11 @@ class UsersController extends BakaUsersController
             );
         }
 
-        return parent::delete($id);
+        $user = Users::findFirstOrFail($id);
+
+        UsersAssociatedApps::disassociateUserFromApp($user, $this->userData->getCurrentCompany());
+
+        return $this->response('Delete Successfully');
     }
 
     /**
@@ -233,11 +245,79 @@ class UsersController extends BakaUsersController
     {
         $userAssociatedToApp = UsersAssociatedApps::findFirstOrFail([
             'conditions' => 'users_id = ?0 and apps_id = ?1 and companies_id = ?2 and is_deleted = 0',
-            'bind' => [$id, $this->app->getId(), $this->userData->getDefaultCompany()->getId()]
+            'bind' => [
+                $id,
+                $this->app->getId(),
+                $this->userData->getDefaultCompany()->getId()
+            ]
         ]);
 
         $userAssociatedToApp->user_active = $userAssociatedToApp->user_active ? 0 : 1;
         $userAssociatedToApp->updateOrFail();
         return $this->response($userAssociatedToApp);
+    }
+
+    /**
+     * unsubscribe from notification.
+     *
+     * @param int $id
+     *
+     * @throws InternalServerErrorException
+     *
+     * @return Response
+     */
+    public function unsubscribe(int $id) : Response
+    {
+        $request = $this->request->getPostData();
+
+        $this->request->validate([
+            'notification_types' => 'required|array'
+        ]);
+
+        //none admin users can only edit themselves
+        if (!$this->userData->hasRole('Default.Admins') || $id == 0) {
+            $id = $this->userData->getId();
+        }
+
+        $user = $this->model->findFirstOrFail([
+            'id = ?0 AND is_deleted = 0',
+            'bind' => [$id],
+        ]);
+        $unsubscribe = [];
+        foreach ($request['notification_types'] as $typeId) {
+            $unsubscribe[] = $user->unsubscribe((int) $typeId);
+        }
+
+        return $this->response($unsubscribe);
+    }
+
+    /**
+     * Update a User Info.
+     *
+     * @param string $roleName
+     *
+     * @return Response
+     */
+    public function getUsersByRole(string $roleName) : Response
+    {
+        if (!Roles::isRole($roleName)) {
+            throw new NotFoundException(_('Role does not exist'));
+        }
+
+        $role = Roles::getByName(ucfirst($roleName));
+
+        $this->additionalSearchFields = [
+            ['is_deleted', ':', 0],
+        ];
+
+        $this->customTableJoins = ' , user_roles as r';
+        $this->customConditions = " AND users.id = r.users_id AND  
+                        r.companies_id = {$this->userData->getCurrentCompany()->getId()}
+                        AND r.roles_id = {$role->getId()}
+                        AND r.is_deleted = 0
+                        AND r.apps_id = {$this->app->getId()}
+        ";
+
+        return $this->index();
     }
 }

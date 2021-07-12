@@ -20,12 +20,13 @@ class ModelsMetadataProvider implements ServiceProviderInterface
      */
     public function register(DiInterface $container) : void
     {
-        $config = $container->getShared('config');
         $app = envValue('GEWAER_APP_ID', 1);
 
         $container->setShared(
             'modelsMetadata',
-            function () use ($config, $app) {
+            function () use ($container, $app) {
+                $config = $container->getShared('config');
+
                 if (strtolower($config->app->env) != Flags::PRODUCTION) {
                     return new MemoryMetaDataAdapter();
                 }
@@ -36,7 +37,6 @@ class ModelsMetadataProvider implements ServiceProviderInterface
                 $options = [
                     'host' => $options['host'],
                     'port' => (int) $options['port'],
-                    'index' => (int) $options['index'],
                     'lifetime' => (int) $options['lifetime'],
                     'prefix' => $options['prefix'],
                 ];

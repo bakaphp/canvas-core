@@ -37,24 +37,55 @@ class InitGewaer extends AbstractSeed
         $table = $this->table('apps');
         $table->insert($data)->save();
 
-        //add default companies
+        //add default companies group
+        $data = [
+            [
+                'name' => 'Canvas',
+                'users_id' => 1,
+                'apps_id' => 1,
+                'is_default' => 1,
+                'created_at' => date('Y-m-d H:i:s'),
+                'is_deleted' => 0
+            ],
+        ];
+
+        $table = $this->table('companies_groups');
+        $table->insert($data)->save();
+
+        //companies
         $data = [
             [
                 'name' => 'Canvas',
                 'users_id' => 1,
                 'system_modules_id' => 1,
+                'language' => 'EN',
                 'created_at' => date('Y-m-d H:i:s'),
                 'is_deleted' => 0
             ], [
                 'name' => 'CRM',
                 'users_id' => 1,
                 'system_modules_id' => 1,
+                'language' => 'EN',
                 'created_at' => date('Y-m-d H:i:s'),
                 'is_deleted' => 0
             ],
         ];
 
         $table = $this->table('companies');
+        $table->insert($data)->save();
+
+        //add default companies group
+        $data = [
+            [
+                'companies_groups_id' => 1,
+                'companies_id' => 1,
+                'is_default' => 1,
+                'created_at' => date('Y-m-d H:i:s'),
+                'is_deleted' => 0
+            ],
+        ];
+
+        $table = $this->table('companies_associations');
         $table->insert($data)->save();
 
         //add default companies
@@ -169,6 +200,8 @@ class InitGewaer extends AbstractSeed
                 'scope' => 0,
                 'companies_id' => 1,
                 'apps_id' => 1,
+                'is_default' => 1,
+                'is_active' => 1,
                 'created_at' => date('Y-m-d H:i:s'),
                 'is_deleted' => 0
             ], [
@@ -177,6 +210,8 @@ class InitGewaer extends AbstractSeed
                 'scope' => 0,
                 'companies_id' => 1,
                 'apps_id' => 1,
+                'is_default' => 1,
+                'is_active' => 1,
                 'created_at' => date('Y-m-d H:i:s'),
                 'is_deleted' => 0
             ], [
@@ -185,6 +220,8 @@ class InitGewaer extends AbstractSeed
                 'scope' => 0,
                 'companies_id' => 1,
                 'apps_id' => 1,
+                'is_default' => 1,
+                'is_active' => 1,
                 'created_at' => date('Y-m-d H:i:s'),
                 'is_deleted' => 0
             ]
@@ -225,11 +262,12 @@ class InitGewaer extends AbstractSeed
                 'stripe_id' => 'monthly-10-1',
                 'stripe_plan' => 'monthly-10-1',
                 'pricing' => 10,
-                'pricing_anual' => 100,
+                'pricing_annual' => 100,
                 'currency_id' => 1,
                 'free_trial_dates' => 14,
                 'is_default' => 1,
-                'payment_frequencies_id' => 1
+                'payment_frequencies_id' => 1,
+                'created_at' => date('Y-m-d H:i:s'),
             ], [
                 'apps_id' => '1',
                 'name' => 'monthly-10-2',
@@ -238,11 +276,12 @@ class InitGewaer extends AbstractSeed
                 'stripe_id' => 'monthly-10-2',
                 'stripe_plan' => 'monthly-10-2',
                 'pricing' => 100,
-                'pricing_anual' => 100,
+                'pricing_annual' => 100,
                 'currency_id' => 1,
                 'free_trial_dates' => 14,
                 'is_default' => 0,
-                'payment_frequencies_id' => 1
+                'payment_frequencies_id' => 1,
+                'created_at' => date('Y-m-d H:i:s'),
             ],
             [
                 'apps_id' => '1',
@@ -252,11 +291,12 @@ class InitGewaer extends AbstractSeed
                 'stripe_id' => 'yearly-10-1',
                 'stripe_plan' => 'yearly-10-1',
                 'pricing' => 100,
-                'pricing_anual' => 60,
+                'pricing_annual' => 60,
                 'currency_id' => 1,
                 'free_trial_dates' => 14,
                 'is_default' => 1,
-                'payment_frequencies_id' => 2
+                'payment_frequencies_id' => 2,
+                'created_at' => date('Y-m-d H:i:s'),
             ], [
                 'apps_id' => '1',
                 'name' => 'yearly-10-2',
@@ -265,11 +305,12 @@ class InitGewaer extends AbstractSeed
                 'stripe_id' => 'yearly-10-2',
                 'stripe_plan' => 'yearly-10-2',
                 'pricing' => 1000,
-                'pricing_anual' => 60,
+                'pricing_annual' => 60,
                 'currency_id' => 1,
                 'free_trial_dates' => 14,
                 'is_default' => 0,
-                'payment_frequencies_id' => 2
+                'payment_frequencies_id' => 2,
+                'created_at' => date('Y-m-d H:i:s'),
             ]
         ];
 
@@ -406,6 +447,23 @@ class InitGewaer extends AbstractSeed
                 'show' => '0',
                 'use_elastic' => '0',
                 'browse_fields' => '[{"name":"name","title":"Module","sortField":"name","filterable":true,"searchable":true}]',
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => null,
+                'is_deleted' => '0',
+                'mobile_component_type' => null,
+                'mobile_navigation_type' => null,
+                'mobile_tab_index' => '0'
+            ],
+            [
+                'name' => 'Users Invite',
+                'slug' => 'users-invite',
+                'model_name' => 'Canvas\\Models\\UsersInvite',
+                'apps_id' => '1',
+                'parents_id' => '0',
+                'menu_order' => null,
+                'show' => '0',
+                'use_elastic' => '0',
+                'browse_fields' => '[{"name":"email","title":"Email","sortField":"email","filterable":true,"searchable":true},{"name":"roles.0.name","title":"Roles","sortField":"roles_id","filterable":true}]',
                 'created_at' => date('Y-m-d H:i:s'),
                 'updated_at' => null,
                 'is_deleted' => '0',

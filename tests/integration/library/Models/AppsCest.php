@@ -1,6 +1,6 @@
 <?php
 
-namespace Gewaer\Tests\integration\library\Models;
+namespace Canvas\Tests\integration\library\Models;
 
 use Canvas\Models\Apps;
 use Canvas\Models\AppsPlans;
@@ -14,10 +14,13 @@ class AppsCest
     {
         $actual = $I->getModelRelationships(Apps::class);
         $expected = [
-            [2, 'id', AppsPlans::class, 'apps_id', ['alias' => 'plans']],
-            [2, 'id', UserWebhooks::class, 'apps_id', ['alias' => 'user-webhooks']],
-            [2, 'id', AppsSettings::class, 'apps_id', ['alias' => 'settingsApp']],
-            [1, 'default_apps_plan_id', AppsPlans::class, 'id', ['alias' => 'plan']],
+            [2, 'id', AppsPlans::class, 'apps_id', ['alias' => 'plans', 'reusable' => true]],
+            [2, 'id', UserWebhooks::class, 'apps_id', ['alias' => 'user-webhooks', 'reusable' => true]],
+            [2, 'id', AppsSettings::class, 'apps_id', ['alias' => 'settingsApp', 'reusable' => true]],
+            [1, 'default_apps_plan_id', AppsPlans::class, 'id', ['alias' => 'plan', 'reusable' => true]],
+            [1, 'id', AppsPlans::class, 'apps_id', ['alias' => 'defaultPlan', 'reusable' => true, 'params' => [
+                'conditions' => 'Canvas\Models\AppsPlans.is_default = 1'
+            ]]],
         ];
 
         $I->assertEquals($expected, $actual);
@@ -72,5 +75,21 @@ class AppsCest
     {
         $app = Apps::getACLApp('Default');
         $I->assertTrue(is_bool($app->subscriptionBased()));
+    }
+
+    public function getAppByDomain(IntegrationTester $I)
+    {
+        $app = Apps::findFirst(1);
+        $app->domain = 'localhost';
+        $app->domain_based = 1;
+        $app->update();
+
+        $I->assertTrue(Apps::getByDomainName('localhost') instanceof Apps);
+
+        //revert
+        $app = Apps::findFirst(1);
+        $app->domain = '';
+        $app->domain_based = 0;
+        $app->update();
     }
 }

@@ -36,7 +36,7 @@ class AclUpdateStructureAgain extends AbstractMigration
         ]);
         $table->changeColumn('phone_number', 'string', [
             'null' => true,
-            'default' => '"America/New_York"',
+            'default' => '',
             'limit' => 128,
             'collation' => 'utf8_general_ci',
             'encoding' => 'utf8',
@@ -44,7 +44,7 @@ class AclUpdateStructureAgain extends AbstractMigration
         ])
         ->changeColumn('cell_phone_number', 'string', [
             'null' => true,
-            'default' => '"America/New_York"',
+            'default' => '',
             'limit' => 128,
             'collation' => 'utf8_general_ci',
             'encoding' => 'utf8',

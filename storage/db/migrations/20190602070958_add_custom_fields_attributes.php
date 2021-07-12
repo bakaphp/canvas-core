@@ -1,31 +1,32 @@
 <?php
 
-use Phinx\Migration\AbstractMigration;
 use Phinx\Db\Adapter\MysqlAdapter;
+use Phinx\Migration\AbstractMigration;
 
 class AddCustomFieldsAttributes extends AbstractMigration
 {
     public function change()
     {
         $this->table('audits', [
-                'id' => false,
-                'primary_key' => ['id'],
-                'engine' => 'InnoDB',
-                'encoding' => 'utf8mb4',
-                'collation' => 'utf8mb4_general_ci',
-                'comment' => '',
-                'row_format' => 'DYNAMIC',
-            ])
+            'id' => false,
+            'primary_key' => ['id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_general_ci',
+            'comment' => '',
+            'row_format' => 'DYNAMIC',
+        ])
             ->addColumn('id', 'biginteger', [
                 'null' => false,
                 'limit' => MysqlAdapter::INT_BIG,
-                'signed' => false,
                 'identity' => 'enable',
+                'precision' => '20',
             ])
-            ->addColumn('entity_id', 'integer', [
+            ->addColumn('entity_id', 'char', [
                 'null' => false,
-                'limit' => '10',
-                'signed' => false,
+                'limit' => '36',
+                'collation' => 'utf8mb4_general_ci',
+                'encoding' => 'utf8mb4',
                 'after' => 'id',
             ])
             ->addColumn('model_name', 'string', [
@@ -60,50 +61,52 @@ class AddCustomFieldsAttributes extends AbstractMigration
                 'after' => 'type',
             ])
         ->addIndex(['entity_id'], [
-                'name' => 'idx1',
-                'unique' => false,
-            ])
+            'name' => 'idx1',
+            'unique' => false,
+        ])
         ->addIndex(['model_name'], [
-                'name' => 'idx2',
-                'unique' => false,
-            ])
+            'name' => 'idx2',
+            'unique' => false,
+        ])
         ->addIndex(['users_id'], [
-                'name' => 'idx3',
-                'unique' => false,
-            ])
+            'name' => 'idx3',
+            'unique' => false,
+        ])
         ->addIndex(['type'], [
-                'name' => 'idx4',
-                'unique' => false,
-            ])
+            'name' => 'idx4',
+            'unique' => false,
+        ])
         ->addIndex(['model_name', 'type'], [
-                'name' => 'idx5',
-                'unique' => false,
-            ])
+            'name' => 'idx5',
+            'unique' => false,
+        ])
         ->addIndex(['entity_id', 'model_name', 'type'], [
-                'name' => 'idx6',
-                'unique' => false,
-            ])
+            'name' => 'idx6',
+            'unique' => false,
+        ])
             ->create();
 
         $this->table('audits_details', [
-                'id' => false,
-                'primary_key' => ['id'],
-                'engine' => 'InnoDB',
-                'encoding' => 'utf8mb4',
-                'collation' => 'utf8mb4_general_ci',
-                'comment' => '',
-                'row_format' => 'DYNAMIC',
-            ])
+            'id' => false,
+            'primary_key' => ['id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_general_ci',
+            'comment' => '',
+            'row_format' => 'DYNAMIC',
+        ])
             ->addColumn('id', 'biginteger', [
                 'null' => false,
                 'limit' => MysqlAdapter::INT_BIG,
                 'signed' => false,
                 'identity' => 'enable',
+                'precision' => '20',
             ])
             ->addColumn('audits_id', 'biginteger', [
                 'null' => false,
                 'limit' => MysqlAdapter::INT_BIG,
                 'signed' => false,
+                'precision' => '20',
                 'after' => 'id',
             ])
             ->addColumn('field_name', 'string', [
@@ -142,41 +145,41 @@ class AddCustomFieldsAttributes extends AbstractMigration
                 'after' => 'new_value',
             ])
         ->addIndex(['audits_id'], [
-                'name' => 'idx1',
-                'unique' => false,
-            ])
+            'name' => 'idx1',
+            'unique' => false,
+        ])
         ->addIndex(['field_name'], [
-                'name' => 'field_name',
-                'unique' => false,
-            ])
+            'name' => 'field_name',
+            'unique' => false,
+        ])
             ->create();
 
         $this->table('custom_fields_modules', [
-                'id' => false,
-                'primary_key' => ['id'],
-                'engine' => 'InnoDB',
-                'encoding' => 'utf8mb4',
-                'collation' => 'utf8mb4_unicode_ci',
-                'comment' => '',
-                'row_format' => 'DYNAMIC',
-            ])
+            'id' => false,
+            'primary_key' => ['id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+            'row_format' => 'DYNAMIC',
+        ])
         ->changeColumn('id', 'integer', [
-                'null' => false,
-                'limit' => MysqlAdapter::INT_REGULAR,
-                'identity' => 'enable',
-            ])
+            'null' => false,
+            'limit' => MysqlAdapter::INT_REGULAR,
+            'identity' => 'enable',
+        ])
         ->changeColumn('apps_id', 'integer', [
-                'null' => false,
-                'limit' => MysqlAdapter::INT_REGULAR,
-                'after' => 'id',
-            ])
+            'null' => false,
+            'limit' => MysqlAdapter::INT_REGULAR,
+            'after' => 'id',
+        ])
         ->changeColumn('name', 'string', [
-                'null' => false,
-                'limit' => 64,
-                'collation' => 'utf8mb4_unicode_ci',
-                'encoding' => 'utf8mb4',
-                'after' => 'apps_id',
-            ])
+            'null' => false,
+            'limit' => 64,
+            'collation' => 'utf8mb4_unicode_ci',
+            'encoding' => 'utf8mb4',
+            'after' => 'apps_id',
+        ])
             ->changeColumn('model_name', 'string', [
                 'null' => false,
                 'limit' => 64,
@@ -185,57 +188,57 @@ class AddCustomFieldsAttributes extends AbstractMigration
                 'after' => 'name',
             ])
         ->changeColumn('created_at', 'datetime', [
-                'null' => false,
-                'after' => 'model_name',
-            ])
+            'null' => false,
+            'after' => 'model_name',
+        ])
         ->changeColumn('updated_at', 'datetime', [
-                'null' => true,
-                'after' => 'created_at',
-            ])
+            'null' => true,
+            'after' => 'created_at',
+        ])
         ->changeColumn('is_deleted', 'integer', [
-                'null' => false,
-                'default' => '0',
-                'limit' => '3',
-                'after' => 'updated_at',
-            ])
+            'null' => false,
+            'default' => '0',
+            'limit' => '3',
+            'after' => 'updated_at',
+        ])
             ->save();
 
         $this->table('custom_fields', [
-                'id' => false,
-                'primary_key' => ['id'],
-                'engine' => 'InnoDB',
-                'encoding' => 'utf8mb4',
-                'collation' => 'utf8mb4_unicode_ci',
-                'comment' => '',
-                'row_format' => 'DYNAMIC',
-            ])
+            'id' => false,
+            'primary_key' => ['id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+            'row_format' => 'DYNAMIC',
+        ])
         ->changeColumn('id', 'integer', [
-                'null' => false,
-                'limit' => MysqlAdapter::INT_REGULAR,
-                'identity' => 'enable',
-            ])
+            'null' => false,
+            'limit' => MysqlAdapter::INT_REGULAR,
+            'identity' => 'enable',
+        ])
         ->changeColumn('users_id', 'integer', [
-                'null' => false,
-                'limit' => MysqlAdapter::INT_REGULAR,
-                'after' => 'id',
-            ])
+            'null' => false,
+            'limit' => MysqlAdapter::INT_REGULAR,
+            'after' => 'id',
+        ])
         ->changeColumn('companies_id', 'integer', [
-                'null' => false,
-                'limit' => MysqlAdapter::INT_REGULAR,
-                'after' => 'users_id',
-            ])
+            'null' => false,
+            'limit' => MysqlAdapter::INT_REGULAR,
+            'after' => 'users_id',
+        ])
         ->changeColumn('apps_id', 'integer', [
-                'null' => false,
-                'limit' => MysqlAdapter::INT_REGULAR,
-                'after' => 'companies_id',
-            ])
+            'null' => false,
+            'limit' => MysqlAdapter::INT_REGULAR,
+            'after' => 'companies_id',
+        ])
         ->changeColumn('name', 'string', [
-                'null' => false,
-                'limit' => 64,
-                'collation' => 'utf8mb4_unicode_ci',
-                'encoding' => 'utf8mb4',
-                'after' => 'apps_id',
-            ])
+            'null' => false,
+            'limit' => 64,
+            'collation' => 'utf8mb4_unicode_ci',
+            'encoding' => 'utf8mb4',
+            'after' => 'apps_id',
+        ])
             ->changeColumn('label', 'string', [
                 'null' => true,
                 'limit' => 64,
@@ -244,15 +247,15 @@ class AddCustomFieldsAttributes extends AbstractMigration
                 'after' => 'name',
             ])
         ->changeColumn('custom_fields_modules_id', 'integer', [
-                'null' => false,
-                'limit' => MysqlAdapter::INT_REGULAR,
-                'after' => 'label',
-            ])
+            'null' => false,
+            'limit' => MysqlAdapter::INT_REGULAR,
+            'after' => 'label',
+        ])
         ->changeColumn('fields_type_id', 'integer', [
-                'null' => false,
-                'limit' => MysqlAdapter::INT_REGULAR,
-                'after' => 'custom_fields_modules_id',
-            ])
+            'null' => false,
+            'limit' => MysqlAdapter::INT_REGULAR,
+            'after' => 'custom_fields_modules_id',
+        ])
             ->addColumn('attributes', 'text', [
                 'null' => true,
                 'limit' => MysqlAdapter::TEXT_LONG,
@@ -261,19 +264,19 @@ class AddCustomFieldsAttributes extends AbstractMigration
                 'after' => 'fields_type_id',
             ])
         ->changeColumn('created_at', 'datetime', [
-                'null' => false,
-                'after' => 'attributes',
-            ])
+            'null' => false,
+            'after' => 'attributes',
+        ])
         ->changeColumn('updated_at', 'datetime', [
-                'null' => true,
-                'after' => 'created_at',
-            ])
+            'null' => true,
+            'after' => 'created_at',
+        ])
         ->changeColumn('is_deleted', 'integer', [
-                'null' => false,
-                'default' => '0',
-                'limit' => '3',
-                'after' => 'updated_at',
-            ])
+            'null' => false,
+            'default' => '0',
+            'limit' => '3',
+            'after' => 'updated_at',
+        ])
             ->save();
     }
 }

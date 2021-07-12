@@ -41,7 +41,16 @@ class AppsController extends BaseController
      *
      * @var array
      */
-    protected $updateFields = [];
+    protected $updateFields =
+    [
+        'name',
+        'description',
+        'url',
+        'default_apps_plan_id',
+        'payments_active',
+        'ecosystem_auth',
+        'is_public'
+    ];
 
     /**
      * set objects.
@@ -62,7 +71,6 @@ class AppsController extends BaseController
      *
      * @return ModelInterface
      *
-     * @throws Exception
      */
     protected function processCreate(RequestInterface $request) : ModelInterface
     {
@@ -76,6 +84,27 @@ class AppsController extends BaseController
         $this->model->saveOrFail($request, $this->createFields);
 
         return $this->model;
+    }
+
+    /**
+     * Process the update request and return the object.
+     *
+     * @param RequestInterface $request
+     * @param ModelInterface $record
+     *
+     * @return ModelInterface
+     */
+    protected function processEdit(RequestInterface $request, ModelInterface $record) : ModelInterface
+    {
+        //process the input
+        $request = $this->processInput($request->getPutData());
+        if (array_key_exists('settings', $request) && isJson($request['settings'])) {
+            $record->setSettings(json_decode($request['settings'], true));
+        }
+
+        $record->updateOrFail($request, $this->updateFields);
+
+        return $record;
     }
 
     /**
@@ -104,8 +133,6 @@ class AppsController extends BaseController
 
     /**
      * Delete a Record.
-     *
-     * @throws Exception
      *
      * @return Response
      */

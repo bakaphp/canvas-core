@@ -4,14 +4,16 @@ declare(strict_types=1);
 
 namespace Canvas\Providers;
 
-use Canvas\Middleware\NotFoundMiddleware;
 use Baka\Router\Providers\MiddlewareProvider as BakaMiddlewareProvider;
-use Canvas\Middleware\AuthenticationMiddleware;
 use Canvas\Middleware\AclMiddleware;
+use Canvas\Middleware\ActiveStatusMiddleware;
 use Canvas\Middleware\AnonymousMiddleware;
+use Canvas\Middleware\AuthenticationMiddleware;
+use Canvas\Middleware\NotFoundMiddleware;
 use Canvas\Middleware\SubscriptionMiddleware;
-use Phalcon\Mvc\Micro;
+use Canvas\Middleware\TokenExpirationMiddleware;
 use Phalcon\Events\Manager;
+use Phalcon\Mvc\Micro;
 
 class MiddlewareProvider extends BakaMiddlewareProvider
 {
@@ -32,7 +34,9 @@ class MiddlewareProvider extends BakaMiddlewareProvider
         'auth.jwt' => AuthenticationMiddleware::class,
         'auth.anonymous' => AnonymousMiddleware::class,
         'auth.acl' => AclMiddleware::class,
-        'auth.subscription' => SubscriptionMiddleware::class
+        'auth.subscription' => SubscriptionMiddleware::class,
+        'auth.activeStatus' => ActiveStatusMiddleware::class,
+        'auth.jwt.token.expiration' => TokenExpirationMiddleware::class
     ];
 
     /**

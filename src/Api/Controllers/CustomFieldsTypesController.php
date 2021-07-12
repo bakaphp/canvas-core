@@ -6,14 +6,6 @@ namespace Canvas\Api\Controllers;
 
 use Canvas\Models\CustomFieldsTypes;
 
-/**
- * Class LanguagesController.
- *
- * @package Canvas\Api\Controllers
- * @property Users $userData
- * @property Apps $app
- *
- */
 class CustomFieldsTypesController extends BaseController
 {
     /**

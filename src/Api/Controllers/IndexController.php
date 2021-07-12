@@ -11,16 +11,6 @@ use Phalcon\Http\Response;
 use PhpAmqpLib\Exception\AMQPIOException;
 use RedisException;
 
-/**
- * Class IndexController.
- *
- * @package Canvas\Api\Controllers
- *
- * @property Redis $redis
- * @property Beanstalk $queue
- * @property Mysql $db
- * @property \Monolog\Logger $log
- */
 class IndexController extends BaseController
 {
     /**
@@ -85,6 +75,18 @@ class IndexController extends BaseController
         } catch (Exception $e) {
             $this->log->error("The database isn't working. {$e->getMessage()}", $e->getTrace());
             $response['errors']['db'] = "The database isn't working.";
+        }
+
+        if ($this->di->has('dbLocal')) {
+            try {
+                $this->dbLocal->connect();
+            } catch (PDOException $e) {
+                $this->log->error($e->getMessage(), $e->getTrace());
+                $response['errors']['dbLocal'] = $e->getMessage();
+            } catch (Exception $e) {
+                $this->log->error("The database isn't working. {$e->getMessage()}", $e->getTrace());
+                $response['errors']['dbLocal'] = "The database isn't working.";
+            }
         }
 
         if (!count($response)) {

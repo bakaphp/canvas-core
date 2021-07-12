@@ -7,6 +7,7 @@ class CompaniesAssociations extends AbstractModel
 {
     public int $companies_groups_id;
     public int $companies_id;
+    public ?int $is_default = 0;
 
     /**
      * Initialize method for model.

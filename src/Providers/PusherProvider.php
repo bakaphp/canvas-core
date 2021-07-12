@@ -2,8 +2,8 @@
 
 namespace Canvas\Providers;
 
-use Phalcon\Di\ServiceProviderInterface;
 use Phalcon\Di\DiInterface;
+use Phalcon\Di\ServiceProviderInterface;
 use Pusher\Pusher;
 
 class PusherProvider implements ServiceProviderInterface
@@ -13,11 +13,11 @@ class PusherProvider implements ServiceProviderInterface
      */
     public function register(DiInterface $container) : void
     {
-        $config = $container->getShared('config');
-
         $container->setShared(
             'pusher',
-            function () use ($config) {
+            function () use ($container) {
+                $config = $container->getShared('config');
+
                 return new Pusher(
                     $config->pusher->key,
                     $config->pusher->secret,

@@ -104,6 +104,14 @@ class UserInvitesSeeder extends AbstractSeed
                 'name' => 'users-subscription-canceled',
                 'template' => '{link}',
                 'created_at' => date('Y-m-d H:i:s'),
+            ],
+            [
+                'users_id' => 1,
+                'companies_id' => 0,
+                'apps_id' => 0,
+                'name' => 'users-inactive',
+                'template' => '{link}',
+                'created_at' => date('Y-m-d H:i:s'),
             ]
         ];
 

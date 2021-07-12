@@ -6,14 +6,6 @@ namespace Canvas\Api\Controllers;
 
 use Canvas\Models\ResourcesAccesses;
 
-/**
- * Class AclResourcesController
- *
- * @package Canvas\Api\Controllers
- *
- * @property Users $userData
- * @property Apps $app
- */
 class PermissionsResourcesAccessController extends BaseController
 {
     /*
@@ -31,13 +23,14 @@ class PermissionsResourcesAccessController extends BaseController
     protected $updateFields = [];
 
     /**
-     * set objects
+     * set objects.
      *
      * @return void
      */
     public function onConstruct()
     {
         $this->model = new ResourcesAccesses();
+        $this->customLimit = 200;
 
         //get the list of roes for the systema + my company
         $this->additionalSearchFields = [

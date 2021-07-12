@@ -13,16 +13,16 @@ class FileSystem extends AbstractModel
 {
     use HashTableTrait;
 
-    public int $companies_id;
-    public int $apps_id;
-    public int $users_id;
+    public int $companies_id = 0;
+    public int $apps_id = 0;
+    public int $users_id = 0;
     public int $system_modules_id = 0;
-    public int $entity_id;
-    public string $name;
-    public string $path;
-    public string $url;
-    public string $size;
-    public string $file_type;
+    public int $entity_id = 0;
+    public ?string $name = null;
+    public ?string $path = null;
+    public ?string $url = null;
+    public ?string $size = null;
+    public ?string $file_type = null;
 
     /**
      * Initialize method for model.
@@ -35,49 +35,49 @@ class FileSystem extends AbstractModel
             'apps_id',
             'Canvas\Models\Apps',
             'id',
-            ['alias' => 'app']
+            ['alias' => 'app', 'reusable' => true]
         );
 
         $this->belongsTo(
             'users_id',
             'Canvas\Models\Users',
             'id',
-            ['alias' => 'user']
+            ['alias' => 'user', 'reusable' => true]
         );
 
         $this->belongsTo(
             'companies_id',
             'Canvas\Models\Companies',
             'id',
-            ['alias' => 'company']
+            ['alias' => 'company', 'reusable' => true]
         );
 
         $this->belongsTo(
             'system_modules_id',
             'Canvas\Models\SystemModules',
             'id',
-            ['alias' => 'systemModules']
+            ['alias' => 'systemModules', 'reusable' => true]
         );
 
         $this->hasMany(
             'id',
             'Canvas\Models\FileSystemSettings',
             'filesystem_id',
-            ['alias' => 'attributes']
+            ['alias' => 'attributes', 'reusable' => true]
         );
 
         $this->hasOne(
             'id',
             'Canvas\Models\FileSystemSettings',
             'filesystem_id',
-            ['alias' => 'attribute']
+            ['alias' => 'attribute', 'reusable' => true]
         );
 
         $this->hasMany(
             'id',
             'Canvas\Models\FileSystemEntities',
             'filesystem_id',
-            ['alias' => 'entities']
+            ['alias' => 'entities', 'reusable' => true]
         );
     }
 

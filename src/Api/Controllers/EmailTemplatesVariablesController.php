@@ -6,17 +6,6 @@ namespace Canvas\Api\Controllers;
 
 use Canvas\Models\EmailTemplatesVariables;
 
-/**
- * Class LanguagesController.
- *
- * @package Canvas\Api\Controllers
- *
- * @property Users $userData
- * @property Request $request
- * @property Config $config
- * @property Apps $app
- *
- */
 class EmailTemplatesVariablesController extends BaseController
 {
     /*

@@ -6,6 +6,7 @@ use function Baka\envValue;
 use Phalcon\Di\DiInterface;
 use Phalcon\Di\ServiceProviderInterface;
 use Redis;
+use RedisCluster;
 
 class RedisProvider implements ServiceProviderInterface
 {
@@ -19,15 +20,31 @@ class RedisProvider implements ServiceProviderInterface
         $container->setShared(
             'redis',
             function (bool $prefix = true) use ($app) {
-                $redis = new Redis();
-                $redis->connect(envValue('REDIS_HOST', '127.0.0.1'), (int) envValue('REDIS_PORT', 6379));
+                if (!envValue('REDIS_CLUSTER', 0)) {
+                    $redis = new Redis();
+                    $redis->connect(
+                        envValue('REDIS_HOST', '127.0.0.1'),
+                        (int) envValue('REDIS_PORT', 6379)
+                    );
+                } else {
+                    $clusters = explode(',', envValue('REDIS_CLUSTER_HOST', '127.0.0.1'));
+                    $clusters = array_map('trim', $clusters);
+
+                    $redis = new RedisCluster(null, $clusters, 1.5, 1.5);
+                }
                 if ($prefix) {
                     $redis->setOption(Redis::OPT_PREFIX, $app . ':'); // use custom prefix on all keys
                 }
 
+                $serializeEngine = Redis::SERIALIZER_PHP;
+
                 //igbinary serialization is faster than PHP internal
-                $serializeEngine = !extension_loaded('igbinary') ? Redis::SERIALIZER_PHP : Redis::SERIALIZER_IGBINARY;
+                if (extension_loaded('igbinary') && envValue('REDIS_SERIALIZER', 'igbinary') === 'igbinary') {
+                    $serializeEngine = Redis::SERIALIZER_IGBINARY;
+                }
+
                 $redis->setOption(Redis::OPT_SERIALIZER, $serializeEngine);
+
                 return $redis;
             }
         );
@@ -39,8 +56,19 @@ class RedisProvider implements ServiceProviderInterface
         $container->setShared(
             'redisUnSerialize',
             function (bool $prefix = true) use ($app) {
-                $redis = new Redis();
-                $redis->connect(envValue('REDIS_HOST', '127.0.0.1'), (int) envValue('REDIS_PORT', 6379));
+                if (!envValue('REDIS_CLUSTER', 0)) {
+                    $redis = new Redis();
+                    $redis->connect(
+                        envValue('REDIS_HOST', '127.0.0.1'),
+                        (int) envValue('REDIS_PORT', 6379)
+                    );
+                } else {
+                    $clusters = explode(',', envValue('REDIS_CLUSTER_HOST', '127.0.0.1'));
+                    $clusters = array_map('trim', $clusters);
+
+                    $redis = new RedisCluster(null, $clusters, 1.5, 1.5);
+                }
+
                 if ($prefix) {
                     $redis->setOption(Redis::OPT_PREFIX, $app . ':'); // use custom prefix on all keys
                 }

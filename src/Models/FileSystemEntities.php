@@ -9,11 +9,17 @@ use Phalcon\Validation\Validator\Uniqueness;
 
 class FileSystemEntities extends AbstractModel
 {
-    public int $filesystem_id;
-    public int $entity_id;
-    public int $system_modules_id;
-    public int $companies_id;
-    public string $field_name;
+    public int $filesystem_id = 0;
+
+    /**
+     * @todo for php 8.1 update type
+     *
+     * @var int|string
+     */
+    public $entity_id;
+    public int $system_modules_id = 0;
+    public int $companies_id = 0;
+    public ?string $field_name = null;
 
     /**
      * Initialize method for model.
@@ -26,7 +32,10 @@ class FileSystemEntities extends AbstractModel
             'filesystem_id',
             FileSystem::class,
             'id',
-            ['alias' => 'file']
+            [
+                'alias' => 'file',
+                'reusable' => true
+            ]
         );
     }
 
@@ -60,7 +69,7 @@ class FileSystemEntities extends AbstractModel
      */
     public static function getByIdWithSystemModule(int $id, SystemModules $systemModules, bool $isDeleted = false)
     {
-        $app = Di::getDefault()->getApp();
+        $app = Di::getDefault()->get('app');
         $addCompanySql = null;
 
         $bind = [
@@ -69,8 +78,8 @@ class FileSystemEntities extends AbstractModel
             'apps_id' => $app->getId(),
         ];
 
-        if (!(bool) Di::getDefault()->getApp()->get('public_images')) {
-            $companyId = Di::getDefault()->getUserData()->currentCompanyId();
+        if (!(bool) $app->get('public_images')) {
+            $companyId = Di::getDefault()->get('userData')->currentCompanyId();
             $addCompanySql = 'AND companies_id = :companies_id:';
             $bind['companies_id'] = $companyId;
         }
@@ -92,7 +101,7 @@ class FileSystemEntities extends AbstractModel
      */
     public static function getById(int $id) : FileSystemEntities
     {
-        $app = Di::getDefault()->getApp();
+        $app = Di::getDefault()->get('app');
 
         $addCompanySql = null;
 
@@ -101,8 +110,8 @@ class FileSystemEntities extends AbstractModel
             'apps_id' => $app->getId(),
         ];
 
-        if (!(bool) Di::getDefault()->getApp()->get('public_images')) {
-            $companyId = Di::getDefault()->getUserData()->currentCompanyId();
+        if (!(bool) Di::getDefault()->get('app')->get('public_images')) {
+            $companyId = Di::getDefault()->get('userData')->currentCompanyId();
             $addCompanySql = 'AND companies_id = :companies_id:';
             $bind['companies_id'] = $companyId;
         }
@@ -124,7 +133,7 @@ class FileSystemEntities extends AbstractModel
      */
     public static function getByEntityId(int $id) : FileSystemEntities
     {
-        $app = Di::getDefault()->getApp();
+        $app = Di::getDefault()->get('app');
 
         $addCompanySql = null;
 
@@ -133,8 +142,8 @@ class FileSystemEntities extends AbstractModel
             'apps_id' => $app->getId(),
         ];
 
-        if (!(bool) Di::getDefault()->getApp()->get('public_images')) {
-            $companyId = Di::getDefault()->getUserData()->currentCompanyId();
+        if (!(bool) Di::getDefault()->get('app')->get('public_images')) {
+            $companyId = Di::getDefault()->get('userData')->currentCompanyId();
             $addCompanySql = 'AND companies_id = :companies_id:';
             $bind['companies_id'] = $companyId;
         }

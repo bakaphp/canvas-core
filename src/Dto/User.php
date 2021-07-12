@@ -1,330 +1,62 @@
 <?php
+declare(strict_types=1);
 
 namespace Canvas\Dto;
 
 class User
 {
-    /**
-     *
-     * @var int
-     */
-    public $id;
-
-    /**
-     * @var array
-     */
-    public $access_list;
-
-    /**
-     *
-     * @var int
-     */
-    public $active_subscription_id;
-
-    /**
-     *
-     * @var array
-     */
-    //public $bypassRoutes;
-
-    /**
-     *
-     * @var string
-     */
-    public $card_brand;
-
-    /**
-     *
-     * @var string
-     */
-    public $cell_phone_number;
-
-    /**
-     *
-     * @var int
-     */
-    public $city_id;
-
-    /**
-     *
-     * @var int
-     */
-    public $country_id;
-
-    /**
-     *
-     * @var string
-     */
-    public $created_at;
-
-    /**
-     *
-     * @var int
-     */
-    public $default_company;
-
-    /**
-     *
-     * @var int
-     */
-    public $default_company_branch;
-
-    /**
-     *
-     * @var string
-     */
-    public $displayname;
-
-    /**
-     *
-     * @var string
-     */
-    public $dob;
-
-    /**
-     *
-     * @var string
-     */
-    public $email;
-
-    /**
-     *
-     * @var string
-     */
-    public $firstname;
-    
-    /**
-     *
-     * @var string
-     */
-    public $description;
-
-
-    /**
-     *
-     * @var string
-     */
-    public $interest;
-
-    /**
-     *
-     * @var int
-     */
-    public $karma;
-
-    /**
-     *
-     * @var string
-     */
-    public $language;
-
-    /**
-     *
-     * @var string
-     */
-    public $lastname;
-
-    /**
-     *
-     * @var string
-     */
-    public $lastvisit;
-
-    /**
-     *
-     * @var string
-     */
-    public $location;
-
-    /**
-     *
-     * @var string
-     */
-    public $phone_number;
-
-    /**
-     *
-     * @var string
-     */
-    public $profile_header;
-
-    /**
-     *
-     * @var string
-     */
-    public $profile_header_mobile;
-
-    /**
-     *
-     * @var string
-     */
-    public $profile_image;
-
-    /**
-     *
-     * @var string
-     */
-    public $profile_image_mobile;
-
-    /**
-     *
-     * @var string
-     */
-    public $profile_image_thumb;
-
-    /**
-     *
-     * @var string
-     */
-    public $profile_privacy;
-
-    /**
-     *
-     * @var string
-     */
-    public $profile_remote_image;
-
-    /**
-     *
-     * @var string
-     */
-    public $registered;
-
-    /**
-     *
-     * @var string
-     */
-    public $roles;
-
-    /**
-     *
-     * @var int
-     */
-    public $roles_id;
-
-    /**
-     *
-     * @var string
-     */
-    public $session_id;
-
-    /**
-     *
-     * @var string
-     */
-    public $session_key;
-
-    /**
-     *
-     * @var int
-     */
-    public $session_page;
-
-    /**
-     *
-     * @var int
-     */
-    public $session_time;
-
-    /**
-     *
-     * @var string
-     */
-    public $sex;
-
-    /**
-     *
-     * @var int
-     */
-    public $state_id;
-
-    /**
-     *
-     * @var int
-     */
-    public $status;
-
-    /**
-     *
-     * @var string
-     */
-    public $stripe_id;
-
-    /**
-     *
-     * @var string
-     */
-    public $system_modules_id;
-
-    /**
-     *
-     * @var string
-     */
-    public $timezone;
-
-    /**
-     *
-     * @var string
-     */
-    public $trial_ends_at;
-
-    /**
-     *
-     * @var string
-     */
-    public $updated_at;
-
-    /**
-     *
-     * @var string
-     */
+    public int $id;
+    public ?string $uuid = null;
+    public array $access_list;
+    public ?int $active_subscription_id = 0;
+    public array $bypassRoutes;
+    public ?string $card_brand = null;
+    public ?string $cell_phone_number = null;
+    public ?int $city_id = 0;
+    public ?int $country_id = 0;
+    public string $created_at;
+    public int $default_company;
+    public ?int $default_company_branch = 0;
+    public ?string $displayname = null;
+    public ?string $dob = null;
+    public string $email;
+    public ?string $firstname = null;
+    public ?string $description = null;
+    public string $interest;
+    public ?int $karma = null;
+    public ?string $language = null;
+    public ?string $lastname = null;
+    public ?string $lastvisit = null;
+    public ?string $location = null;
+    public ?string $phone_number = null;
+    public ?string $profile_header = null;
+    public ?string $profile_header_mobile = null;
+    public ?string $profile_image = null;
+    public ?string $profile_image_mobile = null;
+    public string $profile_image_thumb;
+    public ?int $profile_privacy = null;
+    public ?string $profile_remote_image = null;
+    public ?string $registered = null;
+    public int $roles_id;
+    public string $session_id;
+    public string $session_key;
+    public ?int $session_page = 0;
+    public ?int $session_time = 0;
+    public ?string $sex = null;
+    public ?int $state_id = null;
+    public ?int $status = null;
+    public ?string $stripe_id = null;
+    public ?int $system_modules_id = 0;
+    public ?string $timezone = null;
+    public ?string $trial_ends_at = null;
+    public ?string $updated_at;
     public $user_active;
-
-    /**
-     *
-     * @var string
-     */
-    public $user_last_login_try;
-
-    /**
-     *
-     * @var string
-     */
-    public $user_level;
-
-    /**
-     *
-     * @var string
-     */
-    public $user_login_tries;
-
-    /**
-     *
-     * @var string
-     */
-    public $votes;
-
-    /**
-     *
-     * @var string
-     */
-    public $votes_points;
-
-    /**
-     *
-     * @var string
-     */
-    public $welcome;
-
-    /**
-     *
-     * @var string
-     */
-    public $user_activation_email;
-
-    /**
-     *
-     * @var string
-     */
+    public ?int $user_last_login_try = null;
+    public int $user_level;
+    public ?int $user_login_tries = 0;
+    public ?int $votes = null;
+    public ?int $votes_points = null;
+    public ?int $welcome = null;
+    public ?string $user_activation_email = null;
     public $photo;
 }

@@ -4,23 +4,14 @@ declare(strict_types=1);
 
 namespace Canvas\Api\Controllers;
 
-use Canvas\Models\CustomFieldsModules;
-use Canvas\CustomFields\CustomFields;
-use Phalcon\Http\Response;
-use Baka\Http\Exception\NotFoundException;
 use Baka\Http\Exception\UnauthorizedException;
+use Canvas\Contracts\Controllers\ProcessOutputMapperTrait;
+use Canvas\CustomFields\CustomFields;
 use Canvas\Dto\CustomFieldsModules as CustomFieldsModulesDto;
 use Canvas\Mapper\CustomFieldsModulesMapper;
-use Canvas\Contracts\Controllers\ProcessOutputMapperTrait;
+use Canvas\Models\CustomFieldsModules;
+use Phalcon\Http\Response;
 
-/**
- * Class LanguagesController.
- *
- * @package Canvas\Api\Controllers
- * @property Users $userData
- * @property Apps $app
- *
- */
 class CustomFieldsModulesController extends BaseController
 {
     use ProcessOutputMapperTrait;
@@ -64,10 +55,12 @@ class CustomFieldsModulesController extends BaseController
 
     /**
      * Fetch all Custom Fields of a Module.
-     * @param integer $id
+     *
+     * @param int $id
+     *
      * @return Response
      */
-    public function customFieldsByModulesId(int $id): Response
+    public function customFieldsByModulesId(int $id) : Response
     {
         //Verify that module exists
         $module = $this->model::findFirstOrFail([

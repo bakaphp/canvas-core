@@ -3,12 +3,13 @@ declare(strict_types=1);
 
 namespace Canvas\Models;
 
-use Baka\Database\Exception\ModelNotFoundException;
 use Baka\Http\Exception\InternalServerErrorException;
 use Baka\Http\Exception\UnprocessableEntityException;
+use Baka\Support\Str;
 use Phalcon\Acl\Role as AclRole;
 use Phalcon\Di;
 use Phalcon\Validation;
+use Phalcon\Validation\Validator\ExclusionIn;
 use Phalcon\Validation\Validator\PresenceOf;
 use Phalcon\Validation\Validator\StringLength;
 use Phalcon\Validation\Validator\Uniqueness;
@@ -16,10 +17,12 @@ use Phalcon\Validation\Validator\Uniqueness;
 class Roles extends AbstractModel
 {
     public string $name;
-    public ?string$description;
+    public ?string $description;
     public ?int $scope;
     public int $companies_id;
     public int $apps_id;
+    public int $is_default = 0;
+    public int $is_active = 1;
 
     /**
      * Default ACL company.
@@ -28,6 +31,7 @@ class Roles extends AbstractModel
     const DEFAULT_ACL_COMPANY_ID = 1;
     const DEFAULT_ACL_APP_ID = 1;
     const DEFAULT = 'Admins';
+    const DEFAULT_ROLES_NAMES = ['Admin', 'Admins', 'User', 'Users', 'Agents'];
 
     /**
      * Initialize method for model.
@@ -38,16 +42,27 @@ class Roles extends AbstractModel
 
         $this->hasMany(
             'id',
-            'Canvas\Models\AccessList',
+            AccessList::class,
             'roles_id',
-            ['alias' => 'accesList']
+            ['alias' => 'accesList', 'reusable' => true]
         );
 
         $this->hasMany(
             'id',
-            'Canvas\Models\AccessList',
+            AccessList::class,
             'roles_id',
-            ['alias' => 'accessList']
+            ['alias' => 'accessList', 'reusable' => true]
+        );
+
+        $this->hasMany(
+            'id',
+            UserRoles::class,
+            'roles_id',
+            [
+                'alias' => 'users',
+                'conditions' => 'is_delete = 0',
+                'reusable' => true
+            ]
         );
     }
 
@@ -78,7 +93,7 @@ class Roles extends AbstractModel
             'name',
             new StringLength([
                 'max' => 32,
-                'messageMinimum' => _('Role Name. Maxium 32 characters.'),
+                'messageMinimum' => _('Role Name. Maximum 32 characters.'),
             ])
         );
 
@@ -91,11 +106,21 @@ class Roles extends AbstractModel
             )
         );
 
+        $validator->add(
+            'name',
+            new ExclusionIn(
+                [
+                    'message' => 'Can\'t use the names Admins, Users, Agents',
+                    'domain' => self::DEFAULT_ROLES_NAMES
+                ]
+            )
+        );
+
         return $this->validate($validator);
     }
 
     /**
-     * Check if the role existe in the db.
+     * Check if the role exists in the db.
      *
      * @param AclRole $role
      *
@@ -103,14 +128,14 @@ class Roles extends AbstractModel
      */
     public static function exist(AclRole $role) : int
     {
-        $companyId = Di::getDefault()->getAcl()->getCompany()->getId();
+        $companyId = Di::getDefault()->get('acl')->getCompany()->getId();
 
         return self::count([
             'conditions' => 'name = ?0 AND companies_id = ?1 AND apps_id = ?2',
             'bind' => [
                 $role->getName(),
                 $companyId,
-                Di::getDefault()->getAcl()->getApp()->getId()
+                Di::getDefault()->get('acl')->getApp()->getId()
             ]
         ]);
     }
@@ -118,21 +143,21 @@ class Roles extends AbstractModel
     /**
      * check if this string is already a role
      * whats the diff with exist or why not merge them? exist uses the alc object and only check
-     * with your current app, this also check with de defautl company ap.
+     * with your current app, this also check with de default company ap.
      *
      * @param string $roleName
      *
-     * @return boolean
+     * @return bool
      */
     public static function isRole(string $roleName) : bool
     {
-        $companyId = Di::getDefault()->getAcl()->getCompany()->getId();
+        $companyId = Di::getDefault()->get('acl')->getCompany()->getId();
 
         return (bool) self::count([
             'conditions' => 'name = ?0 AND apps_id in (?1, ?3) AND companies_id in (?2, ?3)',
             'bind' => [
                 $roleName,
-                Di::getDefault()->getAcl()->getApp()->getId(),
+                Di::getDefault()->get('acl')->getApp()->getId(),
                 $companyId,
                 Apps::CANVAS_DEFAULT_APP_ID
             ]
@@ -148,13 +173,13 @@ class Roles extends AbstractModel
      */
     public static function getByName(string $name) : Roles
     {
-        $companyId = Di::getDefault()->getAcl()->getCompany()->getId();
+        $companyId = Di::getDefault()->get('acl')->getCompany()->getId();
 
         $role = self::findFirst([
             'conditions' => 'name = ?0 AND apps_id in (?1, ?3) AND companies_id in (?2, ?3) AND is_deleted = 0',
             'bind' => [
                 $name,
-                Di::getDefault()->getAcl()->getApp()->getId(),
+                Di::getDefault()->get('acl')->getApp()->getId(),
                 $companyId,
                 Apps::CANVAS_DEFAULT_APP_ID
             ],
@@ -163,7 +188,7 @@ class Roles extends AbstractModel
 
         if (!is_object($role)) {
             throw new UnprocessableEntityException(
-                _('Roles ' . $name . ' not found on this app ' . Di::getDefault()->getAcl()->getApp()->getId() . ' AND Company ' . Di::getDefault()->getUserData()->currentCompanyId())
+                _('Roles ' . $name . ' not found on this app ' . Di::getDefault()->get('acl')->getApp()->getId() . ' AND Company ' . Di::getDefault()->getUserData()->currentCompanyId())
             );
         }
 
@@ -179,15 +204,15 @@ class Roles extends AbstractModel
      */
     public static function getById(int $id) : Roles
     {
-        $companyId = Di::getDefault()->getAcl()->getCompany()->getId();
+        $companyId = Di::getDefault()->get('acl')->getCompany()->getId();
 
         return self::findFirstOrFail([
             'conditions' => 'id = ?0 AND companies_id in (?1, ?2) AND apps_id in (?3, ?4) AND is_deleted = 0',
             'bind' => [
                 $id,
                 $companyId,
-                self::DEFAULT_ACL_COMPANY_ID,
-                Di::getDefault()->getAcl()->getApp()->getId(),
+                Apps::CANVAS_DEFAULT_COMPANY_ID,
+                Di::getDefault()->get('acl')->getApp()->getId(),
                 Apps::CANVAS_DEFAULT_APP_ID
             ],
             'order' => 'apps_id DESC'
@@ -203,8 +228,8 @@ class Roles extends AbstractModel
      */
     public static function getByAppName(string $role, Companies $company) : Roles
     {
-        //echeck if we have a dot , taht means we are sending the specific app to use
-        if (strpos($role, '.') === false) {
+        //check if we have a dot , that means we are sending the specific app to use
+        if (!Str::contains($role, '.')) {
             throw new InternalServerErrorException('ACL - We are expecting the app for this role');
         }
 
@@ -224,7 +249,7 @@ class Roles extends AbstractModel
                 $app->getId(),
                 self::DEFAULT_ACL_APP_ID,
                 $company->getId(),
-                self::DEFAULT_ACL_COMPANY_ID
+                Apps::CANVAS_DEFAULT_COMPANY_ID
             ],
             'order' => 'apps_id DESC'
         ]);
@@ -237,17 +262,17 @@ class Roles extends AbstractModel
      */
     public function copy() : Roles
     {
-        $accesList = $this->accesList;
+        $accessList = $this->accessList;
 
         //remove id to create new record
-        $this->name .= 'Copie';
+        $this->name .= 'Copied';
         $this->scope = 1;
         $this->id = null;
         $this->companies_id = $this->di->getUserData()->currentCompanyId();
         $this->apps_id = $this->di->getApp()->getId();
         $this->save();
 
-        foreach ($accesList as $access) {
+        foreach ($accessList as $access) {
             $copyAccessList = new AccessList();
             $copyAccessList->apps_id = $this->apps_id;
             $copyAccessList->roles_id = $this->getId();
@@ -267,7 +292,7 @@ class Roles extends AbstractModel
      * @param string $roleName
      * @param string $roleToInherit
      *
-     * @return boolean
+     * @return bool
      */
     public static function addInherit(string $roleName, string $roleToInherit)
     {
@@ -308,7 +333,7 @@ class Roles extends AbstractModel
         //if we deleted the role
         if ($this->is_deleted) {
             //delete
-            foreach ($this->accesList as $access) {
+            foreach ($this->accessList as $access) {
                 $access->softDelete();
             }
         }
@@ -324,10 +349,6 @@ class Roles extends AbstractModel
     public static function existsById(int $id) : Roles
     {
         $role = self::getById($id);
-
-        if (!is_object($role)) {
-            throw new ModelNotFoundException('Role does not exist');
-        }
 
         return $role;
     }
@@ -361,5 +382,32 @@ class Roles extends AbstractModel
         }
 
         return true;
+    }
+
+    /**
+     * check if role is default or not.
+     *
+     * @return bool
+     */
+    public function isDefault() : bool
+    {
+        return (bool) $this->is_default;
+    }
+
+    /**
+     * Get the roles App Id.
+     *
+     * @return int
+     */
+    public function getAppsId() : int
+    {
+        $app = $this->di->get('app');
+        $appId = $this->apps_id;
+
+        if ($app->getId() != Apps::CANVAS_DEFAULT_APP_ID && $this->apps_id === Apps::CANVAS_DEFAULT_APP_ID) {
+            $appId = $app->getId();
+        }
+
+        return (int) $appId;
     }
 }

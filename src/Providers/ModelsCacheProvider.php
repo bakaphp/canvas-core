@@ -7,7 +7,7 @@ namespace Canvas\Providers;
 use Baka\Constants\Flags;
 use function Baka\envValue;
 use Phalcon\Cache;
-use Phalcon\Cache\AdapterFactory;
+use Phalcon\Cache\Adapter\Redis;
 use Phalcon\Di\DiInterface;
 use Phalcon\Di\ServiceProviderInterface;
 use Phalcon\Storage\SerializerFactory;
@@ -19,13 +19,14 @@ class ModelsCacheProvider implements ServiceProviderInterface
      */
     public function register(DiInterface $container) : void
     {
-        $config = $container->getShared('config');
         $app = envValue('GEWAER_APP_ID', 1);
 
         $container->setShared(
             'modelsCache',
-            function () use ($config, $app) {
-                $type = 'redis';
+            function () use ($container, $app) {
+                $config = $container->getShared('config');
+
+                //$type = 'redis';
                 $cache = $config->get('cache')->toArray();
                 $options = $cache['metadata']['prod']['options'];
 
@@ -38,13 +39,12 @@ class ModelsCacheProvider implements ServiceProviderInterface
                                } */
 
                 $serializerFactory = new SerializerFactory();
-                $adapterFactory = new AdapterFactory($serializerFactory);
 
                 $options['prefix'] = $app;
+                $options['defaultSerializer'] = extension_loaded('igbinary') ? 'Igbinary' : 'Php';
+                $options['lifetime'] = 7200;
 
-                $adapter = $adapterFactory->newInstance($type, $options);
-
-                return new Cache($adapter);
+                return new Redis($serializerFactory, $options);
             }
         );
     }

@@ -38,13 +38,18 @@ class AccessList extends AbstractModel
      * @param string $resourceName
      * @param string $accessName
      *
-     * @return integer
+     * @return int
      */
     public static function exist(Roles $role, string $resourceName, string $accessName) : int
     {
         return self::count([
             'conditions' => 'roles_id = ?0 and resources_name = ?1 AND access_name = ?2 AND apps_id = ?3',
-            'bind' => [$role->getId(), $resourceName, $accessName, Di::getDefault()->getAcl()->getApp()->getId()]
+            'bind' => [
+                $role->getId(),
+                $resourceName,
+                $accessName,
+                Di::getDefault()->get('acl')->getApp()->getId()
+            ]
         ]);
     }
 
@@ -55,17 +60,26 @@ class AccessList extends AbstractModel
      * @param string $resourceName
      * @param string $accessName
      *
-     * @return integer
+     * @return AccessList
      */
     public static function getBy(Roles $role, string $resourceName, string $accessName) : AccessList
     {
         $access = self::findFirst([
             'conditions' => 'roles_id = ?0 and resources_name = ?1 AND access_name = ?2 AND apps_id = ?3',
-            'bind' => [$role->getId(), $resourceName, $accessName, Di::getDefault()->getAcl()->getApp()->getId()]
+            'bind' => [
+                $role->getId(),
+                $resourceName,
+                $accessName,
+                Di::getDefault()->get('acl')->getApp()->getId()
+            ]
         ]);
 
         if (!is_object($access)) {
-            throw new NotFoundException(_('Access for role ' . $role->name . ' with resource ' . $resourceName . '-' . $accessName . ' not found on this app ' . Di::getDefault()->getAcl()->getApp()->getId() . ' AND Company' . Di::getDefault()->getAcl()->getCompany()->getId()));
+            throw new NotFoundException(
+                _('Access for role ' . $role->name . ' with resource ' . $resourceName . '-' . $accessName . ' 
+                    not found on this app ' . Di::getDefault()->get('acl')->getApp()->getId() .
+                    ' AND Company' . Di::getDefault()->get('acl')->getCompany()->getId())
+            );
         }
 
         return $access;

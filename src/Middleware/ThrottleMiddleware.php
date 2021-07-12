@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Canvas\Middleware;
 
 use Canvas\Http\Response;
-use Canvas\Traits\ResponseTrait;
+use Canvas\Contracts\ResponseTrait;
 use Phalcon\Mvc\Micro;
 use Phalcon\Mvc\Micro\MiddlewareInterface;
 use Phalcon\Mvc\User\Plugin;
@@ -29,7 +29,7 @@ class ThrottleMiddleware extends Plugin implements MiddlewareInterface
     {
         /** @var ThrottlerInterface $throttler */
         $throttler = $this->getDI()->get('throttler');
-        $rateLimit = $throttler->consume($this->request->getClientAddress());
+        $rateLimit = $throttler->consume($this->request->getClientAddress(true));
 
         if ($rateLimit->isLimited()) {
             /**

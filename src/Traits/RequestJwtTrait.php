@@ -4,29 +4,12 @@ declare(strict_types=1);
 
 namespace Canvas\Traits;
 
+use Canvas\Contracts\RequestJwtTrait as ContractsRequestJwtTrait;
 
 /**
- * Trait TokenTrait.
- *
- * @package Niden\Traits
+ * @deprecated 0.3
  */
 trait RequestJwtTrait
 {
-    /**
-    * @return string
-    */
-    public function getBearerTokenFromHeader(): string
-    {
-        return str_replace('Bearer ', '', $this->getHeader('Authorization'));
-    }
-
-    /**
-     * @return bool
-     */
-    public function isEmptyBearerToken(): bool
-    {
-        return empty($this->getBearerTokenFromHeader());
-    }
-
-    abstract public function getHeader($header);
+    use ContractsRequestJwtTrait;
 }
