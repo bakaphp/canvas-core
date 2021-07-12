@@ -1,6 +1,8 @@
 <?php
 
-namespace Gewaer\Tests\integration\library\Jobs;
+declare(strict_types=1);
+
+namespace Canvas\Tests\integration\library\App;
 
 use Canvas\App\Setup;
 use Canvas\Models\AccessList;
@@ -65,8 +67,6 @@ class SetupCest
      */
     public function createDefaultPlans(IntegrationTester $I)
     {
-        $setup = new Setup($this->app);
-        $setup->plans();
         $appPlans = AppsPlans::findOrFail([
             'conditions' => 'apps_id = :apps_id: and is_deleted = 0',
             'bind' => ['apps_id' => $this->app->getId()]
@@ -84,16 +84,29 @@ class SetupCest
      */
     public function createDefaultAcl(IntegrationTester $I)
     {
-        $setup = new Setup($this->app);
-        $setup->acl();
-
-        //Check number of roles
+        $defaultCountAppRoleCount = 1;
+        $defaultCountAppRolesEcosystem = 3;
+        $defaultCountAppResources = 9;
+        $defaultCountAccessList = 53;
+        //check app roles
         $roles = Roles::findOrFail([
             'conditions' => 'apps_id = :apps_id: and is_deleted = 0',
-            'bind' => ['apps_id' => $this->app->getId()]
+            'bind' => [
+                'apps_id' => $this->app->getId()
+            ]
         ]);
 
-        $I->assertTrue(count($roles) == 2);
+        $I->assertTrue(count($roles) == $defaultCountAppRoleCount);
+
+        //Check global roles
+        $roles = Roles::findOrFail([
+            'conditions' => 'apps_id = :apps_id: and is_deleted = 0',
+            'bind' => [
+                'apps_id' => Apps::CANVAS_DEFAULT_APP_ID
+            ]
+        ]);
+
+        $I->assertTrue(count($roles) == $defaultCountAppRolesEcosystem);
 
         //Check number of resources
         $resources = Resources::findOrFail([
@@ -101,7 +114,7 @@ class SetupCest
             'bind' => ['apps_id' => $this->app->getId()]
         ]);
 
-        $I->assertTrue(count($resources) == 9);
+        $I->assertTrue(count($resources) == $defaultCountAppResources);
 
         //Check Access List privileges
         $accessList = AccessList::findOrFail([
@@ -109,7 +122,7 @@ class SetupCest
             'bind' => ['apps_id' => $this->app->getId()]
         ]);
 
-        $I->assertTrue(count($accessList) == 54);
+        $I->assertTrue(count($accessList) == $defaultCountAccessList);
     }
 
     /**
@@ -121,8 +134,6 @@ class SetupCest
      */
     public function createDefaultSystemModules(IntegrationTester $I)
     {
-        $setup = new Setup($this->app);
-        $setup->systemModules();
         $systemModules = SystemModules::findOrFail([
             'conditions' => 'apps_id = :apps_id: and is_deleted = 0',
             'bind' => ['apps_id' => $this->app->getId()]
@@ -140,8 +151,6 @@ class SetupCest
      */
     public function createDefaultEmailTemplates(IntegrationTester $I)
     {
-        $setup = new Setup($this->app);
-        $setup->emailTemplates();
         $emailTemplates = SystemModules::findOrFail([
             'conditions' => 'apps_id = :apps_id: and is_deleted = 0',
             'bind' => ['apps_id' => $this->app->getId()]
@@ -159,9 +168,6 @@ class SetupCest
      */
     public function createDefaultMenus(IntegrationTester $I)
     {
-        $setup = new Setup($this->app);
-        $setup->defaultMenus();
-
         $menu = Menus::findFirstOrFail([
             'conditions' => 'apps_id = :apps_id: and is_deleted = 0',
             'bind' => ['apps_id' => $this->app->getId()]

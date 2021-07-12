@@ -6,17 +6,6 @@ namespace Canvas\Api\Controllers;
 
 use Canvas\Models\Webhooks;
 
-/**
- * Class LanguagesController.
- *
- * @package Canvas\Api\Controllers
- *
- * @property Users $userData
- * @property Request $request
- * @property Config $config
- * @property Apps $app
- *
- */
 class WebhooksController extends BaseController
 {
     /*

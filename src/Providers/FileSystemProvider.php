@@ -2,12 +2,12 @@
 
 namespace Canvas\Providers;
 
-use Phalcon\Di\ServiceProviderInterface;
-use Phalcon\Di\DiInterface;
+use Aws\S3\S3Client;
 use League\Flysystem\Adapter\Local;
 use League\Flysystem\AwsS3v3\AwsS3Adapter;
 use League\Flysystem\Filesystem;
-use Aws\S3\S3Client;
+use Phalcon\Di\DiInterface;
+use Phalcon\Di\ServiceProviderInterface;
 
 class FileSystemProvider implements ServiceProviderInterface
 {
@@ -16,11 +16,11 @@ class FileSystemProvider implements ServiceProviderInterface
      */
     public function register(DiInterface $container) : void
     {
-        $config = $container->getShared('config');
-
         $container->set(
             'filesystem',
-            function ($filesystem = null) use ($config, $container) {
+            function ($filesystem = null) use ($container) {
+                $config = $container->getShared('config');
+
                 //we ened to call it internally to avoid the test failing WTF
                 $app = $container->getShared('app');
 

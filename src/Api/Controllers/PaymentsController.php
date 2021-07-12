@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Canvas\Api\Controllers;
 
-use Baka\Contracts\Cashier\StripeWebhookHandlersTrait;
 use Baka\Http\Exception\NotFoundException;
+use Canvas\Contracts\Cashier\StripeWebhookHandlersTrait;
+use Canvas\Models\CompaniesGroups;
 use Canvas\Models\CompaniesSettings;
 use Canvas\Models\Subscription;
 use Canvas\Models\Users;
@@ -55,10 +56,10 @@ class PaymentsController extends BaseController
      */
     protected function handleCustomerSubscriptionUpdated(array $payload, string $method) : Response
     {
-        $user = Users::findFirstByStripeId($payload['data']['object']['customer']);
-        if ($user) {
+        $companyGroup = CompaniesGroups::findFirstByStripeId($payload['data']['object']['customer']);
+        if ($companyGroup) {
             //We need to send a mail to the user
-            $this->sendWebhookResponseEmail($user, $payload, $method);
+            $this->sendWebhookResponseEmail($companyGroup, $payload, $method);
         }
         return $this->response(['Webhook Handled']);
     }
@@ -72,11 +73,11 @@ class PaymentsController extends BaseController
      */
     protected function handleCustomerSubscriptionDeleted(array $payload, string $method) : Response
     {
-        $user = Users::findFirstByStripeId($payload['data']['object']['customer']);
-        if ($user) {
+        $companyGroup = CompaniesGroups::findFirstByStripeId($payload['data']['object']['customer']);
+        if ($companyGroup) {
             //Update current subscription's paid column to false and store date of payment
-            $this->updateSubscriptionPaymentStatus($user, $payload);
-            $this->sendWebhookResponseEmail($user, $payload, $method);
+            $this->updateSubscriptionPaymentStatus($companyGroup, $payload);
+            $this->sendWebhookResponseEmail($companyGroup, $payload, $method);
         }
         return $this->response(['Webhook Handled']);
     }
@@ -90,17 +91,17 @@ class PaymentsController extends BaseController
      */
     protected function handleCustomerSubscriptionTrialwillend(array $payload, string $method) : Response
     {
-        $user = Users::findFirstByStripeId($payload['data']['object']['customer']);
-        if ($user) {
+        $companyGroup = CompaniesGroups::findFirstByStripeId($payload['data']['object']['customer']);
+        if ($companyGroup) {
             //We need to send a mail to the user
-            $this->sendWebhookResponseEmail($user, $payload, $method);
-            $this->log->info("Email was sent to: {$user->email}\n");
+            $this->sendWebhookResponseEmail($companyGroup, $payload, $method);
+            $this->log->info("Email was sent to: {$companyGroup->users->email}\n");
         }
         return $this->response(['Webhook Handled']);
     }
 
     /**
-     * Handle sucessfull payment.
+     * Handle successfully payment.
      *
      * @param array $payload
      *
@@ -108,11 +109,11 @@ class PaymentsController extends BaseController
      */
     protected function handleChargeSucceeded(array $payload, string $method) : Response
     {
-        $user = Users::findFirstByStripeId($payload['data']['object']['customer']);
-        if ($user) {
+        $companyGroup = CompaniesGroups::findFirstByStripeId($payload['data']['object']['customer']);
+        if ($companyGroup) {
             //Update current subscription's paid column to true and store date of payment
-            $this->updateSubscriptionPaymentStatus($user, $payload);
-            $this->sendWebhookResponseEmail($user, $payload, $method);
+            $this->updateSubscriptionPaymentStatus($companyGroup, $payload);
+            $this->sendWebhookResponseEmail($companyGroup, $payload, $method);
         }
         return $this->response(['Webhook Handled']);
     }
@@ -126,11 +127,11 @@ class PaymentsController extends BaseController
      */
     protected function handleChargeFailed(array $payload, string $method) : Response
     {
-        $user = Users::findFirstByStripeId($payload['data']['object']['customer']);
-        if ($user) {
+        $companyGroup = CompaniesGroups::findFirstByStripeId($payload['data']['object']['customer']);
+        if ($companyGroup) {
             //We need to send a mail to the user
-            $this->updateSubscriptionPaymentStatus($user, $payload);
-            $this->sendWebhookResponseEmail($user, $payload, $method);
+            $this->updateSubscriptionPaymentStatus($companyGroup, $payload);
+            $this->sendWebhookResponseEmail($companyGroup, $payload, $method);
         }
         return $this->response(['Webhook Handled']);
     }
@@ -144,10 +145,10 @@ class PaymentsController extends BaseController
      */
     protected function handleChargePending(array $payload, string $method) : Response
     {
-        $user = Users::findFirstByStripeId($payload['data']['object']['customer']);
-        if ($user) {
+        $companyGroup = CompaniesGroups::findFirstByStripeId($payload['data']['object']['customer']);
+        if ($companyGroup) {
             //We need to send a mail to the user
-            $this->sendWebhookResponseEmail($user, $payload, $method);
+            $this->sendWebhookResponseEmail($companyGroup, $payload, $method);
         }
         return $this->response(['Webhook Handled']);
     }
@@ -161,7 +162,7 @@ class PaymentsController extends BaseController
      *
      * @return void
      */
-    protected function sendWebhookResponseEmail(Users $user, array $payload, string $method) : void
+    protected function sendWebhookResponseEmail(CompaniesGroups $companyGroup, array $payload, string $method) : void
     {
         $templateName = '';
         $title = null;
@@ -202,10 +203,10 @@ class PaymentsController extends BaseController
 
         //Search for actual template by templateName
         if ($templateName) {
-            $emailTemplate = Template::generate($templateName, $user->toArray());
+            $emailTemplate = Template::generate($templateName, $companyGroup->users->toArray());
 
             Di::getDefault()->getMail()
-            ->to($user->email)
+            ->to($companyGroup->users->email)
             ->subject($this->app->name . ' - ' . $title)
             ->content($emailTemplate)
             ->sendNow();
@@ -220,7 +221,7 @@ class PaymentsController extends BaseController
      *
      * @return void
      */
-    public function updateSubscriptionPaymentStatus(Users $user, array $payload) : void
+    public function updateSubscriptionPaymentStatus(CompaniesGroups $companyGroup, array $payload) : void
     {
         // Identify if payload comes from mobile payments
         if ($payload['is_mobile']) {
@@ -234,7 +235,8 @@ class PaymentsController extends BaseController
         }
 
         //Fetch current user subscription
-        $subscription = Subscription::getByDefaultCompany($user);
+        $subscription = $companyGroup->subscription();
+        $user = $companyGroup->users;
 
         if (is_object($subscription)) {
             $subscription->paid = $paidStatus ?? 0;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Gewaer\Tests\integration\library\Mapper;
+namespace Canvas\Tests\integration\library\Mapper;
 
 use Canvas\Mapper\CompaniesGroupsMapper;
 use Canvas\Mapper\CustomFieldsMapper;

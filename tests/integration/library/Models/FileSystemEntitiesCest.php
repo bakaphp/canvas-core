@@ -1,6 +1,6 @@
 <?php
 
-namespace Gewaer\Tests\integration\library\Models;
+namespace Canvas\Tests\integration\library\Models;
 
 use Canvas\Models\FileSystem;
 use Canvas\Models\FileSystemEntities;
@@ -13,6 +13,7 @@ class FileSystemEntitiesCest
      * Get a filesystem entities from this system modules.
      *
      * @param IntegrationTester $I
+     *
      * @return void
      */
     public function getByIdWithSystemModule(IntegrationTester $I)
@@ -27,6 +28,7 @@ class FileSystemEntitiesCest
      * Get a filesystem entities from this system modules.
      *
      * @param IntegrationTester $I
+     *
      * @return void
      */
     public function getById(IntegrationTester $I)
@@ -39,6 +41,7 @@ class FileSystemEntitiesCest
      * Get a filesystem entities from this system modules.
      *
      * @param IntegrationTester $I
+     *
      * @return void
      */
     public function getByEntityId(IntegrationTester $I)
@@ -51,6 +54,7 @@ class FileSystemEntitiesCest
      * Given a entity id get all its asociated files.
      *
      * @param IntegrationTester $I
+     *
      * @return void
      */
     public function getAllByEntityId(IntegrationTester $I)

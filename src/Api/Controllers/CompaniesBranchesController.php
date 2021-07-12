@@ -4,18 +4,10 @@ declare(strict_types=1);
 
 namespace Canvas\Api\Controllers;
 
-use Phalcon\Http\Response;
 use Baka\Http\Exception\UnprocessableEntityException;
 use Canvas\Models\CompaniesBranches;
+use Phalcon\Http\Response;
 
-/**
- * Class CompaniesController.
- *
- * @package Canvas\Api\Controllers
- *
- * @property Users $userData
- * @property Request $request
- */
 class CompaniesBranchesController extends BaseController
 {
     /*
@@ -72,7 +64,7 @@ class CompaniesBranchesController extends BaseController
      *
      * @return Response
      */
-    public function getById($id): Response
+    public function getById($id) : Response
     {
         //find the info
         $record = $this->model->findFirstOrFail([
@@ -98,13 +90,16 @@ class CompaniesBranchesController extends BaseController
     {
         $company = $this->model->findFirstOrFail([
             'id = ?0 AND is_deleted = 0 and companies_id = ?1',
-            'bind' => [$id, $this->userData->currentCompanyId()],
+            'bind' => [
+                $id,
+                $this->userData->currentCompanyId()
+            ],
         ]);
 
         $request = $this->request->getPutData();
 
         //update
-        if ($company->update($request, $this->updateFields)) {
+        if ($company->updateOrFail($request, $this->updateFields)) {
             return $this->response($this->processOutput($company));
         } else {
             //didnt work

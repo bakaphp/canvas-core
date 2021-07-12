@@ -1,6 +1,6 @@
 <?php
 
-namespace Gewaer\Tests\integration\library\Filesystem;
+namespace Canvas\Tests\integration\library\Filesystem;
 
 use Aws\S3\Exception\S3Exception;
 use Canvas\Filesystem\Helper;

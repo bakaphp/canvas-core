@@ -6,12 +6,6 @@ namespace Canvas\Api\Controllers;
 
 use Canvas\Models\UsersAssociatedCompanies;
 
-/**
- * Class TimeZonesController.
- *
- * @package Canvas\Api\Controllers
- *
- */
 class UsersAssociatedCompaniesController extends BaseController
 {
     /*

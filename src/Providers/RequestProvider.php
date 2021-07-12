@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Canvas\Providers;
 
+use function Baka\isSwooleServer;
 use Canvas\Http\Request;
 use Canvas\Http\SwooleRequest;
-use Phalcon\Di\ServiceProviderInterface;
 use Phalcon\Di\DiInterface;
-use function Baka\isSwooleServer;
+use Phalcon\Di\ServiceProviderInterface;
 
 class RequestProvider implements ServiceProviderInterface
 {

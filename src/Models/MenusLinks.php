@@ -27,26 +27,26 @@ class MenusLinks extends AbstractModel
             'parent_id',
             'Canvas\Models\MenusLinks',
             'id',
-            ['alias' => 'childLinks']
+            ['alias' => 'childLinks', 'reusable' => true]
         );
 
         $this->belongsTo(
             'menus_id',
             'Canvas\Models\Menus',
             'id',
-            ['alias' => 'menus']
+            ['alias' => 'menus', 'reusable' => true]
         );
 
         $this->belongsTo(
             'system_modules_id',
             'Canvas\Models\SystemModules',
             'id',
-            ['alias' => 'modules']
+            ['alias' => 'modules', 'reusable' => true]
         );
     }
 
     /**
-     * Check whether or not the menuslink is a parent.
+     * Check whether or not the menus link is a parent.
      *
      * @return bool
      */

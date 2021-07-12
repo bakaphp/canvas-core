@@ -6,6 +6,7 @@ namespace Canvas\Providers;
 
 use function Baka\envValue;
 use Baka\Http\Exception\InternalServerErrorException;
+use function Baka\isCLI;
 use PDO;
 use PDOException;
 use Phalcon\Db\Adapter\Pdo\Mysql;
@@ -19,6 +20,12 @@ class DatabaseProvider implements ServiceProviderInterface
      */
     public function register(DiInterface $container) : void
     {
+        /* $shared = true;
+        //only when active do we run full async
+        if (envValue('SWOOLE_COROUTINE_SHARED_DB', false)) {
+            $shared = defined('API_TESTS') || !isCLI() ? true : false;
+        } */
+
         $container->setShared(
             'db',
             function () {
@@ -28,7 +35,9 @@ class DatabaseProvider implements ServiceProviderInterface
                     'password' => envValue('DATA_API_MYSQL_PASS', ''),
                     'dbname' => envValue('DATA_API_MYSQL_NAME', 'gonano'),
                     'charset' => 'utf8',
-                    'options' => [PDO::ATTR_ERRMODE => PDO::ERRMODE_WARNING]
+                    'options' => [
+                        PDO::ATTR_ERRMODE => PDO::ERRMODE_WARNING,
+                    ]
                 ];
 
                 try {

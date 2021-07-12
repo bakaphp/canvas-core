@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Canvas\Listener;
 
-use Phalcon\Events\Event;
 use Baka\Mail\Message;
 use Canvas\Cli\Jobs\Pusher;
 use Canvas\Cli\Jobs\PushNotifications;
 use Canvas\Notifications\PusherNotification;
 use Canvas\Notifications\PushNotification;
+use Phalcon\Events\Event;
 
 class Notification
 {
@@ -18,6 +18,7 @@ class Notification
      *
      * @param Event $event
      * @param Message $mail
+     *
      * @return mixed
      */
     public function sendMail(Event $event, Message $mail)
@@ -30,6 +31,7 @@ class Notification
      *
      * @param Event $event
      * @param PusherNotification $pusherNotification
+     *
      * @return void
      */
     public function sendPushNotification(Event $event, PushNotification $pushNotification)
@@ -42,6 +44,7 @@ class Notification
      *
      * @param Event $event
      * @param PusherNotification $pusherNotification
+     *
      * @return void
      */
     public function sendRealtime(Event $event, PusherNotification $pusherNotification)

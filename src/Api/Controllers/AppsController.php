@@ -71,7 +71,6 @@ class AppsController extends BaseController
      *
      * @return ModelInterface
      *
-     * @throws Exception
      */
     protected function processCreate(RequestInterface $request) : ModelInterface
     {
@@ -93,17 +92,14 @@ class AppsController extends BaseController
      * @param RequestInterface $request
      * @param ModelInterface $record
      *
-     * @throws Exception
-     *
      * @return ModelInterface
      */
     protected function processEdit(RequestInterface $request, ModelInterface $record) : ModelInterface
     {
         //process the input
         $request = $this->processInput($request->getPutData());
-
         if (array_key_exists('settings', $request) && isJson($request['settings'])) {
-            $this->model->setSettings(json_decode($request['settings'], true));
+            $record->setSettings(json_decode($request['settings'], true));
         }
 
         $record->updateOrFail($request, $this->updateFields);
@@ -137,8 +133,6 @@ class AppsController extends BaseController
 
     /**
      * Delete a Record.
-     *
-     * @throws Exception
      *
      * @return Response
      */

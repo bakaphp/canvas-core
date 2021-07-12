@@ -20,7 +20,7 @@ class Menus extends AbstractModel
             'id',
             'Canvas\Models\MenusLinks',
             'menus_id',
-            ['alias' => 'links']
+            ['alias' => 'links', 'reusable' => true]
         );
     }
 }

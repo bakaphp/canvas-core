@@ -1,6 +1,6 @@
 <?php
 
-namespace Gewaer\Tests\integration\library\Acl;
+namespace Canvas\Tests\integration\library\Acl;
 
 use Canvas\Acl\Manager as AclManager;
 use Canvas\Models\Users;

@@ -27,8 +27,8 @@ class IntegrationTests extends Api
         //set all the services
 
         /**
-        * @todo Find a better way to handle unit test file include
-        */
+         * @todo Find a better way to handle unit test file include
+         */
         $this->providers = require appPath('tests/providers.php');
 
         //run my parents setup

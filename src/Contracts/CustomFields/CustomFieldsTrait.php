@@ -98,7 +98,7 @@ trait CustomFieldsTrait
             'entity_id' => $this->getId(),
             'label' => $name,
             'name' => $name,
-            'value' => $value
+            'value' => !is_array($value) ? $value : json_encode($value)
         ]);
     }
 

@@ -2,9 +2,9 @@
 
 namespace Canvas\Providers;
 
-use Phalcon\Di\ServiceProviderInterface;
-use Phalcon\Di\DiInterface;
 use Baka\Mail\Manager as BakaMail;
+use Phalcon\Di\DiInterface;
+use Phalcon\Di\ServiceProviderInterface;
 
 class MailProvider implements ServiceProviderInterface
 {
@@ -13,11 +13,11 @@ class MailProvider implements ServiceProviderInterface
      */
     public function register(DiInterface $container) : void
     {
-        $config = $container->getShared('config');
-
         $container->setShared(
             'mail',
-            function () use ($config) {
+            function () use ($container) {
+                $config = $container->getShared('config');
+
                 $mailer = new BakaMail($config->email->toArray());
                 return $mailer->createMessage();
             }

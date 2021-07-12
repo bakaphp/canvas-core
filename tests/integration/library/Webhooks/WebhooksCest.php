@@ -1,6 +1,6 @@
 <?php
 
-namespace Gewaer\Tests\integration\library\Webhooks;
+namespace Canvas\Tests\integration\library\Webhooks;
 
 use Canvas\Models\UserWebhooks;
 use Canvas\Models\Webhooks as ModelsWebhooks;

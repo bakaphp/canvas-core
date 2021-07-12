@@ -1,6 +1,6 @@
 <?php
 
-namespace Gewaer\Tests\integration\library\Jobs;
+namespace Canvas\Tests\integration\library\Jobs;
 
 use Canvas\Models\Users;
 use Baka\Notifications\Notify;

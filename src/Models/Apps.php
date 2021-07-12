@@ -6,8 +6,9 @@ namespace Canvas\Models;
 use Baka\Contracts\Database\HashTableTrait;
 use Baka\Contracts\EventsManager\EventManagerAwareTrait;
 use Baka\Database\Apps as BakaApps;
-use Canvas\Cli\Jobs\Apps as JobsApps;
-use Canvas\Traits\UsersAssociatedTrait;
+use Canvas\App\Setup;
+use Canvas\Contracts\UsersAssociatedTrait;
+use Phalcon\Di;
 use Phalcon\Security\Random;
 
 class Apps extends BakaApps
@@ -29,8 +30,17 @@ class Apps extends BakaApps
      * @var string
      */
     const CANVAS_DEFAULT_APP_ID = 1;
+    const CANVAS_DEFAULT_COMPANY_ID = 1;
     const CANVAS_DEFAULT_APP_NAME = 'Default';
     const APP_DEFAULT_ROLE_SETTING = 'default_admin_role';
+    const APP_DEFAULT_COUNTRY = 'default_user_country';
+
+    /**
+     * Kanvas Core App Version.
+     *
+     * @var string
+     */
+    const VERSION = 0.3;
 
     /**
      * Users Associated Trait.
@@ -53,29 +63,52 @@ class Apps extends BakaApps
             'default_apps_plan_id',
             'Canvas\Models\AppsPlans',
             'id',
-            ['alias' => 'plan']
+            ['alias' => 'plan', 'reusable' => true]
+        );
+
+        $this->hasOne(
+            'id',
+            'Canvas\Models\AppsPlans',
+            'apps_id',
+            [
+                'alias' => 'defaultPlan',
+                'reusable' => true,
+                'params' => [
+                    'conditions' => 'Canvas\Models\AppsPlans.is_default = 1',
+                ]
+            ]
         );
 
         $this->hasMany(
             'id',
             'Canvas\Models\AppsPlans',
             'apps_id',
-            ['alias' => 'plans']
+            ['alias' => 'plans', 'reusable' => true]
         );
 
         $this->hasMany(
             'id',
             'Canvas\Models\UserWebhooks',
             'apps_id',
-            ['alias' => 'user-webhooks']
+            ['alias' => 'user-webhooks', 'reusable' => true]
         );
 
         $this->hasMany(
             'id',
             'Canvas\Models\AppsSettings',
             'apps_id',
-            ['alias' => 'settingsApp']
+            ['alias' => 'settingsApp', 'reusable' => true]
         );
+    }
+
+    /**
+     * Get the default Plan.
+     *
+     * @return AppsPlans
+     */
+    public function getDefaultPlan() : AppsPlans
+    {
+        return $this->defaultPlan;
     }
 
     /**
@@ -103,8 +136,34 @@ class Apps extends BakaApps
             $this->set($key, $value);
         }
 
-        //send job to finish app creation
-        JobsApps::dispatch($this);
+        $setup = new Setup($this);
+        $setup->plans()
+            ->acl()
+            ->systemModules()
+            ->emailTemplates()
+            ->defaultMenus();
+
+        //Create a new UserAssociatedApps record
+        $userAssociatedApp = new UsersAssociatedApps();
+        $userAssociatedApp->users_id = Di::getDefault()->getUserData()->getId();
+        $userAssociatedApp->apps_id = $this->getId();
+        $userAssociatedApp->companies_id = Di::getDefault()->getUserData()->getCurrentCompany()->getId();
+        $userAssociatedApp->identify_id = (string)Di::getDefault()->getUserData()->getId();
+        $userAssociatedApp->user_active = 1;
+        $userAssociatedApp->user_role = (string)Di::getDefault()->getUserData()->roles_id;
+        $userAssociatedApp->saveOrFail();
+    }
+
+    /**
+     * After Update function.
+     *
+     * @return void
+     */
+    public function afterUpdate() : void
+    {
+        foreach ($this->settings as $key => $value) {
+            $this->set($key, $value);
+        }
     }
 
     /**
@@ -178,6 +237,16 @@ class Apps extends BakaApps
     }
 
     /**
+     * Get th default app currency.
+     *
+     * @return string
+     */
+    public function defaultCurrency() : string
+    {
+        return $this->get('currency');
+    }
+
+    /**
      * Get app by domain name.
      *
      * @param string $domain
@@ -186,15 +255,14 @@ class Apps extends BakaApps
      */
     public static function getByDomainName(string $domain) : ?self
     {
+        /**
+         * @todo add cache
+         */
         return self::findFirst([
             'conditions' => 'domain = :domain: AND domain_based = 1',
             'bind' => [
                 'domain' => $domain
-            ],
-            'cache' => [
-                'key' => 'app-by-domain-cache' . $domain,
-                'lifetime' => 432000, //1week
-            ],
+            ]
         ]);
     }
 }

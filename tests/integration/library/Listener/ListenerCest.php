@@ -1,6 +1,6 @@
 <?php
 
-namespace Gewaer\Tests\integration\library\Listener;
+namespace Canvas\Tests\integration\library\Listener;
 
 use Canvas\Listener\Company;
 use Canvas\Listener\Notification;

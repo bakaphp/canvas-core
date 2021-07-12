@@ -3,12 +3,15 @@
 namespace Canvas\Cli\Tasks;
 
 use function Baka\appPath;
+use Canvas\Contracts\Models\CacheKeys;
 use Phalcon\Cli\Task as PhTask;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 
 class ClearcacheTask extends PhTask
 {
+    use CacheKeys;
+
     /**
      * Clears the data cache from the application.
      */
@@ -19,11 +22,11 @@ class ClearcacheTask extends PhTask
     }
 
     /**
-     * Clear all data from the application
+     * Clear all data from the application.
      *
      * @return void
      */
-    public function allAction() :  void
+    public function allAction() : void
     {
         $this->mainAction();
         $this->clearRedisCache();
@@ -34,7 +37,7 @@ class ClearcacheTask extends PhTask
      */
     protected function clearFileCache() : void
     {
-        echo PHP_EOL.'Clearing Cache folders' . PHP_EOL;
+        echo PHP_EOL . 'Clearing Cache folders' . PHP_EOL;
 
         $fileList = [];
         $whitelist = ['.', '..', '.gitignore'];
@@ -68,9 +71,18 @@ class ClearcacheTask extends PhTask
      */
     protected function clearRedisCache() : void
     {
-        echo PHP_EOL.'Clearing data cache' . PHP_EOL;
+        echo 'Are you sure you want delete your FULL REDIS DB?  [y/N]' . PHP_EOL;
 
-        $keys = $this->di->get('redis', [true])->keys('*');
+        //read user input
+        $confirmation = trim(fgets(STDIN));
+        if ($confirmation !== 'y') {
+            // The user did not say 'y'.
+            return;
+        }
+
+        echo PHP_EOL . 'Clearing data cache' . PHP_EOL;
+
+        $keys = $this->di->get('redis', [false])->keys('*');
         echo sprintf('Found %s keys', count($keys)) . PHP_EOL;
         foreach ($keys as $key) {
             $this->redis->del($key);
@@ -80,23 +92,25 @@ class ClearcacheTask extends PhTask
     }
 
     /**
-     * Clear all model schema cache
+     * Clear all model schema cache.
      *
      * @return void
      */
     protected function clearModelRedisCache() : void
     {
-        echo PHP_EOL.'Clearing Model data cache' . PHP_EOL;
+        echo PHP_EOL . 'Clearing Model data cache' . PHP_EOL;
 
         $cache = $this->di->get('config')->get('cache')->toArray();
         $options = $cache['metadata']['prod']['options'];
 
-        $keys = $this->di->get('redisUnSerialize', [false])->keys($options['prefix'].'*');
+        $keys = $this->di->get('redisUnSerialize', [false])->keys($options['prefix'] . '*');
 
-        echo sprintf('Found %s Models keys', count($keys)) . PHP_EOL;
+        echo sprintf('Found %s Models Schema Cache', count($keys)) . PHP_EOL;
         foreach ($keys as $key) {
             $this->redisUnSerialize->del($key);
         }
+
+        echo sprintf('Found %s Models Cache', $this->clearCacheByKeyPattern('')) . PHP_EOL;
 
         echo  'Cleared Model schema cache' . PHP_EOL;
     }

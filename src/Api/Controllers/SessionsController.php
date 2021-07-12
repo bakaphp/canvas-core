@@ -4,16 +4,8 @@ declare(strict_types=1);
 
 namespace Canvas\Api\Controllers;
 
-use Baka\Auth\Models\Sessions;
-use Phalcon\Http\Response;
+use Canvas\Models\Sessions;
 
-/**
- * Class LanguagesController.
- *
- * @package Canvas\Api\Controllers
- * @property UserData $userData
- *
- */
 class SessionsController extends BaseController
 {
     /*

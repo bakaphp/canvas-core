@@ -4,25 +4,14 @@ declare(strict_types=1);
 
 namespace Canvas\Api\Controllers;
 
+use Baka\Http\Exception\UnprocessableEntityException;
 use function Baka\isJson;
 use Baka\Validation;
-use Baka\Http\Exception\UnprocessableEntityException;
 use Canvas\Models\UserWebhooks;
 use Canvas\Webhooks;
 use Phalcon\Http\Response;
 use Phalcon\Validation\Validator\PresenceOf;
 
-/**
- * Class LanguagesController.
- *
- * @package Canvas\Api\Controllers
- *
- * @property Users $userData
- * @property Request $request
- * @property Config $config
- * @property Apps $app
- *
- */
 class UserWebhooksController extends BaseController
 {
     /*

@@ -1,6 +1,6 @@
 <?php
 
-namespace Gewaer\Tests\integration\library\Models;
+namespace Canvas\Tests\integration\library\Models;
 
 use Canvas\Auth\Auth;
 use Canvas\Models\Apps;
@@ -14,6 +14,7 @@ use Canvas\Models\UsersInvite;
 use Faker\Factory;
 use IntegrationTester;
 use Phalcon\Security\Random;
+use Baka\Auth\UserProvider;
 
 class DefaultSetupCest
 {
@@ -141,14 +142,15 @@ class DefaultSetupCest
      */
     public function signupTest(IntegrationTester $I)
     {
-        $user = [
-            'email' => $this->email,
-            'firstname' => $I->faker()->firstname,
-            'lastname' => $I->faker()->lastname,
-            'password' => $this->password,
-            'displayname' => $I->faker()->name,
-            'defaultCompanyName' => $I->faker()->company,
-        ];
+        UserProvider::set(new Users());
+
+        $user =  UserProvider::get();
+        $user->firstname = $I->faker->firstname;
+        $user->lastname = $I->faker->lastname;
+        $user->email = $this->email;
+        $user->password = $this->password;
+        $user->defaultCompanyName = $I->faker->company;
+        $user->displayname = $I->faker->firstname;
 
         $I->assertTrue(Auth::signUp($user) instanceof Users);
     }

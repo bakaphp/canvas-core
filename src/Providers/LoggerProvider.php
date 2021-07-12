@@ -24,11 +24,11 @@ class LoggerProvider implements ServiceProviderInterface
      */
     public function register(DiInterface $container) : void
     {
-        $config = $container->getShared('config');
-
         $container->setShared(
             'log',
-            function () use ($config) {
+            function () use ($container) {
+                $config = $container->getShared('config');
+
                 /** @var string $logName */
                 $logName = envValue('LOGGER_DEFAULT_FILENAME', 'api.log');
                 /** @var string $logPath */

@@ -4,25 +4,14 @@ declare(strict_types=1);
 
 namespace Canvas\Api\Controllers;
 
+use Baka\Database\Contracts\CustomFilters\CustomFilterTrait;
 use Baka\Database\CustomFilters\CustomFilters;
 use Canvas\Dto\CustomFilter as CustomFilterDto;
-use Baka\Database\Contracts\CustomFilters\CustomFilterTrait;
-use Phalcon\Mvc\ModelInterface;
-use Phalcon\Http\Request;
-use RuntimeException;
 use Canvas\Mapper\CustomFilterMapper;
+use Phalcon\Http\Request;
+use Phalcon\Mvc\ModelInterface;
+use RuntimeException;
 
-/**
- * Class BaseController.
- *
- * @package Canvas\Api\Controllers
- *
- * @property Users $userData
- * @property Request $request
- * @property Config $config
- * @property \Baka\Mail\Message $mail
- * @property Apps $app
- */
 class CustomFiltersController extends BaseController
 {
     use CustomFilterTrait;
@@ -65,9 +54,10 @@ class CustomFiltersController extends BaseController
      * Process the create request and trecurd the boject.
      *
      * @return ModelInterface
+     *
      * @throws Exception
      */
-    protected function processCreate(Request $request): ModelInterface
+    protected function processCreate(Request $request) : ModelInterface
     {
         //process the input
         $request = $this->processInput($request->getPostData());
@@ -88,10 +78,12 @@ class CustomFiltersController extends BaseController
      *
      * @param Request $request
      * @param ModelInterface $record
+     *
      * @throws Exception
+     *
      * @return ModelInterface
      */
-    protected function processEdit(Request $request, ModelInterface $record): ModelInterface
+    protected function processEdit(Request $request, ModelInterface $record) : ModelInterface
     {
         $record = parent::processEdit($request, $record);
         $request = $this->processInput($request->getPutData());
@@ -108,6 +100,7 @@ class CustomFiltersController extends BaseController
      * Format output.
      *
      * @param [type] $results
+     *
      * @return void
      */
     protected function processOutput($results)

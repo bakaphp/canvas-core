@@ -7,12 +7,14 @@ namespace Canvas\App;
 use Canvas\Models\Apps;
 use Canvas\Models\AppsPlans;
 use Canvas\Models\Companies;
-use Canvas\Models\Roles;
-use Canvas\Models\SystemModules;
 use Canvas\Models\EmailTemplates;
 use Canvas\Models\Menus;
 use Canvas\Models\MenusLinks;
+use Canvas\Models\Roles;
+use Canvas\Models\SystemModules;
 use Canvas\Models\Users;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 use Phalcon\Di;
 
 class Setup
@@ -21,6 +23,8 @@ class Setup
 
     protected $systemModulesIds = [];
 
+    protected Logger $log;
+
     /**
      * Construct.
      *
@@ -28,6 +32,8 @@ class Setup
      */
     public function __construct(Apps $app)
     {
+        $this->log = Di::getDefault()->get('log');
+        $this->log->pushHandler(new StreamHandler('php://stdout', Logger::INFO));
         $this->app = $app;
     }
 
@@ -36,15 +42,15 @@ class Setup
      */
     public function settings() : self
     {
-        echo("Setting default App Settings...\n\n");
+        $this->log->info("Setting default App Settings...\n\n");
         if (!$this->app->hasSettings()) {
             foreach ($this->SettingsData() as $key => $value) {
-                echo("set default app setting: {$value['name']} \n");
+                $this->log->info("set default app setting: {$value['name']} \n");
                 $this->app->set($value['name'], $value['value']);
             }
         }
 
-        echo("Done!\n\n");
+        $this->log->info("Done!\n\n");
         return $this;
     }
 
@@ -53,16 +59,16 @@ class Setup
      */
     public function plans() : self
     {
-        echo("Setting default Plans...\n\n");
+        $this->log->info("Setting default Plans...\n\n");
         foreach ($this->plansData() as $plan) {
-            echo("set default plan: {$plan['name']} \n");
+            $this->log->info("set default plan: {$plan['name']} \n");
             $appPlans = new AppsPlans();
             $appPlans->assign($plan);
             $appPlans->apps_id = $this->app->getId();
             $appPlans->saveOrFail();
         }
 
-        echo("Done!\n\n");
+        $this->log->info("Done!\n\n");
         return $this;
     }
 
@@ -73,9 +79,9 @@ class Setup
      */
     public function systemModules() : self
     {
-        echo("Setting default System Modules...\n\n");
+        $this->log->info("Setting default System Modules...\n\n");
         foreach ($this->systemModulesData() as $module) {
-            echo("set default system module: {$module['name']} \n");
+            $this->log->info("set default system module: {$module['name']} \n");
             $systemModule = new SystemModules();
             $systemModule->assign($module);
             $systemModule->apps_id = $this->app->getId();
@@ -84,48 +90,48 @@ class Setup
             $this->systemModulesIds[$systemModule->name] = $systemModule->id;
         }
 
-        echo("Done!\n\n");
+        $this->log->info("Done!\n\n");
         return $this;
     }
 
     /**
-    * Set the email templates.
-    *
-    * @return self
-    */
+     * Set the email templates.
+     *
+     * @return self
+     */
     public function emailTemplates() : self
     {
-        echo("Setting default Email Templates...\n\n");
+        $this->log->info("Setting default Email Templates...\n\n");
         foreach ($this->emailTemplatesData() as $template) {
-            echo("set default template: {$template['name']} \n");
+            $this->log->info("set default template: {$template['name']} \n");
             $emailTemplate = new EmailTemplates();
             $emailTemplate->assign($template);
             $emailTemplate->apps_id = $this->app->getId();
             $emailTemplate->saveOrFail();
         }
 
-        echo("Done!\n\n");
+        $this->log->info("Done!\n\n");
         return $this;
     }
 
     /**
-    * Set the default menus.
-    *
-    * @return self
-    */
+     * Set the default menus.
+     *
+     * @return self
+     */
     public function defaultMenus() : self
     {
-        echo("Setting default Menus..\n\n");
+        $this->log->info("Setting default Menus..\n\n");
         //Create a new Menu with current app id
         $menu = new Menus();
         $menu->apps_id = $this->app->getId();
-        $menu->name = "main";
-        $menu->slug = "main";
+        $menu->name = 'main';
+        $menu->slug = 'main';
         $menu->saveOrFail();
 
         //Create default menu links
         foreach ($this->MenusLinkData() as $link) {
-            echo("set default menu: {$link['title']} \n");
+            $this->log->info("set default menu: {$link['title']} \n");
             $menusLink = new MenusLinks();
             $menusLink->assign($link);
             $menusLink->menus_id = (int)$menu->id;
@@ -133,7 +139,7 @@ class Setup
             $menusLink->saveOrFail();
         }
 
-        echo("Done!\n\n");
+        $this->log->info("Done!\n\n");
         return $this;
     }
 
@@ -250,11 +256,11 @@ class Setup
      */
     public function acl() : self
     {
+        $this->log->info("Configuring ACL..\n\n");
         $acl = Di::getDefault()->get('acl');
         $acl->setApp($this->app);
 
-        $acl->addRole($this->app->name . '.Admins');
-        $acl->addRole($this->app->name . '.Users');
+        $acl->addRole($this->app->name . '.Manager');
 
         $acl->addComponent(
             $this->app->name . '.Users',
@@ -268,7 +274,7 @@ class Setup
         );
 
         $acl->allow(
-            'Admins',
+            'Manager',
             $this->app->name . '.Users',
             [
                 'read',
@@ -299,6 +305,7 @@ class Setup
         ];
 
         foreach ($defaultResources as $resource) {
+            $this->log->info("Setting {$resource} resource and permissions \n");
             $acl->addComponent(
                 $resource,
                 [
@@ -311,7 +318,7 @@ class Setup
             );
 
             $acl->allow(
-                'Admins',
+                'Manager',
                 $resource,
                 [
                     'read',
@@ -324,7 +331,7 @@ class Setup
         }
 
         $acl->allow(
-            'Admins',
+            'Manager',
             $this->app->name . '.SettingsMenu',
             [
                 'company-settings',
@@ -333,6 +340,7 @@ class Setup
             ]
         );
 
+        $this->log->info("Done!\n\n");
         return $this;
     }
 
@@ -388,7 +396,7 @@ class Setup
     }
 
     /**
-     * Default email templates
+     * Default email templates.
      *
      * @return array
      */
@@ -400,14 +408,14 @@ class Setup
                 'companies_id' => 0,
                 'apps_id' => 0,
                 'name' => 'users-invite',
-                'template' => 'Hi {{entity[\'email\']} you have been invite to the app {{app.name}} to create you account please <a href=\'{{invitationUrl}}\'>click here</a> <br /><br />\r\n \n\n Thanks {{fromUser.firstname}} {{fromUser.lastname}} ( {{fromUser.getDefaultCompany().name}} )',
+                'template' => 'Hi {{entity[\'email\']}} you have been invite to the app {{app.name}} to create you account please <a href=\'{{invitationUrl}}\'>click here</a> <br /><br />\r\n \n\n Thanks {{fromUser.firstname}} {{fromUser.lastname}} ( {{fromUser.getDefaultCompany().name}} )',
                 'created_at' => date('Y-m-d H:i:s'),
             ], [
                 'users_id' => 1,
                 'companies_id' => 0,
                 'apps_id' => 0,
                 'name' => 'users-registration',
-                'template' => '\r\nHi {{entity[\'displayname\']} Welcome to the new app {{app.name}}\r\n<br /><br />>\r\nLet us know if you need any help\r\n\r\nThanks',
+                'template' => '\r\nHi {{entity[\'displayname\']}} Welcome to the new app {{app.name}}\r\n<br /><br />>\r\nLet us know if you need any help\r\n\r\nThanks',
                 'created_at' => date('Y-m-d H:i:s'),
             ], [
                 'users_id' => 1,
@@ -421,7 +429,7 @@ class Setup
     }
 
     /**
-     * Default email templates
+     * Default email templates.
      *
      * @return array
      */
@@ -432,7 +440,7 @@ class Setup
                 'menus_id' => 1,
                 'parent_id' => 0,
                 'system_modules_id' => 0,
-                'url' => "/",
+                'url' => '/',
                 'title' => 'Overview',
                 'position' => 0,
                 'icon_url' => null,
@@ -444,7 +452,7 @@ class Setup
                 'menus_id' => 1,
                 'parent_id' => 0,
                 'system_modules_id' => 1,
-                'url' => "/companies",
+                'url' => '/companies',
                 'title' => 'Companies',
                 'position' => 0,
                 'icon_url' => null,
@@ -456,7 +464,7 @@ class Setup
                 'menus_id' => 1,
                 'parent_id' => 0,
                 'system_modules_id' => 2,
-                'url' => "/users",
+                'url' => '/users',
                 'title' => 'Users',
                 'position' => 0,
                 'icon_url' => null,

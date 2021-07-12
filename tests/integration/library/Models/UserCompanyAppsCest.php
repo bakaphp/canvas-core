@@ -1,6 +1,6 @@
 <?php
 
-namespace Gewaer\Tests\integration\library\Models;
+namespace Canvas\Tests\integration\library\Models;
 
 use Canvas\Models\UserCompanyApps;
 use IntegrationTester;

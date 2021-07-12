@@ -22,28 +22,28 @@ class UserRoles extends AbstractModel
 
         $this->belongsTo(
             'users_id',
-            'Canvas\Models\Users',
+            Users::class,
             'id',
             ['alias' => 'user']
         );
 
         $this->belongsTo(
             'roles_id',
-            'Canvas\Models\Roles',
+            Roles::class,
             'id',
             ['alias' => 'roles']
         );
 
         $this->belongsTo(
             'apps_id',
-            'Canvas\Models\Apps',
+            Apps::class,
             'id',
             ['alias' => 'app']
         );
 
         $this->belongsTo(
             'companies_id',
-            'Canvas\Models\Companies',
+            Companies::class,
             'id',
             ['alias' => 'company']
         );

@@ -6,9 +6,9 @@ namespace Canvas\Bootstrap;
 
 use function Baka\appPath;
 use Baka\Http\Request\Phalcon as Request;
+use Canvas\Http\Response;
 use Phalcon\Di\FactoryDefault;
 use Phalcon\Mvc\Micro;
-use Canvas\Http\Response;
 use Throwable;
 
 /**
@@ -29,7 +29,8 @@ class Api extends AbstractBootstrap
     {
         try {
             $request = new Request();
-            return $this->application->handle($request->getServer('REQUEST_URI'));
+            $uri = rawurldecode($request->getServer('REQUEST_URI') ?? '');
+            return $this->application->handle($uri);
         } catch (Throwable $e) {
             $response = new Response();
             $response->handleException($e)->send();
@@ -46,8 +47,8 @@ class Api extends AbstractBootstrap
         //set all the services
 
         /**
-        * @todo Find a better way to handle unit test file include
-        */
+         * @todo Find a better way to handle unit test file include
+         */
         $this->providers = require appPath('api/config/providers.php');
 
         //run my parents setup

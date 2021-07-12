@@ -1,0 +1,16 @@
+# Codeception Test Suite Configuration
+#
+# Suite for API tests.
+
+actor: ApiTester
+modules:
+  enabled:
+    - Asserts
+    - Helper\Api
+    - \Helper\Integration
+    - Phalcon4:
+        bootstrap: "tests/_ci/bootstrap-api.php"
+        cleanup: false
+        savepoints: false
+    - REST:
+        depends: Phalcon4

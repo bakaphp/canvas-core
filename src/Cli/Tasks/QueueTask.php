@@ -4,6 +4,7 @@ namespace Canvas\Cli\Tasks;
 
 use Baka\Contracts\Queue\QueueableJobInterface;
 use Baka\Queue\Queue;
+use Baka\Support\Str;
 use Canvas\Models\Users;
 use Phalcon\Cli\Task as PhTask;
 use Phalcon\Mvc\Model;
@@ -28,17 +29,9 @@ class QueueTask extends PhTask
      */
     public function eventsAction()
     {
-        $callback = function ($msg) {
+        $callback = function ($msg) : void {
             //check the db before running anything
-            if (!$this->isDbConnected('db')) {
-                return ;
-            }
-
-            if ($this->di->has('dblocal')) {
-                if (!$this->isDbConnected('dblocal')) {
-                    return ;
-                }
-            }
+            $this->reconnectDb();
 
             //we get the data from our event trigger and unserialize
             $event = unserialize($msg->body);
@@ -66,17 +59,9 @@ class QueueTask extends PhTask
      */
     public function notificationsAction()
     {
-        $callback = function ($msg) {
+        $callback = function (object $msg) : void {
             //check the db before running anything
-            if (!$this->isDbConnected('db')) {
-                return ;
-            }
-
-            if ($this->di->has('dblocal')) {
-                if (!$this->isDbConnected('dblocal')) {
-                    return ;
-                }
-            }
+            $this->reconnectDb();
 
             //we get the data from our event trigger and unserialize
             $notification = unserialize($msg->body);
@@ -129,45 +114,36 @@ class QueueTask extends PhTask
     {
         $queue = is_null($queueName) ? QUEUE::JOBS : $queueName;
 
-        $callback = function ($msg) {
-            //check the db before running anything
-            if (!$this->isDbConnected('db')) {
-                return ;
-            }
-
-            if ($this->di->has('dblocal')) {
-                if (!$this->isDbConnected('dblocal')) {
-                    return ;
-                }
-            }
-
-            //we get the data from our event trigger and unserialize
-            $job = unserialize($msg->body);
-
-            //overwrite the user who is running this process
-            if ($job['userData'] instanceof Users) {
-                $this->di->setShared('userData', $job['userData']);
-            }
-
-            if (!class_exists($job['class'])) {
-                echo 'No Job class found' . PHP_EOL;
-                $this->log->error('No Job class found ' . $job['class']);
-                return;
-            }
-
-            if (!$job['job'] instanceof QueueableJobInterface) {
-                echo 'This Job is not queueable ' . $msg->delivery_info['consumer_tag'] ;
-                $this->log->error('This Job is not queueable ' . $msg->delivery_info['consumer_tag']);
-                return;
-            }
-
+        $callback = function (object $msg) : void {
             try {
-                /**
-                 * swoole coroutine.
-                 */
+                //check the db before running anything
+                $this->reconnectDb();
+
+                //we get the data from our event trigger and unserialize
+                $job = unserialize($msg->body);
+
+                //overwrite the user who is running this process
+                if ($job['userData'] instanceof Users) {
+                    $this->di->setShared('userData', $job['userData']);
+                }
+
+                if (!class_exists($job['class'])) {
+                    echo 'No Job class found' . PHP_EOL;
+                    $this->log->error('No Job class found ' . $job['class']);
+                    return;
+                }
+
+                if (!$job['job'] instanceof QueueableJobInterface) {
+                    echo 'This Job is not queueable ' . $msg->delivery_info['consumer_tag'] ;
+                    $this->log->error('This Job is not queueable ' . $msg->delivery_info['consumer_tag']);
+                    return;
+                }
+
                 go(function () use ($job, $msg) {
                     //instance notification and pass the entity
                     try {
+                        $this->reconnectDb();
+
                         $result = $job['job']->handle();
 
                         $this->log->info(
@@ -177,14 +153,18 @@ class QueueTask extends PhTask
                     } catch (Throwable $e) {
                         $this->log->info(
                             $e->getMessage(),
-                            [$e->getTraceAsString()]
+                            [
+                                $e->getTraceAsString()
+                            ]
                         );
                     }
                 });
             } catch (Throwable $e) {
                 $this->log->info(
                     $e->getMessage(),
-                    [$e->getTraceAsString()]
+                    [
+                        $e->getTraceAsString()
+                    ]
                 );
             }
         };
@@ -193,16 +173,37 @@ class QueueTask extends PhTask
     }
 
     /**
+     * Reconnect to our db providers.
+     *
+     * @return void
+     */
+    protected function reconnectDb() : void
+    {
+        //list all of our di
+        $listOfServices = array_keys($this->di->getServices());
+
+        foreach ($listOfServices as $service) {
+            //find all db providers
+            if (Str::contains(strtolower($service), 'db')) {
+                $this->isDbConnected($service);
+            }
+        }
+
+        return ;
+    }
+
+    /**
      * Confirm if the db is connected.
      *
-     * @return boolean
+     * @return bool
      */
     protected function isDbConnected(string $dbProvider) : bool
     {
         try {
             $this->di->get($dbProvider)->fetchAll('SELECT 1');
         } catch (Throwable $e) {
-            if (strpos($e->getMessage(), 'MySQL server has gone away') !== false) {
+            if (Str::contains($e->getMessage(), 'MySQL server has gone away') ||
+                Str::contains($e->getMessage(), 'Connection timed out')) {
                 $this->di->get($dbProvider)->connect();
                 return true;
             }

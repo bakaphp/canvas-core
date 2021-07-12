@@ -21,37 +21,37 @@ class SystemModules extends BakaSystemModules
     {
         $this->hasMany(
             'id',
-            'Canvas\Models\EmailTemplatesVariables',
+            EmailTemplatesVariables::class,
             'system_modules_id',
             ['alias' => 'templateVariable']
         );
 
         $this->hasMany(
             'id',
-            'Canvas\Models\Webhooks',
+            Webhooks::class,
             'system_modules_id',
             ['alias' => 'webhook']
         );
 
         $this->belongsTo(
             'companies_id',
-            'Canvas\Models\Companies',
+            Companies::class,
             'id',
-            ['alias' => 'company']
+            ['alias' => 'company', 'reusable' => true]
         );
 
         $this->belongsTo(
             'apps_id',
-            'Canvas\Models\Apps',
+            Apps::class,
             'id',
-            ['alias' => 'app']
+            ['alias' => 'app', 'reusable' => true]
         );
 
         $this->belongsTo(
             'company_branches_id',
-            'Canvas\Models\CompanyBranches',
+            CompaniesBranches::class,
             'id',
-            ['alias' => 'companyBranch']
+            ['alias' => 'companyBranch', 'reusable' => true]
         );
     }
 
@@ -61,24 +61,13 @@ class SystemModules extends BakaSystemModules
      * @deprecated v2
      *
      * @param string $model_name
+     * @param bool $cache
      *
-     * @return ModelInterface
+     * @return SystemModules
      */
-    public static function getSystemModuleByModelName(string $modelName) : ModelInterface
+    public static function getSystemModuleByModelName(string $modelName, bool $cache = true) : self
     {
-        $module = SystemModules::findFirst([
-            'conditions' => 'model_name = ?0 and apps_id = ?1',
-            'bind' => [
-                $modelName,
-                Di::getDefault()->get('app')->getId()
-            ]
-        ]);
-
-        if (!is_object($module)) {
-            throw new InternalServerErrorException('No system module for ' . $modelName);
-        }
-
-        return $module;
+        return self::getByModelName($modelName);
     }
 
     /**
@@ -86,11 +75,26 @@ class SystemModules extends BakaSystemModules
      *
      * @param string $model_name
      *
-     * @return ModelInterface
+     * @return SystemModules
      */
-    public static function getByModelName(string $modelName) : ModelInterface
+    public static function getByModelName(string $modelName) : self
     {
-        return self::getSystemModuleByModelName($modelName);
+        $app = Di::getDefault()->get('app');
+        $params = [
+            'conditions' => 'model_name = ?0 and apps_id = ?1',
+            'bind' => [
+                $modelName,
+                $app->getId()
+            ]
+        ];
+
+        $module = self::findFirst($params);
+
+        if (!is_object($module)) {
+            throw new InternalServerErrorException('No system module found for ' . $modelName);
+        }
+
+        return $module;
     }
 
     /**

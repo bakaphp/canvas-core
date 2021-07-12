@@ -12,7 +12,8 @@ class Subscription
      * Event to run after starting a free trial.
      *
      * @param Event $event
-     * @param [type] $subscription
+     * @param mixed $subscription
+     *
      * @return void
      */
     public function afterStart(Event $event, $subscription)
@@ -20,10 +21,11 @@ class Subscription
     }
 
     /**
-     * Event afte the free trial ends.
+     * Event after the free trial ends.
      *
      * @param Event $event
-     * @param [type] $subscription
+     * @param mixed $subscription
+     *
      * @return void
      */
     public function afterTrialEnds(Event $event, $subscription)

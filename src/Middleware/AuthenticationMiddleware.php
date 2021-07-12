@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace Canvas\Middleware;
 
-use Baka\Auth\Models\Sessions;
 use Baka\Auth\UserProvider;
 use Baka\Http\Exception\UnauthorizedException;
 use Canvas\Constants\Flags;
 use Canvas\Models\Apps;
 use Canvas\Models\AppsKeys;
+use Canvas\Models\Sessions;
 use Canvas\Models\Users;
+use Lcobucci\JWT\Token;
 use Phalcon\Config;
 use Phalcon\Http\RequestInterface;
 use Phalcon\Mvc\Micro;
@@ -61,14 +62,14 @@ class AuthenticationMiddleware extends TokenBase
      *
      * @param Micro $api
      * @param Config $config
-     * @param string $token
+     * @param Token $token
      * @param RequestInterface $request
      *
      * @throws UnauthorizedException
      *
      * @return void
      */
-    protected function sessionUser(Micro $api, Config $config, object $token, RequestInterface $request) : void
+    protected function sessionUser(Micro $api, Config $config, Token $token, RequestInterface $request) : void
     {
         $api->getDI()->setShared(
             'userData',
@@ -77,18 +78,18 @@ class AuthenticationMiddleware extends TokenBase
                 $userData = UserProvider::get();
 
                 //all is empty and is dev, ok take use the first user
-                if (empty($token->getClaim('sessionId')) && strtolower($config->app->env) == Flags::DEVELOPMENT) {
+                if (empty($token->claims()->get('sessionId')) && strtolower($config->app->env) == Flags::DEVELOPMENT) {
                     return $userData->findFirst(1);
                 }
 
-                if (!empty($token->getClaim('sessionId'))) {
+                if (!empty($token->claims()->get('sessionId'))) {
                     //user
-                    if (!$user = $userData->getByEmail($token->getClaim('email'))) {
+                    if (!$user = $userData->getByEmail($token->claims()->get('email'))) {
                         throw new UnauthorizedException('User not found');
                     }
 
-                    $ip = !defined('API_TESTS') ? $request->getClientAddress() : '127.0.0.1';
-                    return $session->check($user, $token->getClaim('sessionId'), (string) $ip, 1);
+                    $ip = !defined('API_TESTS') ? $request->getClientAddress(true) : '127.0.0.1';
+                    return $session->check($user, $token->claims()->get('sessionId'), (string) $ip, 1);
                 } else {
                     throw new UnauthorizedException('User not found');
                 }
@@ -101,7 +102,7 @@ class AuthenticationMiddleware extends TokenBase
          *
          * Find the user attached to this token
          */
-        if (!$token->validate(Users::getValidationData($token->getHeader('jti')))) {
+        if (!Users::validateJwtToken($token)) {
             throw new UnauthorizedException('Invalid Token');
         }
     }

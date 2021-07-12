@@ -16,11 +16,11 @@ class AppProvider implements ServiceProviderInterface
      */
     public function register(DiInterface $container) : void
     {
-        $config = $container->getShared('config');
-
         $container->setShared(
             'app',
-            function () use ($config) {
+            function () use ($container) {
+                $config = $container->getShared('config');
+
                 $request = new Request();
                 //$appKey = $request->hasHeader('KanvasKey') ? $request->getHeader('KanvasKey') : $config->app->id;
 

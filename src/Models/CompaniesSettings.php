@@ -3,7 +3,9 @@ declare(strict_types=1);
 
 namespace Canvas\Models;
 
-class CompaniesSettings extends \Baka\Auth\Models\CompanySettings
+use Baka\Database\Model;
+
+class CompaniesSettings extends Model
 {
     public int $companies_id;
     public string $name;
@@ -14,8 +16,6 @@ class CompaniesSettings extends \Baka\Auth\Models\CompanySettings
      */
     public function initialize()
     {
-        parent::initialize();
-
         $this->belongsTo(
             'companies_id',
             'Canvas\Models\Companies',

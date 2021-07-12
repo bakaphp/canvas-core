@@ -57,7 +57,7 @@ class AppsKeysController extends BaseController
     }
 
     /**
-     * Process the create request and trecurd the boject.
+     * Process the create request.
      *
      * @return ModelInterface
      *
@@ -81,7 +81,10 @@ class AppsKeysController extends BaseController
     {
         $appsKeys = AppsKeys::findFirstOrFail([
             'conditions' => 'users_id = ?0 and apps_id = ?1 and is_deleted = 0',
-            'bind' => [$this->userData->getId(), $this->app->getId()]
+            'bind' => [
+                $this->userData->getId(),
+                $this->app->getId()
+            ]
         ]);
 
         $appsKeys->client_id = bin2hex(random_bytes(64));

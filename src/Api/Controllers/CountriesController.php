@@ -9,12 +9,6 @@ use Canvas\Models\Locations\Countries;
 use Canvas\Models\Locations\States;
 use Phalcon\Http\Response;
 
-/**
- * Class TimeZonesController.
- *
- * @package Canvas\Api\Controllers
- *
- */
 class CountriesController extends BaseController
 {
     /*

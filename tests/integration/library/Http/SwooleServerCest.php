@@ -1,6 +1,6 @@
 <?php
 
-namespace Gewaer\Tests\integration\library\Http;
+namespace Canvas\Tests\integration\library\Http;
 
 use Canvas\Http\SwooleRequest;
 use Canvas\Http\SwooleResponse;

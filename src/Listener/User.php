@@ -53,15 +53,21 @@ class User
                 $user->default_company_branch = $user->getDefaultCompany()->branch->getId();
             }
 
-            $user->getDI()->getApp()->associate($user, $user->getDefaultCompany());
+            $user->getDI()->get('app')->associate($user, $user->getDefaultCompany());
         }
 
         //Create new company associated company
         $user->getDefaultCompany()->associate($user, $user->getDefaultCompany());
 
         //Insert record into user_roles
-        if (!$role = $user->getDI()->getApp()->get(Apps::APP_DEFAULT_ROLE_SETTING)) {
-            $role = $user->getDI()->getApp()->name . '.' . Roles::getById((int) $user->roles_id)->name;
+        if (!$role = $user->getDI()->get('app')->get(Apps::APP_DEFAULT_ROLE_SETTING)) {
+            $role = $user->getDI()->get('app')->name . '.' . Roles::getById((int) $user->roles_id)->name;
+        }
+
+        //assign default location
+        if (!$defaultCountryId = $user->getDI()->get('app')->get(Apps::APP_DEFAULT_COUNTRY)) {
+            $user->country_id = $defaultCountryId;
+            $user->updateOrFail();
         }
 
         $user->assignRole($role);
@@ -91,6 +97,6 @@ class User
          * @todo this is hackable , need to add use Roles::getById($usersInvite->role_id) , without
          * but we need the company info without been logged in
          */
-        $user->assignRole(Roles::findFirstOrFail($usersInvite->role_id)->name);
+        $user->assignRole(Roles::findFirstOrFail($usersInvite->role_id)->name, $usersInvite->company);
     }
 }
