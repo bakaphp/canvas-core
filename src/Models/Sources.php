@@ -17,6 +17,7 @@ class Sources extends Model
     public ?int $language_id = null;
     public int $pv_order;
     public int $ep_order;
+    public int $use_validation;
 
     const APPLE = 'apple';
     const FACEBOOK = 'facebook';
@@ -58,39 +59,6 @@ class Sources extends Model
         return $appleUserInfo;
     }
 
-    /**
-     * validation.
-     *
-     * @param  string $email
-     * @param  string $token
-     *
-     * @return bool
-     */
-    public function validation(string $email, string $token) : bool
-    {
-        $di = DI::getDefault();
-        switch ($this->title) {
-                case 'google':
-                        $client = $di->getGoogle();
-                        $payload = $client->verifyIdToken($token);
-                        if ($payload) {
-                            $userid = $payload['sub'];
-                            return $payload['email'] === $email;
-                        } else {
-                            throw new Exception('Invalid user on google validation, payload or email incorrect');
-                        }
-                    break;
-                case 'facebook':
-                        $fb = $di->getFacebook();
-                        $response = $fb->get('/me', $token);
-                        $user = $response->getGraphUser();
-                        if ($user) {
-                            return true;
-                        }
-                        throw new Exception('Invalid user on facebook validation');
-                break;
-        }
-    }
 
     /*
      * Get a source by its title.

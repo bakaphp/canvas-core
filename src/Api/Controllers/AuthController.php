@@ -26,7 +26,7 @@ use Canvas\Validation;
 use Exception;
 use Phalcon\Http\Response;
 use Phalcon\Validation\Validator\Email;
-
+use Canvas\Validations\Sources as SourcesValidation;
 class AuthController extends BaseController
 {
     /**
@@ -346,8 +346,8 @@ class AuthController extends BaseController
             $appleUserInfo = $source->validateAppleUser($request['social_id']);
             $request['social_id'] = $appleUserInfo->sub;
             $request['email'] = $appleUserInfo->email;
-        } else {
-            $source->validation($request['email'], $request['social_id']);
+        } elseif($source->use_validation) {
+            SourcesValidation::validation($source->title, $request['email'], $request['social_id']);
         }
 
         $emailValidation = new Validation();
