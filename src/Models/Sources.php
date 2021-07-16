@@ -73,4 +73,14 @@ class Sources extends Model
 
         return $sourceData;
     }
+    
+    /**
+     * hasValidation
+     *
+     * @return bool
+     */
+    public function hasValidation(): bool
+    {
+        return $this->use_validation;
+    }
 }

@@ -346,7 +346,7 @@ class AuthController extends BaseController
             $appleUserInfo = $source->validateAppleUser($request['social_id']);
             $request['social_id'] = $appleUserInfo->sub;
             $request['email'] = $appleUserInfo->email;
-        } elseif($source->use_validation) {
+        } elseif($source->hasValidation()) {
             SourcesValidation::validation($source->title, $request['email'], $request['social_id']);
         }
 
