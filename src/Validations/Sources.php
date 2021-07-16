@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 namespace Canvas\Validations;
+
 use Phalcon\Di;
 
 class Sources
@@ -19,7 +20,7 @@ class Sources
         $di = DI::getDefault();
         switch ($title) {
                 case 'google':
-                        $client = $di->getGoogle();
+                        $client = $di->get('google');
                         $payload = $client->verifyIdToken($token);
                         if ($payload) {
                             $userid = $payload['sub'];
@@ -29,7 +30,7 @@ class Sources
                         }
                     break;
                 case 'facebook':
-                        $fb = $di->getFacebook();
+                        $fb = $di->get('facebook');
                         $response = $fb->get('/me', $token);
                         $user = $response->getGraphUser();
                         if ($user) {
