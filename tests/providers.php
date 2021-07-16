@@ -24,11 +24,13 @@ use Canvas\Providers\RegistryProvider;
 use Canvas\Providers\RequestProvider;
 use Canvas\Providers\ResponseProvider;
 use Canvas\Providers\SessionProvider;
+use Canvas\Providers\SocialProvider;
 
 return [
     ConfigProvider::class,
     LoggerProvider::class,
     ErrorHandlerProvider::class,
+    SocialProvider::class,
     DatabaseProvider::class,
     ModelsMetadataProvider::class,
     RequestProvider::class,
