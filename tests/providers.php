@@ -30,7 +30,6 @@ return [
     ConfigProvider::class,
     LoggerProvider::class,
     ErrorHandlerProvider::class,
-    SocialProvider::class,
     DatabaseProvider::class,
     ModelsMetadataProvider::class,
     RequestProvider::class,
@@ -48,4 +47,5 @@ return [
     MapperProvider::class,
     ElasticProvider::class,
     RegistryProvider::class,
+    SocialProvider::class,
 ];
