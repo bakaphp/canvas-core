@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Canvas\Validations;
 
 use Phalcon\Di;
+use Exception;
 
 class Sources
 {
