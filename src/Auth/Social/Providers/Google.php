@@ -1,12 +1,12 @@
 <?php
 
-namespace Canvas\AuthSocial;
+namespace Canvas\Auth\Social\Providers;
 
-use Canvas\Contracts\Auth\SocialInterface;
+use Canvas\Contracts\Auth\SocialProviderInterface;
 use Phalcon\Di;
 use Exception;
 
-class Google implements SocialInterface
+class Google implements SocialProviderInterface
 {
     /**
      * getInfo
