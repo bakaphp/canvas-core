@@ -4,41 +4,30 @@ declare(strict_types=1);
 namespace Canvas\Validations;
 
 use Phalcon\Di;
+use Canvas\Models\Sources as SourcesModel;
+use Canvas\Contracts\Auth\SocialInterface;
 use Exception;
 
 class Sources
 {
+    
     /**
-     * validation.
+     * validation
      *
+     * @param  SourcesModel $source
      * @param  string $email
      * @param  string $token
-     *
-     * @return bool
+     * @return array
      */
-    public static function validation(string $title, string $email, string $token) : bool
+    public static function validation(SourcesModel $source, string $email, string $token) : array
     {
-        $di = DI::getDefault();
-        switch ($title) {
-                case 'google':
-                        $client = $di->get('google');
-                        $payload = $client->verifyIdToken($token);
-                        if ($payload) {
-                            $userid = $payload['sub'];
-                            return $payload['email'] === $email;
-                        } else {
-                            throw new Exception('Invalid user on google validation, payload or email incorrect');
-                        }
-                    break;
-                case 'facebook':
-                        $fb = $di->get('facebook');
-                        $response = $fb->get('/me', $token);
-                        $user = $response->getGraphUser();
-                        if ($user) {
-                            return true;
-                        }
-                        throw new Exception('Invalid user on facebook validation');
-                break;
+        $validationClass = $source->getValidationClass();
+        $validation = new $validationClass();
+        $interfaces = class_implements($validation);
+        if (!in_array(SocialInterface::class, $interfaces)) {
+            throw new Exception("The validation class isn't a implementation of SocialInterface");
         }
+
+        return $validation->getInfo($token);
     }
 }

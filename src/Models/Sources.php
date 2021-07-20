@@ -18,6 +18,7 @@ class Sources extends Model
     public int $pv_order;
     public int $ep_order;
     public int $use_validation;
+    public ?string $validation_class = null;
 
     const APPLE = 'apple';
     const FACEBOOK = 'facebook';
@@ -75,12 +76,22 @@ class Sources extends Model
     }
     
     /**
-     * hasValidation
-     *
-     * @return bool
-     */
-    public function hasValidation(): bool
+    * getUseValidation
+    *
+    * @return bool
+    */
+    public function getUseValidation(): int
     {
         return $this->use_validation;
+    }
+
+    /**
+     * getValidationClass
+     *
+     * @return string
+     */
+    public function getValidationClass(): ?string
+    {
+        return $this->validation_class;
     }
 }
