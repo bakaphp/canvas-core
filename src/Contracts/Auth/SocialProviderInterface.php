@@ -3,7 +3,7 @@
 namespace Canvas\Contracts\Auth;
 
 
-interface SocialInterface {
+interface SocialProviderInterface {
 
     public function getInfo(string $token): array;
 

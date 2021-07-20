@@ -5,7 +5,7 @@ namespace Canvas\Validations;
 
 use Phalcon\Di;
 use Canvas\Models\Sources as SourcesModel;
-use Canvas\Contracts\Auth\SocialInterface;
+use Canvas\Contracts\Auth\SocialProviderInterface;
 use Exception;
 
 class Sources
@@ -24,7 +24,7 @@ class Sources
         $validationClass = $source->getValidationClass();
         $validation = new $validationClass();
         $interfaces = class_implements($validation);
-        if (!in_array(SocialInterface::class, $interfaces)) {
+        if (!in_array(SocialProviderInterface::class, $interfaces)) {
             throw new Exception("The validation class isn't a implementation of SocialInterface");
         }
 
