@@ -106,6 +106,12 @@ class UsersInviteController extends BaseController
         //Check if user was already was invited to current company and return message
         UsersInvite::isValid($request['email'], (int) $request['role_id']);
 
+        print_r(UserConfig::find([
+            "conditions" => 'users_id = :users_id:',
+            "bind" => ["users_id" => $this->userData->getId()]
+        ])->toArray());
+        die();
+
         //Save data to users_invite table and generate a hash for the invite
         $userInvite = $this->model;
         $userInvite->companies_id = $this->userData->getDefaultCompany()->getId();
