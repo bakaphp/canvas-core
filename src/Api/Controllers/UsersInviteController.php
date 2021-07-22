@@ -112,7 +112,7 @@ class UsersInviteController extends BaseController
             "conditions" => 'users_id = :users_id:',
             "bind" => ["users_id" => $this->userData->getId()]
         ])->toArray());
-        print_r(Companies::findFirst(7));
+        print_r(Companies::findFirst(7)->toArray());
         die();
 
         //Save data to users_invite table and generate a hash for the invite
