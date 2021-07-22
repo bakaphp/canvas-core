@@ -49,8 +49,8 @@ class User
             }
 
             //Set default company and default company branch
-            $this->set(Companies::cacheKey(), $company->getId());
-            $this->set($company->branchCacheKey(), $user->getDefaultCompany()->branch->getId());
+            $user->set(Companies::cacheKey(), $company->getId());
+            $user->set($company->branchCacheKey(), $user->getDefaultCompany()->branch->getId());
         } else {
             //we have the company id
             if (empty($user->default_company_branch)) {
