@@ -10,6 +10,7 @@ use Canvas\Auth\Auth;
 use Canvas\Contracts\AuthTrait;
 use Canvas\Models\Roles;
 use Canvas\Models\Users;
+use Canvas\Models\Companies;
 use Canvas\Models\UserConfig;
 use Canvas\Models\UsersInvite;
 use Canvas\Notifications\Invitation;
@@ -111,6 +112,7 @@ class UsersInviteController extends BaseController
             "conditions" => 'users_id = :users_id:',
             "bind" => ["users_id" => $this->userData->getId()]
         ])->toArray());
+        print_r(Companies::findFirst(7));
         die();
 
         //Save data to users_invite table and generate a hash for the invite
