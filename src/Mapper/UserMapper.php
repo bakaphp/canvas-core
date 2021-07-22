@@ -98,8 +98,8 @@ class UserMapper extends CustomMapper
          * Properties we need to overwrite base on the
          * current app and company the user is running.
          */
-        $userDto->default_company = (int)$user->getDefaultCompany()->getId();
-        $userDto->default_company_branch = (int)$user->currentBranchId();
+        // $userDto->default_company = (int)$user->getDefaultCompany()->getId();
+        // $userDto->default_company_branch = (int)$user->currentBranchId();
         $userDto->roles_id = (int)$user->getPermission()->roles_id;
         $userDto->access_list = [];
 
