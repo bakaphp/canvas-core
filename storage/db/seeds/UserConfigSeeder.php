@@ -10,7 +10,7 @@ class UserConfigSeeder extends AbstractSeed
             [
                 'users_id'=> 1,
                 'name' => 'DefaulCompanyApp_1',
-                'value'=> 3,
+                'value'=> 1,
                 'created_at' => date('Y-m-d H:m:s'),
             ]
         ];
