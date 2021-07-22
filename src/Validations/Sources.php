@@ -3,20 +3,20 @@ declare(strict_types=1);
 
 namespace Canvas\Validations;
 
-use Phalcon\Di;
-use Canvas\Models\Sources as SourcesModel;
 use Canvas\Contracts\Auth\SocialProviderInterface;
+use Canvas\Models\Sources as SourcesModel;
 use Exception;
 
 class Sources
 {
-    
+
     /**
-     * validation
+     * validation.
      *
      * @param  SourcesModel $source
      * @param  string $email
      * @param  string $token
+     *
      * @return array
      */
     public static function validation(SourcesModel $source, string $email, string $token) : array

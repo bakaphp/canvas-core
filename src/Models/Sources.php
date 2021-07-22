@@ -8,7 +8,6 @@ use Baka\Database\Model;
 use Baka\Http\Exception\InternalServerErrorException;
 use Baka\Http\Exception\NotFoundException;
 use Baka\Social\Apple\ASDecoder;
-use Phalcon\Di;
 
 class Sources extends Model
 {
@@ -74,23 +73,23 @@ class Sources extends Model
 
         return $sourceData;
     }
-    
+
     /**
-    * getUseValidation
-    *
-    * @return bool
-    */
-    public function getUseValidation(): int
+     * getUseValidation.
+     *
+     * @return bool
+     */
+    public function getUseValidation() : int
     {
         return $this->use_validation;
     }
 
     /**
-     * getValidationClass
+     * getValidationClass.
      *
      * @return string
      */
-    public function getValidationClass(): ?string
+    public function getValidationClass() : ?string
     {
         return $this->validation_class;
     }

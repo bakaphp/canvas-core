@@ -18,7 +18,7 @@ class SocialProvider implements ServiceProviderInterface
     {
         $container->setShared(
             'facebook',
-            function (bool $prefix = true) use ($app) {
+            function (bool $prefix = true) {
                 //Connect to redis
 
                 $fb = new Facebook([
@@ -33,7 +33,7 @@ class SocialProvider implements ServiceProviderInterface
 
         $container->setShared(
             'google',
-            function (bool $prefix = true) use ($app) {
+            function (bool $prefix = true) {
                 //Connect to redis
                 $client = new Google_Client([
                     'client_id' => envValue('GOOGLE_CLIENT_ID')

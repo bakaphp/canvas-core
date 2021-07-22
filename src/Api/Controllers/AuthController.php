@@ -23,10 +23,11 @@ use Canvas\Notifications\ResetPassword;
 use Canvas\Notifications\Signup;
 use Canvas\Notifications\UpdateEmail;
 use Canvas\Validation;
+use Canvas\Validations\Sources as SourcesValidation;
 use Exception;
 use Phalcon\Http\Response;
 use Phalcon\Validation\Validator\Email;
-use Canvas\Validations\Sources as SourcesValidation;
+
 class AuthController extends BaseController
 {
     /**
@@ -346,7 +347,7 @@ class AuthController extends BaseController
             $appleUserInfo = $source->validateAppleUser($request['social_id']);
             $request['social_id'] = $appleUserInfo->sub;
             $request['email'] = $appleUserInfo->email;
-        } elseif($source->getUseValidation()) {
+        } elseif ($source->getUseValidation()) {
             $socialData = SourcesValidation::validation($source, $request['email'], $request['social_id']);
             $request = array_merge($socialData, $request);
         }

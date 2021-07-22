@@ -1,20 +1,21 @@
 <?php
+declare(strict_types=1);
 
 namespace Canvas\Auth\Social\Providers;
 
 use Canvas\Contracts\Auth\SocialProviderInterface;
 use Phalcon\Di;
-use Exception;
 
 class Google implements SocialProviderInterface
 {
     /**
-     * getInfo
+     * getInfo.
      *
      * @param  string $token
+     *
      * @return array
      */
-    public function getInfo(string $token): array
+    public function getInfo(string $token) : array
     {
         $client = DI::getDefault()->get('facebook');
         $response = $client->get('/me?fields=name,email,cover', $token);
