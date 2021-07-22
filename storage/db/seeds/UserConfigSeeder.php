@@ -8,9 +8,9 @@ class UserConfigSeeder extends AbstractSeed
     {
         $data = [
             [
-                'users_id'=>1,
+                'users_id'=> 1,
                 'name' => 'DefaulCompanyApp_1',
-                'value'=> 1,
+                'value'=> 3,
                 'created_at' => date('Y-m-d H:m:s'),
             ]
         ];
