@@ -149,19 +149,16 @@ class UsersInviteController extends BaseController
         $this->overWriteUserDataProvider((int)$usersInvite->users_id);
 
         try {
-            print_r('here 1');
             print_r($this->userData->getDefaultCompany()->toArray());
             die();
-
             //Check if user already exists
             $userExists = Users::getByEmail($usersInvite->email);
             $newUser = $userExists;
             $this->userData->getDefaultCompany()->associate($userExists, $this->userData->getDefaultCompany());
+            print_r($this->userData->getDefaultCompany()->toArray());
+            die();
         } catch (Exception $e) {
             try {
-                print_r($this->userData->getDefaultCompany()->toArray());
-                die();
-
                 $newUser = $usersInvite->newUser($request);
 
                 $this->db->begin();
