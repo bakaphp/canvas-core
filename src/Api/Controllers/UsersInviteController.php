@@ -149,29 +149,19 @@ class UsersInviteController extends BaseController
         $this->overWriteUserDataProvider((int)$usersInvite->users_id);
 
         try {
-            print_r($this->userData->getDefaultCompany()->toArray());
             //Check if user already exists
             $userExists = Users::getByEmail($usersInvite->email);
             $newUser = $userExists;
 
-            print_r('after ' . $this->userData->getDefaultCompany()->toArray());
-
             $this->userData->getDefaultCompany()->associate($userExists, $this->userData->getDefaultCompany());
-            print_r($this->userData->getDefaultCompany()->toArray());
-            die();
         } catch (Exception $e) {
             try {
                 $newUser = $usersInvite->newUser($request);
-
                 $this->db->begin();
-
-                //signup
                 $newUser = Auth::signUp($newUser);
-
                 $this->db->commit();
             } catch (Exception $e) {
                 $this->db->rollback();
-
                 throw new UnprocessableEntityException($e->getMessage());
             }
         }
