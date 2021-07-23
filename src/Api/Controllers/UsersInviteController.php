@@ -113,7 +113,7 @@ class UsersInviteController extends BaseController
             "bind" => ["users_id" => $this->userData->getId()]
         ])->toArray());
         print_r(Companies::findFirst(7)->toArray());
-        print_r($this->userData->getDefaultCompany());
+        print_r($this->userData->getDefaultCompany()->toArray());
 
         die();
 
