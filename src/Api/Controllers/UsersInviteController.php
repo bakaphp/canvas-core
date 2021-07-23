@@ -150,7 +150,6 @@ class UsersInviteController extends BaseController
 
         try {
             print_r($this->userData->getDefaultCompany()->toArray());
-            die();
             //Check if user already exists
             $userExists = Users::getByEmail($usersInvite->email);
             $newUser = $userExists;
