@@ -26,9 +26,14 @@ class Company
     {
         $app = Di::getDefault()->get('app');
 
-        //now that we setup de company and associated with the user we need to setup this as its default company
+        //Set Default Company if record is not found
         if (!$company->user->get(Companies::cacheKey())) {
             $company->user->set(Companies::cacheKey(), $company->getId());
+        }
+
+        //Set Default Company Branch if record is not found
+        if (!$company->user->get($company->branchCacheKey())) {
+            $company->user->set($company->branchCacheKey(), $company->branch->getId());
         }
 
         $company->associate($company->user, $company);
