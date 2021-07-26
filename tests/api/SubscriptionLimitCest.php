@@ -50,7 +50,7 @@ class SubscriptionLimitCest
         $company = Companies::findFirstByUsers_id($userData->id);
         $userActivity = new UserCompanyAppsActivities();
         $userActivity->companies_id = $company->getId();
-        $userActivity->company_branches_id = $user->default_company_branch;
+        $userActivity->company_branches_id = $user->currentBranchId();
         $userActivity->apps_id = 1; //default first app
         $userActivity->key = 'users_total'; //default first app
         $userActivity->value = 0; //default first app

@@ -9,9 +9,9 @@ class FileSystemEntitiesSeeder extends AbstractSeed
         $data = [
             [
                 'filesystem_id' => 1,
-                'entity_id' => 3,
+                'entity_id' => 1,
                 'system_modules_id' => 1,
-                'companies_id' => 3,
+                'companies_id' => 1,
                 'field_name' => 'logo',
                 'created_at' => date('Y-m-d H:m:s'),
             ]
