@@ -57,11 +57,6 @@ class User
             $user->set(Companies::cacheKey(), $company->getId());
             $user->set($company->branchCacheKey(), $user->default_company_branch);
 
-            //we have the company id
-            // if (empty($user->default_company_branch)) {
-            //     $user->default_company_branch = $user->getDefaultCompany()->branch->getId();
-            // }
-
             $user->getDI()->get('app')->associate($user, $user->getDefaultCompany());
         }
 
