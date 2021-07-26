@@ -52,10 +52,15 @@ class User
             $user->set(Companies::cacheKey(), $company->getId());
             $user->set($company->branchCacheKey(), $user->getDefaultCompany()->branch->getId());
         } else {
+            //Get user's default company info
+            $company = Companies::findFirstOrFail($user->default_company);
+            $user->set(Companies::cacheKey(), $company->getId());
+            $user->set($company->branchCacheKey(), $user->default_company_branch);
+
             //we have the company id
-            if (empty($user->default_company_branch)) {
-                $user->default_company_branch = $user->getDefaultCompany()->branch->getId();
-            }
+            // if (empty($user->default_company_branch)) {
+            //     $user->default_company_branch = $user->getDefaultCompany()->branch->getId();
+            // }
 
             $user->getDI()->get('app')->associate($user, $user->getDefaultCompany());
         }
