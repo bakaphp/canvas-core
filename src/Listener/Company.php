@@ -31,16 +31,16 @@ class Company
             $company->user->set(Companies::cacheKey(), $company->getId());
         }
 
-        //Set Default Company Branch if record is not found
-        if (!$company->user->get($company->branchCacheKey())) {
-            $company->user->set($company->branchCacheKey(), $company->branch->getId());
-        }
-
         $company->associate($company->user, $company);
         $app->associate($company->user, $company);
 
         //create default branch
         $company->createBranch();
+
+        //Set Default Company Branch if record is not found
+        if (!$company->user->get($company->branchCacheKey())) {
+            $company->user->set($company->branchCacheKey(), $company->branch->getId());
+        }
 
         //look for the default plan for this app
         $company->registerInApp($app);
