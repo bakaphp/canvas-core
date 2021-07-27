@@ -7,7 +7,7 @@ use Canvas\Models\UsersAssociatedApps;
 use Canvas\Models\Users;
 use Phalcon\Cli\Task as PhTask;
 
-class MainTask extends PhTask
+class CompaniesTask extends PhTask
 {
     /**
      * Upgrade Kanvas Core version.
