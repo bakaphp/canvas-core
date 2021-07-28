@@ -39,8 +39,8 @@ class Auth
         //if its a email lets by it by email, if not by displayname
         $user = UserProvider::get()::getByEmail($email);
 
-        if (!$user->get(Companies::branchCacheKey())) {
-            $user->set(Companies::branchCacheKey(), $user->getDefaultCompany()->branch->getId());
+        if (!$user->get($user->getDefaultCompany()->branchCacheKey())) {
+            $user->set($user->getDefaultCompany()->branchCacheKey(), $user->getDefaultCompany()->branch->getId());
         }
 
 
