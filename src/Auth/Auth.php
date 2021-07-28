@@ -44,6 +44,9 @@ class Auth
             throw new AuthException(_('Invalid email or password.'));
         }
 
+        /**
+         * @todo Remove this in future versions
+         */
         if (!$user->get($user->getDefaultCompany()->branchCacheKey())) {
             $user->set($user->getDefaultCompany()->branchCacheKey(), $user->getDefaultCompany()->branch->getId());
         }
