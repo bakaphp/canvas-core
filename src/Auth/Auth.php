@@ -12,6 +12,7 @@ use Baka\Hashing\Password;
 use Baka\Support\Random;
 use Canvas\Models\Sessions;
 use Canvas\Models\Users;
+use Canvas\Models\Companies;
 use Exception;
 use Lcobucci\JWT\Token;
 use stdClass;
@@ -37,6 +38,11 @@ class Auth
 
         //if its a email lets by it by email, if not by displayname
         $user = UserProvider::get()::getByEmail($email);
+
+        if (!$user->get($user->getDefaultCompany()->branchCacheKey())) {
+            $user->set($user->getDefaultCompany()->branchCacheKey(), $user->getDefaultCompany()->branch->getId());
+        }
+
 
         //first we find the user
         if (!$user) {
