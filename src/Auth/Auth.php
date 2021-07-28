@@ -12,6 +12,7 @@ use Baka\Hashing\Password;
 use Baka\Support\Random;
 use Canvas\Models\Sessions;
 use Canvas\Models\Users;
+use Canvas\Models\Companies;
 use Exception;
 use Lcobucci\JWT\Token;
 use stdClass;
