@@ -39,15 +39,15 @@ class Auth
         //if its a email lets by it by email, if not by displayname
         $user = UserProvider::get()::getByEmail($email);
 
-        if (!$user->get($user->getDefaultCompany()->branchCacheKey())) {
-            $user->set($user->getDefaultCompany()->branchCacheKey(), $user->getDefaultCompany()->branch->getId());
-        }
-
-
         //first we find the user
         if (!$user) {
             throw new AuthException(_('Invalid email or password.'));
         }
+
+        if (!$user->get($user->getDefaultCompany()->branchCacheKey())) {
+            $user->set($user->getDefaultCompany()->branchCacheKey(), $user->getDefaultCompany()->branch->getId());
+        }
+
 
         self::loginAttemptsValidation($user);
 
