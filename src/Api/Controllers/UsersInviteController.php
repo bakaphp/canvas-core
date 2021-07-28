@@ -152,7 +152,6 @@ class UsersInviteController extends BaseController
             //Check if user already exists
             $userExists = Users::getByEmail($usersInvite->email);
             $newUser = $userExists;
-
             $this->userData->getDefaultCompany()->associate($userExists, $this->userData->getDefaultCompany());
         } catch (Exception $e) {
             try {
