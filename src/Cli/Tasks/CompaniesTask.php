@@ -24,7 +24,7 @@ class CompaniesTask extends PhTask
             ]);
 
             foreach ($associatedApps as $associatedApp) {
-                echo("\n Setting Default companies and branches for user with id: {$user->getId()}");
+                echo("\n\n Setting Default companies and branches for user with id: {$user->getId()}");
                 if (!$user->get(Companies::DEFAULT_COMPANY_APP . $associatedApp->apps_id)) {
                     $user->set(Companies::DEFAULT_COMPANY_APP . $associatedApp->apps_id, $associatedApp->company->getId());
                     echo("\n Default companies inserted");
