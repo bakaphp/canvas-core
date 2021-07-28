@@ -10,6 +10,8 @@ use Canvas\Auth\Auth;
 use Canvas\Contracts\AuthTrait;
 use Canvas\Models\Roles;
 use Canvas\Models\Users;
+use Canvas\Models\Companies;
+use Canvas\Models\UserConfig;
 use Canvas\Models\UsersInvite;
 use Canvas\Notifications\Invitation;
 use Exception;
@@ -149,20 +151,16 @@ class UsersInviteController extends BaseController
         try {
             //Check if user already exists
             $userExists = Users::getByEmail($usersInvite->email);
+            $newUser = $userExists;
             $this->userData->getDefaultCompany()->associate($userExists, $this->userData->getDefaultCompany());
         } catch (Exception $e) {
             try {
                 $newUser = $usersInvite->newUser($request);
-
                 $this->db->begin();
-
-                //signup
                 $newUser = Auth::signUp($newUser);
-
                 $this->db->commit();
             } catch (Exception $e) {
                 $this->db->rollback();
-
                 throw new UnprocessableEntityException($e->getMessage());
             }
         }
