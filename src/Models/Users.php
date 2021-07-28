@@ -555,7 +555,7 @@ class Users extends AbstractModel implements UserInterface
      */
     public function currentCompanyId() : int
     {
-        return  (int) $this->get(Companies::cacheKey()) ?: (int) $this->default_company;
+        return  (int) $this->get(Companies::cacheKey());
     }
 
     /**
@@ -565,8 +565,7 @@ class Users extends AbstractModel implements UserInterface
      */
     public function currentBranchId() : int
     {
-        $defaultBranch = $this->get($this->getDefaultCompany()->branchCacheKey());
-        return !is_null($defaultBranch) ? (int) $defaultBranch : (int) $this->default_company_branch;
+        return $this->get($this->getDefaultCompany()->branchCacheKey());
     }
 
     /**
