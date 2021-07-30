@@ -565,7 +565,7 @@ class Users extends AbstractModel implements UserInterface
      */
     public function currentBranchId() : int
     {
-        return $this->get($this->getDefaultCompany()->branchCacheKey());
+        return $this->get($this->getDefaultCompany()->branchCacheKey()) ?? $this->getDefaultCompany()->defaultBranch->getId();
     }
 
     /**
