@@ -25,13 +25,15 @@ class CompaniesTask extends PhTask
 
             foreach ($associatedApps as $associatedApp) {
                 echo("\n Setting Default companies and branches for user with id: {$user->getId()}");
-                if (!$user->get(Companies::DEFAULT_COMPANY_APP . $associatedApp->apps_id)) {
-                    $user->set(Companies::DEFAULT_COMPANY_APP . $associatedApp->apps_id, $associatedApp->company->getId());
-                    echo("\n Default companies inserted");
-                }
-                if (!$user->get(Companies::DEFAULT_COMPANY_BRANCH_APP . $associatedApp->apps_id . '_' . $associatedApp->company->getId())) {
-                    $user->set(Companies::DEFAULT_COMPANY_BRANCH_APP . $associatedApp->apps_id . '_' . $associatedApp->company->getId(), $associatedApp->company->branch->getId());
-                    echo("\n Default companies branches inserted");
+                if (is_object($associatedApp->company)) {
+                    if (!$user->get(Companies::DEFAULT_COMPANY_APP . $associatedApp->apps_id)) {
+                        $user->set(Companies::DEFAULT_COMPANY_APP . $associatedApp->apps_id, $associatedApp->company->getId());
+                        echo("\n Default companies inserted");
+                    }
+                    if (!$user->get(Companies::DEFAULT_COMPANY_BRANCH_APP . $associatedApp->apps_id . '_' . $associatedApp->company->getId())) {
+                        $user->set(Companies::DEFAULT_COMPANY_BRANCH_APP . $associatedApp->apps_id . '_' . $associatedApp->company->getId(), $associatedApp->company->branch->getId());
+                        echo("\n Default companies branches inserted");
+                    }
                 }
             }
         }
