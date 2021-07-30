@@ -16,7 +16,7 @@ class CompaniesTask extends PhTask
      */
     public function syncDefaultCompaniesAction() : void
     {
-        $users = Users::find();
+        $users = Users::find(["conditions" => "id > 0"]);
         foreach ($users as $user) {
             $associatedApps = UsersAssociatedApps::find([
                 'conditions' => "users_id = :users_id: and user_active = 1 and is_deleted = 0",
