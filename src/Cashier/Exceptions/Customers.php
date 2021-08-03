@@ -6,7 +6,7 @@ use function Baka\getShortClassName;
 use Canvas\Exception\Exception;
 use Phalcon\Mvc\ModelInterface;
 
-class Customer extends Exception
+class Customers extends Exception
 {
     /**
      * Is not a valid customer.
