@@ -3,8 +3,8 @@
 namespace Canvas\Cli\Tasks;
 
 use Canvas\Models\Companies;
-use Canvas\Models\UsersAssociatedApps;
 use Canvas\Models\Users;
+use Canvas\Models\UsersAssociatedApps;
 use Phalcon\Cli\Task as PhTask;
 
 class CompaniesTask extends PhTask
@@ -16,23 +16,23 @@ class CompaniesTask extends PhTask
      */
     public function syncDefaultCompaniesAction() : void
     {
-        $users = Users::find(["conditions" => "id > 0"]);
+        $users = Users::find();
         foreach ($users as $user) {
             $associatedApps = UsersAssociatedApps::find([
-                'conditions' => "users_id = :users_id: and user_active = 1 and is_deleted = 0",
-                'bind' => ["users_id" => $user->getId()]
+                'conditions' => 'users_id = :users_id: and user_active = 1 and is_deleted = 0',
+                'bind' => ['users_id' => $user->getId()]
             ]);
 
             foreach ($associatedApps as $associatedApp) {
-                echo("\n Setting Default companies and branches for user with id: {$user->getId()}");
+                echo PHP_EOL . "Setting Default companies and branches for user with id: {$user->getId()}" ;
                 if (is_object($associatedApp->company)) {
                     if (!$user->get(Companies::DEFAULT_COMPANY_APP . $associatedApp->apps_id)) {
                         $user->set(Companies::DEFAULT_COMPANY_APP . $associatedApp->apps_id, $associatedApp->company->getId());
-                        echo("\n Default companies inserted");
+                        echo PHP_EOL . 'Default companies inserted';
                     }
                     if (!$user->get(Companies::DEFAULT_COMPANY_BRANCH_APP . $associatedApp->apps_id . '_' . $associatedApp->company->getId())) {
                         $user->set(Companies::DEFAULT_COMPANY_BRANCH_APP . $associatedApp->apps_id . '_' . $associatedApp->company->getId(), $associatedApp->company->branch->getId());
-                        echo("\n Default companies branches inserted");
+                        echo PHP_EOL . 'Default companies branches inserted';
                     }
                 }
             }
