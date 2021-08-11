@@ -181,4 +181,23 @@ class UsersInviteController extends BaseController
             'session' => $authInfo
         ]);
     }
+
+    /**
+     * Resends invite email.
+     *
+     * @param int $id
+     *
+     * @return Response
+     */
+    public function resendInvite(int $id) : Response
+    {
+        $userInvite = UsersInvite::findFirstOrFail($id);
+
+        $tempUser = new Users();
+        $tempUser->id = 0;
+        $tempUser->email = $userInvite->email;
+        $tempUser->notify(new Invitation($userInvite));
+
+        return $this->response($userInvite);
+    }
 }
