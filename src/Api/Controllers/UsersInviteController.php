@@ -198,6 +198,6 @@ class UsersInviteController extends BaseController
         $tempUser->email = $userInvite->email;
         $tempUser->notify(new Invitation($userInvite));
 
-        return $this->response($userInvite);
+        return $this->response("Success");
     }
 }
