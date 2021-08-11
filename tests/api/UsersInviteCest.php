@@ -95,4 +95,33 @@ class UsersInviteCest
 
         $I->assertTrue($data['email'] == $testEmail);
     }
+
+    /**
+     * Resend invite test
+     *
+     * @param ApiTester $I
+     *
+     * @return void
+     */
+    public function resendInvite(ApiTester $I) : void
+    {
+        $userData = $I->apiLogin();
+        $companyName = $I->faker()->company;
+        $resource = 'users-invite';
+
+        $I->haveHttpHeader('Authorization', $userData->token);
+        $I->sendGet('/v1/' . $resource);
+
+        $I->seeResponseIsSuccessful();
+        $response = $I->grabResponse();
+        $data = json_decode($response, true);
+
+        $I->sendPOST('/v1/' . $resource . '/' . $data[count($data) - 1]['id'] . '/resend', []);
+
+        $I->seeResponseIsSuccessful();
+        $response = $I->grabResponse();
+        $data = json_decode($response, true);
+
+        $I->assertTrue($data == 'Success');
+    }
 }
