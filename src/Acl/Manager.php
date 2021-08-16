@@ -138,7 +138,7 @@ class Manager extends AbstractAdapter
     /**
      * Get the current App.
      *
-     * @return void
+     * @return Companies
      */
     public function getCompany() : Companies
     {
@@ -459,7 +459,7 @@ class Manager extends AbstractAdapter
      * @param  array|string $access
      * @param  mixed $func
      *
-     * @return bool
+     * @return void
      */
     public function deny($roleName, $resourceName, $access, $func = null) : void
     {
