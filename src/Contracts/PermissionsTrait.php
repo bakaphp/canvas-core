@@ -190,7 +190,7 @@ trait PermissionsTrait
      */
     public function isAdmin() : bool
     {
-        if (!$this->hasRole("{$this->app->name}.Admins")) {
+        if (!$this->hasRole("Defaults.Admins")) {
             throw new UnauthorizedException('Current user does not have Admins role');
         }
 
