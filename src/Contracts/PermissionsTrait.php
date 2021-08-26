@@ -20,6 +20,7 @@ trait PermissionsTrait
      * Example: App.Role.
      *
      * @param string $role
+     * @param Companies|null $company
      *
      * @return bool
      */
@@ -34,11 +35,8 @@ trait PermissionsTrait
             $role = $appRole[1];
         }
 
-        $role = Roles::getByName($role);
-        $companyId = !is_null($company) ? $company->getId() : $this->currentCompanyId();
-        if ($company) {
-            Di::getDefault()->get('acl')->setCompany($company);
-        }
+        $company = !is_null($company) ? $company : $this->getDefaultCompany();
+        $role = Roles::getByName($role, $company);
         //if its not the default app , use the current app
         $appId = $role->apps_id == Apps::CANVAS_DEFAULT_APP_ID ? Di::getDefault()->get('app')->getId() : $role->apps_id;
 
@@ -47,13 +45,13 @@ trait PermissionsTrait
             'bind' => [
                 $this->getId(),
                 $appId,
-                $companyId
+                $company->getId()
             ]
         ], [
             'users_id' => $this->getId(),
             'roles_id' => $role->getId(),
             'apps_id' => $appId,
-            'companies_id' => $companyId,
+            'companies_id' => $company->getId(),
         ]);
 
         if ($userRole) {
@@ -68,24 +66,26 @@ trait PermissionsTrait
      * Example: App.Role.
      *
      * @param int $id
+     * @param Companies|null $company
      *
      * @return bool
      */
-    public function assignRoleById(int $id) : bool
+    public function assignRoleById(int $id, ?Companies $company = null) : bool
     {
-        $role = Roles::getById($id);
+        $company = !is_null($company) ? $company : $this->getDefaultCompany();
+        $role = Roles::getById($id, $company);
 
         $userRole = UserRoles::findFirstOrCreate([
             'conditions' => 'users_id = :users_id: and apps_id = :apps_id: and companies_id = :companies_id: and is_deleted = 0',
             'bind' => [
                 'users_id' => $this->getId(),
                 'apps_id' => $role->getAppsId(),
-                'companies_id' => $this->currentCompanyId()
+                'companies_id' => $company->getId()
             ]], [
                 'users_id' => $this->getId(),
                 'roles_id' => $role->getId(),
                 'apps_id' => $role->getAppsId(),
-                'companies_id' => $this->currentCompanyId()
+                'companies_id' => $company->getId()
             ]);
 
         $userRole->roles_id = $role->getId();
@@ -98,12 +98,14 @@ trait PermissionsTrait
      * Example: App.Role.
      *
      * @param string $role
+     * @param Companies|null $company
      *
      * @return bool
      */
-    public function removeRole(string $role) : bool
+    public function removeRole(string $role, ?Companies $company = null) : bool
     {
-        $role = Roles::getByAppName($role, $this->getDefaultCompany());
+        $company = !is_null($company) ? $company : $this->getDefaultCompany();
+        $role = Roles::getByAppName($role, $company);
 
         $userRole = UserRoles::findFirst([
             'conditions' => 'users_id = ?0 and roles_id = ?1 and apps_id = ?2 and companies_id = ?3',
@@ -111,7 +113,7 @@ trait PermissionsTrait
                 $this->getId(),
                 $role->getId(),
                 $role->apps_id,
-                $this->currentCompanyId()
+                $company->getId()
             ]
         ]);
 
@@ -126,12 +128,14 @@ trait PermissionsTrait
      * Check if the user has this role.
      *
      * @param string $role
+     * @param Companies|null $company
      *
      * @return bool
      */
-    public function hasRole(string $role) : bool
+    public function hasRole(string $role, ?Companies $company = null) : bool
     {
-        $role = Roles::getByAppName($role, $this->getDefaultCompany());
+        $company = !is_null($company) ? $company : $this->getDefaultCompany();
+        $role = Roles::getByAppName($role, $company);
 
         return (bool) UserRoles::count([
             'conditions' => 'users_id = ?0 and roles_id = ?1 and (apps_id = ?2 or apps_id = ?4) and companies_id = ?3',
@@ -139,7 +143,7 @@ trait PermissionsTrait
                 $this->getId(),
                 $role->getId(),
                 $role->apps_id,
-                $this->currentCompanyId(),
+                $company->getId(),
                 $this->di->getApp()->getId()
             ]
         ]);
@@ -190,7 +194,7 @@ trait PermissionsTrait
      */
     public function isAdmin() : bool
     {
-        if (!$this->hasRole("Defaults.Admins")) {
+        if (!$this->hasRole("{$this->app->name}.Admins")) {
             throw new UnauthorizedException('Current user does not have Admins role');
         }
 
