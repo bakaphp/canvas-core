@@ -46,10 +46,24 @@ trait SocialLoginTrait
     protected function providerLogin(Sources $source, string $identifier, array $userInfo) : array
     {
         $random = new Random();
-        $existingUser = Users::findFirst([
-            'conditions' => 'email = ?0 and is_deleted = 0 and status = 1',
-            'bind' => [$userInfo['email']]
-        ]);
+        //if we don't find email go by social ID
+        if (isset($userInfo['email'])) {
+            try {
+                $existingUser = Users::getByEmail($userInfo['email']);
+            } catch (Exception $e) {
+            }
+        } else {
+            $linked = UserLinkedSources::findFirst([
+                'conditions' => 'source_id = :source_id: and source_users_id_text = :source_users_id_text: and is_deleted = 0',
+                'bind' => [
+                    'source_id' => $source->getId(),
+                    'source_users_id_text' => $identifier
+                ]
+            ]);
+            if ($linked) {
+                $existingUser = $linked->user;
+            }
+        }
 
         if ($existingUser) {
             /**
