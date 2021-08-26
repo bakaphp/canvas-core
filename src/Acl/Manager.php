@@ -22,6 +22,9 @@ use Phalcon\Db\AdapterInterface as DbAdapter;
 use Phalcon\Db\Enum;
 use Phalcon\Di;
 
+/**
+ * @todo Full refactor for v0.4 (PermissionTrait and Roles Model)
+ */
 class Manager extends AbstractAdapter
 {
     /**
