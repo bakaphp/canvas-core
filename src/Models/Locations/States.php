@@ -17,6 +17,7 @@ class States extends AbstractModel
     public function initialize()
     {
         $this->setSource('countries_states');
+        $this->hasMany('id', Cities::class, 'states_id', ['alias' => 'cities']);
         $this->belongsTo('countries_id', Countries::class, 'id', ['alias' => 'countries']);
     }
 }
