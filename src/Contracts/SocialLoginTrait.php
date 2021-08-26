@@ -53,14 +53,7 @@ trait SocialLoginTrait
             } catch (Exception $e) {
             }
         } else {
-            $linked = UserLinkedSources::findFirst([
-                'conditions' => 'source_id = :source_id: and source_users_id_text = :source_users_id_text: and is_deleted = 0',
-                'bind' => [
-                    'source_id' => $source->getId(),
-                    'source_users_id_text' => $identifier
-                ]
-            ]);
-            if ($linked) {
+            if ($linked = UserLinkedSources::getBySourceAndSocialId($source, $identifier)) {
                 $existingUser = $linked->user;
             }
         }
