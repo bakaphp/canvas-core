@@ -5,7 +5,9 @@ namespace Canvas\Cli\Tasks;
 use function Baka\appPath;
 use Canvas\App\Setup;
 use Canvas\Models\Apps;
+use Canvas\Models\SystemModules;
 use Phalcon\Cli\Task as PhTask;
+use Phalcon\Utils\Slug;
 use Phinx\Console\PhinxApplication;
 use Phinx\Wrapper\TextWrapper;
 
@@ -69,5 +71,30 @@ class SetupTask extends PhTask
             ->defaultMenus();
 
         echo 'App Create ' . $app->name . PHP_EOL;
+    }
+
+    /**
+     * Create a new system module from name a namespace.
+     *
+     * @param string $name
+     * @param string $model
+     *
+     * @return void
+     */
+    public function createSystemModuleAction(string $name, string $model) : void
+    {
+        if (!class_exists($model)) {
+            echo 'We expecting the complete class name with namespace ' . PHP_EOL;
+        }
+
+        $newSystemModule = new SystemModules();
+        $newSystemModule->name = $name;
+        $newSystemModule->slug = Slug::generate($name);
+        $newSystemModule->model_name = $model;
+        $newSystemModule->apps_id = $this->app->getId();
+        $newSystemModule->name = $name;
+        $newSystemModule->saveOrFail();
+
+        echo $name . 'was saved on system module as' . $model . PHP_EOL;
     }
 }
