@@ -97,4 +97,23 @@ class UserLinkedSources extends Model
 
         return false;
     }
+
+    /**
+     * Get by source and user Id.
+     *
+     * @param int $sourceId
+     * @param string $socialId
+     *
+     * @return UserLinkedSources|null
+     */
+    public static function getBySourceAndSocialId(Sources $source, string $socialId) : ?UserLinkedSources
+    {
+        return self::findFirst([
+            'conditions' => 'source_id = :source_id: and source_users_id_text = :source_users_id_text: and is_deleted = 0',
+            'bind' => [
+                'source_id' => $source->getId(),
+                'source_users_id_text' => $socialId
+            ]
+        ]);
+    }
 }

@@ -348,14 +348,17 @@ class AuthController extends BaseController
             $request['email'] = $appleUserInfo->email;
         }
 
-        $emailValidation = new Validation();
+        /**
+         * @todo change social login validation
+         */
+        /* $emailValidation = new Validation();
         $emailValidation->add(
             'email',
             new Email([
                 'The email is required'
             ])
         );
-        $emailValidation->validate($request);
+        $emailValidation->validate($request); */
 
         return $this->response(
             $this->providerLogin($source, $request['social_id'], $request)
