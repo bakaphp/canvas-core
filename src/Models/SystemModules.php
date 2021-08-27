@@ -14,6 +14,8 @@ class SystemModules extends BakaSystemModules
 {
     use CustomFieldsTrait;
 
+    public ?string $bulk_actions = null;
+
     /**
      * Initialize method for model.
      */

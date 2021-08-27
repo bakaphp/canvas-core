@@ -7,8 +7,6 @@ namespace Canvas\Mapper;
 use AutoMapperPlus\CustomMapper\CustomMapper;
 use Baka\Contracts\Elasticsearch\CustomFiltersSchemaTrait;
 
-// You can either extend the CustomMapper, or just implement the MapperInterface
-// directly.
 class ListSchemaMapper extends CustomMapper
 {
     use CustomFiltersSchemaTrait;
@@ -23,7 +21,7 @@ class ListSchemaMapper extends CustomMapper
      */
     public function mapToObject($systemModel, $listSchema, array $context = [])
     {
-        $listSchema->bulkActions = [
+        $bulkActions = [
             [
                 'name' => 'Export CSV',
                 'action' => 'exportCsv'
@@ -42,11 +40,8 @@ class ListSchemaMapper extends CustomMapper
                     $listSchema->customFilterFields = $this->getSchema($systemModel->slug);
                 }
          */
-        /**
-         * get the schema.
-         *
-         * @todo in PHP 7.3 change to use exceptions
-         */
+
+        $listSchema->bulkActions = !empty($systemModel->bulk_actions) ? json_decode($systemModel->bulk_actions) : $bulkActions;
         $listSchema->tableFields = !empty($systemModel->browse_fields) ? json_decode($systemModel->browse_fields) : null;
 
         return $listSchema;

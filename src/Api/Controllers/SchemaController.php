@@ -5,13 +5,12 @@ declare(strict_types=1);
 namespace Canvas\Api\Controllers;
 
 use Baka\Http\Api\BaseController as BakaBaseController;
+use Baka\Http\Exception\InternalServerErrorException;
 use Canvas\Dto\ListSchema;
-use Canvas\Exception\ServerErrorHttpException;
 use Canvas\Mapper\ListSchemaMapper;
 use Canvas\Models\SystemModules;
 use Phalcon\Db\Column;
 use Phalcon\Http\Response;
-
 
 class SchemaController extends BakaBaseController
 {
@@ -65,7 +64,7 @@ class SchemaController extends BakaBaseController
     {
         //none admin users can only edit themselves
         if (!$this->userData->hasRole('Default.Admins')) {
-            throw new ServerErrorHttpException('No route found');
+            throw new InternalServerErrorException('No route found');
         }
 
         $schema = SystemModules::getBySlug($slug);
