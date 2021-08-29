@@ -98,4 +98,32 @@ class UserSettings extends AbstractModel
             'apps_id' => $app->getId()
         ]);
     }
+
+    /**
+     * Undocumented function.
+     *
+     * @param Apps $app
+     * @param UserInterface $user
+     * @param NotificationType $notificationType
+     *
+     * @return array
+     */
+    public static function listOfNotifications(Apps $app, UserInterface $user, int $parent = 0) : array
+    {
+        $notificationType = NotificationType::find('parent_id = ' . $parent . ' and apps_id =' . $app->getId());
+        $userNotificationList = [];
+        $i = 0;
+        foreach ($notificationType as $notification) {
+            $userNotificationList[$i] = [
+                'name' => $notification->name,
+                'description' => $notification->description,
+                'notifications_types_id' => $notification->getId(),
+                'is_enabled' => (int) self::isEnabled($app, $user, $notification),
+            ];
+            $userNotificationList[$i]['children'] = self::listOfNotifications($app, $user, $notification->getId());
+            $i++;
+        }
+
+        return $userNotificationList;
+    }
 }

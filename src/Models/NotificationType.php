@@ -16,7 +16,7 @@ class NotificationType extends AbstractModel
     public ?string $template = null;
     public ?string $icon_url = null;
     public int $with_realtime;
-    public int $parents_id = 0;
+    public int $parent_id = 0;
     public float $weight = 0.0;
 
     /**
