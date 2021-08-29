@@ -47,7 +47,7 @@ class NotificationsUnsubscribe extends AbstractModel
     public static function getByNotificationType(Users $user, int $notificationTypeId) : ?NotificationsUnsubscribe
     {
         return NotificationsUnsubscribe::findFirst([
-            'conditions' => 'users_id = ?0 AND companies_id = ?1 AND apps_id = ?2 AND notification_type_id = ?3 AND is_deleted = 0',
+            'conditions' => 'users_id = ?0 AND companies_id = ?1 AND apps_id = ?2 AND \notification_type_id = ?3 AND is_deleted = 0',
             'bind' => [
                 0 => $user->getId(),
                 1 => $user->currentCompanyId(),
