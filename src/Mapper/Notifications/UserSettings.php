@@ -24,7 +24,8 @@ class UserSettings extends CustomMapper
     {
         $userSettingsDto->users_id = $userSettings->users_id;
         $userSettingsDto->notifications_types_id = $userSettings->notifications_types_id;
-        $userSettingsDto->notification_title = $userSettings->notification->name;
+        $userSettingsDto->name = $userSettings->notification->name;
+        $userSettingsDto->description = $userSettings->notification->description;
         $userSettingsDto->is_enabled = $userSettings->is_enabled;
         $userSettingsDto->channels = !empty($userSettings->channels) && isJson($userSettings->channels) ? json_decode($userSettings->channels, true) : [];
 

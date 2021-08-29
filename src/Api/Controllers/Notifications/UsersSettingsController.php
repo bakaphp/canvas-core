@@ -64,21 +64,7 @@ class UsersSettingsController extends BaseController
      */
     public function listAll(int $userId) : Response
     {
-        /*  $notificationType = NotificationType::find('parent_id = 0 and apps_id =' . $this->app->getId());
-         $userNotificationList = [];
-         $i = 0;
-         foreach ($notificationType as $key => $notification) {
-             if ($userSetting = UserSettings::getByUserAndNotificationType($this->app, $this->userData, $notification)) {
-                 $userNotificationList[$i] = $userSetting->toArray();
-                 $userNotificationList[$i]['children'] = NotificationType::find('parent_id = ' . $notification->id);
-                 $i++;
-             }
-         }
- */
-        $userNotificationList = UserSettings::listOfNotifications($this->app, $this->userData);
-
-        return $this->response($userNotificationList);
-        return $this->index();
+        return $this->response(UserSettings::listOfNotifications($this->app, $this->userData));
     }
 
     /**
