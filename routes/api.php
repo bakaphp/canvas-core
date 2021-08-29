@@ -99,7 +99,8 @@ $privateRoutes = [
     Route::delete('/users/{id}/notifications')->controller('Notifications\UsersSettingsController')->action('muteAll'),
     Route::get('/users/{id}/notifications/{notificationId}')->controller('Notifications\UsersSettingsController')->action('getByNotificationId'),
     Route::put('/users/{id}/notifications/{notificationId}')->controller('Notifications\UsersSettingsController')->action('setNotificationSettings'),
-
+    Route::get('/users/{id}/notifications_importance')->controller('Notifications\UsersImportanceController')->action('index'),
+    Route::post('/users/{id}/notifications_importance')->controller('Notifications\UsersImportanceController')->action('setImportanceSettings'),
 ];
 
 $privateRoutesRefresh = [
@@ -141,9 +142,6 @@ $subscriptionPrivateRoutes = RouteGroup::from($privateSubscriptionRoutes)
                 ->addMiddlewares('auth.jwt@before', 'auth.jwt.token.expiration@before', 'auth.acl@before', 'auth.subscription@before')
                 ->defaultPrefix(envValue('API_VERSION', '/v1'));
 
-/**
- * @todo look for a better way to handle this
- */
 return array_merge(
     $publicRoutesGroup->toCollections(),
     $privateRoutesGroup->toCollections(),
