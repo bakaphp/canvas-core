@@ -42,7 +42,7 @@ class UserSettings extends AbstractModel
      *
      * @return self
      */
-    public static function getByUserAndNotificationType(Apps $app, UserInterface $user, NotificationType $notificationType) : self
+    public static function getByUserAndNotificationType(Apps $app, UserInterface $user, NotificationType $notificationType) : ?self
     {
         return self::findFirst([
             'conditions' => 'users_id = :users_id: AND apps_id = :apps_id: AND \notifications_types_id = :notifications_types_id:  AND is_deleted = 0',

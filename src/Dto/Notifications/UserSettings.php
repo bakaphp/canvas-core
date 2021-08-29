@@ -4,7 +4,6 @@ namespace Canvas\Dto\Notifications;
 
 class UserSettings
 {
-    public int $id;
     public int $users_id;
     public int $notifications_types_id;
     public string $notification_title;

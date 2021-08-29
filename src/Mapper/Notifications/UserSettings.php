@@ -22,7 +22,6 @@ class UserSettings extends CustomMapper
      */
     public function mapToObject($userSettings, $userSettingsDto, array $context = [])
     {
-        $userSettingsDto->id = $userSettings->getId();
         $userSettingsDto->users_id = $userSettings->users_id;
         $userSettingsDto->notifications_types_id = $userSettings->notifications_types_id;
         $userSettingsDto->notification_title = $userSettings->notification->name;
