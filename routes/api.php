@@ -95,6 +95,10 @@ $privateRoutes = [
     Route::get('/sources')->controller('SourcesController')->action('index'),
     Route::get('/sources/{id}')->controller('SourcesController')->action('getById'),
     Route::post('/users-invite/{id}/resend')->controller('UsersInviteController')->action('resendInvite'),
+    Route::get('/users/{id}/notifications')->controller('Notifications\UsersSettingsController')->action('listAll'),
+    Route::get('/users/{id}/notifications/{notificationId}')->controller('Notifications\UsersSettingsController')->action('getByNotificationId'),
+    Route::put('/users/{id}/notifications/{notificationId}')->controller('Notifications\UsersSettingsController')->action('setNotificationSettings'),
+
 ];
 
 $privateRoutesRefresh = [

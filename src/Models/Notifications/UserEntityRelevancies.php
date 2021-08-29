@@ -5,7 +5,7 @@ namespace Canvas\Models\Notifications;
 
 use Canvas\Models\AbstractModel;
 
-class UsersEntityRelevancies extends AbstractModel
+class UserEntityRelevancies extends AbstractModel
 {
     public int $apps_id;
     public string $name;
