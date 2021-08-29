@@ -23,29 +23,31 @@ class NotificationsUnsubscribe extends AbstractModel
 
         $this->belongsTo(
             'users_id',
-            'Canvas\Models\Users',
+            Users::class,
             'id',
             ['alias' => 'user']
         );
 
         $this->belongsTo(
             'notification_type_id',
-            'Canvas\Models\NotificationType',
+            NotificationType::class,
             'id',
             ['alias' => 'type']
         );
     }
 
     /**
-     * get NotificationsUnsubscribe by NotificationType
+     * get NotificationsUnsubscribe by NotificationType.
+     *
      * @param Users $user
      * @param int $notificationTypeId
+     *
      * @return NotificationsUnsubscribe
      */
     public static function getByNotificationType(Users $user, int $notificationTypeId) : ?NotificationsUnsubscribe
     {
         return NotificationsUnsubscribe::findFirst([
-            'conditions' => 'users_id = ?0 AND companies_id = ?1 AND apps_id = ?2 AND \notification_type_id = ?3 AND is_deleted = 0',
+            'conditions' => 'users_id = ?0 AND companies_id = ?1 AND apps_id = ?2 AND notification_type_id = ?3 AND is_deleted = 0',
             'bind' => [
                 0 => $user->getId(),
                 1 => $user->currentCompanyId(),
@@ -56,9 +58,11 @@ class NotificationsUnsubscribe extends AbstractModel
     }
 
     /**
-     * Verify that the user is unsubscribed
+     * Verify that the user is unsubscribed.
+     *
      * @param Users $user
      * @param int $notificationType
+     *
      * @return bool
      */
     public static function isUnsubscribe(Users $user, int $notificationTypeId) : bool
@@ -74,10 +78,12 @@ class NotificationsUnsubscribe extends AbstractModel
     }
 
     /**
-     * unsubscribe user for NotificationType
+     * unsubscribe user for NotificationType.
+     *
      * @param Users $user
      * @param int $notificationTypeId
      * @param int $systemModulesId
+     *
      * @return NotificationsUnsubscribe
      */
     public static function unsubscribe(Users $user, int $notificationTypeId, int $systemModulesId) : NotificationsUnsubscribe
