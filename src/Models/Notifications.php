@@ -26,21 +26,21 @@ class Notifications extends AbstractModel
 
         $this->belongsTo(
             'users_id',
-            'Canvas\Models\Users',
+            Users::class,
             'id',
             ['alias' => 'user', 'reusable' => true]
         );
 
         $this->belongsTo(
             'from_users_id',
-            'Canvas\Models\Users',
+            Users::class,
             'id',
             ['alias' => 'from', 'reusable' => true]
         );
 
         $this->belongsTo(
             'notification_type_id',
-            'Canvas\Models\NotificationType',
+            NotificationType::class,
             'id',
             ['alias' => 'type', 'reusable' => true]
         );
@@ -51,47 +51,64 @@ class Notifications extends AbstractModel
      *
      * @param Users $user
      *
-     * @return void
+     * @return bool
      */
-    public static function markAsRead(Users $user) : bool
+    public static function markAsRead(Users $user, bool $global = true) : bool
     {
-        $result = Di::getDefault()->getDb()->prepare(
-            'UPDATE notifications set `read` = 1 WHERE users_id = ? AND companies_id = ? AND apps_id = ?'
+        $statement = 'UPDATE notifications set `read` = 1 WHERE users_id = :users_id  AND apps_id = :apps_id';
+        $bind = [
+            'users_id' => $user->getId(),
+            'apps_id' => Di::getDefault()->get('app')->getId()
+        ];
+
+        if (!$global) {
+            $statement .= ' AND companies_id = :companies_id';
+            $bind['companies_id'] = $user->currentCompanyId();
+        }
+
+        $result = Di::getDefault()->get('db')->prepare(
+            $statement
         );
 
-        $result->execute([
-            $user->getId(),
-            $user->currentCompanyId(),
-            Di::getDefault()->getApp()->getId()
-        ]);
-
-        return true;
+        return (bool) $result->execute($bind);
     }
 
     /**
      * Get the total notification for the current user.
      *
+     * @param Users $user
+     * @param bool $global
+     *
      * @return int
      */
-    public static function totalUnRead(Users $user) : int
+    public static function totalUnRead(Users $user, bool $global = true) : int
     {
+        $conditions = 'is_deleted = 0 AND read = 0 AND users_id = :users_id: AND apps_id = :apps_id:';
+        $bind = [
+            'users_id' => $user->getId(),
+            'apps_id' => Di::getDefault()->get('app')->getId()
+        ];
+
+        if (!$global) {
+            $conditions .= ' AND companies_id = :companies_id:';
+            $bind['companies_id'] = $user->currentCompanyId();
+        }
+
         return self::count([
-            'conditions' => 'is_deleted = 0 AND read = 0 AND users_id = ?0 AND companies_id = ?1 AND apps_id = ?2',
-            'bind' => [
-                $user->getId(),
-                $user->currentCompanyId(),
-                Di::getDefault()->getApp()->getId()
-            ]
+            'conditions' => $conditions,
+            'bind' => $bind
         ]);
     }
 
     /**
-    * unsubscribe user for NotificationType
-    * @param Users $user
-    * @param int $notificationTypeId
-    * @param int $systemModulesId
-    * @return NotificationsUnsubscribe
-    */
+     * unsubscribe user for NotificationType.
+     *
+     * @param Users $user
+     * @param int $notificationTypeId
+     * @param int $systemModulesId
+     *
+     * @return NotificationsUnsubscribe
+     */
     public static function unsubscribe(Users $user, int $notificationTypeId, int $systemModulesId) : NotificationsUnsubscribe
     {
         return NotificationsUnsubscribe::unsubscribe($user, $notificationTypeId, $systemModulesId);

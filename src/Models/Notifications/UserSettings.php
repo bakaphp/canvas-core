@@ -34,13 +34,40 @@ class UserSettings extends AbstractModel
     }
 
     /**
+     * Is the current notification type enabled for the current user.
+     *
+     * @param Apps $app
+     * @param UserInterface $user
+     * @param NotificationType $notificationType
+     *
+     * @return bool
+     */
+    public static function isEnabled(Apps $app, UserInterface $user, NotificationType $notificationType) : bool
+    {
+        $setting = self::findFirst([
+            'conditions' => 'users_id = :users_id: AND apps_id = :apps_id: AND \notifications_types_id = :notifications_types_id:  AND is_deleted = 0',
+            'bind' => [
+                'users_id' => $user->getId(),
+                'apps_id' => $app->getId(),
+                'notifications_types_id' => $notificationType->getId(),
+            ],
+        ]);
+
+        if (is_object($setting)) {
+            return (bool) $setting->is_enabled;
+        }
+
+        return true;
+    }
+
+    /**
      * Get user notification settings by type.
      *
      * @param Apps $app
      * @param UserInterface $user
      * @param NotificationType $notificationType
      *
-     * @return self
+     * @return self|null
      */
     public static function getByUserAndNotificationType(Apps $app, UserInterface $user, NotificationType $notificationType) : ?self
     {
