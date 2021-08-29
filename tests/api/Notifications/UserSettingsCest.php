@@ -76,4 +76,26 @@ class UserSettingsCest
 
         $I->assertArrayHasKey('is_enabled', $data);
     }
+
+    /**
+     * Get.
+     *
+     * @param ApiTester $I
+     *
+     * @return void
+     */
+    public function muteAll(ApiTester $I) : void
+    {
+        $userData = $I->apiLogin();
+
+        $I->haveHttpHeader('Authorization', $userData->token);
+
+        $I->sendDelete('/v1/users/' . $userData->id . '/notifications');
+
+        $I->seeResponseIsSuccessful();
+        $response = $I->grabResponse();
+        $data = json_decode($response, true);
+
+        $I->assertEquals('All Notifications are muted', $data);
+    }
 }

@@ -53,4 +53,22 @@ class UserSettings extends AbstractModel
             ],
         ]);
     }
+
+    /**
+     * Mute all setting for the current user.
+     *
+     * @param Apps $app
+     * @param UserInterface $user
+     *
+     * @return bool
+     */
+    public function muteAll(Apps $app, UserInterface $user) : bool
+    {
+        return $this->di->get('db')->prepare(
+            'UPDATE users_notification_settings SET is_enabled = 0 WHERE users_id = :users_id AND apps_id = :apps_id AND is_deleted = 0',
+        )->execute([
+            'users_id' => $user->getId(),
+            'apps_id' => $app->getId()
+        ]);
+    }
 }

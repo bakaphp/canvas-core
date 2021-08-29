@@ -112,4 +112,18 @@ class UsersSettingsController extends BaseController
 
         return $this->response($this->processOutput($notificationSettings));
     }
+
+    /**
+     * Clear all settings.
+     *
+     * @param int $userId
+     *
+     * @return Response
+     */
+    public function muteAll(int $userId) : Response
+    {
+        $this->model->muteAll($this->app, $this->userData);
+
+        return $this->response('All Notifications are muted');
+    }
 }
