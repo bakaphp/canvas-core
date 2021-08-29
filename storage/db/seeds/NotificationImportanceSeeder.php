@@ -12,6 +12,7 @@ class NotificationImportanceSeeder extends AbstractSeed
                 'apps_id' => 1,
                 'name' => 'all',
                 'validation_expression' => 'id>0',
+                'created_at' => date('Y-m-d H:m:s'),
             ]
         ];
 
