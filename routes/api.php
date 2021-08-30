@@ -101,6 +101,7 @@ $privateRoutes = [
     Route::put('/users/{id}/notifications/{notificationId}')->controller('Notifications\UsersSettingsController')->action('setNotificationSettings'),
     Route::get('/users/{id}/notifications_importance')->controller('Notifications\UsersImportanceController')->action('index'),
     Route::post('/users/{id}/notifications_importance')->controller('Notifications\UsersImportanceController')->action('setImportanceSettings'),
+    Route::get('/notifications_importance')->controller('Notifications\ImportanceController')->action('index'),
 ];
 
 $privateRoutesRefresh = [

@@ -26,6 +26,7 @@ class UserImportance extends CustomMapper
             'name' => $userEntityImportance->systemModule->name,
         ];
         $userImportanceDto->importance_id = $userEntityImportance->importance_id;
+        $userImportanceDto->name = $userEntityImportance->importance->name;
 
         return $userImportanceDto;
     }
