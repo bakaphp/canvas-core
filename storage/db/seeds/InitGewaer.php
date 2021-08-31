@@ -353,6 +353,23 @@ class InitGewaer extends AbstractSeed
                 'mobile_tab_index' => '0'
             ],
             [
+                'name' => 'Users',
+                'slug' => 'users',
+                'model_name' => 'Gewaer\\Models\\Users',
+                'apps_id' => '1',
+                'parents_id' => '0',
+                'menu_order' => null,
+                'show' => '1',
+                'use_elastic' => '0',
+                'browse_fields' => '[{"name":"firstname","title":"First Name","sortField":"firstname","filterable":true,"searchable":true},{"name":"lastname","title":"Last Name","sortField":"lastname","filterable":true,"searchable":true},{"name":"email","title":"Email","sortField":"email","filterable":true,"searchable":true},{"name":"displayname","title":"Display Name","sortField":"displayname","filterable":true,"searchable":true}]',
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => null,
+                'is_deleted' => '0',
+                'mobile_component_type' => null,
+                'mobile_navigation_type' => null,
+                'mobile_tab_index' => '0'
+            ],
+            [
                 'name' => 'Companies Branches',
                 'slug' => 'companies-branches',
                 'model_name' => 'Canvas\\Models\\CompaniesBranches',
