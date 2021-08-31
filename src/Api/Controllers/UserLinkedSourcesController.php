@@ -90,6 +90,7 @@ class UserLinkedSourcesController extends BaseController
             'conditions' => 'users_id = ?0 AND source_users_id_text = ?1 AND source_id = ?2',
                 'bind' => [
                     $this->userData->getId(),
+                    $deviceId,
                     $source->getId()
                 ]
             ], [
