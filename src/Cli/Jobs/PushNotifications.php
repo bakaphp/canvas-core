@@ -77,12 +77,12 @@ class PushNotifications extends Job implements QueueableJobInterface
          */
         //send push android
         if (!empty($userDevicesArray[2])) {
-            $pushBody['include_player_ids'][] = $userDevicesArray[2][0];
+            $pushBody['include_player_ids'][] = $userDevicesArray[2];
         }
 
         //ios
         if (!empty($userDevicesArray[3])) {
-            $pushBody['include_player_ids'][] = $userDevicesArray[3][0];
+            $pushBody['include_player_ids'][] = $userDevicesArray[3];
         }
 
         try {
