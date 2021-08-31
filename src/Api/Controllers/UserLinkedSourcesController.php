@@ -86,14 +86,20 @@ class UserLinkedSourcesController extends BaseController
                 $deviceId = $this->validateAppleUser($deviceId)->sub;
             }
 
-            $userLinkedSource = new UserLinkedSources();
-            $userLinkedSource->users_id = $this->userData->getId();
-            $userLinkedSource->source_id = $source->getId();
-            $userLinkedSource->source_users_id = $this->userData->getId();
-            $userLinkedSource->source_username = $this->userData->displayname . ' ' . $app;
-            $userLinkedSource->is_deleted = 0;
-            $userLinkedSource->source_users_id_text = $deviceId;
-            $userLinkedSource->saveOrFail();
+            UserLinkedSources::findFirstOrCreate([
+            'conditions' => 'users_id = ?0 AND source_users_id_text = ?1 AND source_id = ?2',
+                'bind' => [
+                    $this->userData->getId(),
+                    $source->getId()
+                ]
+            ], [
+                'users_id' => $this->userData->getId(),
+                'source_id' => $source->getId(),
+                'source_users_id' => $this->userData->getId(),
+                'source_username' => $this->userData->displayname . ' ' . $app,
+                'is_deleted' => 0,
+                'source_users_id_text' => $deviceId,
+            ]);
 
             $msg = 'User Device Associated';
         }
