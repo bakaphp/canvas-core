@@ -73,16 +73,15 @@ class PushNotifications extends Job implements QueueableJobInterface
         }
 
         /**
-         * @todo change to use some constanta , ID don't tell you what device it is
+         * @todo We need to use external_users_id instead of player_id in the future
+         * for proper multi-device notification.
          */
-        //send push android
-        if (!empty($userDevicesArray[2])) {
-            $pushBody['include_player_ids'][] = $userDevicesArray[2];
-        }
-
-        //ios
-        if (!empty($userDevicesArray[3])) {
-            $pushBody['include_player_ids'][] = $userDevicesArray[3];
+        foreach ($userDevicesArray as $userDevicesSourcesArray) {
+            if (!empty($userDevicesSourcesArray)) {
+                foreach ($userDevicesSourcesArray as $userDevice) {
+                    $pushBody['include_player_ids'][] = $userDevice;
+                }
+            }
         }
 
         try {
