@@ -18,8 +18,12 @@ class RemovePrimaryUsersLinkedSources extends Phinx\Migration\AbstractMigration
             ->addColumn('id', 'integer', [
                 'null' => false,
                 'limit' => MysqlAdapter::INT_REGULAR,
-                'precision' => '10',
+                'precision' => '11',
                 'identity' => 'enable',
+            ])
+            ->addIndex(['id'], [
+            'name' => 'id',
+            'unique' => false,
             ])
             ->save();
     }
