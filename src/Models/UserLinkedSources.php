@@ -26,25 +26,6 @@ class UserLinkedSources extends Model
     }
 
     /**
-     * Validations and business logic.
-     */
-    public function validation()
-    {
-        $validator = new Validation();
-        $validator->add(
-            [
-                'users_id',
-                'source_id'
-            ],
-            new Uniqueness([
-                'field' => ['users_id', 'source_id'],
-                'message' => _('You have already associated this account.'),
-            ])
-        );
-        return $this->validate($validator);
-    }
-
-    /**
      * Get all user linked sources by user's id.
      *
      * @param int $usersId
