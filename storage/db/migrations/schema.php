@@ -19584,7 +19584,7 @@ return array(
       ),
       'columns' =>
       array(
-        'users_id' =>
+        'id' =>
         array(
           'TABLE_CATALOG' => 'def',
           'TABLE_NAME' => 'user_linked_sources',
@@ -19608,6 +19608,7 @@ return array(
           'IS_GENERATED' => 'NEVER',
           'GENERATION_EXPRESSION' => null,
         ),
+        'users_id' =>
         array(
           'TABLE_CATALOG' => 'def',
           'TABLE_NAME' => 'user_linked_sources',
@@ -19819,6 +19820,24 @@ return array(
             'Comment' => '',
             'Index_comment' => '',
           )
+        ),
+        'id' =>
+        array(
+          1 =>
+          array(
+            'Table' => 'user_linked_sources',
+            'Non_unique' => '1',
+            'Key_name' => 'id',
+            'Seq_in_index' => '1',
+            'Column_name' => 'id',
+            'Collation' => 'A',
+            'Sub_part' => null,
+            'Packed' => null,
+            'Null' => '',
+            'Index_type' => 'BTREE',
+            'Comment' => '',
+            'Index_comment' => '',
+          ),
         ),
         'user_id' =>
         array(
