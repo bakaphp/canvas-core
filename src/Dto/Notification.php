@@ -4,110 +4,31 @@ namespace Canvas\Dto;
 
 class Notification
 {
-    /**
-     *
-     * @var int
-     */
-    public $id;
+    public int $id;
+    public ?string $type = null;
+    public ?string $title = null;
+    public ?string $icon = null;
+    public int $users_id;
+    public ?array $users_avatar = [];
+    public int $from_users_id;
+    public int $companies_id;
+    public int $apps_id;
+    public int $system_modules_id;
+    public int $notification_type_id;
+    public int $entity_id;
 
     /**
-     *
-     * @var string
-     */
-    public $type;
-
-    /**
-     *
-     * @var string
-     */
-    public $title;
-
-    /**
-     *
-     * @var string
-     */
-    public $icon;
-
-    /**
-     *
-     * @var int
-     */
-    public $users_id;
-
-    /**
-     *
-     * @var int
-     */
-    public $users_avatar;
-
-    /**
-     *
-     * @var int
-     */
-    public $from_users_id;
-
-    /**
-     *
-     * @var int
-     */
-    public $companies_id;
-
-    /**
-     *
-     * @var int
-     */
-    public $apps_id;
-
-    /**
-     *
-     * @var int
-     */
-    public $system_modules_id;
-
-    /**
-     *
-     * @var int
-     */
-    public $notification_type_id;
-
-    /**
-     *
-     * @var int
-     */
-    public $entity_id;
-    /**
-     *
-     * @var string
+     * @var mixed
      */
     public $content;
+    public int $read = 0;
+    public string $created_at;
+    public ?string $updated_at = null;
+    public array $from = [];
 
     /**
      *
-     * @var int
-     */
-    public $read;
-
-    /**
-     *
-     * @var string
-     */
-    public $created_at;
-
-    /**
-     *
-     * @var string
-     */
-    public $updated_at;
-
-    /**
-     *
-     * @var array
-     */
-    public $from;
-
-    /**
-     *
-     * @var array
+     * @var mixed
      */
     public $entity;
 }

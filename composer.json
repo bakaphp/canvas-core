@@ -1,6 +1,6 @@
 {
     "name": "canvas/core",
-    "description": "Saas Kanvas Ecosystem Packages",
+    "description": "Kanvas Ecosystem Packages",
     "license": "MIT",
     "authors": [{
         "name": "kaioken",
@@ -60,7 +60,9 @@
         "codeception/module-phalcon4": "^1.0",
         "codeception/module-rest": "^1.2",
         "phpstan/phpstan": "^0.12",
-        "squizlabs/php_codesniffer": "^3.2"
+        "squizlabs/php_codesniffer": "^3.2",
+        "illuminate/support": "^8.47",
+        "illuminate/validation": "^8.47"
     },
     "autoload": {
         "psr-4": {
