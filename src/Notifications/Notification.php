@@ -35,29 +35,29 @@ class Notification implements NotificationInterface
     protected bool $useQueue = false;
 
     /**
-     * Save the notifications into the db
+     * Save the notifications into the db.
      *
      * @var bool
      */
     protected bool $saveNotification = true;
 
     /**
-     * Send this notification to pusher
-     * 
+     * Send this notification to pusher.
+     *
      * @var bool
      */
     protected bool $toPusher = true;
 
     /**
-     * Send this notification to mail
-     * 
+     * Send this notification to mail.
+     *
      * @var bool
      */
     protected bool $toMail = true;
 
     /**
-     * Send this notification to push notification
-     * 
+     * Send this notification to push notification.
+     *
      * @var bool
      */
     protected bool $toPushNotification = true;
@@ -293,11 +293,11 @@ class Notification implements NotificationInterface
     }
 
     /**
-     * Save the notification used to the database
+     * Save the notification used to the database.
      *
-     * @return boolean
+     * @return bool
      */
-    public function saveNotification(): bool
+    public function saveNotification() : bool
     {
         $content = $this->message();
         $app = Di::getDefault()->getApp();
@@ -325,19 +325,19 @@ class Notification implements NotificationInterface
      */
     public function trigger() : bool
     {
-        if($this->saveNotification) {
+        if ($this->saveNotification) {
             $this->saveNotification();
         }
 
-        if($this->toPusher) {
+        if ($this->toPusher) {
             $this->toPusher();
         }
 
-        if($this->toMail) {
+        if ($this->toMail) {
             $this->toMailNotification();
         }
 
-        if($this->toPushNotification) {
+        if ($this->toPushNotification) {
             $this->toSendPushNotification();
         }
 
@@ -345,9 +345,9 @@ class Notification implements NotificationInterface
     }
 
     /**
-     * Send to pusher the notification
+     * Send to pusher the notification.
      *
-     * @return boolean
+     * @return bool
      */
     public function toPusher() : bool
     {
@@ -360,9 +360,9 @@ class Notification implements NotificationInterface
     }
 
     /**
-     * Send notification to mail
+     * Send notification to mail.
      *
-     * @return boolean
+     * @return bool
      */
     public function toMailNotification() : bool
     {
@@ -375,9 +375,9 @@ class Notification implements NotificationInterface
     }
 
     /**
-     * Send Push notification
+     * Send Push notification.
      *
-     * @return boolean
+     * @return bool
      */
     public function toSendPushNotification() : bool
     {
