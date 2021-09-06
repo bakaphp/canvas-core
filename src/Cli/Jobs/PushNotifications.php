@@ -21,6 +21,8 @@ class PushNotifications extends Job implements QueueableJobInterface
     protected Users $users;
     protected string $message;
     protected string $title;
+    protected const IOS = 3;
+    protected const ANDROID = 2;
     /**
      * Realtime params.
      *
@@ -70,6 +72,12 @@ class PushNotifications extends Job implements QueueableJobInterface
 
         if (!empty($this->params)) {
             $pushBody['data'] = $this->params;
+        }
+
+        //if IOS add badge
+        if (!empty($userDevicesArray[self::IOS])) {
+            $pushBody['ios_badgeType'] = 'Increase';
+            $pushBody['ios_badgeCount'] = 1;
         }
 
         /**
