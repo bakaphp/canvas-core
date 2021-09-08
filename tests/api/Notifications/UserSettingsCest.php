@@ -3,7 +3,9 @@
 namespace Canvas\Tests\api\Notifications;
 
 use ApiTester;
+use Canvas\Enums\Notification;
 use Canvas\Models\NotificationType;
+use Canvas\Models\Users;
 
 class UserSettingsCest
 {
@@ -29,6 +31,9 @@ class UserSettingsCest
         $response = $I->grabResponse();
         $data = json_decode($response, true);
 
+        $user = Users::findFirst($userData->id);
+
+        $I->assertFalse((bool)  $user->get(Notification::USER_MUTE_ALL_STATUS));
         $I->assertArrayHasKey('is_enabled', $data);
     }
 
@@ -96,6 +101,9 @@ class UserSettingsCest
         $response = $I->grabResponse();
         $data = json_decode($response, true);
 
+        $user = Users::findFirst($userData->id);
+
+        $I->assertTrue((bool)  $user->get(Notification::USER_MUTE_ALL_STATUS));
         $I->assertEquals('All Notifications are muted', $data);
     }
 }

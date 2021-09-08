@@ -59,5 +59,6 @@ class User
     public ?int $welcome = null;
     public ?string $user_activation_email = null;
     public int $new_notification = 0;
+    public int $notification_mute_all_status = 0;
     public $photo;
 }

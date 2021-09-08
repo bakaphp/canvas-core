@@ -7,6 +7,7 @@ namespace Canvas\Api\Controllers\Notifications;
 use Canvas\Api\Controllers\BaseController;
 use Canvas\Contracts\Controllers\ProcessOutputMapperTrait;
 use Canvas\Dto\Notifications\UserSettings as NotificationsUserSettings;
+use Canvas\Enums\Notification;
 use Canvas\Mapper\Notifications\UserSettings as MapperNotificationsUserSettings;
 use Canvas\Models\Notifications\UserSettings;
 use Canvas\Models\NotificationType;
@@ -109,6 +110,7 @@ class UsersSettingsController extends BaseController
             $notificationSettings->is_enabled = (int) !$notificationSettings->is_enabled;
         }
         $notificationSettings->saveOrFail();
+        $this->userData->set(Notification::USER_MUTE_ALL_STATUS, 0);
 
         return $this->response($this->processOutput($notificationSettings));
     }
@@ -123,6 +125,7 @@ class UsersSettingsController extends BaseController
     public function muteAll(int $userId) : Response
     {
         $this->model->muteAll($this->app, $this->userData);
+        $this->userData->set(Notification::USER_MUTE_ALL_STATUS, 1);
 
         return $this->response('All Notifications are muted');
     }
