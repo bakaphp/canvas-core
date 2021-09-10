@@ -43,7 +43,7 @@ class LoggerProvider implements ServiceProviderInterface
                 $handler->setFormatter($formatter);
 
                 //only run logs in production
-                if ($config->app->production && (bool) envValue('SENTRY_PROJECT', 1)) {
+                if ((bool) envValue('SENTRY_PROJECT', 0)) {
                     //sentry logger
                     $client = ClientBuilder::create([
                         'dsn' => 'https://' . getenv('SENTRY_PROJECT_SECRET') . '@sentry.io/' . getenv('SENTRY_PROJECT_ID')
