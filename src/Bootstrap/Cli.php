@@ -35,7 +35,7 @@ class Cli extends AbstractBootstrap
             return $this->application->handle($this->options);
         } catch (Throwable $e) {
             //only log when server error production is server error or dev
-            if ($e instanceof ServerErrorHttpException || strtolower($config->app->env) != Flags::PRODUCTION) {
+            if ((bool) envValue('SENTRY_PROJECT', 0)) {
                 $this->container->getLog()->error($e->getTraceAsString());
             }
 
