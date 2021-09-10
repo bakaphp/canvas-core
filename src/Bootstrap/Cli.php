@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Canvas\Bootstrap;
 
 use function Baka\appPath;
+use function Baka\envValue;
 use Canvas\Constants\Flags;
 use Canvas\Exception\ServerErrorHttpException;
 use Phalcon\Cli\Console;
