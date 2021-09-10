@@ -9,7 +9,7 @@ class Notification
     public ?string $title = null;
     public ?string $icon = null;
     public int $users_id;
-    public ?array $users_avatar = [];
+    public ?string $users_avatar = null;
     public int $from_users_id;
     public int $companies_id;
     public int $apps_id;
