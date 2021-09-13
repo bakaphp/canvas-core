@@ -18,7 +18,27 @@ class ClearcacheTask extends PhTask
     public function mainAction() : void
     {
         $this->clearFileCache();
+        $this->clearModelMetaDataRedisCache();
+    }
+
+    /**
+     * Delete all model cache.
+     *
+     * @return void
+     */
+    public function modelAction() : void
+    {
         $this->clearModelRedisCache();
+    }
+
+    /**
+     * Delete all model cache.
+     *
+     * @return void
+     */
+    public function modelMetaDataAction() : void
+    {
+        $this->clearModelMetaDataRedisCache();
     }
 
     /**
@@ -92,11 +112,11 @@ class ClearcacheTask extends PhTask
     }
 
     /**
-     * Clear all model schema cache.
+     * Clear all model metadata cache.
      *
      * @return void
      */
-    protected function clearModelRedisCache() : void
+    protected function clearModelMetaDataRedisCache() : void
     {
         echo PHP_EOL . 'Clearing Model data cache' . PHP_EOL;
 
@@ -106,8 +126,26 @@ class ClearcacheTask extends PhTask
         $keys = $this->di->get('redisUnSerialize', [false])->keys($options['prefix'] . '*');
 
         echo sprintf('Found %s Models Schema Cache', count($keys)) . PHP_EOL;
-        foreach ($keys as $key) {
-            $this->redisUnSerialize->del($key);
+
+        $this->modelsMetadata->reset();
+
+        echo  'Cleared Model schema cache' . PHP_EOL;
+    }
+
+    /**
+     * Clear all model cache.
+     *
+     * @return void
+     */
+    protected function clearModelRedisCache() : void
+    {
+        echo 'Are you sure you want delete all your Model Cache?  [y/N]' . PHP_EOL;
+
+        //read user input
+        $confirmation = trim(fgets(STDIN));
+        if ($confirmation !== 'y') {
+            // The user did not say 'y'.
+            return;
         }
 
         echo sprintf('Found %s Models Cache', $this->clearCacheByKeyPattern('')) . PHP_EOL;
