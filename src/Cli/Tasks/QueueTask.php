@@ -151,7 +151,7 @@ class QueueTask extends PhTask
                             [$result]
                         );
                     } catch (Throwable $e) {
-                        $this->log->info(
+                        $this->log->error(
                             $e->getMessage(),
                             [
                                 $e->getTraceAsString()
@@ -160,7 +160,7 @@ class QueueTask extends PhTask
                     }
                 });
             } catch (Throwable $e) {
-                $this->log->info(
+                $this->log->error(
                     $e->getMessage(),
                     [
                         $e->getTraceAsString()
