@@ -25,7 +25,7 @@ trait UsersAssociatedTrait
         $usersAssociatedModel = new $class();
         $usersAssociatedModel->users_id = $user->getId();
         $usersAssociatedModel->companies_id = $company->getId();
-        $usersAssociatedModel->apps_id = $this->di->getApp()->getId();
+        $usersAssociatedModel->apps_id = get_class($this) == "Apps" ? $this->getId() : $this->di->getApp()->getId();
         $usersAssociatedModel->identify_id = (string) $user->getId();
         $usersAssociatedModel->user_active = 1;
         $usersAssociatedModel->user_role = (string) $user->roles_id;
