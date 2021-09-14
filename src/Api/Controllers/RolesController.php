@@ -7,7 +7,6 @@ namespace Canvas\Api\Controllers;
 use Baka\Http\Exception\ForbiddenException;
 use Canvas\Models\Apps;
 use Canvas\Models\Roles;
-use Exception;
 use Phalcon\Http\Response;
 
 class RolesController extends BaseController
@@ -61,9 +60,38 @@ class RolesController extends BaseController
     }
 
     /**
-     * Delete a Record.
+     * Update a record.
      *
-     * @throws Exception
+     * @param mixed $id
+     *
+     * @return Response
+     */
+    public function edit($id) : Response
+    {
+        $role = $this->getRecordById($id);
+
+        /**
+         * Can edit ecosystem roles , only on the ecosystem admin app.
+         */
+        if (
+            !$this->userData->isAdmin()
+            && Apps::CANVAS_DEFAULT_APP_ID !== $this->app->getId()
+            && (
+                $role->companies_id === Apps::CANVAS_DEFAULT_COMPANY_ID
+                || $role->apps_id === Apps::CANVAS_DEFAULT_APP_ID
+            )
+            ) {
+            throw new ForbiddenException('Cant Edit a Global App Role');
+        }
+
+        //process the input
+        $result = $this->processEdit($this->request, $role);
+
+        return $this->response($this->processOutput($result));
+    }
+
+    /**
+     * Delete a Record.
      *
      * @return Response
      */

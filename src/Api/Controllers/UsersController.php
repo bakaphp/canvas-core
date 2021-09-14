@@ -12,7 +12,6 @@ use Canvas\Dto\User as UserDto;
 use Canvas\Mapper\UserMapper;
 use Canvas\Models\Notifications;
 use Canvas\Models\Roles;
-use Canvas\Models\UserRoles;
 use Canvas\Models\Users;
 use Canvas\Models\UsersAssociatedApps;
 use Phalcon\Http\Response;
@@ -246,7 +245,11 @@ class UsersController extends BaseController
     {
         $userAssociatedToApp = UsersAssociatedApps::findFirstOrFail([
             'conditions' => 'users_id = ?0 and apps_id = ?1 and companies_id = ?2 and is_deleted = 0',
-            'bind' => [$id, $this->app->getId(), $this->userData->getDefaultCompany()->getId()]
+            'bind' => [
+                $id,
+                $this->app->getId(),
+                $this->userData->getDefaultCompany()->getId()
+            ]
         ]);
 
         $userAssociatedToApp->user_active = $userAssociatedToApp->user_active ? 0 : 1;
@@ -267,9 +270,9 @@ class UsersController extends BaseController
     {
         $request = $this->request->getPostData();
 
-        if (!isset($request['notification_types'])) {
-            throw new Exception('Error Processing Request', 1);
-        }
+        $this->request->validate([
+            'notification_types' => 'required|array'
+        ]);
 
         //none admin users can only edit themselves
         if (!$this->userData->hasRole('Default.Admins') || $id == 0) {
@@ -297,31 +300,24 @@ class UsersController extends BaseController
      */
     public function getUsersByRole(string $roleName) : Response
     {
-        $usersArray = [];
-
         if (!Roles::isRole($roleName)) {
             throw new NotFoundException(_('Role does not exist'));
         }
 
         $role = Roles::getByName(ucfirst($roleName));
 
-        // Use table users role to get a list of all users with that role and belong to current company and app
-        $userRoles = UserRoles::findOrFail([
-            'conditions' => 'apps_id = :apps_id: 
-                            and companies_id = :companies_id: 
-                            and roles_id = :roles_id: 
-                            and is_deleted = 0',
-            'bind' => [
-                'apps_id' => $this->app->getId(),
-                'companies_id' => $this->userData->getCurrentCompany()->getId(),
-                'roles_id' => $role->id
-            ]
-        ]);
+        $this->additionalSearchFields = [
+            ['is_deleted', ':', 0],
+        ];
 
-        foreach ($userRoles as $userRole) {
-            $usersArray[] = $userRole->user;
-        }
+        $this->customTableJoins = ' , user_roles as r';
+        $this->customConditions = " AND users.id = r.users_id AND  
+                        r.companies_id = {$this->userData->getCurrentCompany()->getId()}
+                        AND r.roles_id = {$role->getId()}
+                        AND r.is_deleted = 0
+                        AND r.apps_id = {$this->app->getId()}
+        ";
 
-        return $this->response($usersArray);
+        return $this->index();
     }
 }

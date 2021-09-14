@@ -84,13 +84,29 @@ class SetupCest
      */
     public function createDefaultAcl(IntegrationTester $I)
     {
-        //Check number of roles
+        $defaultCountAppRoleCount = 1;
+        $defaultCountAppRolesEcosystem = 3;
+        $defaultCountAppResources = 9;
+        $defaultCountAccessList = 53;
+        //check app roles
         $roles = Roles::findOrFail([
             'conditions' => 'apps_id = :apps_id: and is_deleted = 0',
-            'bind' => ['apps_id' => $this->app->getId()]
+            'bind' => [
+                'apps_id' => $this->app->getId()
+            ]
         ]);
 
-        $I->assertTrue(count($roles) == 2);
+        $I->assertTrue(count($roles) == $defaultCountAppRoleCount);
+
+        //Check global roles
+        $roles = Roles::findOrFail([
+            'conditions' => 'apps_id = :apps_id: and is_deleted = 0',
+            'bind' => [
+                'apps_id' => Apps::CANVAS_DEFAULT_APP_ID
+            ]
+        ]);
+
+        $I->assertTrue(count($roles) == $defaultCountAppRolesEcosystem);
 
         //Check number of resources
         $resources = Resources::findOrFail([
@@ -98,7 +114,7 @@ class SetupCest
             'bind' => ['apps_id' => $this->app->getId()]
         ]);
 
-        $I->assertTrue(count($resources) == 9);
+        $I->assertTrue(count($resources) == $defaultCountAppResources);
 
         //Check Access List privileges
         $accessList = AccessList::findOrFail([
@@ -106,7 +122,7 @@ class SetupCest
             'bind' => ['apps_id' => $this->app->getId()]
         ]);
 
-        $I->assertTrue(count($accessList) == 54);
+        $I->assertTrue(count($accessList) == $defaultCountAccessList);
     }
 
     /**

@@ -3,13 +3,13 @@ declare(strict_types=1);
 
 namespace Canvas\Models;
 
-use Baka\Database\Exception\ModelNotFoundException;
 use Baka\Http\Exception\InternalServerErrorException;
 use Baka\Http\Exception\UnprocessableEntityException;
 use Baka\Support\Str;
 use Phalcon\Acl\Role as AclRole;
 use Phalcon\Di;
 use Phalcon\Validation;
+use Phalcon\Validation\Validator\ExclusionIn;
 use Phalcon\Validation\Validator\PresenceOf;
 use Phalcon\Validation\Validator\StringLength;
 use Phalcon\Validation\Validator\Uniqueness;
@@ -31,6 +31,7 @@ class Roles extends AbstractModel
     const DEFAULT_ACL_COMPANY_ID = 1;
     const DEFAULT_ACL_APP_ID = 1;
     const DEFAULT = 'Admins';
+    const DEFAULT_ROLES_NAMES = ['Admin', 'Admins', 'User', 'Users', 'Agents'];
 
     /**
      * Initialize method for model.
@@ -41,14 +42,14 @@ class Roles extends AbstractModel
 
         $this->hasMany(
             'id',
-            'Canvas\Models\AccessList',
+            AccessList::class,
             'roles_id',
             ['alias' => 'accesList', 'reusable' => true]
         );
 
         $this->hasMany(
             'id',
-            'Canvas\Models\AccessList',
+            AccessList::class,
             'roles_id',
             ['alias' => 'accessList', 'reusable' => true]
         );
@@ -101,6 +102,16 @@ class Roles extends AbstractModel
             new Uniqueness(
                 [
                     'message' => 'Can\'t have 2 roles with the same name - ' . $this->name
+                ]
+            )
+        );
+
+        $validator->add(
+            'name',
+            new ExclusionIn(
+                [
+                    'message' => 'Can\'t use the names Admins, Users, Agents',
+                    'domain' => self::DEFAULT_ROLES_NAMES
                 ]
             )
         );
@@ -254,7 +265,7 @@ class Roles extends AbstractModel
         $accessList = $this->accessList;
 
         //remove id to create new record
-        $this->name .= 'Copie';
+        $this->name .= 'Copied';
         $this->scope = 1;
         $this->id = null;
         $this->companies_id = $this->di->getUserData()->currentCompanyId();
@@ -338,10 +349,6 @@ class Roles extends AbstractModel
     public static function existsById(int $id) : Roles
     {
         $role = self::getById($id);
-
-        if (!is_object($role)) {
-            throw new ModelNotFoundException('Role does not exist');
-        }
 
         return $role;
     }
