@@ -127,8 +127,11 @@ class ClearcacheTask extends PhTask
 
         echo sprintf('Found %s Models Schema Cache', count($keys)) . PHP_EOL;
 
-        $this->modelsMetadata->reset();
-
+        //delete each metada from redis
+        foreach ($keys as $key) {
+            $this->redisUnSerialize->del($key);
+        }
+        
         echo  'Cleared Model schema cache' . PHP_EOL;
     }
 
