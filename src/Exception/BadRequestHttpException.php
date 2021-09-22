@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace Canvas\Exception;
 
+use Baka\Http\Exception\BadRequestException as BakaBadRequestException;
 use Canvas\Http\Response;
 
 /**
  * @deprecated version 0.1.5
  */
-class BadRequestHttpException extends HttpException
+class BadRequestHttpException extends BakaBadRequestException
 {
-    protected $httpCode = Response::BAD_REQUEST;
-    protected $httpMessage = 'Bad Request';
 }

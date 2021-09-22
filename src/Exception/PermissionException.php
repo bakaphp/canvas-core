@@ -11,6 +11,6 @@ use Canvas\Http\Response;
  */
 class PermissionException extends HttpException
 {
-    protected $httpCode = Response::UNAUTHORIZED;
-    protected $httpMessage = 'Unauthorized';
+    protected int $httpCode = Response::UNAUTHORIZED;
+    protected string $httpMessage = 'Unauthorized';
 }

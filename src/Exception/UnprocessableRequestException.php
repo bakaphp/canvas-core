@@ -11,6 +11,6 @@ use Canvas\Http\Response;
  */
 class UnprocessableRequestException extends HttpException
 {
-    protected $httpCode = Response::NOT_ACCEPTABLE;
-    protected $httpMessage = 'Not Acceptable';
+    protected int $httpCode = Response::NOT_ACCEPTABLE;
+    protected string $httpMessage = 'Not Acceptable';
 }
