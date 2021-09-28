@@ -20,7 +20,7 @@ trait SendGlobalCounter
         parent::trigger();
 
         //send to pusher
-        $this->fireToQueue(
+        $this->fire(
             'notification:sendRealtime',
             $this->sendGlobalCounter()
         );

@@ -40,7 +40,7 @@ class Notification
     }
 
     /**
-     * From a given notificatino send its realtime websocket.
+     * From a given notification send its realtime websocket.
      *
      * @param Event $event
      * @param PusherNotification $pusherNotification

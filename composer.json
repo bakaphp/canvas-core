@@ -72,7 +72,8 @@
     "autoload-dev": {
         "psr-4": {
             "Canvas\\": "src/",
-            "Canvas\\Tests\\": "tests/"
+            "Canvas\\Tests\\": "tests/",
+            "Canvas\\Tests\\Support\\": "tests/_support/"
         }
     },
     "config": {
