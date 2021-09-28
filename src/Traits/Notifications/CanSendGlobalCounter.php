@@ -8,7 +8,7 @@ use Canvas\Models\Notifications;
 use Canvas\Notifications\PusherNotification;
 use Phalcon\Di;
 
-trait SendGlobalCounter
+trait CanSendGlobalCounter
 {
     /**
      * Send the notification to the places the user defined.
