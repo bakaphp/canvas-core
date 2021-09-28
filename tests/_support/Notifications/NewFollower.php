@@ -7,12 +7,12 @@ namespace Canvas\Tests\Support\Notifications;
 use Baka\Contracts\Notifications\NotificationInterface;
 use Canvas\Notifications\Notification;
 use Canvas\Notifications\PusherNotification;
-use Canvas\Traits\Notifications\SendGlobalCounter;
+use Canvas\Traits\Notifications\CanSendGlobalCounter;
 use Phalcon\Di;
 
 class NewFollower extends Notification implements NotificationInterface
 {
-    use SendGlobalCounter;
+    use CanSendGlobalCounter;
 
     /**
      * Notification msg.
