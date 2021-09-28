@@ -8,6 +8,7 @@ use Baka\Contracts\Auth\UserInterface;
 use Baka\Contracts\Notifications\NotificationInterface;
 use Baka\Mail\Message;
 use Baka\Queue\Queue;
+use Canvas\Contracts\EventManagerAwareTrait;
 use Canvas\Models\AbstractModel;
 use Canvas\Models\Notifications;
 use Canvas\Models\NotificationType;
@@ -15,7 +16,6 @@ use Canvas\Models\Users;
 use Phalcon\Di;
 use Phalcon\Mvc\Model;
 use Phalcon\Mvc\ModelInterface;
-use Phalcon\Traits\EventManagerAwareTrait;
 
 class Notification implements NotificationInterface
 {
@@ -173,7 +173,7 @@ class Notification implements NotificationInterface
     }
 
     /**
-     * Set the usre we are sending the notification to.
+     * Set the user we are sending the notification to.
      *
      * @return Users
      */
@@ -254,7 +254,12 @@ class Notification implements NotificationInterface
     {
         //if the user didn't provide the type get it based on the class name
         if (is_null($this->type)) {
-            $this->setType(NotificationType::getByKeyOrCreate(static::class, $this->entity));
+            $this->setType(
+                NotificationType::getByKeyOrCreate(
+                    static::class,
+                    $this->entity
+                )
+            );
         } elseif (is_string($this->type)) {
             //not great but for now lets use it
             $this->setType(NotificationType::getByKey($this->type));
@@ -289,7 +294,10 @@ class Notification implements NotificationInterface
             'notification' => get_class($this),
         ];
 
-        return Queue::send(Queue::NOTIFICATIONS, serialize($notificationData));
+        return Queue::send(
+            Queue::NOTIFICATIONS,
+            serialize($notificationData)
+        );
     }
 
     /**
@@ -300,7 +308,7 @@ class Notification implements NotificationInterface
     public function saveNotification() : bool
     {
         $content = $this->message();
-        $app = Di::getDefault()->getApp();
+        $app = Di::getDefault()->get('app');
 
         //save to DB
         $notification = new Notifications();

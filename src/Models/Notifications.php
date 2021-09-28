@@ -94,10 +94,12 @@ class Notifications extends AbstractModel
             $bind['companies_id'] = $user->currentCompanyId();
         }
 
-        return self::count([
+        $total = self::count([
             'conditions' => $conditions,
             'bind' => $bind
         ]);
+
+        return  $total > 99 ? 99 : $total;
     }
 
     /**
