@@ -77,7 +77,7 @@ class QueueTask extends PhTask
             }
 
             if (!class_exists($notification['notification'])) {
-                echo 'Attribute notification has to be a Notificatoin' . PHP_EOL;
+                echo 'Attribute notification has to be a Notification' . PHP_EOL;
                 return;
             }
             $notificationClass = $notification['notification'];
