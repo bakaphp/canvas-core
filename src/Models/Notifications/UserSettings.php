@@ -100,7 +100,7 @@ class UserSettings extends AbstractModel
     }
 
     /**
-     * Undocumented function.
+     * List of the notifications that are published function.
      *
      * @param Apps $app
      * @param UserInterface $user
@@ -110,7 +110,7 @@ class UserSettings extends AbstractModel
      */
     public static function listOfNotifications(Apps $app, UserInterface $user, int $parent = 0) : array
     {
-        $notificationType = NotificationType::find('parent_id = ' . $parent . ' and apps_id =' . $app->getId());
+        $notificationType = NotificationType::find('is_published = 1 AND parent_id = ' . $parent . ' and apps_id =' . $app->getId());
         $userNotificationList = [];
         $i = 0;
         foreach ($notificationType as $notification) {
