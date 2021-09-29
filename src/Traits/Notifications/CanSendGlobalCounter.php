@@ -20,10 +20,13 @@ trait CanSendGlobalCounter
         parent::trigger();
 
         //send to pusher
-        $this->fire(
-            'notification:sendRealtime',
-            $this->sendGlobalCounter()
-        );
+        $totalCounter = Notifications::totalUnRead($this->toUser);
+        if ($totalCounter > 0) {
+            $this->fire(
+                'notification:sendRealtime',
+                $this->sendGlobalCounter($totalCounter)
+            );
+        }
 
         return true;
     }
@@ -34,7 +37,7 @@ trait CanSendGlobalCounter
      *
      * @return PusherNotification
      */
-    public function sendGlobalCounter() : PusherNotification
+    public function sendGlobalCounter(int $totalCounter) : PusherNotification
     {
         Di::getDefault()->setShared('userData', $this->toUser);
 
@@ -46,7 +49,7 @@ trait CanSendGlobalCounter
                     'id' => $this->toUser->getId(),
                     'userName' => $this->toUser->displayname
                 ],
-                'total' => Notifications::totalUnRead($this->toUser)
+                'total' => $totalCounter
             ]
         );
     }
