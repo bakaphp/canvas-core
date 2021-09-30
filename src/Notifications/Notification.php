@@ -340,7 +340,7 @@ class Notification implements NotificationInterface
             $this->saveNotification();
         }
 
-        if ($this->sendNotification()) {
+        if ($this->sendNotificationEnabled()) {
             if ($this->toPusher) {
                 $this->toPusher();
             }
@@ -363,24 +363,29 @@ class Notification implements NotificationInterface
      *
      * @return bool
      */
-    protected function sendNotification() : bool
+    protected function sendNotificationEnabled() : bool
     {
         $sendNotificationByImportance = true;
         $app = Di::getDefault()->get('app');
+
+        //is this type of notification enabled for this user?
         $sendNotification = UserSettings::isEnabled(
             $app,
             $this->toUser,
             $this->type
         );
 
-        $toUserSettlings = UserEntityImportance::getByEntity(
-            $app,
-            $this->toUser,
-            $this->fromUser
-        );
+        //those he want to receive this type of notification from the current entity?
+        if ($this->fromUser instanceof UserInterface) {
+            $toUserSettlings = UserEntityImportance::getByEntity(
+                $app,
+                $this->toUser,
+                $this->fromUser
+            );
 
-        if ($toUserSettlings && is_object($toUserSettlings->importance)) {
-            $sendNotificationByImportance = $toUserSettlings->importance->validateExpression($this->currentNotification);
+            if ($toUserSettlings && is_object($toUserSettlings->importance)) {
+                $sendNotificationByImportance = $toUserSettlings->importance->validateExpression($this->currentNotification);
+            }
         }
 
         return $sendNotification && $sendNotificationByImportance;
