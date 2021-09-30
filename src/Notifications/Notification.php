@@ -11,6 +11,8 @@ use Baka\Queue\Queue;
 use Canvas\Contracts\EventManagerAwareTrait;
 use Canvas\Models\AbstractModel;
 use Canvas\Models\Notifications;
+use Canvas\Models\Notifications\UserEntityImportance;
+use Canvas\Models\Notifications\UserSettings;
 use Canvas\Models\NotificationType;
 use Canvas\Models\Users;
 use Phalcon\Di;
@@ -26,6 +28,7 @@ class Notification implements NotificationInterface
     protected $type = null;
     protected ?ModelInterface $entity = null;
     protected string $message = '';
+    protected ?Notifications $currentNotification = null;
 
     /**
      * Send this notification to the queue?
@@ -119,7 +122,7 @@ class Notification implements NotificationInterface
     /**
      * Define a Baka Mail to send a email.
      *
-     * @todo add Interfase to bakaMail
+     * @todo add Interface to bakaMail
      *
      * @return Message
      */
@@ -149,7 +152,7 @@ class Notification implements NotificationInterface
     }
 
     /**
-     * Set the usre we are sending the notification to.
+     * Set the user we are sending the notification to.
      *
      * @param Users $user
      *
@@ -311,17 +314,17 @@ class Notification implements NotificationInterface
         $app = Di::getDefault()->get('app');
 
         //save to DB
-        $notification = new Notifications();
-        $notification->from_users_id = $this->fromUser->getId();
-        $notification->users_id = $this->toUser->getId();
-        $notification->companies_id = $this->fromUser->currentCompanyId();
-        $notification->apps_id = $app->getId();
-        $notification->system_modules_id = $this->type->system_modules_id;
-        $notification->notification_type_id = $this->type->getId();
-        $notification->entity_id = $this->entity->getId();
-        $notification->content = $content;
-        $notification->read = 0;
-        $notification->saveOrFail();
+        $this->currentNotification = new Notifications();
+        $this->currentNotification->from_users_id = $this->fromUser->getId();
+        $this->currentNotification->users_id = $this->toUser->getId();
+        $this->currentNotification->companies_id = $this->fromUser->currentCompanyId();
+        $this->currentNotification->apps_id = $app->getId();
+        $this->currentNotification->system_modules_id = $this->type->system_modules_id;
+        $this->currentNotification->notification_type_id = $this->type->getId();
+        $this->currentNotification->entity_id = $this->entity->getId();
+        $this->currentNotification->content = $content;
+        $this->currentNotification->read = 0;
+        $this->currentNotification->saveOrFail();
 
         return true;
     }
@@ -337,20 +340,57 @@ class Notification implements NotificationInterface
             $this->saveNotification();
         }
 
-        if ($this->toPusher) {
-            $this->toPusher();
-        }
+        if ($this->sendNotificationEnabled()) {
+            if ($this->toPusher) {
+                $this->toPusher();
+            }
 
-        if ($this->toMail) {
-            $this->toMailNotification();
-        }
+            if ($this->toMail) {
+                $this->toMailNotification();
+            }
 
-        if ($this->toPushNotification) {
-            $this->toSendPushNotification();
+            if ($this->toPushNotification) {
+                $this->toSendPushNotification();
+            }
         }
 
         return true;
     }
+
+    /**
+     * Check the current user setting to know if he wants to receive
+     * the current type of notification.
+     *
+     * @return bool
+     */
+    protected function sendNotificationEnabled() : bool
+    {
+        $sendNotificationByImportance = true;
+        $app = Di::getDefault()->get('app');
+
+        //is this type of notification enabled for this user?
+        $sendNotification = UserSettings::isEnabled(
+            $app,
+            $this->toUser,
+            $this->type
+        );
+
+        //those he want to receive this type of notification from the current entity?
+        if ($this->fromUser instanceof UserInterface) {
+            $toUserSettlings = UserEntityImportance::getByEntity(
+                $app,
+                $this->toUser,
+                $this->fromUser
+            );
+
+            if ($toUserSettlings && is_object($toUserSettlings->importance)) {
+                $sendNotificationByImportance = $toUserSettlings->importance->validateExpression($this->currentNotification);
+            }
+        }
+
+        return $sendNotification && $sendNotificationByImportance;
+    }
+
 
     /**
      * Send to pusher the notification.
