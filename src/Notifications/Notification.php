@@ -340,10 +340,6 @@ class Notification implements NotificationInterface
             $this->saveNotification();
         }
 
-        //del ussuario k la este enviando
-        //tengo flageado que me interesa este tipo de notificacion
-        //vasado en la configuracion de imortancia
-
         if ($this->sendNotification()) {
             if ($this->toPusher) {
                 $this->toPusher();
