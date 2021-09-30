@@ -11,11 +11,14 @@ use Baka\Queue\Queue;
 use Canvas\Contracts\EventManagerAwareTrait;
 use Canvas\Models\AbstractModel;
 use Canvas\Models\Notifications;
+use Canvas\Models\Notifications\UserSettings;
 use Canvas\Models\NotificationType;
 use Canvas\Models\Users;
 use Phalcon\Di;
 use Phalcon\Mvc\Model;
 use Phalcon\Mvc\ModelInterface;
+
+use function PHPSTORM_META\type;
 
 class Notification implements NotificationInterface
 {
@@ -119,7 +122,7 @@ class Notification implements NotificationInterface
     /**
      * Define a Baka Mail to send a email.
      *
-     * @todo add Interfase to bakaMail
+     * @todo add Interface to bakaMail
      *
      * @return Message
      */
@@ -149,7 +152,7 @@ class Notification implements NotificationInterface
     }
 
     /**
-     * Set the usre we are sending the notification to.
+     * Set the user we are sending the notification to.
      *
      * @param Users $user
      *
@@ -337,16 +340,26 @@ class Notification implements NotificationInterface
             $this->saveNotification();
         }
 
-        if ($this->toPusher) {
-            $this->toPusher();
-        }
+        //check if user wants to receive this type of notification
+        $app = Di::getDefault()->get('app');
+        $sendNotification = UserSettings::sendNotification(
+            $app,
+            $this->toUser,
+            $this->type
+        );
 
-        if ($this->toMail) {
-            $this->toMailNotification();
-        }
+        if ($sendNotification) {
+            if ($this->toPusher) {
+                $this->toPusher();
+            }
 
-        if ($this->toPushNotification) {
-            $this->toSendPushNotification();
+            if ($this->toMail) {
+                $this->toMailNotification();
+            }
+
+            if ($this->toPushNotification) {
+                $this->toSendPushNotification();
+            }
         }
 
         return true;
