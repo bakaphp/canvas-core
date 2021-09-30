@@ -58,7 +58,7 @@ class UserEntityImportance extends AbstractModel
          * @todo expand to use more system modules
          */
         return self::findFirst([
-            'conditions' => 'apps_id = :apps_id: AND users_id = :users_id: AND entity_id = :entity_id:',
+            'conditions' => 'apps_id = :apps_id: AND users_id = :users_id: AND entity_id = :entity_id: AND is_deleted = 0',
             'bind' => [
                 'apps_id' => $app->getId(),
                 'users_id' => $user->getId(),
