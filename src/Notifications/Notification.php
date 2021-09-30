@@ -11,14 +11,13 @@ use Baka\Queue\Queue;
 use Canvas\Contracts\EventManagerAwareTrait;
 use Canvas\Models\AbstractModel;
 use Canvas\Models\Notifications;
+use Canvas\Models\Notifications\UserEntityImportance;
 use Canvas\Models\Notifications\UserSettings;
 use Canvas\Models\NotificationType;
 use Canvas\Models\Users;
 use Phalcon\Di;
 use Phalcon\Mvc\Model;
 use Phalcon\Mvc\ModelInterface;
-
-use function PHPSTORM_META\type;
 
 class Notification implements NotificationInterface
 {
@@ -29,6 +28,7 @@ class Notification implements NotificationInterface
     protected $type = null;
     protected ?ModelInterface $entity = null;
     protected string $message = '';
+    protected ?Notifications $currentNotification = null;
 
     /**
      * Send this notification to the queue?
@@ -314,17 +314,17 @@ class Notification implements NotificationInterface
         $app = Di::getDefault()->get('app');
 
         //save to DB
-        $notification = new Notifications();
-        $notification->from_users_id = $this->fromUser->getId();
-        $notification->users_id = $this->toUser->getId();
-        $notification->companies_id = $this->fromUser->currentCompanyId();
-        $notification->apps_id = $app->getId();
-        $notification->system_modules_id = $this->type->system_modules_id;
-        $notification->notification_type_id = $this->type->getId();
-        $notification->entity_id = $this->entity->getId();
-        $notification->content = $content;
-        $notification->read = 0;
-        $notification->saveOrFail();
+        $this->currentNotification = new Notifications();
+        $this->currentNotification->from_users_id = $this->fromUser->getId();
+        $this->currentNotification->users_id = $this->toUser->getId();
+        $this->currentNotification->companies_id = $this->fromUser->currentCompanyId();
+        $this->currentNotification->apps_id = $app->getId();
+        $this->currentNotification->system_modules_id = $this->type->system_modules_id;
+        $this->currentNotification->notification_type_id = $this->type->getId();
+        $this->currentNotification->entity_id = $this->entity->getId();
+        $this->currentNotification->content = $content;
+        $this->currentNotification->read = 0;
+        $this->currentNotification->saveOrFail();
 
         return true;
     }
@@ -340,15 +340,11 @@ class Notification implements NotificationInterface
             $this->saveNotification();
         }
 
-        //check if user wants to receive this type of notification
-        $app = Di::getDefault()->get('app');
-        $sendNotification = UserSettings::isEnabled(
-            $app,
-            $this->toUser,
-            $this->type
-        );
+        //del ussuario k la este enviando
+        //tengo flageado que me interesa este tipo de notificacion
+        //vasado en la configuracion de imortancia
 
-        if ($sendNotification) {
+        if ($this->sendNotification()) {
             if ($this->toPusher) {
                 $this->toPusher();
             }
@@ -364,6 +360,36 @@ class Notification implements NotificationInterface
 
         return true;
     }
+
+    /**
+     * Check the current user setting to know if he wants to receive
+     * the current type of notification.
+     *
+     * @return bool
+     */
+    protected function sendNotification() : bool
+    {
+        $sendNotificationByImportance = true;
+        $app = Di::getDefault()->get('app');
+        $sendNotification = UserSettings::isEnabled(
+            $app,
+            $this->toUser,
+            $this->type
+        );
+
+        $toUserSettlings = UserEntityImportance::getByEntity(
+            $app,
+            $this->toUser,
+            $this->fromUser
+        );
+
+        if ($toUserSettlings && is_object($toUserSettlings->importance)) {
+            $sendNotificationByImportance = $toUserSettlings->importance->validateExpression($this->currentNotification);
+        }
+
+        return $sendNotification && $sendNotificationByImportance;
+    }
+
 
     /**
      * Send to pusher the notification.
