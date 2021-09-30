@@ -342,7 +342,7 @@ class Notification implements NotificationInterface
 
         //check if user wants to receive this type of notification
         $app = Di::getDefault()->get('app');
-        $sendNotification = UserSettings::sendNotification(
+        $sendNotification = UserSettings::isEnabled(
             $app,
             $this->toUser,
             $this->type
