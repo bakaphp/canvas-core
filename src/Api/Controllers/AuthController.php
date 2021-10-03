@@ -376,8 +376,15 @@ class AuthController extends BaseController
     public function reset(string $key) : Response
     {
         //is the key empty or does it exist?
-        if (empty($key) || !$userData = Users::findFirst(['user_activation_forgot = :key:', 'bind' => ['key' => $key]])) {
-            throw new Exception(_('This Key to reset password doesn\'t exist'));
+        $userData = Users::findFirst([
+            'conditions' => 'user_activation_forgot = :key:',
+            'bind' => [
+                'key' => $key
+            ]
+        ]);
+
+        if (empty($key) || !$userData) {
+            throw new Exception(_('Password reset link has expired, request a new link.'));
         }
 
         $this->request->enableSanitize();
