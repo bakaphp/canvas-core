@@ -4,6 +4,7 @@ namespace Canvas\Models;
 
 use Baka\Contracts\Auth\UserInterface;
 use Baka\Database\Model;
+use Baka\Http\Exception\UnauthorizedException;
 use Canvas\Contracts\Auth\TokenTrait;
 use Exception;
 
@@ -146,12 +147,12 @@ class Sessions extends Model
         $userData = $result->getFirst();
 
         if (empty($userData)) {
-            throw new Exception('Invalid Session');
+            throw new UnauthorizedException('Invalid Session');
         }
 
         //wtf? how did you get this token to mimic another user?
         if ($userData->user->getId() != $user->getId()) {
-            throw new Exception('Invalid Token');
+            throw new UnauthorizedException('Invalid Token');
         }
 
         //
@@ -183,7 +184,7 @@ class Sessions extends Model
             return $user;
         }
 
-        throw new Exception(_('No Session Token Found'));
+        throw new UnauthorizedException(_('No Session Token Found'));
     }
 
     /**
