@@ -4,7 +4,7 @@ namespace Canvas\Models;
 
 use Baka\Contracts\Auth\UserInterface;
 use Baka\Database\Model;
-use Baka\Http\Exception\ForbiddenException;
+use Baka\Http\Exception\SessionNotFound;
 use Canvas\Contracts\Auth\TokenTrait;
 
 class Sessions extends Model
@@ -68,7 +68,7 @@ class Sessions extends Model
 
         if ($banInfo) {
             if ($banInfo['ip'] || $banInfo['users_id'] || $banInfo['email']) {
-                throw new ForbiddenException(_('This account has been banned. Please contact the administrators.'));
+                throw new SessionNotFound(_('This account has been banned. Please contact the administrators.'));
             }
         }
 
@@ -146,12 +146,12 @@ class Sessions extends Model
         $userData = $result->getFirst();
 
         if (empty($userData)) {
-            throw new ForbiddenException('Invalid Session');
+            throw new SessionNotFound('Invalid Session');
         }
 
         //wtf? how did you get this token to mimic another user?
         if ($userData->user->getId() != $user->getId()) {
-            throw new ForbiddenException('Invalid Token');
+            throw new SessionNotFound('Invalid Token');
         }
 
         //
@@ -166,7 +166,7 @@ class Sessions extends Model
                 $session->session_page = $pageId;
 
                 if (!$session->update()) {
-                    throw new ForbiddenException(current($session->getMessages()));
+                    throw new SessionNotFound(current($session->getMessages()));
                 }
 
                 //update user
@@ -183,7 +183,7 @@ class Sessions extends Model
             return $user;
         }
 
-        throw new ForbiddenException(_('No Session Token Found'));
+        throw new SessionNotFound(_('No Session Token Found'));
     }
 
     /**
