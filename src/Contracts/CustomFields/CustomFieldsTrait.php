@@ -167,39 +167,6 @@ trait CustomFieldsTrait
      *
      * @return ModelInterface|null
      */
-    public static function findFirstByCustomField(string $name, $value, ?Companies $company = null) : ?ModelInterface
-    {
-        $customField = AppsCustomFields::findFirst([
-            'conditions' => 'companies_id = :companies_id:  
-                            AND model_name = :model_name: 
-                            AND name = :name: 
-                            AND value = :value:
-                            AND is_deleted = 0
-                            ',
-            'bind' => [
-                'companies_id' => $company ? $company->getId() : Companies::GLOBAL_COMPANIES_ID,
-                'model_name' => static::class,
-                'name' => $name,
-                'value' => $value
-            ]
-        ]);
-
-        if ($customField) {
-            return static::findFirst($customField->entity_id);
-        }
-
-        return null;
-    }
-
-    /**
-     * Find first a entity by custom field.
-     *
-     * @param string $name
-     * @param mixed $value
-     * @param Companies|null $company
-     *
-     * @return ModelInterface|null
-     */
     public static function findByCustomField(string $name, $value, ?Companies $company = null) : ResultsetInterface
     {
         return AppsCustomFields::find([

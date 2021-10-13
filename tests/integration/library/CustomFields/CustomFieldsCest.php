@@ -30,23 +30,6 @@ class CustomFieldsCest
         $I->assertTrue($systemModule->get('test') == $value);
     }
 
-    public function findFirstByCustomField(IntegrationTester $I)
-    {
-        $searchCustomField = AppsCustomFields::findFirst();
-        $customField = SystemModules::findFirstByCustomField($searchCustomField->name, $searchCustomField->value);
-
-        $I->assertTrue($customField instanceof $searchCustomField->model_name);
-    }
-
-    public function findFirstByCustomFieldNotFound(IntegrationTester $I)
-    {
-        $value = $I->faker()->name;
-
-        $customField = SystemModules::findFirstByCustomField('test', $value);
-
-        $I->assertTrue($customField === null);
-    }
-
     public function findByCustomField(IntegrationTester $I)
     {
         $searchCustomField = AppsCustomFields::findFirst();
