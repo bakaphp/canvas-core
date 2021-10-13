@@ -6,8 +6,10 @@ use Baka\Auth\UserProvider;
 use Baka\Contracts\CustomFields\CustomFieldsTrait as CustomFieldsCustomFieldsTrait;
 use Canvas\CustomFields\CustomFields;
 use Canvas\Models\AppsCustomFields;
+use Canvas\Models\Companies;
 use Canvas\Models\CustomFieldsModules;
 use Phalcon\Di;
+use Phalcon\Mvc\Model\ResultsetInterface;
 use Phalcon\Mvc\ModelInterface;
 use Phalcon\Utils\Slug;
 
@@ -57,9 +59,12 @@ trait CustomFieldsTrait
     public function getCustomField(string $name) : ?ModelInterface
     {
         return AppsCustomFields::findFirst([
-            'conditions' => 'companies_id = :companies_id:  AND model_name = :model_name: AND entity_id = :entity_id: AND name = :name:',
+            'conditions' => 'companies_id = :companies_id: 
+                            AND model_name = :model_name: 
+                            AND entity_id = :entity_id: 
+                            AND name = :name:',
             'bind' => [
-                'companies_id' => $this->companies_id,
+                'companies_id' => $this->companies_id ?? Companies::GLOBAL_COMPANIES_ID,
                 'model_name' => get_class($this),
                 'entity_id' => $this->getId(),
                 'name' => $name,
@@ -77,7 +82,7 @@ trait CustomFieldsTrait
      */
     public function set(string $name, $value)
     {
-        $companyId = $this->companies_id ?? 0;
+        $companyId = $this->companies_id ?? Companies::GLOBAL_COMPANIES_ID;
 
         $this->setInRedis($name, $value);
 
@@ -141,7 +146,7 @@ trait CustomFieldsTrait
                 'custom_fields_modules_id' => $customFieldModules->getId(),
             ]
         ], [
-            'users_id' => $di->has('userData') ? UserProvider::get()->getId() : 0,
+            'users_id' => $di->has('userData') ? UserProvider::get()->getId() : Companies::GLOBAL_COMPANIES_ID,
             'companies_id' => $companiesId,
             'apps_id' => $appsId,
             'name' => $name,
@@ -151,5 +156,65 @@ trait CustomFieldsTrait
         ]);
 
         return $customField;
+    }
+
+    /**
+     * Find first a entity by custom field.
+     *
+     * @param string $name
+     * @param mixed $value
+     * @param Companies|null $company
+     *
+     * @return ModelInterface|null
+     */
+    public static function findFirstByCustomField(string $name, $value, ?Companies $company = null) : ?ModelInterface
+    {
+        $customField = AppsCustomFields::findFirst([
+            'conditions' => 'companies_id = :companies_id:  
+                            AND model_name = :model_name: 
+                            AND name = :name: 
+                            AND value = :value:
+                            AND is_deleted = 0
+                            ',
+            'bind' => [
+                'companies_id' => $company ? $company->getId() : Companies::GLOBAL_COMPANIES_ID,
+                'model_name' => static::class,
+                'name' => $name,
+                'value' => $value
+            ]
+        ]);
+
+        if ($customField) {
+            return static::findFirst($customField->entity_id);
+        }
+
+        return null;
+    }
+
+    /**
+     * Find first a entity by custom field.
+     *
+     * @param string $name
+     * @param mixed $value
+     * @param Companies|null $company
+     *
+     * @return ModelInterface|null
+     */
+    public static function findByCustomField(string $name, $value, ?Companies $company = null) : ResultsetInterface
+    {
+        return AppsCustomFields::find([
+            'conditions' => 'companies_id = :companies_id:  
+                            AND model_name = :model_name: 
+                            AND name = :name: 
+                            AND value = :value:
+                            AND is_deleted = 0
+                            ',
+            'bind' => [
+                'companies_id' => $company ? $company->getId() : Companies::GLOBAL_COMPANIES_ID,
+                'model_name' => static::class,
+                'name' => $name,
+                'value' => $value
+            ]
+        ]);
     }
 }
