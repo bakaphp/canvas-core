@@ -23,23 +23,25 @@ class NotificationsUnsubscribe extends AbstractModel
 
         $this->belongsTo(
             'users_id',
-            'Canvas\Models\Users',
+            Users::class,
             'id',
             ['alias' => 'user']
         );
 
         $this->belongsTo(
             'notification_type_id',
-            'Canvas\Models\NotificationType',
+            NotificationType::class,
             'id',
             ['alias' => 'type']
         );
     }
 
     /**
-     * get NotificationsUnsubscribe by NotificationType
+     * get NotificationsUnsubscribe by NotificationType.
+     *
      * @param Users $user
      * @param int $notificationTypeId
+     *
      * @return NotificationsUnsubscribe
      */
     public static function getByNotificationType(Users $user, int $notificationTypeId) : ?NotificationsUnsubscribe
@@ -56,9 +58,11 @@ class NotificationsUnsubscribe extends AbstractModel
     }
 
     /**
-     * Verify that the user is unsubscribed
+     * Verify that the user is unsubscribed.
+     *
      * @param Users $user
      * @param int $notificationType
+     *
      * @return bool
      */
     public static function isUnsubscribe(Users $user, int $notificationTypeId) : bool
@@ -74,10 +78,12 @@ class NotificationsUnsubscribe extends AbstractModel
     }
 
     /**
-     * unsubscribe user for NotificationType
+     * unsubscribe user for NotificationType.
+     *
      * @param Users $user
      * @param int $notificationTypeId
      * @param int $systemModulesId
+     *
      * @return NotificationsUnsubscribe
      */
     public static function unsubscribe(Users $user, int $notificationTypeId, int $systemModulesId) : NotificationsUnsubscribe

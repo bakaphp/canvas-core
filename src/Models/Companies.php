@@ -35,11 +35,11 @@ class Companies extends AbstractModel
     public int $system_modules_id = 1;
     public ?string $phone = null;
 
-    const DEFAULT_COMPANY = 'DefaulCompany';
-    const DEFAULT_COMPANY_APP = 'DefaulCompanyApp_';
-    const PAYMENT_GATEWAY_CUSTOMER_KEY = 'payment_gateway_customer_id';
-    const DEFAULT_COMPANY_BRANCH_APP = 'DefaultCompanyBranchApp_';
-    const GLOBAL_COMPANIES_ID = 0;
+    public const DEFAULT_COMPANY = 'DefaulCompany';
+    public const DEFAULT_COMPANY_APP = 'DefaulCompanyApp_';
+    public const PAYMENT_GATEWAY_CUSTOMER_KEY = 'payment_gateway_customer_id';
+    public const DEFAULT_COMPANY_BRANCH_APP = 'DefaultCompanyBranchApp_';
+    public const GLOBAL_COMPANIES_ID = 0;
 
     /**
      * Initialize method for model.

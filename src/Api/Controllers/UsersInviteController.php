@@ -10,6 +10,8 @@ use Canvas\Auth\Auth;
 use Canvas\Contracts\AuthTrait;
 use Canvas\Models\Roles;
 use Canvas\Models\Users;
+use Canvas\Models\Companies;
+use Canvas\Models\UserConfig;
 use Canvas\Models\UsersInvite;
 use Canvas\Notifications\Invitation;
 use Exception;
@@ -154,16 +156,11 @@ class UsersInviteController extends BaseController
         } catch (Exception $e) {
             try {
                 $newUser = $usersInvite->newUser($request);
-
                 $this->db->begin();
-
-                //signup
                 $newUser = Auth::signUp($newUser);
-
                 $this->db->commit();
             } catch (Exception $e) {
                 $this->db->rollback();
-
                 throw new UnprocessableEntityException($e->getMessage());
             }
         }
@@ -183,5 +180,24 @@ class UsersInviteController extends BaseController
             'user' => $newUser,
             'session' => $authInfo
         ]);
+    }
+
+    /**
+     * Resends invite email.
+     *
+     * @param int $id
+     *
+     * @return Response
+     */
+    public function resendInvite(int $id) : Response
+    {
+        $userInvite = UsersInvite::findFirstOrFail($id);
+
+        $tempUser = new Users();
+        $tempUser->id = 0;
+        $tempUser->email = $userInvite->email;
+        $tempUser->notify(new Invitation($userInvite));
+
+        return $this->response("Success");
     }
 }

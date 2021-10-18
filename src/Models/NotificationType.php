@@ -16,6 +16,9 @@ class NotificationType extends AbstractModel
     public ?string $template = null;
     public ?string $icon_url = null;
     public int $with_realtime;
+    public int $parent_id = 0;
+    public int $is_published = 1;
+    public float $weight = 0.0;
 
     /**
      * Initialize method for model.
@@ -52,21 +55,24 @@ class NotificationType extends AbstractModel
      *
      * @param string $key
      * @param Model $model
+     *
      * @return NotificationType
      */
     public static function getByKeyOrCreate(string $key, ?Model $model = null) : NotificationType
     {
         $app = Di::getDefault()->getApp();
         $systemModule = SystemModules::getByModelName(get_class($model));
-        
-        return self::findFirstOrCreate([
-            'conditions' => 'apps_id in (?0, ?1) AND key = ?2',
-            'bind' => [
-                $app->getId(),
-                Apps::CANVAS_DEFAULT_APP_ID,
-                $key
-            ]
-            ],[
+
+        return self::findFirstOrCreate(
+            [
+                'conditions' => 'apps_id in (?0, ?1) AND key = ?2',
+                'bind' => [
+                    $app->getId(),
+                    Apps::CANVAS_DEFAULT_APP_ID,
+                    $key
+                ]
+            ],
+            [
                 'apps_id' => $app->getId(),
                 'system_modules_id' => $systemModule->getId(),
                 'name' => get_class($model),

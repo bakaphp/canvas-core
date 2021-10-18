@@ -51,7 +51,7 @@ class Pusher extends Job implements QueueableJobInterface
      */
     public function handle()
     {
-        $pusher = Di::getDefault()->getPusher();
+        $pusher = Di::getDefault()->get('pusher');
         return $pusher->trigger($this->channel, $this->event, $this->params);
     }
 }

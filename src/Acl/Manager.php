@@ -22,6 +22,9 @@ use Phalcon\Db\AdapterInterface as DbAdapter;
 use Phalcon\Db\Enum;
 use Phalcon\Di;
 
+/**
+ * @todo Full refactor for v0.4 (PermissionTrait and Roles Model)
+ */
 class Manager extends AbstractAdapter
 {
     /**
@@ -138,7 +141,7 @@ class Manager extends AbstractAdapter
     /**
      * Get the current App.
      *
-     * @return void
+     * @return Companies
      */
     public function getCompany() : Companies
     {
@@ -459,7 +462,7 @@ class Manager extends AbstractAdapter
      * @param  array|string $access
      * @param  mixed $func
      *
-     * @return bool
+     * @return void
      */
     public function deny($roleName, $resourceName, $access, $func = null) : void
     {

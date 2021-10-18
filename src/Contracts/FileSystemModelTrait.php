@@ -532,22 +532,7 @@ trait FileSystemModelTrait
             $condition = 'AND f.companies_id = :company_id';
         }
 
-        $sql = '
-        SELECT
-            e.*
-            FROM 
-                filesystem_entities AS e,
-                filesystem AS f
-            WHERE 
-                e.filesystem_id = f.id
-                AND e.system_modules_id = :system_module_id
-                AND e.entity_id = :entity_id
-                AND e.is_deleted = :is_deleted
-                AND f.is_deleted = :is_deleted
-                AND f.id = e.filesystem_id
-                ' . $condition . ' 
-            ORDER BY e.id DESC
-        ';
+        $sql = $this->getAttachmentsQuery($condition);
 
         $key = self::generateCacheKey($bindParams);
         $resultSet = $redis->get($key);
@@ -564,6 +549,49 @@ trait FileSystemModelTrait
         }
 
         return $resultSet;
+    }
+
+    /**
+     * Given a condition get the optimize query.
+     *
+     * @param string|null $condition
+     *
+     * @return string
+     */
+    protected function getAttachmentsQuery(?string $condition = null) : string
+    {
+        if (is_null($condition)) {
+            $sql = '
+                SELECT
+                    *
+                    FROM 
+                        filesystem_entities
+                    WHERE 
+                        system_modules_id = :system_module_id
+                        AND entity_id = :entity_id
+                        AND is_deleted = :is_deleted
+                    ORDER BY id DESC
+                ';
+        } else {
+            $sql = '
+                SELECT
+                    e.*
+                    FROM 
+                        filesystem_entities AS e,
+                        filesystem AS f
+                    WHERE 
+                        e.filesystem_id = f.id
+                        AND e.system_modules_id = :system_module_id
+                        AND e.entity_id = :entity_id
+                        AND e.is_deleted = :is_deleted
+                        AND f.is_deleted = :is_deleted
+                        AND f.id = e.filesystem_id
+                        ' . $condition . ' 
+                    ORDER BY e.id DESC
+                ';
+        }
+
+        return $sql;
     }
 
     /**

@@ -4,6 +4,7 @@ namespace Canvas\Cli\Jobs;
 
 use Baka\Contracts\Queue\QueueableJobInterface;
 use Baka\Jobs\Job;
+use Canvas\Models\Notifications;
 use Canvas\Models\UserLinkedSources;
 use Canvas\Models\Users;
 use Canvas\Notifications\PushNotification;
@@ -21,6 +22,8 @@ class PushNotifications extends Job implements QueueableJobInterface
     protected Users $users;
     protected string $message;
     protected string $title;
+    protected const IOS = 3;
+    protected const ANDROID = 2;
     /**
      * Realtime params.
      *
@@ -72,17 +75,22 @@ class PushNotifications extends Job implements QueueableJobInterface
             $pushBody['data'] = $this->params;
         }
 
-        /**
-         * @todo change to use some constanta , ID don't tell you what device it is
-         */
-        //send push android
-        if (!empty($userDevicesArray[2])) {
-            $pushBody['include_player_ids'][] = $userDevicesArray[2][0];
+        //if IOS add badge
+        if (!empty($userDevicesArray[self::IOS])) {
+            $pushBody['ios_badgeType'] = 'SetTo';
+            $pushBody['ios_badgeCount'] = Notifications::totalUnRead($this->users);
         }
 
-        //ios
-        if (!empty($userDevicesArray[3])) {
-            $pushBody['include_player_ids'][] = $userDevicesArray[3][0];
+        /**
+         * @todo We need to use external_users_id instead of player_id in the future
+         * for proper multi-device notification.
+         */
+        foreach ($userDevicesArray as $userDevicesSourcesArray) {
+            if (!empty($userDevicesSourcesArray)) {
+                foreach ($userDevicesSourcesArray as $userDevice) {
+                    $pushBody['include_player_ids'][] = $userDevice;
+                }
+            }
         }
 
         try {

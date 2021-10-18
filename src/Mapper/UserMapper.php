@@ -6,7 +6,9 @@ namespace Canvas\Mapper;
 
 use AutoMapperPlus\CustomMapper\CustomMapper;
 use Canvas\Contracts\Mapper\RelationshipTrait;
+use Canvas\Enums\Notification;
 use Canvas\Models\AccessList;
+use Canvas\Models\Notifications;
 use Canvas\Models\Users;
 use Phalcon\Di;
 
@@ -93,6 +95,8 @@ class UserMapper extends CustomMapper
         $userDto->countries = $user->countries ?: null;
         $userDto->states = $user->states ?: null;
         $userDto->cities = $user->cities ?: null;
+        $userDto->new_notification = Notifications::totalUnRead($user);
+        $userDto->notification_mute_all_status = (int) $user->get(Notification::USER_MUTE_ALL_STATUS);
 
         /**
          * Properties we need to overwrite base on the

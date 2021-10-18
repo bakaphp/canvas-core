@@ -78,7 +78,7 @@ class QueueTask extends PhTask
             }
 
             if (!class_exists($notification['notification'])) {
-                echo 'Attribute notification has to be a Notificatoin' . PHP_EOL;
+                echo 'Attribute notification has to be a Notification' . PHP_EOL;
                 return;
             }
             $notificationClass = $notification['notification'];
@@ -159,7 +159,7 @@ class QueueTask extends PhTask
                             [$result]
                         );
                     } catch (Throwable $e) {
-                        $this->log->info(
+                        $this->log->error(
                             $e->getMessage(),
                             [
                                 $e->getTraceAsString(),
@@ -177,7 +177,7 @@ class QueueTask extends PhTask
                     return $msg->ack();
                 });
             } catch (Throwable $e) {
-                $this->log->info(
+                $this->log->error(
                     $e->getMessage(),
                     [
                         $e->getTraceAsString(),
@@ -196,15 +196,18 @@ class QueueTask extends PhTask
      */
     protected function reconnectDb() : void
     {
-        if (!$this->isDbConnected('db')) {
-            return;
-        }
+        //list all of our di
+        $listOfServices = array_keys($this->di->getServices());
 
-        if ($this->di->has('dblocal')) {
-            if (!$this->isDbConnected('dblocal')) {
-                return;
+        foreach ($listOfServices as $service) {
+            //find all db providers
+            if (Str::contains(strtolower($service), 'db')) {
+                $this->isDbConnected($service);
+
             }
         }
+
+        return ;
     }
 
     /**
@@ -217,7 +220,8 @@ class QueueTask extends PhTask
         try {
             $this->di->get($dbProvider)->fetchAll('SELECT 1');
         } catch (Throwable $e) {
-            if (Str::contains($this->getMessage(), 'MySQL server has gone away')) {
+            if (Str::contains($e->getMessage(), 'MySQL server has gone away') ||
+                Str::contains($e->getMessage(), 'Connection timed out')) {
                 $this->di->get($dbProvider)->connect();
                 return true;
             }

@@ -20,10 +20,13 @@ class DatabaseProvider implements ServiceProviderInterface
      */
     public function register(DiInterface $container) : void
     {
-        //cant run isCLI on github action
-        $shared = defined('API_TESTS') || !isCLI() ? true : false;
+        /* $shared = true;
+        //only when active do we run full async
+        if (envValue('SWOOLE_COROUTINE_SHARED_DB', false)) {
+            $shared = defined('API_TESTS') || !isCLI() ? true : false;
+        } */
 
-        $container->set(
+        $container->setShared(
             'db',
             function () {
                 $options = [
@@ -32,7 +35,9 @@ class DatabaseProvider implements ServiceProviderInterface
                     'password' => envValue('DATA_API_MYSQL_PASS', ''),
                     'dbname' => envValue('DATA_API_MYSQL_NAME', 'gonano'),
                     'charset' => 'utf8',
-                    'options' => [PDO::ATTR_ERRMODE => PDO::ERRMODE_WARNING]
+                    'options' => [
+                        PDO::ATTR_ERRMODE => PDO::ERRMODE_WARNING,
+                    ]
                 ];
 
                 try {
@@ -45,8 +50,7 @@ class DatabaseProvider implements ServiceProviderInterface
                 }
 
                 return $connection;
-            },
-            $shared
+            }
         );
     }
 }

@@ -8,14 +8,16 @@ use Baka\Contracts\Auth\UserInterface;
 use Baka\Contracts\Notifications\NotificationInterface;
 use Baka\Mail\Message;
 use Baka\Queue\Queue;
+use Canvas\Contracts\EventManagerAwareTrait;
 use Canvas\Models\AbstractModel;
 use Canvas\Models\Notifications;
+use Canvas\Models\Notifications\UserEntityImportance;
+use Canvas\Models\Notifications\UserSettings;
 use Canvas\Models\NotificationType;
 use Canvas\Models\Users;
 use Phalcon\Di;
 use Phalcon\Mvc\Model;
 use Phalcon\Mvc\ModelInterface;
-use Phalcon\Traits\EventManagerAwareTrait;
 
 class Notification implements NotificationInterface
 {
@@ -26,6 +28,7 @@ class Notification implements NotificationInterface
     protected $type = null;
     protected ?ModelInterface $entity = null;
     protected string $message = '';
+    protected ?Notifications $currentNotification = null;
 
     /**
      * Send this notification to the queue?
@@ -35,29 +38,29 @@ class Notification implements NotificationInterface
     protected bool $useQueue = false;
 
     /**
-     * Save the notifications into the db
+     * Save the notifications into the db.
      *
      * @var bool
      */
     protected bool $saveNotification = true;
 
     /**
-     * Send this notification to pusher
-     * 
+     * Send this notification to pusher.
+     *
      * @var bool
      */
     protected bool $toPusher = true;
 
     /**
-     * Send this notification to mail
-     * 
+     * Send this notification to mail.
+     *
      * @var bool
      */
     protected bool $toMail = true;
 
     /**
-     * Send this notification to push notification
-     * 
+     * Send this notification to push notification.
+     *
      * @var bool
      */
     protected bool $toPushNotification = true;
@@ -119,7 +122,7 @@ class Notification implements NotificationInterface
     /**
      * Define a Baka Mail to send a email.
      *
-     * @todo add Interfase to bakaMail
+     * @todo add Interface to bakaMail
      *
      * @return Message
      */
@@ -149,7 +152,7 @@ class Notification implements NotificationInterface
     }
 
     /**
-     * Set the usre we are sending the notification to.
+     * Set the user we are sending the notification to.
      *
      * @param Users $user
      *
@@ -173,7 +176,7 @@ class Notification implements NotificationInterface
     }
 
     /**
-     * Set the usre we are sending the notification to.
+     * Set the user we are sending the notification to.
      *
      * @return Users
      */
@@ -254,7 +257,12 @@ class Notification implements NotificationInterface
     {
         //if the user didn't provide the type get it based on the class name
         if (is_null($this->type)) {
-            $this->setType(NotificationType::getByKeyOrCreate(static::class, $this->entity));
+            $this->setType(
+                NotificationType::getByKeyOrCreate(
+                    static::class,
+                    $this->entity
+                )
+            );
         } elseif (is_string($this->type)) {
             //not great but for now lets use it
             $this->setType(NotificationType::getByKey($this->type));
@@ -289,31 +297,34 @@ class Notification implements NotificationInterface
             'notification' => get_class($this),
         ];
 
-        return Queue::send(Queue::NOTIFICATIONS, serialize($notificationData));
+        return Queue::send(
+            Queue::NOTIFICATIONS,
+            serialize($notificationData)
+        );
     }
 
     /**
-     * Save the notification used to the database
+     * Save the notification used to the database.
      *
-     * @return boolean
+     * @return bool
      */
-    public function saveNotification(): bool
+    public function saveNotification() : bool
     {
         $content = $this->message();
-        $app = Di::getDefault()->getApp();
+        $app = Di::getDefault()->get('app');
 
         //save to DB
-        $notification = new Notifications();
-        $notification->from_users_id = $this->fromUser->getId();
-        $notification->users_id = $this->toUser->getId();
-        $notification->companies_id = $this->fromUser->currentCompanyId();
-        $notification->apps_id = $app->getId();
-        $notification->system_modules_id = $this->type->system_modules_id;
-        $notification->notification_type_id = $this->type->getId();
-        $notification->entity_id = $this->entity->getId();
-        $notification->content = $content;
-        $notification->read = 0;
-        $notification->saveOrFail();
+        $this->currentNotification = new Notifications();
+        $this->currentNotification->from_users_id = $this->fromUser->getId();
+        $this->currentNotification->users_id = $this->toUser->getId();
+        $this->currentNotification->companies_id = $this->fromUser->currentCompanyId();
+        $this->currentNotification->apps_id = $app->getId();
+        $this->currentNotification->system_modules_id = $this->type->system_modules_id;
+        $this->currentNotification->notification_type_id = $this->type->getId();
+        $this->currentNotification->entity_id = $this->entity->getId();
+        $this->currentNotification->content = $content;
+        $this->currentNotification->read = 0;
+        $this->currentNotification->saveOrFail();
 
         return true;
     }
@@ -325,29 +336,66 @@ class Notification implements NotificationInterface
      */
     public function trigger() : bool
     {
-        if($this->saveNotification) {
+        if ($this->saveNotification) {
             $this->saveNotification();
         }
 
-        if($this->toPusher) {
-            $this->toPusher();
-        }
+        if ($this->sendNotificationEnabled()) {
+            if ($this->toPusher) {
+                $this->toPusher();
+            }
 
-        if($this->toMail) {
-            $this->toMailNotification();
-        }
+            if ($this->toMail) {
+                $this->toMailNotification();
+            }
 
-        if($this->toPushNotification) {
-            $this->toSendPushNotification();
+            if ($this->toPushNotification) {
+                $this->toSendPushNotification();
+            }
         }
 
         return true;
     }
 
     /**
-     * Send to pusher the notification
+     * Check the current user setting to know if he wants to receive
+     * the current type of notification.
      *
-     * @return boolean
+     * @return bool
+     */
+    protected function sendNotificationEnabled() : bool
+    {
+        $sendNotificationByImportance = true;
+        $app = Di::getDefault()->get('app');
+
+        //is this type of notification enabled for this user?
+        $sendNotification = UserSettings::isEnabled(
+            $app,
+            $this->toUser,
+            $this->type
+        );
+
+        //those he want to receive this type of notification from the current entity?
+        if ($this->fromUser instanceof UserInterface) {
+            $toUserSettlings = UserEntityImportance::getByEntity(
+                $app,
+                $this->toUser,
+                $this->fromUser
+            );
+
+            if ($toUserSettlings && is_object($toUserSettlings->importance)) {
+                $sendNotificationByImportance = $toUserSettlings->importance->validateExpression($this->currentNotification);
+            }
+        }
+
+        return $sendNotification && $sendNotificationByImportance;
+    }
+
+
+    /**
+     * Send to pusher the notification.
+     *
+     * @return bool
      */
     public function toPusher() : bool
     {
@@ -360,9 +408,9 @@ class Notification implements NotificationInterface
     }
 
     /**
-     * Send notification to mail
+     * Send notification to mail.
      *
-     * @return boolean
+     * @return bool
      */
     public function toMailNotification() : bool
     {
@@ -375,9 +423,9 @@ class Notification implements NotificationInterface
     }
 
     /**
-     * Send Push notification
+     * Send Push notification.
      *
-     * @return boolean
+     * @return bool
      */
     public function toSendPushNotification() : bool
     {

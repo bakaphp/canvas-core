@@ -12,6 +12,7 @@ use Baka\Hashing\Password;
 use Baka\Support\Random;
 use Canvas\Models\Sessions;
 use Canvas\Models\Users;
+use Canvas\Models\Companies;
 use Exception;
 use Lcobucci\JWT\Token;
 use stdClass;
@@ -29,7 +30,7 @@ class Auth
      *
      * @return UserInterface
      */
-    public static function login(string $email, string $password) : UserInterface
+    public static function login(string $email, string $password, int $autologin = 1, int $admin = 0, ?string $userIp = null) : UserInterface
     {
         //trim email
         $email = ltrim(trim($email));
@@ -42,6 +43,14 @@ class Auth
         if (!$user) {
             throw new AuthException(_('Invalid email or password.'));
         }
+
+        /**
+         * @todo Remove this in future versions
+         */
+        if (!$user->get($user->getDefaultCompany()->branchCacheKey())) {
+            $user->set($user->getDefaultCompany()->branchCacheKey(), $user->getDefaultCompany()->branch->getId());
+        }
+
 
         self::loginAttemptsValidation($user);
 
@@ -59,9 +68,9 @@ class Auth
 
             throw new AuthException(_('Invalid email or password.'));
         } elseif ($user->isBanned()) {
-            throw new AuthException(_('User has not been banned, please check your email for the activation link.'));
+            throw new AuthException(_('User has been banned, please contact support.'));
         } else {
-            throw new AuthException(_('User has not been activated, please check your email for the activation link.'));
+            throw new AuthException(_('User is not active, please contact support.'));
         }
     }
 

@@ -46,10 +46,10 @@ class User
     public ?int $state_id = null;
     public ?int $status = null;
     public ?string $stripe_id = null;
-    public ?int $system_modules_id = 0;
+    public ?int $system_modules_id = 2;
     public ?string $timezone = null;
     public ?string $trial_ends_at = null;
-    public string $updated_at;
+    public ?string $updated_at;
     public $user_active;
     public ?int $user_last_login_try = null;
     public int $user_level;
@@ -58,5 +58,7 @@ class User
     public ?int $votes_points = null;
     public ?int $welcome = null;
     public ?string $user_activation_email = null;
+    public int $new_notification = 0;
+    public int $notification_mute_all_status = 0;
     public $photo;
 }

@@ -9,7 +9,7 @@ class UpdateLinkedSourceWithDatesCreation extends AbstractMigration
     {
         $this->table('user_linked_sources', [
             'id' => false,
-            'primary_key' => ['users_id', 'source_id'],
+            'primary_key' => ['id'],
             'engine' => 'InnoDB',
             'encoding' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
