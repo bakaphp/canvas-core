@@ -7,6 +7,7 @@ use Baka\Queue\Queue;
 use Baka\Support\Str;
 use Canvas\Models\Users;
 use Phalcon\Cli\Task as PhTask;
+use Phalcon\Di;
 use Phalcon\Mvc\Model;
 use Throwable;
 
@@ -134,7 +135,7 @@ class QueueTask extends PhTask
                 }
 
                 if (!$job['job'] instanceof QueueableJobInterface) {
-                    echo 'This Job is not queueable ' . $msg->delivery_info['consumer_tag'] ;
+                    echo 'This Job is not queueable ' . $msg->delivery_info['consumer_tag'];
                     $this->log->error('This Job is not queueable ' . $msg->delivery_info['consumer_tag']);
                     return;
                 }
@@ -143,6 +144,13 @@ class QueueTask extends PhTask
                     //instance notification and pass the entity
                     try {
                         $this->reconnectDb();
+
+                        $redis = Di::getDefault()->get('redis');
+
+                        $retriesCount = $redis->incr($msg->get('message_id'));
+
+                        $job['job']->setMetadata('isRetry', $retriesCount > 1);
+                        $job['job']->setMetadata('retriesQuantity', $retriesCount - 1);
 
                         $result = $job['job']->handle();
 
@@ -154,7 +162,7 @@ class QueueTask extends PhTask
                         $this->log->info(
                             $e->getMessage(),
                             [
-                                $e->getTraceAsString()
+                                $e->getTraceAsString(),
                             ]
                         );
 
@@ -172,7 +180,7 @@ class QueueTask extends PhTask
                 $this->log->info(
                     $e->getMessage(),
                     [
-                        $e->getTraceAsString()
+                        $e->getTraceAsString(),
                     ]
                 );
             }
@@ -189,12 +197,12 @@ class QueueTask extends PhTask
     protected function reconnectDb() : void
     {
         if (!$this->isDbConnected('db')) {
-            return ;
+            return;
         }
 
         if ($this->di->has('dblocal')) {
             if (!$this->isDbConnected('dblocal')) {
-                return ;
+                return;
             }
         }
     }
