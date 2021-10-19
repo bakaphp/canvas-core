@@ -115,9 +115,9 @@ class QueueTask extends PhTask
     {
         $queue = is_null($queueName) ? QUEUE::JOBS : $queueName;
 
-        $callback = function (object $msg) : void {
-            $sentryClient = SentrySdk::getCurrentHub()->getClient();
+        $sentryClient = SentrySdk::getCurrentHub()->getClient();
 
+        $callback = function (object $msg) use ($sentryClient) : void {
             try {
                 //check the db before running anything
                 $this->reconnectDb();
