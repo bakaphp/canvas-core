@@ -8,6 +8,7 @@ use Baka\Support\Str;
 use Canvas\Models\Users;
 use Phalcon\Cli\Task as PhTask;
 use Phalcon\Mvc\Model;
+use Sentry\SentrySdk;
 use Throwable;
 
 class QueueTask extends PhTask
@@ -115,6 +116,8 @@ class QueueTask extends PhTask
         $queue = is_null($queueName) ? QUEUE::JOBS : $queueName;
 
         $callback = function (object $msg) : void {
+            $sentryClient = SentrySdk::getCurrentHub()->getClient();
+
             try {
                 //check the db before running anything
                 $this->reconnectDb();
@@ -134,12 +137,12 @@ class QueueTask extends PhTask
                 }
 
                 if (!$job['job'] instanceof QueueableJobInterface) {
-                    echo 'This Job is not queueable ' . $msg->delivery_info['consumer_tag'] ;
+                    echo 'This Job is not queueable ' . $msg->delivery_info['consumer_tag'];
                     $this->log->error('This Job is not queueable ' . $msg->delivery_info['consumer_tag']);
                     return;
                 }
 
-                go(function () use ($job, $msg) {
+                go(function () use ($job, $msg, $sentryClient) {
                     //instance notification and pass the entity
                     try {
                         $this->reconnectDb();
@@ -154,18 +157,22 @@ class QueueTask extends PhTask
                         $this->log->error(
                             $e->getMessage(),
                             [
-                                $e->getTraceAsString()
+                                $e->getTraceAsString(),
                             ]
                         );
+
+                        $sentryClient->flush();
                     }
                 });
             } catch (Throwable $e) {
                 $this->log->error(
                     $e->getMessage(),
                     [
-                        $e->getTraceAsString()
+                        $e->getTraceAsString(),
                     ]
                 );
+
+                $sentryClient->flush();
             }
         };
 
@@ -189,7 +196,7 @@ class QueueTask extends PhTask
             }
         }
 
-        return ;
+        return;
     }
 
     /**
