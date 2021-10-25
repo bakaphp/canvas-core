@@ -154,6 +154,8 @@ class QueueTask extends PhTask
 
                         $result = $job['job']->handle();
 
+                        $redis->del($msg->get('message_id'));
+
                         $this->log->info(
                             "Job ({$job['class']}) ran for {$job['userData']->getEmail()} - Process ID " . $msg->delivery_info['consumer_tag'],
                             [$result]
@@ -203,7 +205,6 @@ class QueueTask extends PhTask
             //find all db providers
             if (Str::contains(strtolower($service), 'db')) {
                 $this->isDbConnected($service);
-
             }
         }
 
