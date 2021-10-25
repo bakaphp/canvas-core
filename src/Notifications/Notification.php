@@ -15,6 +15,7 @@ use Canvas\Models\Notifications\UserEntityImportance;
 use Canvas\Models\Notifications\UserSettings;
 use Canvas\Models\NotificationType;
 use Canvas\Models\Users;
+use Carbon\Carbon;
 use Phalcon\Di;
 use Phalcon\Mvc\Model;
 use Phalcon\Mvc\ModelInterface;
@@ -66,6 +67,27 @@ class Notification implements NotificationInterface
     protected bool $toPushNotification = true;
 
     /**
+     * Allows notifications to be groupable or not groupable.
+     *
+     * @var bool
+     */
+    protected bool $groupable = true;
+
+    /**
+     * The minimum time to consider before grouping notifications.
+     *
+     * @var int
+     */
+    protected int $softCap = 1;
+
+    /**
+     * The maximun time to consider before grouping notifications.
+     *
+     * @var int
+     */
+    protected int $hardCap = 2000;
+
+    /**
      *
      * @var Baka\Mail\Manager
      */
@@ -96,6 +118,43 @@ class Notification implements NotificationInterface
     {
         $this->type = $type;
     }
+
+    /**
+     * Set the soft cap.
+     *
+     * @param int $softCap
+     *
+     * @return void
+     */
+    public function setSoftCap(int $softCap) : void
+    {
+        $this->softCap = $softCap;
+    }
+
+    /**
+     * Set the hard cap.
+     *
+     * @param int $hardCap
+     *
+     * @return void
+     */
+    public function setHardCap(int $hardCap) : void
+    {
+        $this->hardCap = $hardCap;
+    }
+
+    /**
+     * Set groupable flag.
+     *
+     * @param bool $hardCap
+     *
+     * @return void
+     */
+    public function setGroupable(bool $groupable) : void
+    {
+        $this->groupable = $groupable;
+    }
+
 
     /**
      * Return the message from the current notification type.
@@ -312,22 +371,31 @@ class Notification implements NotificationInterface
     {
         $content = $this->message();
         $app = Di::getDefault()->get('app');
+        $isGroupable = ($this->groupable) ? $this->isGroupable() : null;
 
         //save to DB
-        $this->currentNotification = new Notifications();
-        $this->currentNotification->from_users_id = $this->fromUser->getId();
-        $this->currentNotification->users_id = $this->toUser->getId();
-        $this->currentNotification->companies_id = $this->fromUser->currentCompanyId();
-        $this->currentNotification->apps_id = $app->getId();
-        $this->currentNotification->system_modules_id = $this->type->system_modules_id;
-        $this->currentNotification->notification_type_id = $this->type->getId();
-        $this->currentNotification->entity_id = $this->entity->getId();
-        $this->currentNotification->content = $content;
-        $this->currentNotification->read = 0;
+        if(is_null($isGroupable)){
+            $this->currentNotification = new Notifications();
+            $this->currentNotification->from_users_id = $this->fromUser->getId();
+            $this->currentNotification->users_id = $this->toUser->getId();
+            $this->currentNotification->companies_id = $this->fromUser->currentCompanyId();
+            $this->currentNotification->apps_id = $app->getId();
+            $this->currentNotification->system_modules_id = $this->type->system_modules_id;
+            $this->currentNotification->notification_type_id = $this->type->getId();
+            $this->currentNotification->entity_id = $this->entity->getId();
+            $this->currentNotification->content = $content;
+            $this->currentNotification->read = 0;
+        } else {
+            $this->currentNotification = Notifications::findFirstById($isGroupable);
+            $this->groupNotification();
+        }
+
         $this->currentNotification->saveOrFail();
 
         return true;
     }
+
+
 
     /**
      * Send the notification to the places the user defined.
@@ -383,9 +451,10 @@ class Notification implements NotificationInterface
                 $this->fromUser
             );
 
-            if ($toUserSettlings && is_object($toUserSettlings->importance)) {
-                $sendNotificationByImportance = $toUserSettlings->importance->validateExpression($this->currentNotification);
-            }
+            if ($toUserSettlings
+                && is_object($toUserSettlings->importance)
+                && $this->currentNotification instanceof Notifications
+            ) {
         }
 
         return $sendNotification && $sendNotificationByImportance;
@@ -435,5 +504,57 @@ class Notification implements NotificationInterface
         }
 
         return true;
+    }
+
+    /**
+     * Groups a set of notifications.
+     *
+     * @return void
+     */
+    protected function groupNotification() : void
+    {
+        $notificationGroup = $this->currentNotification->group;
+        $currentUser = [
+            "id" => $this->fromUser->getId(),
+            "name" => $this->fromUser->displayname,
+            "photo" => $this->fromUser->getPhoto()
+            
+        ];
+
+        if(is_null($this->currentNotification->group)) {
+            $notificationGroup->group = [
+                'from_users' => $currentUser
+            ];
+        }
+        else {
+            $notificationGroup = json_decode($this->currentNotification->group);
+            $notificationGroup->from_users[] = $currentUser;
+        }
+
+        $this->currentNotification->group = json_encode($notificationGroup);
+    }
+
+    /**
+     * Identify if notifcationes should be a group.
+     *
+     * @return bool
+     */
+    protected function isGroupable() : ?int
+    {
+        $notificationId = null;
+
+        $sql = "SELECT * FROM notifications
+        WHERE notification_type_id = {$this->type->getId()}
+        AND entity_id = {$this->entity->getId()}
+        AND TIMESTAMPDIFF(MINUTE, CURDATE(), updated_at) between {$this->softCap} and {$this->hardCap}
+        order by updated_at DESC limit 1";
+
+        $notification = Notifications::findByRawSql($sql);
+
+        if(!empty($notification->toArray())){
+            $notificationId = (int) $notification[0]->id;
+        }
+
+        return $notificationId;
     }
 }
