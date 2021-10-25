@@ -123,7 +123,7 @@ class UsersInvite extends AbstractModel
      */
     public function newUser(array $request) : Users
     {
-        $user = Di::getDefault()->get('userProvider');
+        $user = $this->di->get('userProvider');
         $user->firstname = $request['firstname'];
         $user->lastname = $request['lastname'];
         $user->password = $request['password'];
