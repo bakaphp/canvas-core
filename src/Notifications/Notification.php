@@ -544,10 +544,10 @@ class Notification implements NotificationInterface
         $notificationId = null;
 
         $sql = "SELECT * FROM notifications
-        WHERE notification_type_id = {$this->type->getId()}
-        AND entity_id = {$this->entity->getId()}
-        AND TIMESTAMPDIFF(MINUTE, CURDATE(), updated_at) between {$this->softCap} and {$this->hardCap}
-        order by updated_at DESC limit 1";
+                    WHERE notification_type_id = {$this->type->getId()}
+                    AND entity_id = {$this->entity->getId()}
+                    AND TIMESTAMPDIFF(MINUTE, CURDATE(), updated_at) between {$this->softCap} and {$this->hardCap}
+                    order by updated_at DESC limit 1";
 
         $notification = Notifications::findByRawSql($sql);
 
