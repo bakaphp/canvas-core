@@ -15,6 +15,7 @@ use Canvas\Models\Notifications\UserEntityImportance;
 use Canvas\Models\Notifications\UserSettings;
 use Canvas\Models\NotificationType;
 use Canvas\Models\Users;
+use Carbon\Carbon;
 use Phalcon\Di;
 use Phalcon\Mvc\Model;
 use Phalcon\Mvc\ModelInterface;
@@ -451,14 +452,14 @@ class Notification implements NotificationInterface
             );
 
             if ($toUserSettlings
-                && is_object($toUserSettlings->importance)
-                && $this->currentNotification instanceof Notifications
-            ) {
+                    && is_object($toUserSettlings->importance)
+                    && $this->currentNotification instanceof Notifications
+                ) {
+            }
+
+            return $sendNotification && $sendNotificationByImportance;
         }
-
-        return $sendNotification && $sendNotificationByImportance;
     }
-
 
     /**
      * Send to pusher the notification.
