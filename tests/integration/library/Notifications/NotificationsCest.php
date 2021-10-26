@@ -38,6 +38,8 @@ class NotificationsCest
 
         foreach($users as $userGroup) {
             $user->notify(new NewFollower($userGroup, true));
+            $user->notify(new NewFollower($userGroup, true));
+            $user->notify(new NewFollower($userGroup, true));
         }
 
         $notifications = Notifications::findFirst([
