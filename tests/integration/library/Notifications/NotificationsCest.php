@@ -29,4 +29,15 @@ class NotificationsCest
         $user = Users::findFirst();
         $user->notify(new NewFollower($users->getFirst()));
     }
+
+    public function grupedNotifications(IntegrationTester $I)
+    {
+        $users = Users::find('id in (1, 2)');
+        $user = Users::findFirst();
+
+        foreach($users as $userGroup) {
+            $user->notify(new NewFollower($userGroup, true));
+        }
+
+    }
 }

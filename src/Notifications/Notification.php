@@ -70,7 +70,7 @@ class Notification implements NotificationInterface
      *
      * @var bool
      */
-    protected bool $groupable = true;
+    protected bool $groupable = false;
 
     /**
      * The minimum time to consider before grouping notifications.
@@ -84,7 +84,7 @@ class Notification implements NotificationInterface
      *
      * @var int
      */
-    protected int $hardCap = 2000;
+    protected int $hardCap = 5;
 
     /**
      *
@@ -550,7 +550,7 @@ class Notification implements NotificationInterface
         $notification = Notifications::findByRawSql($sql);
 
         if (!empty($notification->toArray())) {
-            $notificationId = (int) $notification[0]->id;
+            $notificationId = (int) $notification->getId();
         }
 
         return $notificationId;
