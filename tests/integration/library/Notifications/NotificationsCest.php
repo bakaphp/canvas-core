@@ -46,7 +46,8 @@ class NotificationsCest
             'order' => 'created_at DESC'
         ]);
 
-        $I->assertIsArray($notifications->group->from_users, 'has a group');
+        $groupUsers = json_decode($notifications->group);
+        $I->assertIsArray($groupUsers->from_users, 'has a group');
 
     }
 }
