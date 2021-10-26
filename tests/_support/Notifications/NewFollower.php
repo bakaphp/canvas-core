@@ -27,7 +27,7 @@ class NewFollower extends Notification implements NotificationInterface
         if ($groupable) {
             $this->setGroupable(true);
             $this->setSoftCap(1);
-            $this->setHardCap(5);
+            $this->setHardCap(2000);
         }
     }
 

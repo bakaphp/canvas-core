@@ -550,7 +550,7 @@ class Notification implements NotificationInterface
         $notification = Notifications::findByRawSql($sql);
 
         if (!empty($notification->toArray())) {
-            $notificationId = (int) $notification->getId();
+            $notificationId = (int) $notification[0]->getId();
         }
 
         return $notificationId;

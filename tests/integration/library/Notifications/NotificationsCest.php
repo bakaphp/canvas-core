@@ -43,7 +43,7 @@ class NotificationsCest
         }
 
         $notifications = Notifications::findFirst([
-            'order' => 'updated_at DESC'
+            'order' => 'created_at DESC'
         ]);
 
         $I->assertIsArray($notifications, 'has a group');
