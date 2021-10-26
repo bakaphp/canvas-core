@@ -15,7 +15,6 @@ use Canvas\Models\Notifications\UserEntityImportance;
 use Canvas\Models\Notifications\UserSettings;
 use Canvas\Models\NotificationType;
 use Canvas\Models\Users;
-use Carbon\Carbon;
 use Phalcon\Di;
 use Phalcon\Mvc\Model;
 use Phalcon\Mvc\ModelInterface;
@@ -374,7 +373,7 @@ class Notification implements NotificationInterface
         $isGroupable = ($this->groupable) ? $this->isGroupable() : null;
 
         //save to DB
-        if(is_null($isGroupable)){
+        if (is_null($isGroupable)) {
             $this->currentNotification = new Notifications();
             $this->currentNotification->from_users_id = $this->fromUser->getId();
             $this->currentNotification->users_id = $this->toUser->getId();
@@ -515,18 +514,17 @@ class Notification implements NotificationInterface
     {
         $notificationGroup = $this->currentNotification->group;
         $currentUser = [
-            "id" => $this->fromUser->getId(),
-            "name" => $this->fromUser->displayname,
-            "photo" => $this->fromUser->getPhoto()
-            
+            'id' => $this->fromUser->getId(),
+            'name' => $this->fromUser->displayname,
+            'photo' => $this->fromUser->getPhoto()
+
         ];
 
-        if(is_null($this->currentNotification->group)) {
+        if (is_null($this->currentNotification->group)) {
             $notificationGroup->group = [
                 'from_users' => $currentUser
             ];
-        }
-        else {
+        } else {
             $notificationGroup = json_decode($this->currentNotification->group);
             $notificationGroup->from_users[] = $currentUser;
         }
@@ -551,7 +549,7 @@ class Notification implements NotificationInterface
 
         $notification = Notifications::findByRawSql($sql);
 
-        if(!empty($notification->toArray())){
+        if (!empty($notification->toArray())) {
             $notificationId = (int) $notification[0]->id;
         }
 
