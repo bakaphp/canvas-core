@@ -46,8 +46,24 @@ class NotificationsCest
             'order' => 'created_at DESC'
         ]);
 
+        $I->assertJson($notifications->group, 'is a valid json');
         $groupUsers = json_decode($notifications->group);
         $I->assertIsArray($groupUsers->from_users, 'has a group');
+    }
+
+    public function nonGroupedNotifications(IntegrationTester $I)
+    {
+        $users = Users::find('id in (1, 2)');
+        $user = Users::findFirst();
+        $user->notify(new NewFollower($users->getFirst()));
+
+        $notifications = Notifications::findFirst([
+            'order' => 'created_at DESC'
+        ]);
+
+        $I->assertNull($notifications->group, 'is not grouped');
 
     }
+
+    
 }
