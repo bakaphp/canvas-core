@@ -16,6 +16,7 @@ class Notification
     public int $system_modules_id;
     public int $notification_type_id;
     public int $entity_id;
+    public ?string $group = null;
 
     /**
      * @var mixed

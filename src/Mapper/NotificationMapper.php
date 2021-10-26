@@ -69,6 +69,7 @@ class NotificationMapper extends CustomMapper
         $notificationDto->apps_id = $notification->apps_id;
         $notificationDto->system_modules_id = $notification->system_modules_id;
         $notificationDto->notification_type_id = $notification->notification_type_id;
+        $notificationDto->group = $notification->group;
         $notificationDto->entity_id = $notification->entity_id;
         $notificationDto->content = $notification->content;
         $notificationDto->read = $notification->read;
