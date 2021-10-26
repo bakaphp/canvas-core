@@ -505,6 +505,8 @@ class Notification implements NotificationInterface
         return true;
     }
 
+
+
     /**
      * Groups a set of notifications.
      *
@@ -544,7 +546,7 @@ class Notification implements NotificationInterface
         $sql = "SELECT * FROM notifications
                     WHERE notification_type_id = {$this->type->getId()}
                     AND entity_id = {$this->entity->getId()}
-                    AND TIMESTAMPDIFF(MINUTE, CURDATE(), updated_at) between {$this->softCap} and {$this->hardCap}
+                    AND TIMESTAMPDIFF(MINUTE, updated_at, NOW()) between {$this->softCap} and {$this->hardCap}
                     order by updated_at DESC limit 1";
 
         $notification = Notifications::findByRawSql($sql);
