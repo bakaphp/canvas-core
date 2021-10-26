@@ -3,6 +3,7 @@
 namespace Canvas\Tests\integration\library\Jobs;
 
 use Baka\Notifications\Notify;
+use Canvas\Models\Notifications;
 use Canvas\Models\Users;
 use Canvas\Notifications\PasswordUpdate;
 use Canvas\Tests\Support\Notifications\NewFollower;
@@ -38,6 +39,12 @@ class NotificationsCest
         foreach($users as $userGroup) {
             $user->notify(new NewFollower($userGroup, true));
         }
+
+        $notifications = Notifications::findFirst([
+            'order' => 'updated_at DESC'
+        ]);
+
+        $I->assertArray($notifications->group, 'has a group');
 
     }
 }
