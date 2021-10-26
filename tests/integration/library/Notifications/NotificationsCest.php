@@ -44,7 +44,7 @@ class NotificationsCest
             'order' => 'updated_at DESC'
         ]);
 
-        $I->assertArray($notifications->group, 'has a group');
+        $I->assertIsArray($notifications->group, 'has a group');
 
     }
 }
