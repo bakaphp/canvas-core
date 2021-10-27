@@ -45,7 +45,7 @@ class NotificationsCest
         $notifications = Notifications::findFirst([
             'order' => 'created_at DESC'
         ]);
-
+        
         $I->assertJson($notifications->group, 'is a valid json');
         $groupUsers = json_decode($notifications->group);
         $I->assertIsArray($groupUsers->from_users, 'has a group');

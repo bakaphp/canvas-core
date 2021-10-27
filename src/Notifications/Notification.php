@@ -522,12 +522,12 @@ class Notification implements NotificationInterface
 
         ];
 
-        if (is_null($this->currentNotification->group)) {
-            $notificationGroup->group[] = [
-                'from_users' => $currentUser
+        if (is_null($notificationGroup)) {
+            $notificationGroup = [
+                'from_users' => [$currentUser]
             ];
         } else {
-            $notificationGroup = json_decode($this->currentNotification->group);
+            $notificationGroup = json_decode($notificationGroup);
             $notificationGroup->from_users[] = $currentUser;
         }
 
