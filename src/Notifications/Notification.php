@@ -538,6 +538,10 @@ class Notification implements NotificationInterface
 
     protected function groupContent() : void
     {
+        if(is_null($this->currentNotification->group)) {
+            return;
+        }
+        
         $group = json_decode($this->currentNotification->group);
         $usersCount = count($group);
         if($usersCount > 0){
