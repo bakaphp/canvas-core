@@ -531,12 +531,19 @@ class Notification implements NotificationInterface
             $notificationGroup->from_users[] = $currentUser;
         }
 
-        $usersCount = count($notificationGroup->from_users);
-        $oldMessage = explode(' ', $this->currentNotification->content);
-        $newMessage = $oldMessage[0] . ' and other ' . $usersCount . 'users ' . $oldMessage[1];
-
-        $this->currentNotification->content = $newMessage;
+        $this->groupContent();
         $this->currentNotification->group = json_encode($notificationGroup);
+    }
+
+
+    protected function groupContent() : void
+    {
+        $group = json_decode($this->currentNotification->group);
+        $usersCount = count($group);
+        if($usersCount > 0){
+            $newMessage = $group->from_users[0]->name . ' and other ' . $usersCount . 'users ' . strstr($this->currentNotification->content, " ");
+            $this->currentNotification->content = $newMessage;
+        }
     }
 
     /**
