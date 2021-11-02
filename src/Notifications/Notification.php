@@ -77,7 +77,7 @@ class Notification implements NotificationInterface
      *
      * @var int
      */
-    protected int $softCap = 1;
+    protected int $softCap = 0;
 
     /**
      * The maximun time to consider before grouping notifications.
