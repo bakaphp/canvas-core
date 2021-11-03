@@ -6,6 +6,7 @@ namespace Canvas\Notifications;
 
 use Baka\Contracts\Auth\UserInterface;
 use Baka\Contracts\Notifications\NotificationInterface;
+use function Baka\isJson;
 use Baka\Mail\Message;
 use Baka\Queue\Queue;
 use Canvas\Contracts\EventManagerAwareTrait;
@@ -543,20 +544,15 @@ class Notification implements NotificationInterface
      */
     protected function groupContent() : void
     {
-        if(is_null($this->currentNotification->group)) {
+        if (is_null($this->currentNotification->group) || !isJson($this->currentNotification->group)) {
             return;
         }
 
         $group = json_decode($this->currentNotification->group);
-
-        if(is_null($group)) {
-            return;
-        }
-
         $usersCount = count($group);
 
-        if($usersCount > 0){
-            $newMessage = $group->from_users[0]->name . ' and other ' . $usersCount . 'users ' . strstr($this->currentNotification->content, " ");
+        if ($usersCount > 0) {
+            $newMessage = $group->from_users[0]->name . ' and other ' . $usersCount . ' users ' . strstr($this->currentNotification->content, ' ');
             $this->currentNotification->content = $newMessage;
         }
     }
