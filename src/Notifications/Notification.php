@@ -529,6 +529,19 @@ class Notification implements NotificationInterface
             ];
         } else {
             $notificationGroup = json_decode($notificationGroup);
+
+            $isInGroup = false;
+            foreach ($notificationGroup->from_users as $user) {
+                if ($user->id == $currentUser['id']) {
+                    $isInGroup = true;
+                    break;
+                }
+            }
+
+            if (!$isInGroup) {
+                return;
+            }
+
             $notificationGroup->from_users[] = $currentUser;
         }
 
