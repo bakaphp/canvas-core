@@ -536,14 +536,25 @@ class Notification implements NotificationInterface
     }
 
 
+    /**
+     * Modifies the notification content adding the amount of users in that notification group.
+     *
+     * @return void
+     */
     protected function groupContent() : void
     {
         if(is_null($this->currentNotification->group)) {
             return;
         }
-        
+
         $group = json_decode($this->currentNotification->group);
+
+        if(is_null($group)) {
+            return;
+        }
+
         $usersCount = count($group);
+
         if($usersCount > 0){
             $newMessage = $group->from_users[0]->name . ' and other ' . $usersCount . 'users ' . strstr($this->currentNotification->content, " ");
             $this->currentNotification->content = $newMessage;
