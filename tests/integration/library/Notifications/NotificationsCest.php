@@ -33,7 +33,7 @@ class NotificationsCest
 
     public function grupedNotifications(IntegrationTester $I)
     {
-        $users = Users::find('id in (1, 2)');
+        $users = Users::find('id in (2, 3, 4, 5, 6, 7, 8, 9 ,10, 11)');
         $user = Users::findFirst();
 
         foreach($users as $userGroup) {
@@ -48,6 +48,7 @@ class NotificationsCest
         
         $I->assertJson($notifications->group, 'is a valid json');
         $groupUsers = json_decode($notifications->group);
+        $I->assertEquals(count($groupUsers->from_users), 10);
         $I->assertIsArray($groupUsers->from_users, 'has a group');
     }
 
