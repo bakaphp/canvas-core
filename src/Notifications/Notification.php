@@ -517,10 +517,6 @@ class Notification implements NotificationInterface
     {
         $notificationGroup = $this->currentNotification->group;
 
-        if (is_null($notificationGroup) || !isJson($notificationGroup)) {
-            return;
-        }
-
         $currentUser = [
             'id' => $this->fromUser->getId(),
             'name' => $this->fromUser->displayname,
@@ -533,15 +529,25 @@ class Notification implements NotificationInterface
                 'from_users' => [$currentUser]
             ];
         } else {
+            if (!isJson($notificationGroup)) {
+                return;
+            }
+
             $notificationGroup = json_decode($notificationGroup);
 
+            $isInGroup = false;
             foreach ($notificationGroup->from_users as $user) {
                 if ($user->id == $currentUser['id']) {
+                    $isInGroup = true;
                     break;
-                } else {
-                    $notificationGroup->from_users[] = $currentUser;
                 }
             }
+
+            if ($isInGroup) {
+                return;
+            }
+
+            $notificationGroup->from_users[] = $currentUser;
         }
 
         $this->groupContent();
