@@ -516,6 +516,11 @@ class Notification implements NotificationInterface
     protected function groupNotification() : void
     {
         $notificationGroup = $this->currentNotification->group;
+
+        if (is_null($notificationGroup) || !isJson($notificationGroup)) {
+            return;
+        }
+
         $currentUser = [
             'id' => $this->fromUser->getId(),
             'name' => $this->fromUser->displayname,
