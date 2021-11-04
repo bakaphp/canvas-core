@@ -87,6 +87,7 @@ class Notification implements NotificationInterface
      */
     protected int $hardCap = 5;
 
+
     /**
      *
      * @var Baka\Mail\Manager
@@ -535,15 +536,7 @@ class Notification implements NotificationInterface
 
             $notificationGroup = json_decode($notificationGroup);
 
-            $isInGroup = false;
-            foreach ($notificationGroup->from_users as $user) {
-                if ($user->id == $currentUser['id']) {
-                    $isInGroup = true;
-                    break;
-                }
-            }
-
-            if ($isInGroup) {
+            if (!$this->canAddNewUser($notificationGroup)) {
                 return;
             }
 
@@ -552,6 +545,30 @@ class Notification implements NotificationInterface
 
         $this->groupContent();
         $this->currentNotification->group = json_encode($notificationGroup);
+    }
+
+    /**
+     * Verifies if the user is already on that grup notification and validates that the lenght is not grater than 10.
+     *
+     * @param  $notificationGroup
+     * @return bool
+     */
+    protected function canAddNewUser($notificationGroup) : bool
+    {
+        $isInGroup = true;
+
+        if (count($notificationGroup) > 10) {
+            return false;
+        }
+
+        foreach ($notificationGroup->from_users as $user) {
+            if ($user->id == $this->fromUser->getId()) {
+                $isInGroup = false;
+                break;
+            }
+        }
+
+        return $isInGroup;
     }
 
 
