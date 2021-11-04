@@ -6,6 +6,7 @@ namespace Canvas\Notifications;
 
 use Baka\Contracts\Auth\UserInterface;
 use Baka\Contracts\Notifications\NotificationInterface;
+use function Baka\isJson;
 use Baka\Mail\Message;
 use Baka\Queue\Queue;
 use Canvas\Contracts\EventManagerAwareTrait;
@@ -77,7 +78,7 @@ class Notification implements NotificationInterface
      *
      * @var int
      */
-    protected int $softCap = 1;
+    protected int $softCap = 0;
 
     /**
      * The maximun time to consider before grouping notifications.
@@ -85,6 +86,7 @@ class Notification implements NotificationInterface
      * @var int
      */
     protected int $hardCap = 5;
+
 
     /**
      *
@@ -515,6 +517,7 @@ class Notification implements NotificationInterface
     protected function groupNotification() : void
     {
         $notificationGroup = $this->currentNotification->group;
+
         $currentUser = [
             'id' => $this->fromUser->getId(),
             'name' => $this->fromUser->displayname,
@@ -522,16 +525,71 @@ class Notification implements NotificationInterface
 
         ];
 
-        if (is_null($notificationGroup)) {
+        if (empty($notificationGroup)) {
             $notificationGroup = [
                 'from_users' => [$currentUser]
             ];
         } else {
+            if (!isJson($notificationGroup)) {
+                return;
+            }
+
             $notificationGroup = json_decode($notificationGroup);
+
+            if (!$this->canAddNewUser($notificationGroup->from_users)) {
+                return;
+            }
+
             $notificationGroup->from_users[] = $currentUser;
         }
 
+        $this->groupContent();
         $this->currentNotification->group = json_encode($notificationGroup);
+    }
+
+    /**
+     * Verifies if the user is already on that grup notification and validates that the lenght is not grater than 10.
+     *
+     * @param  array $notificationGroup
+     * @return bool
+     */
+    protected function canAddNewUser(array $groupUsers) : bool
+    {
+        $isInGroup = true;
+
+        if (count($groupUsers) > 10) {
+            return true;
+        }
+
+        foreach ($groupUsers as $user) {
+            if ($user->id == $this->fromUser->getId()) {
+                $isInGroup = false;
+                break;
+            }
+        }
+
+        return $isInGroup;
+    }
+
+
+    /**
+     * Modifies the notification content adding the amount of users in that notification group.
+     *
+     * @return void
+     */
+    protected function groupContent() : void
+    {
+        if (is_null($this->currentNotification->group) || !isJson($this->currentNotification->group)) {
+            return;
+        }
+
+        $group = json_decode($this->currentNotification->group);
+        $usersCount = count($group);
+
+        if ($usersCount > 0) {
+            $newMessage = $group->from_users[0]->name . ' and other ' . $usersCount . ' users ' . $this->message();
+            $this->currentNotification->content = $newMessage;
+        }
     }
 
     /**
