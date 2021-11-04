@@ -525,7 +525,7 @@ class Notification implements NotificationInterface
 
         ];
 
-        if (is_null($notificationGroup)) {
+        if (empty($notificationGroup)) {
             $notificationGroup = [
                 'from_users' => [$currentUser]
             ];
@@ -558,7 +558,7 @@ class Notification implements NotificationInterface
         $isInGroup = true;
 
         if (count($groupUsers) > 10) {
-            return false;
+            return true;
         }
 
         foreach ($groupUsers as $user) {
@@ -587,7 +587,7 @@ class Notification implements NotificationInterface
         $usersCount = count($group);
 
         if ($usersCount > 0) {
-            $newMessage = $group->from_users[0]->name . ' and other ' . $usersCount . ' users ' . strstr($this->currentNotification->content, ' ');
+            $newMessage = $group->from_users[0]->name . ' and other ' . $usersCount . ' users ' . $this->message();
             $this->currentNotification->content = $newMessage;
         }
     }
