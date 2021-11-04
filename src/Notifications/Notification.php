@@ -536,7 +536,7 @@ class Notification implements NotificationInterface
 
             $notificationGroup = json_decode($notificationGroup);
 
-            if (!$this->canAddNewUser($notificationGroup)) {
+            if (!$this->canAddNewUser($notificationGroup->from_users)) {
                 return;
             }
 
@@ -550,18 +550,18 @@ class Notification implements NotificationInterface
     /**
      * Verifies if the user is already on that grup notification and validates that the lenght is not grater than 10.
      *
-     * @param  $notificationGroup
+     * @param  array $notificationGroup
      * @return bool
      */
-    protected function canAddNewUser($notificationGroup) : bool
+    protected function canAddNewUser(array $groupUsers) : bool
     {
         $isInGroup = true;
 
-        if (count($notificationGroup) > 10) {
+        if (count($groupUsers) > 10) {
             return false;
         }
 
-        foreach ($notificationGroup->from_users as $user) {
+        foreach ($groupUsers as $user) {
             if ($user->id == $this->fromUser->getId()) {
                 $isInGroup = false;
                 break;
