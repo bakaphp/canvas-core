@@ -543,7 +543,7 @@ class Notification implements NotificationInterface
                 }
             }
 
-            if (!$isInGroup) {
+            if ($isInGroup) {
                 return;
             }
 
