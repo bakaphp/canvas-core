@@ -188,14 +188,20 @@ trait PermissionsTrait
     }
 
     /**
-     * Check whether a role is an Admin or not.
+     * Check if user is admin.
+     *
+     * @param bool $throw
      *
      * @return bool
      */
-    public function isAdmin() : bool
+    public function isAdmin(bool $throw = true) : bool
     {
         if (!$this->hasRole("{$this->app->name}.Admins")) {
-            throw new UnauthorizedException('Current user does not have Admins role');
+            if ($throw) {
+                throw new UnauthorizedException('Current user does not have Admins role');
+            }
+
+            return false;
         }
 
         return true;
