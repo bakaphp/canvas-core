@@ -33,15 +33,17 @@ class NotificationsCest
 
     public function grupedNotifications(IntegrationTester $I)
     {
-        $users = Users::find('id in (2, 3, 4, 5, 6, 7, 8, 9 ,10, 11)');
-        $user = Users::findFirst();
+        $users = Users::find([
+            'condition' => 'id > 1',
+            'limit' => 15
+        ]);
+
+        $user = Users::findFirst(1);
 
         foreach($users as $userGroup) {
             $user->notify(new NewFollower($userGroup, true));
-            $user->notify(new NewFollower($userGroup, true));
-            $user->notify(new NewFollower($userGroup, true));
         }
-        sleep(10);
+
         $notifications = Notifications::findFirst([
             'order' => 'created_at DESC'
         ]);
