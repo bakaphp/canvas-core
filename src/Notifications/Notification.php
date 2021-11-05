@@ -526,8 +526,14 @@ class Notification implements NotificationInterface
         ];
 
         if (empty($notificationGroup)) {
+            $mainUser = Users::findFirstById($this->currentNotification->from_users_id);
+
             $notificationGroup = [
-                'from_users' => [$currentUser]
+                'from_users' => [[
+                    'id' => $mainUser->getId(),
+                    'name' => $mainUser->displayname,
+                    'photo' => $mainUser->getPhoto()
+                ], $currentUser]
             ];
         } else {
             if (!isJson($notificationGroup)) {
@@ -543,8 +549,8 @@ class Notification implements NotificationInterface
             $notificationGroup->from_users[] = $currentUser;
         }
 
-        $this->groupContent();
         $this->currentNotification->group = json_encode($notificationGroup);
+        $this->groupContent();
     }
 
     /**

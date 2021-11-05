@@ -4,6 +4,10 @@ use function Baka\appPath;
 use function Baka\envValue;
 
 return [
+    'paths' => [
+        'migrations' => __DIR__ . '/_data/db/migrations',
+        'seeds' => __DIR__ . '/_data/db/seeds',
+    ],
     'application' => [ //@todo migration to app
         'production' => getenv('PRODUCTION'),
         'development' => getenv('DEVELOPMENT'),
