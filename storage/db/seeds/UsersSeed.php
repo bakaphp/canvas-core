@@ -24,6 +24,7 @@ class UsersSeed extends AbstractSeed
                 'lastname' => $faker->lastName,
                 'email' => $faker->email,
                 'default_company' => 1,
+                'default_company_branch' => 1,
                 'user_active' => 1,
                 'password' => password_hash('password', PASSWORD_DEFAULT),
                 'created_at' => date('Y-m-d H:i:s'),
