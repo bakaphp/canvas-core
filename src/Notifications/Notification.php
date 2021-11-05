@@ -535,7 +535,7 @@ class Notification implements NotificationInterface
     }
 
     /**
-     * Identify if notifcationes should be a group.
+     * Identify if notification's should be a group.
      *
      * @return bool
      */
