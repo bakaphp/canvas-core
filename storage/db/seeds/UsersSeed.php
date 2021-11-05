@@ -20,8 +20,8 @@ class UsersSeed extends AbstractSeed
         for ($i = 0; $i < 20; $i++) {
             $data[] = [
                 'uuid' => $faker->uuid,
-                'first_name' => $faker->firstName,
-                'last_name' => $faker->lastName,
+                'firstname' => $faker->firstName,
+                'lastname' => $faker->lastName,
                 'email' => $faker->email,
                 'password' => password_hash('password', PASSWORD_DEFAULT),
                 'created_at' => date('Y-m-d H:i:s'),
