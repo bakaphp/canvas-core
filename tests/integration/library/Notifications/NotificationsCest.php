@@ -34,13 +34,12 @@ class NotificationsCest
     public function grupedNotifications(IntegrationTester $I)
     {
         $users = Users::find();
-
-        $user = Users::findFirst(1);
+        $user = Users::findFirstById(1);
 
         foreach($users as $userGroup) {
-            $user->notify(new NewFollower($userGroup, true));
-            sleep(5);
-
+            for ($i = 0; $i < 20; $i++) {
+                $user->notify(new NewFollower($userGroup, true));
+            }
         }
 
         $notifications = Notifications::findFirst([
