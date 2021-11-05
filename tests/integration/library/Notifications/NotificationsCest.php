@@ -41,16 +41,10 @@ class NotificationsCest
             $user->notify(new NewFollower($userGroup, true));
             $user->notify(new NewFollower($userGroup, true));
             $user->notify(new NewFollower($userGroup, true));
-            $user->notify(new NewFollower($userGroup, true));
-            $user->notify(new NewFollower($userGroup, true));
-            $user->notify(new NewFollower($userGroup, true));
-            $user->notify(new NewFollower($userGroup, true));
-            $user->notify(new NewFollower($userGroup, true));
-            $user->notify(new NewFollower($userGroup, true));
         }
-
+        sleep(20);
         $notifications = Notifications::findFirst([
-            'order' => 'created_at DESC'
+            'order' => 'updated_at DESC'
         ]);
         
         $I->assertJson($notifications->group, 'is a valid json');
