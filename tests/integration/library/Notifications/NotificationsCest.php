@@ -41,8 +41,11 @@ class NotificationsCest
             $user->notify(new NewFollower($userGroup, true));
             $user->notify(new NewFollower($userGroup, true));
             $user->notify(new NewFollower($userGroup, true));
+            $user->notify(new NewFollower($userGroup, true));
+            $user->notify(new NewFollower($userGroup, true));
+
         }
-        sleep(20);
+
         $notifications = Notifications::findFirst([
             'order' => 'updated_at DESC'
         ]);
