@@ -33,10 +33,7 @@ class NotificationsCest
 
     public function grupedNotifications(IntegrationTester $I)
     {
-        $users = Users::find([
-            'condition' => 'id > 1',
-            'limit' => 15
-        ]);
+        $users = Users::find();
 
         $user = Users::findFirst(1);
 
