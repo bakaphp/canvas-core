@@ -11,7 +11,6 @@ use Canvas\Models\Apps;
 use Canvas\Models\Companies;
 use Canvas\Models\Roles;
 use Canvas\Models\UserRoles;
-use Phalcon\Di;
 
 trait PermissionsTrait
 {
@@ -38,10 +37,12 @@ trait PermissionsTrait
         $company = $company !== null ? $company : $this->getDefaultCompany();
         $role = Roles::getByName($role, $company);
         //if its not the default app , use the current app
-        $appId = $role->apps_id == Apps::CANVAS_DEFAULT_APP_ID ? Di::getDefault()->get('app')->getId() : $role->apps_id;
+        $appId = $role->apps_id == Apps::CANVAS_DEFAULT_APP_ID ? $this->getDI()->get('app')->getId() : $role->apps_id;
 
         $userRole = UserRoles::findFirstOrCreate([
-            'conditions' => 'users_id = ?0 and apps_id = ?1 and companies_id = ?2',
+            'conditions' => 'users_id = ?0 
+                            AND apps_id = ?1 
+                            AND companies_id = ?2',
             'bind' => [
                 $this->getId(),
                 $appId,
@@ -76,7 +77,10 @@ trait PermissionsTrait
         $role = Roles::getById($id, $company);
 
         $userRole = UserRoles::findFirstOrCreate([
-            'conditions' => 'users_id = :users_id: and apps_id = :apps_id: and companies_id = :companies_id: and is_deleted = 0',
+            'conditions' => 'users_id = :users_id: 
+                            AND apps_id = :apps_id: 
+                            AND companies_id = :companies_id: 
+                            AND is_deleted = 0',
             'bind' => [
                 'users_id' => $this->getId(),
                 'apps_id' => $role->getAppsId(),
@@ -108,7 +112,10 @@ trait PermissionsTrait
         $role = Roles::getByAppName($role, $company);
 
         $userRole = UserRoles::findFirst([
-            'conditions' => 'users_id = ?0 and roles_id = ?1 and apps_id = ?2 and companies_id = ?3',
+            'conditions' => 'users_id = ?0 
+                            AND roles_id = ?1 
+                            AND apps_id = ?2 
+                            AND companies_id = ?3',
             'bind' => [
                 $this->getId(),
                 $role->getId(),
@@ -138,7 +145,10 @@ trait PermissionsTrait
         $role = Roles::getByAppName($role, $company);
 
         return (bool) UserRoles::count([
-            'conditions' => 'users_id = ?0 and roles_id = ?1 and (apps_id = ?2 or apps_id = ?4) and companies_id = ?3',
+            'conditions' => 'users_id = ?0 
+                            AND roles_id = ?1 
+                            AND (apps_id = ?2 or apps_id = ?4) 
+                            AND companies_id = ?3',
             'bind' => [
                 $this->getId(),
                 $role->getId(),
@@ -174,11 +184,11 @@ trait PermissionsTrait
         //get your user account role for this app or the canvas ecosystem
         if (!$role = $this->getPermission()) {
             throw new InternalServerErrorException(
-                'ACL - User doesn\'t have any set roles in this current app ' . $this->di->getApp()->name
+                'ACL - User doesn\'t have any set roles in this current app ' . $this->getDI()->get('app')->name
             );
         }
 
-        $canExecute = $this->di->getAcl()->isAllowed($role->roles->name, $resource, $action);
+        $canExecute = $this->getDI()->get('acl')->isAllowed($role->roles->name, $resource, $action);
 
         if ($throwException && !$canExecute) {
             throw new UnauthorizedException("ACL - Users doesn't have permission to run this action `{$action}`");
@@ -196,7 +206,7 @@ trait PermissionsTrait
      */
     public function isAdmin(bool $throw = true) : bool
     {
-        if (!$this->hasRole("{$this->app->name}.Admins")) {
+        if (!$this->hasRole("{$this->getDI()->get('app')->name}.Admins")) {
             if ($throw) {
                 throw new UnauthorizedException('Current user does not have Admins role');
             }
