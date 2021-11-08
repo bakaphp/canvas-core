@@ -3,6 +3,7 @@
 namespace Canvas\Cli\Tasks;
 
 use Baka\Contracts\Queue\QueueableJobInterface;
+use function Baka\envValue;
 use Baka\Queue\Queue;
 use Baka\Support\Str;
 use Canvas\Models\Users;
@@ -26,11 +27,13 @@ class QueueTask extends PhTask
     /**
      * Queue to process internal Canvas Events.
      *
+     * @param bool|null $force Force the queue recreation.
+     *
      * @return void
      */
-    public function eventsAction()
+    public function eventsAction(?bool $force = false) : void
     {
-        $callback = function ($msg) : void {
+        $callback = function ($msg) {
             //check the db before running anything
             $this->reconnectDb();
 
@@ -48,19 +51,23 @@ class QueueTask extends PhTask
             $this->log->info(
                 "Notification ({$event['event']}) - Process ID " . $msg->delivery_info['consumer_tag']
             );
+
+            return $msg->ack();
         };
 
-        Queue::process(QUEUE::EVENTS, $callback);
+        Queue::process(QUEUE::EVENTS, $callback, $force);
     }
 
     /**
      * Queue to process internal Canvas Events.
      *
+     * @param bool|null $force Force the queue recreation.
+     *
      * @return void
      */
-    public function notificationsAction()
+    public function notificationsAction(?bool $force = false) : void
     {
-        $callback = function (object $msg) : void {
+        $callback = function (object $msg) {
             //check the db before running anything
             $this->reconnectDb();
 
@@ -74,18 +81,18 @@ class QueueTask extends PhTask
 
             if (!$notification['to'] instanceof Users) {
                 echo 'Attribute TO has to be a User' . PHP_EOL;
-                return;
+                return $msg->ack();
             }
 
             if (!class_exists($notification['notification'])) {
                 echo 'Attribute notification has to be a Notification' . PHP_EOL;
-                return;
+                return $msg->ack();
             }
             $notificationClass = $notification['notification'];
 
             if (!$notification['entity'] instanceof Model) {
                 echo 'Attribute entity has to be a Model' . PHP_EOL;
-                return;
+                return $msg->ack();
             }
 
             $user = $notification['to'];
@@ -101,9 +108,11 @@ class QueueTask extends PhTask
             $this->log->info(
                 "Notification ({$notificationClass}) sent to {$user->email} - Process ID " . $msg->delivery_info['consumer_tag']
             );
+
+            return $msg->ack();
         };
 
-        Queue::process(QUEUE::NOTIFICATIONS, $callback);
+        Queue::process(QUEUE::NOTIFICATIONS, $callback, $force);
     }
 
     /**
@@ -111,7 +120,7 @@ class QueueTask extends PhTask
      *
      * @return void
      */
-    public function jobsAction(?string $queueName = null)
+    public function jobsAction(?string $queueName = null, ?bool $force = false) : void
     {
         $queue = $queueName ?? QUEUE::JOBS;
 
@@ -186,7 +195,7 @@ class QueueTask extends PhTask
             }
         };
 
-        Queue::process($queue, $callback);
+        Queue::process($queue, $callback, $force);
     }
 
     /**
@@ -206,7 +215,7 @@ class QueueTask extends PhTask
             }
         }
 
-        return ;
+        return;
     }
 
     /**
