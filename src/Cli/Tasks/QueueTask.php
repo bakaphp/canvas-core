@@ -141,13 +141,13 @@ class QueueTask extends PhTask
                 }
 
                 go(function () use ($job, $msg) {
+                    $redis = Di::getDefault()->get('redis');
+
+                    $retriesCount = $redis->incr($msg->get('message_id'));
+
                     //instance notification and pass the entity
                     try {
                         $this->reconnectDb();
-
-                        $redis = Di::getDefault()->get('redis');
-
-                        $retriesCount = $redis->incr($msg->get('message_id'));
 
                         $job['job']->setMetadata('isRetry', $retriesCount > 1);
                         $job['job']->setMetadata('retriesQuantity', $retriesCount - 1);
@@ -167,10 +167,9 @@ class QueueTask extends PhTask
                         );
 
                         // requeue
-                        if ($job['job']->useRetry) {
-                            // TODO: Change the delay logic to use the plugin https://github.com/rabbitmq/rabbitmq-delayed-message-exchange/
-                            sleep($job['job']->retryDelay);
-                            return $msg->nack(true);
+                        if ($job['job']->useRetry && $retriesCount <= $job['job']->maxRetryQuantity) {
+                            $requeue = ((int) envValue('QUEUE_RETRY_DELAY', 0)) === 0;
+                            return $msg->nack($requeue);
                         }
                     }
 
