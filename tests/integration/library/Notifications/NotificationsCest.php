@@ -36,22 +36,18 @@ class NotificationsCest
         $users = Users::find();
         $user = Users::findFirstById(1);
 
-        $I->assertEquals($users->count(), 10);
-
         //if users is less than 10, create 10 users
-        // if ($users) < 10) {
-        //     for ($i = 0; $i < 10; $i++) {
-        //         $user = new Users();
-        //         $user->email = 'test' . $i . '@test.com';
-        //         $user->password = 'test';
-        //         $user->save();
-        //     }
-        // }
+        if ($users->count() < 10) {
+            for ($i = 0; $i < 10; $i++) {
+                $user = new Users();
+                $user->email = 'test' . $i . '@test.com';
+                $user->password = 'test';
+                $user->save();
+            }
+        }
 
         foreach($users as $userGroup) {
-            for ($i = 0; $i < 10; $i++) {
-                $user->notify(new NewFollower($userGroup, true));
-            }
+            $user->notify(new NewFollower($userGroup, true));
         }
 
         $notifications = Notifications::findFirst([
