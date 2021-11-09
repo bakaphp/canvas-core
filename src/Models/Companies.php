@@ -34,6 +34,7 @@ class Companies extends AbstractModel
     public ?string $currency = null;
     public int $system_modules_id = 1;
     public ?string $phone = null;
+    public ?string $country_code = null;
 
     public const DEFAULT_COMPANY = 'DefaulCompany';
     public const DEFAULT_COMPANY_APP = 'DefaulCompanyApp_';
