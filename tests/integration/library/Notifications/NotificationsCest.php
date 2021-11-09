@@ -33,10 +33,10 @@ class NotificationsCest
 
     public function grupedNotifications(IntegrationTester $I)
     {
-        $users = Users::count();
+        $users = Users::find();
         $user = Users::findFirstById(1);
 
-        $I->assertEquals($users, 10);
+        $I->assertEquals($users->count(), 10);
 
         //if users is less than 10, create 10 users
         if ($users) < 10) {
