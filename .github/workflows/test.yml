@@ -108,6 +108,10 @@ jobs:
       - name: Phinx Migrate Kanvas Seed
         run: vendor/bin/phinx seed:run
 
+      - name: Run Api
+        if: success()
+        run: vendor/bin/codecept run api
+        
       - name: Run Integration
         if: success()
         run: vendor/bin/codecept run integration
@@ -116,6 +120,4 @@ jobs:
         if: success()
         run: vendor/bin/codecept run unit
 
-      - name: Run Api
-        if: success()
-        run: vendor/bin/codecept run api
+
