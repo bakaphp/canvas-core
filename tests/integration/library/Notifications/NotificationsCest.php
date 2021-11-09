@@ -39,9 +39,17 @@ class NotificationsCest
         //if users is below 10, create 15 users
         if ($users->count() < 10) {
             for ($i = 0; $i < 15; $i++) {
-                $user = new Users();
-                $user->email = 'test' . $i . '@test.com';
-                $user->password = 'test';
+                $user->uuid = "uuid" . $i;
+                $user->firstname = "firstname" . $i;
+                $user->lastname = "lastname" . $i;
+                $user->email = "email" . $i;
+                $user->default_company = 1;
+                $user->default_company_branch = 1;
+                $user->system_modules_id = 1;
+                $user->user_active = 1;
+                $user->password = password_hash('password', PASSWORD_DEFAULT);
+                $user->created_at = date('Y-m-d H:i:s');
+                $user->updated_at = date('Y-m-d H:i:s');
                 $user->save();
             }
         }
