@@ -52,7 +52,10 @@ class NotificationsCest
             $user->save();
         }
 
-        $users = Users::find();
+        $users = Users::find([
+            'condition' => 'id > 1'
+        ]);
+        
         $user = Users::findFirstById(1);
         $I->assertEquals($users->count(), 11);
 
