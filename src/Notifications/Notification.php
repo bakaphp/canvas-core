@@ -563,16 +563,16 @@ class Notification implements NotificationInterface
     {
         $isInGroup = true;
 
-        // if (count($groupUsers) <= 10) {
-        //     return false;
-        // }
+        if (count($groupUsers) > 10) {
+            return false;
+        }
 
-        // foreach ($groupUsers as $user) {
-        //     if ($user->id == $this->fromUser->getId()) {
-        //         $isInGroup = false;
-        //         break;
-        //     }
-        // }
+        foreach ($groupUsers as $user) {
+            if ($user->id == $this->fromUser->getId()) {
+                $isInGroup = false;
+                break;
+            }
+        }
 
         return $isInGroup;
     }
