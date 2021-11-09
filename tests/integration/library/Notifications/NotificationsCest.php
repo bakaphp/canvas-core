@@ -46,11 +46,11 @@ class NotificationsCest
         //     }
         // }
 
-        // foreach($users as $userGroup) {
-        //     for ($i = 0; $i < 10; $i++) {
-        //         $user->notify(new NewFollower($userGroup, true));
-        //     }
-        // }
+        foreach($users as $userGroup) {
+            for ($i = 0; $i < 10; $i++) {
+                $user->notify(new NewFollower($userGroup, true));
+            }
+        }
 
         $notifications = Notifications::findFirst([
             'order' => 'updated_at DESC'
