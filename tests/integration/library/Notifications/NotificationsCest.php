@@ -39,14 +39,14 @@ class NotificationsCest
         $I->assertEquals($users->count(), 10);
 
         //if users is less than 10, create 10 users
-        if ($users) < 10) {
-            for ($i = 0; $i < 10; $i++) {
-                $user = new Users();
-                $user->email = 'test' . $i . '@test.com';
-                $user->password = 'test';
-                $user->save();
-            }
-        }
+        // if ($users) < 10) {
+        //     for ($i = 0; $i < 10; $i++) {
+        //         $user = new Users();
+        //         $user->email = 'test' . $i . '@test.com';
+        //         $user->password = 'test';
+        //         $user->save();
+        //     }
+        // }
 
         foreach($users as $userGroup) {
             for ($i = 0; $i < 10; $i++) {
