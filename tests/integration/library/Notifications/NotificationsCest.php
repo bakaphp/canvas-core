@@ -8,6 +8,7 @@ use Canvas\Models\Users;
 use Canvas\Notifications\PasswordUpdate;
 use Canvas\Tests\Support\Notifications\NewFollower;
 use IntegrationTester;
+use ApiTester;
 use Page\Data;
 
 class NotificationsCest
@@ -32,7 +33,7 @@ class NotificationsCest
         $user->notify(new NewFollower($users->getFirst()));
     }
 
-    public function grupedNotifications(IntegrationTester $I)
+    public function grupedNotifications(ApiTester $I)
     {
         for ($i = 0; $i < 20; $i++) {
             $email = !Users::findFirstByEmail(Data::$defaultEmail) ? Data::$defaultEmail : $I->faker()->email;
