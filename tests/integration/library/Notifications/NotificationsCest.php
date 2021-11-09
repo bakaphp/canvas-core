@@ -33,17 +33,15 @@ class NotificationsCest
 
     public function grupedNotifications(IntegrationTester $I)
     {
-        $users = Users::find();
-        $user = Users::findFirstById(1);
 
         //if users is below 10, create 15 users
         for ($i = 0; $i < 15; $i++) {
             $user = new Users();
-            $user->uuid = "uuid" . $i;
-            $user->firstname = "firstname" . $i;
-            $user->lastname = "lastname" . $i;
-            $user->displayname = "displayname" . $i;
-            $user->email = "email" . $i;
+            $user->uuid = 'uuid' . $i;
+            $user->firstname = 'firstname' . $i;
+            $user->lastname = 'lastname' . $i;
+            $user->displayname = 'displayname' . $i;
+            $user->email = 'email' . $i;
             $user->default_company = 1;
             $user->default_company_branch = 1;
             $user->system_modules_id = 1;
@@ -54,8 +52,10 @@ class NotificationsCest
             $user->save();
         }
 
+        $users = Users::find();
+        $user = Users::findFirstById(1);
 
-        foreach($users as $userGroup) {
+        foreach ($users as $userGroup) {
             for ($i = 0; $i <= 10; $i++) {
                 $user->notify(new NewFollower($userGroup, true));
             }
@@ -64,9 +64,6 @@ class NotificationsCest
         $notifications = Notifications::findFirst([
             'order' => 'updated_at DESC'
         ]);
-
-        $x = Users::find();
-        $I->assertEquals($x->count(), 2);
 
         $I->assertJson($notifications->group, 'is a valid json');
         $groupUsers = json_decode($notifications->group);
@@ -85,8 +82,5 @@ class NotificationsCest
         ]);
 
         $I->assertNull($notifications->group, 'is not grouped');
-
     }
-
-    
 }
