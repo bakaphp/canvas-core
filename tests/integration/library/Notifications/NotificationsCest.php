@@ -36,6 +36,16 @@ class NotificationsCest
         $users = Users::find();
         $user = Users::findFirstById(1);
 
+        //if users is below 10, create 15 users
+        if ($users->count() < 10) {
+            for ($i = 0; $i < 15; $i++) {
+                $user = new Users();
+                $user->email = 'test' . $i . '@test.com';
+                $user->password = 'test';
+                $user->save();
+            }
+        }
+
 
         foreach($users as $userGroup) {
             for ($i = 0; $i <= 10; $i++) {
@@ -46,7 +56,7 @@ class NotificationsCest
         $notifications = Notifications::findFirst([
             'order' => 'updated_at DESC'
         ]);
-        
+
         $I->assertEquals($users->count(), 2);
 
         $I->assertJson($notifications->group, 'is a valid json');
