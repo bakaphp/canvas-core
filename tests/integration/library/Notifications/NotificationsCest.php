@@ -47,6 +47,8 @@ class NotificationsCest
             'order' => 'updated_at DESC'
         ]);
         
+        $I->assertEquals($users->count(), 2);
+
         $I->assertJson($notifications->group, 'is a valid json');
         $groupUsers = json_decode($notifications->group);
         $I->assertEquals(count($groupUsers->from_users), 11);

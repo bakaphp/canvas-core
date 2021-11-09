@@ -522,7 +522,6 @@ class Notification implements NotificationInterface
             'id' => $this->fromUser->getId(),
             'name' => $this->fromUser->displayname,
             'photo' => $this->fromUser->getPhoto()
-
         ];
 
         if (empty($notificationGroup)) {
@@ -567,12 +566,12 @@ class Notification implements NotificationInterface
             return false;
         }
 
-        // foreach ($groupUsers as $user) {
-        //     if ($user->id == $this->fromUser->getId()) {
-        //         $isInGroup = false;
-        //         break;
-        //     }
-        // }
+        foreach ($groupUsers as $user) {
+            if ($user->id == $this->fromUser->getId()) {
+                $isInGroup = false;
+                break;
+            }
+        }
 
         return $isInGroup;
     }
