@@ -54,6 +54,7 @@ class NotificationsCest
 
         $users = Users::find();
         $user = Users::findFirstById(1);
+        $I->assertEquals($users->count(), 11);
 
         foreach ($users as $userGroup) {
             for ($i = 0; $i <= 10; $i++) {
