@@ -38,7 +38,7 @@ class NotificationsCest
 
 
         foreach($users as $userGroup) {
-            for ($i = 0; $i < 9; $i++) {
+            for ($i = 0; $i <= 10; $i++) {
                 $user->notify(new NewFollower($userGroup, true));
             }
         }
@@ -49,7 +49,7 @@ class NotificationsCest
         
         $I->assertJson($notifications->group, 'is a valid json');
         $groupUsers = json_decode($notifications->group);
-        $I->assertEquals(count($groupUsers->from_users), 10);
+        $I->assertEquals(count($groupUsers->from_users), 11);
         $I->assertIsArray($groupUsers->from_users, 'has a group');
     }
 
