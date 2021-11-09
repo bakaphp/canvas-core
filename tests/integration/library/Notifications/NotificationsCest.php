@@ -43,6 +43,7 @@ class NotificationsCest
                 $user->uuid = "uuid" . $i;
                 $user->firstname = "firstname" . $i;
                 $user->lastname = "lastname" . $i;
+                $user->displayname = "displayname" . $i;
                 $user->email = "email" . $i;
                 $user->default_company = 1;
                 $user->default_company_branch = 1;
