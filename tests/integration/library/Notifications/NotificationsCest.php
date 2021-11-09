@@ -37,23 +37,21 @@ class NotificationsCest
         $user = Users::findFirstById(1);
 
         //if users is below 10, create 15 users
-        if ($users->count() < 10) {
-            for ($i = 0; $i < 15; $i++) {
-                $user = new Users();
-                $user->uuid = "uuid" . $i;
-                $user->firstname = "firstname" . $i;
-                $user->lastname = "lastname" . $i;
-                $user->displayname = "displayname" . $i;
-                $user->email = "email" . $i;
-                $user->default_company = 1;
-                $user->default_company_branch = 1;
-                $user->system_modules_id = 1;
-                $user->user_active = 1;
-                $user->password = password_hash('password', PASSWORD_DEFAULT);
-                $user->created_at = date('Y-m-d H:i:s');
-                $user->updated_at = date('Y-m-d H:i:s');
-                $user->save();
-            }
+        for ($i = 0; $i < 15; $i++) {
+            $user = new Users();
+            $user->uuid = "uuid" . $i;
+            $user->firstname = "firstname" . $i;
+            $user->lastname = "lastname" . $i;
+            $user->displayname = "displayname" . $i;
+            $user->email = "email" . $i;
+            $user->default_company = 1;
+            $user->default_company_branch = 1;
+            $user->system_modules_id = 1;
+            $user->user_active = 1;
+            $user->password = password_hash('password', PASSWORD_DEFAULT);
+            $user->created_at = date('Y-m-d H:i:s');
+            $user->updated_at = date('Y-m-d H:i:s');
+            $user->save();
         }
 
 
@@ -67,8 +65,8 @@ class NotificationsCest
             'order' => 'updated_at DESC'
         ]);
 
-        $users = Users::find();
-        $I->assertEquals($users->count(), 2);
+        $x = Users::find();
+        $I->assertEquals($x->count(), 2);
 
         $I->assertJson($notifications->group, 'is a valid json');
         $groupUsers = json_decode($notifications->group);
