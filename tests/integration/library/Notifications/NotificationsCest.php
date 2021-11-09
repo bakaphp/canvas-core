@@ -36,18 +36,9 @@ class NotificationsCest
         $users = Users::find();
         $user = Users::findFirstById(1);
 
-        //if users is less than 10, create 10 users
-        // if ($users->count() < 10) {
-        //     for ($i = 0; $i < 10; $i++) {
-        //         $user = new Users();
-        //         $user->email = 'test' . $i . '@test.com';
-        //         $user->password = 'test';
-        //         $user->save();
-        //     }
-        // }
 
         foreach($users as $userGroup) {
-            for ($i = 0; $i < 10; $i++) {
+            for ($i = 0; $i <= 10; $i++) {
                 $user->notify(new NewFollower($userGroup, true));
             }
         }
@@ -58,7 +49,7 @@ class NotificationsCest
         
         $I->assertJson($notifications->group, 'is a valid json');
         $groupUsers = json_decode($notifications->group);
-        $I->assertEquals(count($groupUsers->from_users), 2);
+        $I->assertEquals(count($groupUsers->from_users), 10);
         $I->assertIsArray($groupUsers->from_users, 'has a group');
     }
 
