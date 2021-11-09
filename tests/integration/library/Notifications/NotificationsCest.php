@@ -8,6 +8,7 @@ use Canvas\Models\Users;
 use Canvas\Notifications\PasswordUpdate;
 use Canvas\Tests\Support\Notifications\NewFollower;
 use IntegrationTester;
+use Page\Data;
 
 class NotificationsCest
 {
@@ -33,20 +34,24 @@ class NotificationsCest
 
     public function grupedNotifications(IntegrationTester $I)
     {
+        for ($i = 0; $i < 20; $i++) {
+            $email = !Users::findFirstByEmail(Data::$defaultEmail) ? Data::$defaultEmail : $I->faker()->email;
+
+            $I->sendPOST(Data::$usersUrl, [
+                'email' => $email,
+                'password' => Data::$defaultPassword,
+                'verify_password' => Data::$defaultPassword,
+                'firstname' => $I->faker()->firstName,
+                'lastname' => $I->faker()->lastName,
+                'displayname' => $I->faker()->userName,
+                'default_company' => $I->faker()->domainWord,
+            ]);
+        }
+
         $users = Users::find();
         $user = Users::findFirstById(1);
 
-        //if users is less than 10, create 10 users
-        if ($users->count() < 10) {
-            for ($i = 0; $i < 10; $i++) {
-                $user = new Users();
-                $user->email = 'test' . $i . '@test.com';
-                $user->password = 'test';
-                $user->save();
-            }
-        }
-
-        foreach($users as $userGroup) {
+        foreach ($users as $userGroup) {
             for ($i = 0; $i < 10; $i++) {
                 $user->notify(new NewFollower($userGroup, true));
             }
@@ -55,7 +60,7 @@ class NotificationsCest
         $notifications = Notifications::findFirst([
             'order' => 'updated_at DESC'
         ]);
-        
+
         $I->assertJson($notifications->group, 'is a valid json');
         $groupUsers = json_decode($notifications->group);
         $I->assertEquals(count($groupUsers->from_users), 2);
@@ -73,8 +78,5 @@ class NotificationsCest
         ]);
 
         $I->assertNull($notifications->group, 'is not grouped');
-
     }
-
-    
 }
