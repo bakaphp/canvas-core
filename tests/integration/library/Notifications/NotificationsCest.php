@@ -39,6 +39,7 @@ class NotificationsCest
         //if users is below 10, create 15 users
         if ($users->count() < 10) {
             for ($i = 0; $i < 15; $i++) {
+                $user = new Users();
                 $user->uuid = "uuid" . $i;
                 $user->firstname = "firstname" . $i;
                 $user->lastname = "lastname" . $i;
