@@ -34,7 +34,7 @@ class NotificationsCest
     public function groupedNotifications(IntegrationTester $I)
     {
         //if users is below 10, create 15 users
-        for ($i = 0; $i < 15; $i++) {
+        for ($i = 0; $i < 55; $i++) {
             $user = new Users();
             $user->firstname = 'firstname' . $i;
             $user->lastname = 'lastname' . $i;
