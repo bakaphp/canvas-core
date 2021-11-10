@@ -57,12 +57,10 @@ class NotificationsCest
             'condition' => 'id != 1'
         ]);
 
-        $user = Users::findFirstById(1);
+        $user = Users::findFirst(1);
 
         foreach ($users as $userGroup) {
-            for ($i = 0; $i <= 10; $i++) {
-                $user->notify(new NewFollower($userGroup, true));
-            }
+            $user->notify(new NewFollower($userGroup, true));
         }
 
         $notifications = Notifications::findFirst([
