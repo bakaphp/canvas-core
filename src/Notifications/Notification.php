@@ -6,7 +6,6 @@ namespace Canvas\Notifications;
 
 use Baka\Contracts\Auth\UserInterface;
 use Baka\Contracts\Notifications\NotificationInterface;
-use function Baka\isJson;
 use Baka\Mail\Message;
 use Baka\Queue\Queue;
 use Canvas\Contracts\EventManagerAwareTrait;
@@ -78,7 +77,7 @@ class Notification implements NotificationInterface
      *
      * @var int
      */
-    protected int $softCap = 0;
+    protected int $softCap = 1;
 
     /**
      * The maximun time to consider before grouping notifications.
@@ -86,7 +85,6 @@ class Notification implements NotificationInterface
      * @var int
      */
     protected int $hardCap = 5;
-
 
     /**
      *
@@ -517,7 +515,6 @@ class Notification implements NotificationInterface
     protected function groupNotification() : void
     {
         $notificationGroup = $this->currentNotification->group;
-
         $currentUser = [
             'id' => $this->fromUser->getId(),
             'name' => $this->fromUser->displayname,
@@ -525,7 +522,7 @@ class Notification implements NotificationInterface
         ];
 
         if (empty($notificationGroup)) {
-            $mainUser = Users::findFirstById($this->currentNotification->from_users_id);
+            $mainUser = Users::findFirst($this->currentNotification->from_users_id);
 
             $notificationGroup = [
                 'from_users' => [[
@@ -535,16 +532,7 @@ class Notification implements NotificationInterface
                 ], $currentUser]
             ];
         } else {
-            if (!isJson($notificationGroup)) {
-                return;
-            }
-
             $notificationGroup = json_decode($notificationGroup);
-
-            if (!$this->canAddNewUser($notificationGroup->from_users)) {
-                return;
-            }
-
             $notificationGroup->from_users[] = $currentUser;
         }
 
@@ -567,7 +555,7 @@ class Notification implements NotificationInterface
         }
 
         foreach ($groupUsers as $user) {
-            if ($user->email == $this->fromUser->email) {
+            if ($user->id == $this->fromUser->id) {
                 $isInGroup = false;
                 break;
             }
