@@ -533,7 +533,16 @@ class Notification implements NotificationInterface
                 ], $currentUser]
             ];
         } else {
+            if (!isJson($notificationGroup)) {
+                return;
+            }
+
             $notificationGroup = json_decode($notificationGroup);
+
+            if (!$this->canAddNewUser($notificationGroup->from_users)) {
+                return;
+            }
+
             $notificationGroup->from_users[] = $currentUser;
         }
 
