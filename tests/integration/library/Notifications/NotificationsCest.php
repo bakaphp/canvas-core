@@ -39,7 +39,7 @@ class NotificationsCest
             $user->firstname = 'firstname' . $i;
             $user->lastname = 'lastname' . $i;
             $user->displayname = 'displayname' . $i;
-            $user->email = 'email' . $i;
+            $user->email = 'email' . $i . '@domain.com';
             $user->default_company = 1;
             $user->default_company_branch = 1;
             $user->system_modules_id = 1;
