@@ -552,7 +552,7 @@ class Notification implements NotificationInterface
     {
         $isInGroup = true;
 
-        if (count($groupUsers) > 10) {
+        if (count($groupUsers) >= 10) {
             return false;
         }
 
