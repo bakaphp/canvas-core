@@ -34,7 +34,7 @@ class NotificationsCest
     public function groupedNotifications(IntegrationTester $I)
     {
         //if users is below 10, create 15 users
-        for ($i = 0; $i < 55; $i++) {
+        for ($i = 0; $i < 20; $i++) {
             $user = new Users();
             $user->firstname = 'firstname' . $i;
             $user->lastname = 'lastname' . $i;
@@ -47,7 +47,7 @@ class NotificationsCest
             $user->password = password_hash('password', PASSWORD_DEFAULT);
             $user->created_at = date('Y-m-d H:i:s');
             $user->updated_at = date('Y-m-d H:i:s');
-            $user->save();
+            $user->saveOrFail();
         }
 
         $users = Users::find([
