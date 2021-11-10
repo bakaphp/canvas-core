@@ -34,40 +34,40 @@ class NotificationsCest
     public function groupedNotifications(IntegrationTester $I)
     {
         //if users is below 10, create 15 users
-        for ($i = 0; $i < 20; $i++) {
-            $user = new Users();
-            $user->firstname = 'firstname' . $i;
-            $user->lastname = 'lastname' . $i;
-            $user->displayname = 'displayname' . $i;
-            $user->email = 'email' . $i . '@domain.com';
-            $user->default_company = 1;
-            $user->default_company_branch = 1;
-            $user->system_modules_id = 1;
-            $user->user_active = 1;
-            $user->password = password_hash('password', PASSWORD_DEFAULT);
-            $user->created_at = date('Y-m-d H:i:s');
-            $user->updated_at = date('Y-m-d H:i:s');
-            $user->saveOrFail();
+        if (Users::count() < 10) {
+            for ($i = 0; $i < 20; $i++) {
+                $user = new Users();
+                $user->firstname = 'firstname' . $i;
+                $user->lastname = 'lastname' . $i;
+                $user->displayname = 'displayname' . $i;
+                $user->email = 'email' . $i . '@domain.com';
+                $user->default_company = 1;
+                $user->default_company_branch = 1;
+                $user->system_modules_id = 1;
+                $user->user_active = 1;
+                $user->password = password_hash('password', PASSWORD_DEFAULT);
+                $user->created_at = date('Y-m-d H:i:s');
+                $user->updated_at = date('Y-m-d H:i:s');
+                $user->saveOrFail();
+            }
         }
 
         $users = Users::find([
-            'condition' => 'id != 1'
+            'condition' => 'id != 1 AND id > 0 '
         ]);
 
         $user = Users::findFirst(1);
-
-        $I->assertEquals($users->count(), 11);
 
         foreach ($users as $userGroup) {
             $user->notify(new NewFollower($userGroup, true));
         }
 
         $notifications = Notifications::findFirst([
-            'order' => 'updated_at DESC'
+            'order' => 'id DESC'
         ]);
 
-        $I->assertJson($notifications->group, 'is a valid json');
-        $groupUsers = json_decode($notifications->group);
+        $I->assertJson($notifications->content_group, 'is a valid json');
+        $groupUsers = json_decode($notifications->content_group);
         $I->assertEquals(count($groupUsers->from_users), 11);
         $I->assertIsArray($groupUsers->from_users, 'has a group');
     }

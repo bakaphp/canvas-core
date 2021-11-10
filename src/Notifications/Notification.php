@@ -30,6 +30,7 @@ class Notification implements NotificationInterface
     protected ?ModelInterface $entity = null;
     protected string $message = '';
     protected ?Notifications $currentNotification = null;
+    protected bool $enableGroupable = true;
 
     /**
      * Send this notification to the queue?
@@ -152,7 +153,7 @@ class Notification implements NotificationInterface
      */
     public function setGroupable(bool $groupable) : void
     {
-        $this->groupable = $groupable;
+        $this->enableGroupable = $groupable;
     }
 
     /**
@@ -370,7 +371,7 @@ class Notification implements NotificationInterface
     {
         $content = $this->message();
         $app = Di::getDefault()->get('app');
-        $isGroupable = ($this->groupable) ? $this->isGroupable() : null;
+        $isGroupable = $this->enableGroupable ? $this->isGroupable() : null;
 
         //save to DB
         if (is_null($isGroupable)) {
@@ -510,7 +511,7 @@ class Notification implements NotificationInterface
      */
     protected function groupNotification() : void
     {
-        $notificationGroup = $this->currentNotification->group;
+        $notificationGroup = $this->currentNotification->content_group;
         $currentUser = [
             'id' => $this->fromUser->getId(),
             'name' => $this->fromUser->displayname,
@@ -544,7 +545,7 @@ class Notification implements NotificationInterface
             $notificationGroup->from_users[] = $currentUser;
         }
 
-        $this->currentNotification->group = json_encode($notificationGroup);
+        $this->currentNotification->content_group = json_encode($notificationGroup);
         $this->groupContent();
     }
 
@@ -574,7 +575,6 @@ class Notification implements NotificationInterface
         return $isInGroup;
     }
 
-
     /**
      * Modifies the notification content adding the amount of users in that notification group.
      *
@@ -582,11 +582,11 @@ class Notification implements NotificationInterface
      */
     protected function groupContent() : void
     {
-        if (is_null($this->currentNotification->group) || !isJson($this->currentNotification->group)) {
+        if (is_null($this->currentNotification->content_group) || !isJson($this->currentNotification->content_group)) {
             return;
         }
 
-        $group = json_decode($this->currentNotification->group);
+        $group = json_decode($this->currentNotification->content_group);
         $usersCount = count($group);
 
         if ($usersCount > 0) {
