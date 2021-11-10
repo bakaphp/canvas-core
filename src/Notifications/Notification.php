@@ -6,6 +6,7 @@ namespace Canvas\Notifications;
 
 use Baka\Contracts\Auth\UserInterface;
 use Baka\Contracts\Notifications\NotificationInterface;
+use function Baka\isJson;
 use Baka\Mail\Message;
 use Baka\Queue\Queue;
 use Canvas\Contracts\EventManagerAwareTrait;
@@ -544,6 +545,7 @@ class Notification implements NotificationInterface
      * Verifies if the user is already on that grup notification and validates that the lenght is not grater than 10.
      *
      * @param  array $notificationGroup
+     *
      * @return bool
      */
     protected function canAddNewUser(array $groupUsers) : bool
