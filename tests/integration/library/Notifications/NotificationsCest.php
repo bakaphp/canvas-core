@@ -56,6 +56,8 @@ class NotificationsCest
 
         $user = Users::findFirst(1);
 
+        $I->assertEquals($users->count(), 11);
+
         foreach ($users as $userGroup) {
             $user->notify(new NewFollower($userGroup, true));
         }
