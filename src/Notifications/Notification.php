@@ -155,7 +155,6 @@ class Notification implements NotificationInterface
         $this->groupable = $groupable;
     }
 
-
     /**
      * Return the message from the current notification type.
      *
@@ -395,8 +394,6 @@ class Notification implements NotificationInterface
         return true;
     }
 
-
-
     /**
      * Send the notification to the places the user defined.
      *
@@ -506,8 +503,6 @@ class Notification implements NotificationInterface
         return true;
     }
 
-
-
     /**
      * Groups a set of notifications.
      *
@@ -526,11 +521,14 @@ class Notification implements NotificationInterface
             $mainUser = Users::findFirst($this->currentNotification->from_users_id);
 
             $notificationGroup = [
-                'from_users' => [[
-                    'id' => $mainUser->getId(),
-                    'name' => $mainUser->displayname,
-                    'photo' => $mainUser->getPhoto()
-                ], $currentUser]
+                'from_users' => [
+                    [
+                        'id' => $mainUser->getId(),
+                        'name' => $mainUser->displayname,
+                        'photo' => $mainUser->getPhoto()
+                    ],
+                    $currentUser
+                ]
             ];
         } else {
             if (!isJson($notificationGroup)) {
@@ -551,7 +549,8 @@ class Notification implements NotificationInterface
     }
 
     /**
-     * Verifies if the user is already on that grup notification and validates that the lenght is not grater than 10.
+     * Verifies if the user is already on that group notification
+     * and validates that the length is not grater than 10.
      *
      * @param  array $notificationGroup
      *
@@ -597,7 +596,7 @@ class Notification implements NotificationInterface
     }
 
     /**
-     * Identify if notifcationes should be a group.
+     * Identify if notification's should be a group.
      *
      * @return bool
      */
