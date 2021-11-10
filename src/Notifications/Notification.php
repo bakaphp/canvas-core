@@ -566,12 +566,12 @@ class Notification implements NotificationInterface
             return false;
         }
 
-        // foreach ($groupUsers as $user) {
-        //     if ($user->id == $this->fromUser->getId()) {
-        //         $isInGroup = false;
-        //         break;
-        //     }
-        // }
+        foreach ($groupUsers as $user) {
+            if ($user->email == $this->fromUser->email) {
+                $isInGroup = false;
+                break;
+            }
+        }
 
         return $isInGroup;
     }
