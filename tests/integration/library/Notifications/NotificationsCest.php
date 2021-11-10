@@ -71,10 +71,7 @@ class NotificationsCest
 
         $I->assertJson($notifications->group, 'is a valid json');
         $groupUsers = json_decode($notifications->group);
-<<<<<<< HEAD
         $I->assertEquals(count($groupUsers->from_users), 11);
-=======
->>>>>>> c6bf22c9d1599f233c16f65d33092acd9e74aaf8
         $I->assertIsArray($groupUsers->from_users, 'has a group');
     }
 
