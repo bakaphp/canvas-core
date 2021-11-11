@@ -638,7 +638,7 @@ class Notification implements NotificationInterface
         if ($this->groupByEntity) {
             $query .= " AND entity_id = {$this->entity->getId()}";
         }
-        
+
         $query .= " AND users_id = {$this->toUser->getId()}
         AND TIMESTAMPDIFF(MINUTE, updated_at, NOW()) BETWEEN {$this->softCap} AND {$this->hardCap}
         ORDER BY updated_at DESC limit 1";

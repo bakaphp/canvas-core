@@ -3,6 +3,7 @@
 namespace Canvas\Tests\integration\library\Jobs;
 
 use Baka\Notifications\Notify;
+use Canvas\Models\Companies;
 use Canvas\Models\Notifications;
 use Canvas\Models\Users;
 use Canvas\Notifications\PasswordUpdate;
@@ -78,9 +79,8 @@ class NotificationsCest
         //total notification + the original creator
         $I->assertEquals(count($groupUsers->from_users), $users->count());
         $I->assertIsArray($groupUsers->from_users, 'has a group');
-
     }
-    
+
     public function groupByEntity(IntegrationTester $I)
     {
         $users = Users::find([
@@ -89,10 +89,10 @@ class NotificationsCest
         ]);
 
         $user = Users::findFirst(1);
-
+        $company = Companies::findFirst();
         foreach ($users as $userGroup) {
-            Di::getDefault()->set('userData', $user);
-            $userGroup->notify(new NewComment($user, true));
+            Di::getDefault()->set('userData', $userGroup);
+            $user->notify(new NewComment($company, true));
         }
 
         $notifications = Notifications::findFirst([
@@ -107,7 +107,6 @@ class NotificationsCest
         //total notification + the original creator
         $I->assertEquals(count($groupUsers->from_users), $users->count());
         $I->assertIsArray($groupUsers->from_users, 'has a group');
-
     }
 
     public function nonGroupedNotifications(IntegrationTester $I)

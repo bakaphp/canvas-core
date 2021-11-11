@@ -39,7 +39,7 @@ class NewComment extends Notification implements NotificationInterface
      */
     public function message() : string
     {
-        return 'is now following you';
+        return 'added a new comment';
     }
 
     /**
