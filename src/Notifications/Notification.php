@@ -643,7 +643,7 @@ class Notification implements NotificationInterface
         AND TIMESTAMPDIFF(MINUTE, updated_at, NOW()) BETWEEN {$this->softCap} AND {$this->hardCap}
         ORDER BY updated_at DESC limit 1";
 
-        $notification = Notifications::findByRawSql($sql);
+        $notification = Notifications::findByRawSql($query);
 
         if (!empty($notification->toArray())) {
             $notificationId = (int) $notification[0]->getId();
