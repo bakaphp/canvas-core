@@ -90,6 +90,13 @@ class Notification implements NotificationInterface
     protected int $hardCap = 10;
 
     /**
+     * Group by entity.
+     *
+     * @var bool
+     */
+    protected bool $groupByEntity = false;
+
+    /**
      *
      * @var Baka\Mail\Manager
      */
@@ -143,6 +150,18 @@ class Notification implements NotificationInterface
     public function setHardCap(int $hardCap) : void
     {
         $this->hardCap = $hardCap;
+    }
+
+    /**
+     * Set group by entity.
+     *
+     * @param bool $hardCap
+     *
+     * @return void
+     */
+    public function setGroupByEntity(bool $groupByEntity) : void
+    {
+        $this->groupByEntity = $groupByEntity;
     }
 
     /**
@@ -613,11 +632,16 @@ class Notification implements NotificationInterface
     {
         $notificationId = null;
 
-        $sql = "SELECT * FROM notifications
-                    WHERE notification_type_id = {$this->type->getId()}
-                    AND users_id = {$this->toUser->getId()}
-                    AND TIMESTAMPDIFF(MINUTE, updated_at, NOW()) BETWEEN {$this->softCap} AND {$this->hardCap}
-                    ORDER BY updated_at DESC limit 1";
+        $query = "SELECT * FROM notifications
+                    WHERE notification_type_id = {$this->type->getId()}";
+
+        if($this->groupByEntity) {
+            $query .= " AND entity_id = {$this->entity->getId()}";
+        }
+        
+        $query .= "AND users_id = {$this->toUser->getId()}
+        AND TIMESTAMPDIFF(MINUTE, updated_at, NOW()) BETWEEN {$this->softCap} AND {$this->hardCap}
+        ORDER BY updated_at DESC limit 1";
 
         $notification = Notifications::findByRawSql($sql);
 
