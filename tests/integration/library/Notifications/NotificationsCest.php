@@ -62,13 +62,17 @@ class NotificationsCest
             $user->notify(new NewFollower($userGroup, true));
         }
 
+        foreach ($users as $userGroup) {
+            $user->notify(new NewFollower($userGroup, true));
+        }
+
         $notifications = Notifications::findFirst([
             'order' => 'id DESC'
         ]);
 
         $I->assertJson($notifications->content_group, 'is a valid json');
         $groupUsers = json_decode($notifications->content_group);
-        $I->assertEquals(count($groupUsers->from_users), 11);
+        $I->assertTrue(count($groupUsers->from_users) > 0);
         $I->assertIsArray($groupUsers->from_users, 'has a group');
     }
 

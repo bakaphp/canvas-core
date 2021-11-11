@@ -7,9 +7,9 @@ namespace Canvas\Tests\Support\Notifications;
 use Baka\Contracts\Notifications\NotificationInterface;
 use Canvas\Notifications\Notification;
 use Canvas\Notifications\PusherNotification;
-use Phalcon\Mvc\Model;
 use Canvas\Traits\Notifications\CanSendGlobalCounter;
 use Phalcon\Di;
+use Phalcon\Mvc\Model;
 
 class NewFollower extends Notification implements NotificationInterface
 {
@@ -23,11 +23,11 @@ class NewFollower extends Notification implements NotificationInterface
     public function __construct(Model $entity, ?bool $groupable = false)
     {
         parent::__construct($entity);
-        
+
         if ($groupable) {
             $this->setGroupable(true);
             $this->setSoftCap(0);
-            $this->setHardCap(10);
+            $this->setHardCap(100);
         }
     }
 
