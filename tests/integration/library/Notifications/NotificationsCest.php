@@ -81,9 +81,6 @@ class NotificationsCest
 
     }
     
-    //create a public function name groupByEntity  
-    //and call it in the notifyAll function
-    //and test the groupByEntity function
     public function groupByEntity(IntegrationTester $I)
     {
         $users = Users::find([
@@ -94,8 +91,8 @@ class NotificationsCest
         $user = Users::findFirst(1);
 
         foreach ($users as $userGroup) {
-            Di::getDefault()->set('userData', $userGroup);
-            $user->notify(new NewComment($userGroup, true));
+            Di::getDefault()->set('userData', $user);
+            $userGroup->notify(new NewComment($user, true));
         }
 
         $notifications = Notifications::findFirst([
