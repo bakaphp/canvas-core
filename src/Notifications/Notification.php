@@ -635,11 +635,11 @@ class Notification implements NotificationInterface
         $query = "SELECT * FROM notifications
                     WHERE notification_type_id = {$this->type->getId()}";
 
-        if($this->groupByEntity) {
+        if ($this->groupByEntity) {
             $query .= " AND entity_id = {$this->entity->getId()}";
         }
         
-        $query .= "AND users_id = {$this->toUser->getId()}
+        $query .= " AND users_id = {$this->toUser->getId()}
         AND TIMESTAMPDIFF(MINUTE, updated_at, NOW()) BETWEEN {$this->softCap} AND {$this->hardCap}
         ORDER BY updated_at DESC limit 1";
 
