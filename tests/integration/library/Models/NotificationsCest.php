@@ -20,4 +20,5 @@ class NotificationsCest
 
         $I->assertTrue(is_int($total));
     }
+
 }

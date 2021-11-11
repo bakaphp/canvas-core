@@ -15,6 +15,7 @@ class CompaniesGroups extends AbstractModel
     public int $users_id;
     public ?string $stripe_id = null;
     public ?int $is_default = 0;
+    public ?string $country_code = null;
 
     /**
      * Initialize method for model.

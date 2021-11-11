@@ -10,6 +10,7 @@ use Canvas\Models\Users;
 use Phalcon\Cli\Task as PhTask;
 use Phalcon\Di;
 use Phalcon\Mvc\Model;
+use Sentry\SentrySdk;
 use Throwable;
 
 class QueueTask extends PhTask
@@ -124,7 +125,9 @@ class QueueTask extends PhTask
     {
         $queue = $queueName ?? QUEUE::JOBS;
 
-        $callback = function (object $msg) : void {
+        $sentryClient = SentrySdk::getCurrentHub()->getClient();
+
+        $callback = function (object $msg) use ($sentryClient) : void {
             try {
                 //check the db before running anything
                 $this->reconnectDb();
@@ -149,7 +152,7 @@ class QueueTask extends PhTask
                     return;
                 }
 
-                go(function () use ($job, $msg) {
+                go(function () use ($job, $msg, $sentryClient) {
                     $redis = Di::getDefault()->get('redis');
 
                     $retriesCount = $redis->incr($msg->get('message_id'));
@@ -175,6 +178,8 @@ class QueueTask extends PhTask
                             ]
                         );
 
+                        $sentryClient->flush();
+
                         // requeue
                         if ($job['job']->useRetry && $retriesCount <= $job['job']->maxRetryQuantity) {
                             $requeue = ((int) envValue('QUEUE_RETRY_DELAY', 0)) === 0;
@@ -192,6 +197,8 @@ class QueueTask extends PhTask
                         $e->getTraceAsString(),
                     ]
                 );
+
+                $sentryClient->flush();
             }
         };
 
