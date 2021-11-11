@@ -79,17 +79,16 @@ class NotificationsCest
         $I->assertEquals(count($groupUsers->from_users), $users->count());
         $I->assertIsArray($groupUsers->from_users, 'has a group');
 
-        
         foreach ($users as $userGroup) {
             Di::getDefault()->set('userData', $userGroup);
             $user->notify(new NewComment($userGroup, true));
         }
 
-        $notifications = Notifications::findFirst([
+        $entityNotifications = Notifications::findFirst([
             'order' => 'id DESC'
         ]);
 
-        $groupUsers2 = json_decode($notifications->content_group);
+        $groupUsers2 = json_decode($entityNotifications->content_group);
         $I->assertEquals(count($groupUsers2->from_users), $users->count());
 
 
