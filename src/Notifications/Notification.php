@@ -512,6 +512,7 @@ class Notification implements NotificationInterface
     protected function groupNotification() : void
     {
         $notificationGroup = $this->currentNotification->content_group;
+
         $currentUser = [
             'id' => $this->fromUser->getId(),
             'name' => $this->fromUser->displayname,
@@ -520,6 +521,11 @@ class Notification implements NotificationInterface
 
         if (empty($notificationGroup)) {
             $mainUser = Users::findFirst($this->currentNotification->from_users_id);
+
+            //if its from the same user we ignore
+            if ($mainUser->getId() === $this->fromUser->getId()) {
+                return;
+            }
 
             $notificationGroup = [
                 'from_users' => [
@@ -589,7 +595,7 @@ class Notification implements NotificationInterface
         }
 
         $group = json_decode($this->currentNotification->content_group);
-        $usersCount = count($group);
+        $usersCount = count($group->from_users);
 
         if ($usersCount > 0) {
             $newMessage = $group->from_users[0]->name . ' and other ' . $usersCount . ' users ' . $this->message();
@@ -608,7 +614,6 @@ class Notification implements NotificationInterface
 
         $sql = "SELECT * FROM notifications
                     WHERE notification_type_id = {$this->type->getId()}
-                    AND entity_id = {$this->entity->getId()}
                     AND users_id = {$this->toUser->getId()}
                     AND TIMESTAMPDIFF(MINUTE, updated_at, NOW()) BETWEEN {$this->softCap} AND {$this->hardCap}
                     ORDER BY updated_at DESC limit 1";

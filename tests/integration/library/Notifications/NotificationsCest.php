@@ -8,6 +8,7 @@ use Canvas\Models\Users;
 use Canvas\Notifications\PasswordUpdate;
 use Canvas\Tests\Support\Notifications\NewFollower;
 use IntegrationTester;
+use Phalcon\Di;
 
 class NotificationsCest
 {
@@ -53,16 +54,18 @@ class NotificationsCest
         }
 
         $users = Users::find([
-            'condition' => 'id != 1 AND id > 0 '
+            'condition' => 'id != 1  ',
         ]);
 
         $user = Users::findFirst(1);
 
         foreach ($users as $userGroup) {
+            Di::getDefault()->set('userData', $userGroup);
             $user->notify(new NewFollower($userGroup, true));
         }
 
         foreach ($users as $userGroup) {
+            Di::getDefault()->set('userData', $userGroup);
             $user->notify(new NewFollower($userGroup, true));
         }
 
@@ -70,9 +73,13 @@ class NotificationsCest
             'order' => 'id DESC'
         ]);
 
+        Di::getDefault()->set('userData', $user);
+
         $I->assertJson($notifications->content_group, 'is a valid json');
         $groupUsers = json_decode($notifications->content_group);
-        $I->assertTrue(count($groupUsers->from_users) > 0);
+
+        //total notification + the original creator
+        $I->assertEquals(count($groupUsers->from_users) + 1, $users->count());
         $I->assertIsArray($groupUsers->from_users, 'has a group');
     }
 
@@ -80,6 +87,7 @@ class NotificationsCest
     {
         $users = Users::find('id in (1, 2)');
         $user = Users::findFirst();
+        Di::getDefault()->set('userData', $users->getFirst());
         $user->notify(new NewFollower($users->getFirst()));
 
         $notifications = Notifications::findFirst([
