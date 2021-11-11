@@ -6,6 +6,7 @@ use Baka\Notifications\Notify;
 use Canvas\Models\Notifications;
 use Canvas\Models\Users;
 use Canvas\Notifications\PasswordUpdate;
+use Canvas\Tests\Support\Notifications\NewComment;
 use Canvas\Tests\Support\Notifications\NewFollower;
 use IntegrationTester;
 use Phalcon\Di;
@@ -65,11 +66,6 @@ class NotificationsCest
             $user->notify(new NewFollower($userGroup, true));
         }
 
-        foreach ($users as $userGroup) {
-            Di::getDefault()->set('userData', $userGroup);
-            $user->notify(new NewFollower($userGroup, true));
-        }
-
         $notifications = Notifications::findFirst([
             'order' => 'id DESC'
         ]);
@@ -82,6 +78,21 @@ class NotificationsCest
         //total notification + the original creator
         $I->assertEquals(count($groupUsers->from_users), $users->count());
         $I->assertIsArray($groupUsers->from_users, 'has a group');
+
+        
+        foreach ($users as $userGroup) {
+            Di::getDefault()->set('userData', $userGroup);
+            $user->notify(new NewComment($userGroup, true));
+        }
+
+        $notifications = Notifications::findFirst([
+            'order' => 'id DESC'
+        ]);
+
+        $groupUsers2 = json_decode($notifications->content_group);
+        $I->assertEquals(count($groupUsers2->from_users), $users->count());
+
+
     }
 
     public function nonGroupedNotifications(IntegrationTester $I)
