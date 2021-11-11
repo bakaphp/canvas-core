@@ -16,6 +16,7 @@ use Canvas\Models\Notifications\UserEntityImportance;
 use Canvas\Models\Notifications\UserSettings;
 use Canvas\Models\NotificationType;
 use Canvas\Models\Users;
+use Canvas\Notifications\Users as NotificationsUsers;
 use Phalcon\Di;
 use Phalcon\Mvc\Model;
 use Phalcon\Mvc\ModelInterface;
@@ -75,14 +76,14 @@ class Notification implements NotificationInterface
     protected bool $groupable = false;
 
     /**
-     * The minimum time to consider before grouping notifications.
+     * The minimum time in minutes to consider before grouping notifications.
      *
      * @var int
      */
     protected int $softCap = 0;
 
     /**
-     * The maximum time to consider before grouping notifications.
+     * The maximum time in minutes to consider before grouping notifications.
      *
      * @var int
      */
@@ -94,9 +95,9 @@ class Notification implements NotificationInterface
      */
     protected $mail;
 
-    const USERS = 'Canvas\Notifications\Users';
-    const SYSTEM = 'Canvas\Notifications\System';
-    const APPS = 'Canvas\Notifications\Apps';
+    const USERS = NotificationsUsers::class;
+    const SYSTEM = System::class;
+    const APPS = Apps::class;
 
     /**
      * Constructor.
@@ -121,7 +122,7 @@ class Notification implements NotificationInterface
     }
 
     /**
-     * Set the soft cap.
+     * Set the soft cap in minutes.
      *
      * @param int $softCap
      *
@@ -133,7 +134,7 @@ class Notification implements NotificationInterface
     }
 
     /**
-     * Set the hard cap.
+     * Set the hard cap in minutes.
      *
      * @param int $hardCap
      *
