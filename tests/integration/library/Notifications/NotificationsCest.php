@@ -79,18 +79,37 @@ class NotificationsCest
         $I->assertEquals(count($groupUsers->from_users), $users->count());
         $I->assertIsArray($groupUsers->from_users, 'has a group');
 
+    }
+    
+    //create a public function name groupByEntity  
+    //and call it in the notifyAll function
+    //and test the groupByEntity function
+    public function groupByEntity(IntegrationTester $I)
+    {
+        $users = Users::find([
+            'condition' => 'id != 1 ',
+            'limit' => 10
+        ]);
+
+        $user = Users::findFirst(1);
+
         foreach ($users as $userGroup) {
             Di::getDefault()->set('userData', $userGroup);
             $user->notify(new NewComment($userGroup, true));
         }
 
-        $entityNotifications = Notifications::findFirst([
+        $notifications = Notifications::findFirst([
             'order' => 'id DESC'
         ]);
 
-        $groupUsers2 = json_decode($entityNotifications->content_group);
-        $I->assertEquals(count($groupUsers2->from_users), $users->count());
+        Di::getDefault()->set('userData', $user);
 
+        $I->assertJson($notifications->content_group, 'is a valid json');
+        $groupUsers = json_decode($notifications->content_group);
+
+        //total notification + the original creator
+        $I->assertEquals(count($groupUsers->from_users), $users->count());
+        $I->assertIsArray($groupUsers->from_users, 'has a group');
 
     }
 
