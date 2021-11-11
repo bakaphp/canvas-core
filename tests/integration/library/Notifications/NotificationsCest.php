@@ -54,7 +54,8 @@ class NotificationsCest
         }
 
         $users = Users::find([
-            'condition' => 'id != 1  ',
+            'condition' => 'id != 1 ',
+            'limit' => 10
         ]);
 
         $user = Users::findFirst(1);
