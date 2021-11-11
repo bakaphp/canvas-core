@@ -26,7 +26,7 @@ class NewComment extends Notification implements NotificationInterface
 
         if ($groupable) {
             $this->setGroupable(true);
-            $this->setGroupByEntity(true);
+            // $this->setGroupByEntity(true);
             $this->setSoftCap(0);
             $this->setHardCap(10);
         }
