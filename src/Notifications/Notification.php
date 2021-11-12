@@ -615,7 +615,7 @@ class Notification implements NotificationInterface
         }
 
         $group = json_decode($this->currentNotification->content_group);
-        $usersCount = count($group->from_users);
+        $usersCount = count($group->from_users) - 1;
 
         if ($usersCount > 0) {
             $newMessage = $group->from_users[0]->name . ' and other ' . $usersCount . ' users ' . $this->message();
