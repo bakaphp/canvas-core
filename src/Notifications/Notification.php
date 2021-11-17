@@ -618,7 +618,8 @@ class Notification implements NotificationInterface
         $usersCount = count($group->from_users) - 1;
 
         if ($usersCount > 0) {
-            $newMessage = $group->from_users[0]->name . ' and other ' . $usersCount . ' users ' . $this->message();
+            //$group->from_users[0]->name , we dont need to add the username
+            $newMessage = 'and other ' . $usersCount . ' users ' . $this->message();
             $this->currentNotification->content = $newMessage;
         }
     }
