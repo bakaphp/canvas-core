@@ -536,6 +536,7 @@ class Notification implements NotificationInterface
         $currentUser = [
             'id' => $this->fromUser->getId(),
             'name' => $this->fromUser->displayname,
+            'displayname' => $this->fromUser->displayname,
             'photo' => $this->fromUser->getPhoto()
         ];
 
