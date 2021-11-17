@@ -31,7 +31,7 @@ class Notification implements NotificationInterface
     protected ?ModelInterface $entity = null;
     protected string $message = '';
     protected ?Notifications $currentNotification = null;
-    protected bool $enableGroupable = true;
+    protected bool $enableGroupable = false;
 
     /**
      * Send this notification to the queue?
