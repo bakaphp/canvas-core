@@ -51,10 +51,9 @@ class Sessions extends Model
         $sql = "SELECT ip, users_id, email
             FROM  Canvas\Models\Banlist
             WHERE ip IN (:ip_one:, :ip_two:, :ip_three:, :ip_four:)
-                OR users_id = :users_id:";
-
-        $sql .= ' OR email LIKE :email:
-                OR email LIKE :email_domain:';
+                OR users_id = :users_id:
+                OR email LIKE :email:
+                OR email LIKE :email_domain:";
 
         $params = [
             'users_id' => $user->getId(),
@@ -66,7 +65,10 @@ class Sessions extends Model
             'ip_four' => $userIp_parts[1] . 'ffffff',
         ];
 
-        $result = $this->getModelsManager()->executeQuery($sql, $params);
+        $result = $this->getModelsManager()->executeQuery(
+            $sql,
+            $params
+        );
 
         //user ban info
         $banData = $result->toArray();
