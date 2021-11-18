@@ -24,7 +24,14 @@ class Sessions extends Model
      */
     public function initialize()
     {
-        $this->belongsTo('users_id', Users::class, 'id', ['alias' => 'user']);
+        $this->belongsTo(
+            'users_id',
+            Users::class,
+            'id',
+            [
+                'alias' => 'user'
+            ]
+        );
     }
 
     /**
@@ -314,7 +321,13 @@ class Sessions extends Model
         $session = new self();
         $session->check($user, $sessionId, $clientAddress, 1);
         $token = $user->getToken();
-        $session->start($user, $token['sessionId'], $token['token'], $clientAddress, 1);
+        $session->start(
+            $user,
+            $token['sessionId'],
+            $token['token'],
+            $clientAddress,
+            1
+        );
         return $token;
     }
 }
