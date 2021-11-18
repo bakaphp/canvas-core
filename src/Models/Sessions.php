@@ -50,14 +50,20 @@ class Sessions extends Model
 
         $sql = "SELECT ip, users_id, email
             FROM  Canvas\Models\Banlist
-            WHERE ip IN ('" . $userIp_parts[1] . $userIp_parts[2] . $userIp_parts[3] . $userIp_parts[4] . "', '" . $userIp_parts[1] . $userIp_parts[2] . $userIp_parts[3] . "ff', '" . $userIp_parts[1] . $userIp_parts[2] . "ffff', '" . $userIp_parts[1] . "ffffff')
+            WHERE ip IN (:ip_one:, :ip_two:, :ip_three:, :ip_four:)
                 OR users_id = :users_id:";
 
-        $sql .= " OR email LIKE '" . str_replace("\'", "''", $user->email) . "'
-                OR email LIKE '" . substr(str_replace("\'", "''", $user->email), strpos(str_replace("\'", "''", $user->email), '@')) . "'";
+        $sql .= ' OR email LIKE :email:
+                OR email LIKE :email_domain:';
 
         $params = [
             'users_id' => $user->getId(),
+            'email' => $user->email,
+            'email_domain' => substr(str_replace("\'", "''", $user->email), strpos(str_replace("\'", "''", $user->email), '@')),
+            'ip_one' => $userIp_parts[1] . $userIp_parts[2] . $userIp_parts[3] . $userIp_parts[4],
+            'ip_two' => $userIp_parts[1] . $userIp_parts[2] . $userIp_parts[3] . 'ff',
+            'ip_three' => $userIp_parts[1] . $userIp_parts[2] . 'ffff',
+            'ip_four' => $userIp_parts[1] . 'ffffff',
         ];
 
         $result = $this->getModelsManager()->executeQuery($sql, $params);
