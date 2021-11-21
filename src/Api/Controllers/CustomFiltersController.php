@@ -8,7 +8,7 @@ use Baka\Database\Contracts\CustomFilters\CustomFilterTrait;
 use Baka\Database\CustomFilters\CustomFilters;
 use Canvas\Dto\CustomFilter as CustomFilterDto;
 use Canvas\Mapper\CustomFilterMapper;
-use Phalcon\Http\Request;
+use Phalcon\Http\RequestInterface;
 use Phalcon\Mvc\ModelInterface;
 use RuntimeException;
 
@@ -51,13 +51,13 @@ class CustomFiltersController extends BaseController
     }
 
     /**
-     * Process the create request and trecurd the boject.
+     * Process the create request.
      *
      * @return ModelInterface
      *
      * @throws Exception
      */
-    protected function processCreate(Request $request) : ModelInterface
+    protected function processCreate(RequestInterface $request) : ModelInterface
     {
         //process the input
         $request = $this->processInput($request->getPostData());
@@ -83,7 +83,7 @@ class CustomFiltersController extends BaseController
      *
      * @return ModelInterface
      */
-    protected function processEdit(Request $request, ModelInterface $record) : ModelInterface
+    protected function processEdit(RequestInterface $request, ModelInterface $record) : ModelInterface
     {
         $record = parent::processEdit($request, $record);
         $request = $this->processInput($request->getPutData());
