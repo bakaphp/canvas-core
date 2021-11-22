@@ -30,7 +30,11 @@ class CustomFiltersController extends BaseController
      *
      * @var array
      */
-    protected $updateFields = [];
+    protected $updateFields = [
+        'name',
+        'description',
+        'sequence_logic'
+    ];
 
     /**
      * set objects.
