@@ -65,6 +65,8 @@ class CustomFiltersController extends BaseController
      */
     protected function processCreate(RequestInterface $request) : ModelInterface
     {
+        $this->userData->isAdmin();
+
         //process the input
         $this->request->validate([
             'criterias' => 'required|array',
@@ -94,6 +96,8 @@ class CustomFiltersController extends BaseController
      */
     protected function processEdit(RequestInterface $request, ModelInterface $record) : ModelInterface
     {
+        $this->userData->isAdmin();
+
         $record = parent::processEdit($request, $record);
         $this->request->validate([
             'criterias' => 'required|array',

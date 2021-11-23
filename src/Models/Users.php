@@ -27,7 +27,7 @@ use Phalcon\Di;
 use Phalcon\Security\Random;
 use Phalcon\Validation;
 use Phalcon\Validation\Validator\Email;
-use  Phalcon\Validation\Validator\PresenceOf;
+use Phalcon\Validation\Validator\PresenceOf;
 use Phalcon\Validation\Validator\Uniqueness;
 
 class Users extends AbstractModel implements UserInterface
@@ -43,7 +43,7 @@ class Users extends AbstractModel implements UserInterface
     /**
      * Constant for anonymous user.
      */
-    const ANONYMOUS = '-1';
+    const ANONYMOUS = -1;
 
     public ?string $uuid = null;
     public ?string $email = null;
@@ -400,7 +400,7 @@ class Users extends AbstractModel implements UserInterface
      */
     public function isAnonymous() : bool
     {
-        return (int) $this->getId() == self::ANONYMOUS;
+        return (int) $this->getId() === self::ANONYMOUS;
     }
 
     /**
@@ -568,7 +568,7 @@ class Users extends AbstractModel implements UserInterface
         $branchId = $this->get($this->getDefaultCompany()->branchCacheKey());
         if (is_null($branchId)) {
             $branchId = $this->getDefaultCompany()->defaultBranch->getId();
-            
+
             /**
              * @todo Remove this later in future versions.
              */

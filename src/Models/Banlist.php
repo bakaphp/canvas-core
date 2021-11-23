@@ -1,10 +1,9 @@
 <?php
+declare(strict_types=1);
 
 namespace Canvas\Models;
 
-use Baka\Database\Model;
-
-class Banlist extends Model
+class Banlist extends AbstractModel
 {
     public int $users_id;
     public string $ip;
@@ -15,6 +14,13 @@ class Banlist extends Model
      */
     public function initialize()
     {
-        $this->belongsTo('users_id', 'Canvas\Models\Users', 'id', ['alias' => 'user']);
+        $this->belongsTo(
+            'users_id',
+            Users::class,
+            'id',
+            [
+                'alias' => 'user'
+            ]
+        );
     }
 }
