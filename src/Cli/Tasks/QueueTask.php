@@ -59,7 +59,9 @@ class QueueTask extends PhTask
                     ]
                 );
 
-                $sentryClient->flush();
+                if ($sentryClient) {
+                    $sentryClient->flush();
+                }
             }
         };
 
@@ -124,7 +126,10 @@ class QueueTask extends PhTask
                         $e->getTraceAsString(),
                     ]
                 );
-                $sentryClient->flush();
+
+                if ($sentryClient) {
+                    $sentryClient->flush();
+                }
             }
         };
 
@@ -186,7 +191,9 @@ class QueueTask extends PhTask
                             ]
                         );
 
-                        $sentryClient->flush();
+                        if ($sentryClient) {
+                            $sentryClient->flush();
+                        }
                     }
                 });
             } catch (Throwable $e) {
@@ -197,7 +204,9 @@ class QueueTask extends PhTask
                     ]
                 );
 
-                $sentryClient->flush();
+                if ($sentryClient) {
+                    $sentryClient->flush();
+                }
             }
         };
 
