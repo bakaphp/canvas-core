@@ -1,6 +1,5 @@
 <?php
 
-
 class UpdateUserConfig extends Phinx\Migration\AbstractMigration
 {
     public function change()
