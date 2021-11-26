@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Canvas\Models;
@@ -27,6 +28,7 @@ class Companies extends AbstractModel
     use EventManagerAwareTrait;
 
     public int $users_id;
+    public ?string $uuid = null;
     public ?int $has_activities = 0;
     public ?int $appPlanId = null;
     public ?int $currency_id = 0;
