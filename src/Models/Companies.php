@@ -11,6 +11,7 @@ use Baka\Http\Exception\InternalServerErrorException;
 use Canvas\Contracts\FileSystemModelTrait;
 use Canvas\Contracts\UsersAssociatedTrait;
 use Canvas\CustomFields\CustomFields;
+use Canvas\Models\Behaviors\Uuid;
 use Canvas\Utils\StringFormatter;
 use Exception;
 use Phalcon\Di;
@@ -51,6 +52,7 @@ class Companies extends AbstractModel
 
         $this->keepSnapshots(true);
         $this->addBehavior(new Blameable());
+        $this->addBehavior(new Uuid());
 
         $this->hasMany('id', CompaniesSettings::class, 'companies_id', ['alias' => 'settings', 'reusable' => true]);
 

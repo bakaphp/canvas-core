@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Canvas\Models;
 
 use Canvas\Cashier\Billable;
+use Canvas\Models\Behaviors\Uuid;
 
 class CompaniesGroups extends AbstractModel
 {
@@ -23,6 +24,7 @@ class CompaniesGroups extends AbstractModel
     public function initialize()
     {
         $this->setSource('companies_groups');
+        $this->addBehavior(new Uuid());
 
         $this->hasMany(
             'id',
