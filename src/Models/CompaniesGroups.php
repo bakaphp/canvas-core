@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace Canvas\Models;
 
 use Canvas\Cashier\Billable;
+use Canvas\Models\Behaviors\Uuid;
 
 class CompaniesGroups extends AbstractModel
 {
     use Billable;
 
     public string $name;
+    public ?string $uuid = null;
     public int $apps_id;
     public int $users_id;
     public ?string $stripe_id = null;
@@ -23,6 +25,7 @@ class CompaniesGroups extends AbstractModel
     public function initialize()
     {
         $this->setSource('companies_groups');
+        $this->addBehavior(new Uuid());
 
         $this->hasMany(
             'id',
@@ -59,7 +62,7 @@ class CompaniesGroups extends AbstractModel
 
         $this->hasOne(
             'id',
-            'Canvas\Models\Subscription',
+            Subscription::class,
             'companies_groups_id',
             [
                 'alias' => 'subscription',
