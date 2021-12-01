@@ -73,8 +73,8 @@ class UserMapper extends CustomMapper
         $userDto->registered = $user->registered;
         $userDto->session_id = ''; //$user->session_id;
         $userDto->session_key = ''; //$user->session_key;
-        $userDto->session_page = ''; //(int)$user->session_page;
-        $userDto->session_time = ''; //(int)$user->session_time;
+        $userDto->session_page = null; //(int)$user->session_page;
+        $userDto->session_time = null; //(int)$user->session_time;
         $userDto->sex = $user->sex;
         $userDto->state_id = (int)$user->state_id;
         $userDto->status = (int)$user->status;
