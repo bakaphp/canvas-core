@@ -56,7 +56,12 @@ class Companies extends AbstractModel
         $this->addBehavior(new Blameable());
         $this->addBehavior(new Uuid());
 
-        $this->hasMany('id', CompaniesSettings::class, 'companies_id', ['alias' => 'settings', 'reusable' => true]);
+        $this->hasMany(
+            'id',
+            CompaniesSettings::class,
+            'companies_id',
+            ['alias' => 'settings', 'reusable' => true]
+        );
 
         $this->belongsTo(
             'users_id',
@@ -315,7 +320,9 @@ class Companies extends AbstractModel
      */
     public function userAssociatedToCompany(Users $user) : bool
     {
-        return $this->countUsersAssociatedApps('users_id =' . $user->getId() . ' and apps_id = ' . Di::getDefault()->get('app')->getId()) > 0;
+        return $this->countUsersAssociatedApps(
+            'users_id =' . $user->getId() . ' AND apps_id = ' . Di::getDefault()->get('app')->getId()
+        ) > 0;
     }
 
     /**
