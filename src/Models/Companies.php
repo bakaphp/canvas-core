@@ -12,6 +12,7 @@ use Baka\Http\Exception\InternalServerErrorException;
 use Canvas\Contracts\FileSystemModelTrait;
 use Canvas\Contracts\UsersAssociatedTrait;
 use Canvas\CustomFields\CustomFields;
+use Canvas\Enums\Company;
 use Canvas\Models\Behaviors\Uuid;
 use Canvas\Utils\StringFormatter;
 use Exception;
@@ -39,11 +40,11 @@ class Companies extends AbstractModel
     public ?string $phone = null;
     public ?string $country_code = null;
 
-    public const DEFAULT_COMPANY = 'DefaulCompany';
-    public const DEFAULT_COMPANY_APP = 'DefaulCompanyApp_';
-    public const PAYMENT_GATEWAY_CUSTOMER_KEY = 'payment_gateway_customer_id';
-    public const DEFAULT_COMPANY_BRANCH_APP = 'DefaultCompanyBranchApp_';
-    public const GLOBAL_COMPANIES_ID = 0;
+    public const DEFAULT_COMPANY = Company::DEFAULT_COMPANY;
+    public const DEFAULT_COMPANY_APP = Company::DEFAULT_COMPANY_APP;
+    public const PAYMENT_GATEWAY_CUSTOMER_KEY = Company::PAYMENT_GATEWAY_CUSTOMER_KEY;
+    public const DEFAULT_COMPANY_BRANCH_APP = Company::DEFAULT_COMPANY_BRANCH_APP;
+    public const GLOBAL_COMPANIES_ID = Company::GLOBAL_COMPANIES_ID;
 
     /**
      * Initialize method for model.

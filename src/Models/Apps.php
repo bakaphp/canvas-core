@@ -32,11 +32,11 @@ class Apps extends BakaApps
      *
      * @var string
      */
-    const CANVAS_DEFAULT_APP_ID = 1;
-    const CANVAS_DEFAULT_COMPANY_ID = 1;
-    const CANVAS_DEFAULT_APP_NAME = 'Default';
-    const APP_DEFAULT_ROLE_SETTING = 'default_admin_role';
-    const APP_DEFAULT_COUNTRY = 'default_user_country';
+    const CANVAS_DEFAULT_APP_ID = App::ECOSYSTEM_APP_ID;
+    const CANVAS_DEFAULT_COMPANY_ID = App::ECOSYSTEM_COMPANY_ID;
+    const CANVAS_DEFAULT_APP_NAME = App::DEFAULT_APP_NAME;
+    const APP_DEFAULT_ROLE_SETTING = App::DEFAULT_ROLE_SETTING;
+    const APP_DEFAULT_COUNTRY = App::DEFAULT_COUNTRY;
 
     /**
      * Kanvas Core App Version.
@@ -181,7 +181,7 @@ class Apps extends BakaApps
     public static function getACLApp(string $name) : Apps
     {
         if (trim($name) == self::CANVAS_DEFAULT_APP_NAME) {
-            $app = self::findFirst(App::CORE_APP_ID);
+            $app = self::findFirst(App::ECOSYSTEM_APP_ID);
         } else {
             $appByName = self::findFirstByName($name);
             $app = $appByName ?: self::findFirstByKey(Di::getDefault()->get('config')->app->id);
