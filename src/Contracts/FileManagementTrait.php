@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Canvas\Contracts;
 
+use Baka\Contracts\Controllers\ProcessOutputMapperTrait;
 use Baka\Http\Exception\UnprocessableEntityException;
 use Canvas\Filesystem\Helper;
 use Canvas\Models\FileSystem;
 use Canvas\Models\FileSystemEntities;
 use Canvas\Models\FileSystemSettings;
-use Baka\Contracts\Controllers\ProcessOutputMapperTrait;
 use Phalcon\Http\Response;
 
 trait FileManagementTrait
@@ -32,7 +32,11 @@ trait FileManagementTrait
             throw new UnprocessableEntityException('No files to upload');
         }
 
-        return $this->response($this->processOutput($this->processFiles()));
+        return $this->response(
+            $this->processOutput(
+                $this->processFiles()
+            )
+        );
     }
 
     /**
@@ -122,12 +126,12 @@ trait FileManagementTrait
     protected function processFiles() : array
     {
         $allFields = $this->request->getPostData();
-        $downloadable = isset($allFields['downloadable']) ? $allFields['downloadable'] : false;
+        $downloadable = $allFields['downloadable'] ?? false;
 
         $files = [];
         $options = [];
         foreach ($this->request->getUploadedFiles() as $file) {
-            $options["ContentDisposition"] = $downloadable ? "attachment" : "inline";
+            $options['ContentDisposition'] = $downloadable ? 'attachment' : 'inline';
             $fileSystem = Helper::upload($file, $options);
 
             //add settings
