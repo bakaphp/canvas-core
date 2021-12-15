@@ -178,7 +178,9 @@ class QueueTask extends PhTask
                             ]
                         );
 
-                        $sentryClient->flush();
+                        if ($sentryClient) {
+                            $sentryClient->flush();
+                        }
 
                         // requeue
                         if ($job['job']->useRetry && $retriesCount <= $job['job']->maxRetryQuantity) {
@@ -198,7 +200,9 @@ class QueueTask extends PhTask
                     ]
                 );
 
-                $sentryClient->flush();
+                if ($sentryClient) {
+                    $sentryClient->flush();
+                }
             }
         };
 
