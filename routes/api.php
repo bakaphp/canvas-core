@@ -115,6 +115,7 @@ $privateSubscriptionRoutes = [
     Route::crud('/custom-fields')->controller('CustomFieldsController'),
     Route::crud('/user-webhooks')->controller('UserWebhooksController'),
     Route::crud('/custom-filters')->controller('CustomFiltersController'),
+    Route::post('/custom-filters/{id}')->controller('CustomFiltersController')->action('executeCriteria'),
     Route::crud('/email-templates-variables')->controller('EmailTemplatesVariablesController'),
     Route::crud('/templates-variables')->controller('EmailTemplatesVariablesController'),
 

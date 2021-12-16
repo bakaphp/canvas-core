@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Canvas\Models;
@@ -11,6 +12,8 @@ use Baka\Http\Exception\InternalServerErrorException;
 use Canvas\Contracts\FileSystemModelTrait;
 use Canvas\Contracts\UsersAssociatedTrait;
 use Canvas\CustomFields\CustomFields;
+use Canvas\Enums\Company;
+use Canvas\Models\Behaviors\Uuid;
 use Canvas\Utils\StringFormatter;
 use Exception;
 use Phalcon\Di;
@@ -26,6 +29,7 @@ class Companies extends AbstractModel
     use EventManagerAwareTrait;
 
     public int $users_id;
+    public ?string $uuid = null;
     public ?int $has_activities = 0;
     public ?int $appPlanId = null;
     public ?int $currency_id = 0;
@@ -36,11 +40,11 @@ class Companies extends AbstractModel
     public ?string $phone = null;
     public ?string $country_code = null;
 
-    public const DEFAULT_COMPANY = 'DefaulCompany';
-    public const DEFAULT_COMPANY_APP = 'DefaulCompanyApp_';
-    public const PAYMENT_GATEWAY_CUSTOMER_KEY = 'payment_gateway_customer_id';
-    public const DEFAULT_COMPANY_BRANCH_APP = 'DefaultCompanyBranchApp_';
-    public const GLOBAL_COMPANIES_ID = 0;
+    public const DEFAULT_COMPANY = Company::DEFAULT_COMPANY;
+    public const DEFAULT_COMPANY_APP = Company::DEFAULT_COMPANY_APP;
+    public const PAYMENT_GATEWAY_CUSTOMER_KEY = Company::PAYMENT_GATEWAY_CUSTOMER_KEY;
+    public const DEFAULT_COMPANY_BRANCH_APP = Company::DEFAULT_COMPANY_BRANCH_APP;
+    public const GLOBAL_COMPANIES_ID = Company::GLOBAL_COMPANIES_ID;
 
     /**
      * Initialize method for model.
@@ -51,8 +55,14 @@ class Companies extends AbstractModel
 
         $this->keepSnapshots(true);
         $this->addBehavior(new Blameable());
+        $this->addBehavior(new Uuid());
 
-        $this->hasMany('id', CompaniesSettings::class, 'companies_id', ['alias' => 'settings', 'reusable' => true]);
+        $this->hasMany(
+            'id',
+            CompaniesSettings::class,
+            'companies_id',
+            ['alias' => 'settings', 'reusable' => true]
+        );
 
         $this->belongsTo(
             'users_id',
@@ -311,7 +321,9 @@ class Companies extends AbstractModel
      */
     public function userAssociatedToCompany(Users $user) : bool
     {
-        return $this->countUsersAssociatedApps('users_id =' . $user->getId() . ' and apps_id = ' . Di::getDefault()->get('app')->getId()) > 0;
+        return $this->countUsersAssociatedApps(
+            'users_id =' . $user->getId() . ' AND apps_id = ' . Di::getDefault()->get('app')->getId()
+        ) > 0;
     }
 
     /**

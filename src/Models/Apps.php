@@ -8,12 +8,15 @@ use Baka\Contracts\EventsManager\EventManagerAwareTrait;
 use Baka\Database\Apps as BakaApps;
 use Canvas\App\Setup;
 use Canvas\Contracts\UsersAssociatedTrait;
+use Canvas\Enums\App;
 use Phalcon\Di;
 use Phalcon\Security\Random;
 
 class Apps extends BakaApps
 {
     use EventManagerAwareTrait;
+    use UsersAssociatedTrait;
+    use HashTableTrait;
 
     public ?string $key = null;
     public ?string $url = null;
@@ -29,11 +32,11 @@ class Apps extends BakaApps
      *
      * @var string
      */
-    const CANVAS_DEFAULT_APP_ID = 1;
-    const CANVAS_DEFAULT_COMPANY_ID = 1;
-    const CANVAS_DEFAULT_APP_NAME = 'Default';
-    const APP_DEFAULT_ROLE_SETTING = 'default_admin_role';
-    const APP_DEFAULT_COUNTRY = 'default_user_country';
+    const CANVAS_DEFAULT_APP_ID = App::ECOSYSTEM_APP_ID;
+    const CANVAS_DEFAULT_COMPANY_ID = App::ECOSYSTEM_COMPANY_ID;
+    const CANVAS_DEFAULT_APP_NAME = App::DEFAULT_APP_NAME;
+    const APP_DEFAULT_ROLE_SETTING = App::DEFAULT_ROLE_SETTING;
+    const APP_DEFAULT_COUNTRY = App::DEFAULT_COUNTRY;
 
     /**
      * Kanvas Core App Version.
@@ -41,16 +44,6 @@ class Apps extends BakaApps
      * @var string
      */
     const VERSION = 0.3;
-
-    /**
-     * Users Associated Trait.
-     */
-    use UsersAssociatedTrait;
-
-    /**
-     * Model Settings Trait.
-     */
-    use HashTableTrait;
 
     /**
      * Initialize method for model.
@@ -61,14 +54,14 @@ class Apps extends BakaApps
 
         $this->hasOne(
             'default_apps_plan_id',
-            'Canvas\Models\AppsPlans',
+            AppsPlans::class,
             'id',
             ['alias' => 'plan', 'reusable' => true]
         );
 
         $this->hasOne(
             'id',
-            'Canvas\Models\AppsPlans',
+            AppsPlans::class,
             'apps_id',
             [
                 'alias' => 'defaultPlan',
@@ -81,21 +74,21 @@ class Apps extends BakaApps
 
         $this->hasMany(
             'id',
-            'Canvas\Models\AppsPlans',
+            AppsPlans::class,
             'apps_id',
             ['alias' => 'plans', 'reusable' => true]
         );
 
         $this->hasMany(
             'id',
-            'Canvas\Models\UserWebhooks',
+            UserWebhooks::class,
             'apps_id',
             ['alias' => 'user-webhooks', 'reusable' => true]
         );
 
         $this->hasMany(
             'id',
-            'Canvas\Models\AppsSettings',
+            AppsSettings::class,
             'apps_id',
             ['alias' => 'settingsApp', 'reusable' => true]
         );
@@ -145,12 +138,12 @@ class Apps extends BakaApps
 
         //Create a new UserAssociatedApps record
         $userAssociatedApp = new UsersAssociatedApps();
-        $userAssociatedApp->users_id = Di::getDefault()->getUserData()->getId();
+        $userAssociatedApp->users_id = Di::getDefault()->get('userData')->getId();
         $userAssociatedApp->apps_id = $this->getId();
-        $userAssociatedApp->companies_id = Di::getDefault()->getUserData()->getCurrentCompany()->getId();
-        $userAssociatedApp->identify_id = (string)Di::getDefault()->getUserData()->getId();
+        $userAssociatedApp->companies_id = Di::getDefault()->get('userData')->getCurrentCompany()->getId();
+        $userAssociatedApp->identify_id = (string)Di::getDefault()->get('userData')->getId();
         $userAssociatedApp->user_active = 1;
-        $userAssociatedApp->user_role = (string)Di::getDefault()->getUserData()->roles_id;
+        $userAssociatedApp->user_role = (string)Di::getDefault()->get('userData')->roles_id;
         $userAssociatedApp->saveOrFail();
     }
 
@@ -188,10 +181,10 @@ class Apps extends BakaApps
     public static function getACLApp(string $name) : Apps
     {
         if (trim($name) == self::CANVAS_DEFAULT_APP_NAME) {
-            $app = self::findFirst(1);
+            $app = self::findFirst(App::ECOSYSTEM_APP_ID);
         } else {
             $appByName = self::findFirstByName($name);
-            $app = $appByName ?: self::findFirstByKey(\Phalcon\DI::getDefault()->getConfig()->app->id);
+            $app = $appByName ?: self::findFirstByKey(Di::getDefault()->get('config')->app->id);
         }
 
         return $app;
@@ -259,7 +252,8 @@ class Apps extends BakaApps
          * @todo add cache
          */
         return self::findFirst([
-            'conditions' => 'domain = :domain: AND domain_based = 1',
+            'conditions' => 'domain = :domain: 
+                            AND domain_based = 1',
             'bind' => [
                 'domain' => $domain
             ]

@@ -20,9 +20,7 @@ use Phalcon\Di;
 class Setup
 {
     protected Apps $app;
-
     protected $systemModulesIds = [];
-
     protected Logger $log;
 
     /**
@@ -44,7 +42,7 @@ class Setup
     {
         $this->log->info("Setting default App Settings...\n\n");
         if (!$this->app->hasSettings()) {
-            foreach ($this->SettingsData() as $key => $value) {
+            foreach ($this->settingsData() as $key => $value) {
                 $this->log->info("set default app setting: {$value['name']} \n");
                 $this->app->set($value['name'], $value['value']);
             }
@@ -148,7 +146,7 @@ class Setup
      *
      * @return array
      */
-    public function SettingsData() : array
+    public function settingsData() : array
     {
         return [
             [
@@ -252,7 +250,7 @@ class Setup
     /**
      *  Set default ACL data for this app.
      *
-     * @return void
+     * @return self
      */
     public function acl() : self
     {

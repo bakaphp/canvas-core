@@ -11,7 +11,7 @@ use Canvas\Traits\Notifications\CanSendGlobalCounter;
 use Phalcon\Di;
 use Phalcon\Mvc\Model;
 
-class NewFollower extends Notification implements NotificationInterface
+class NewComment extends Notification implements NotificationInterface
 {
     use CanSendGlobalCounter;
 
@@ -26,6 +26,7 @@ class NewFollower extends Notification implements NotificationInterface
 
         if ($groupable) {
             $this->setGroupable(true);
+            $this->setGroupByEntity(true);
             $this->setSoftCap(0);
             $this->setHardCap(10);
         }
@@ -38,7 +39,7 @@ class NewFollower extends Notification implements NotificationInterface
      */
     public function message() : string
     {
-        return 'is now following you';
+        return 'added a new comment';
     }
 
     /**
