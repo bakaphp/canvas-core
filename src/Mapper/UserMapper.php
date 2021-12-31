@@ -78,6 +78,7 @@ class UserMapper extends CustomMapper
         $userDto->welcome = (int)$user->welcome;
         $userDto->photo = $user->photo;
         $userDto->countries = $user->countries ?: null;
+        $userDto->user_activation_email = $user->user_activation_email;
         $userDto->states = $user->states ?: null;
         $userDto->cities = $user->cities ?: null;
         $userDto->new_notification = Notifications::totalUnRead($user);
@@ -167,6 +168,7 @@ class UserMapper extends CustomMapper
         $user->email = '';
         $user->phone_number = '';
         $user->cell_phone_number = '';
+        $user->user_activation_email = '';
         $user->dob = '';
         $user->roles = [];
     }

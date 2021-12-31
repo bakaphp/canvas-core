@@ -40,6 +40,7 @@ class User
     public ?string $timezone = null;
     public ?int $welcome = null;
     public int $new_notification = 0;
+    public ?string $user_activation_email = null;
     public int $notification_mute_all_status = 0;
     public $photo;
     public $roles = [];
