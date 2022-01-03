@@ -386,11 +386,13 @@ class Users extends AbstractModel implements UserInterface
     /**
      * is the user logged in?
      *
+     * @deprecated version 1.x
+     *
      * @return bool
      */
     public function isLoggedIn() : bool
     {
-        return $this->loggedIn;
+        return $this->getId() !== self::ANONYMOUS;
     }
 
     /**
