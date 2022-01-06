@@ -45,4 +45,5 @@ class User
     public $photo;
     public $roles = [];
     public array $access_list = [];
+    public ?string $registered = null;
 }
