@@ -144,7 +144,7 @@ class UserMapper extends CustomMapper
         $accessList = AccessList::find([
             'conditions' => 'roles_name = ?0 AND apps_id in (?1, ?2) AND allowed = 0',
             'bind' => [
-                current($userDto->roles)->name,
+                current($userDto->roles)['name'],
                 $app->getId(),
                 $app::CANVAS_DEFAULT_APP_ID
             ]
