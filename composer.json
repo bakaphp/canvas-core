@@ -33,7 +33,6 @@
         "norkunas/onesignal-php-api": "^1.12",
         "sentry/sentry": "^2.4",
         "robmorgan/phinx": "^0.12",
-        "sly/notification-pusher": "2.x",
         "squizlabs/php_codesniffer": "^3.2",
         "stripe/stripe-php": "^7.36",
         "swiftmailer/swiftmailer": "^6",
