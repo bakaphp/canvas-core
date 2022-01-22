@@ -859,8 +859,17 @@ class Users extends AbstractModel implements UserInterface
      */
     public function generateDefaultDisplayname() : string
     {
-        $random = new Random();
-        $displayname = Str::cleanup(strstr($this->email, '@', true) . $random->number(999));
+        if (!empty($this->email)) {
+            $random = new Random();
+            $displayname = Str::cleanup(strstr($this->email, '@', true) . $random->number(999));
+        } else {
+            $appName = $this->getDI()->get('app')->name;
+            $random = new Random();
+            $this->lastname = 'User';
+            $this->firstname = $appName;
+
+            $displayname = $appName . $random->number(99999999);
+        }
 
         return  $displayname;
     }
