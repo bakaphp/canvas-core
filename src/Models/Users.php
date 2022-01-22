@@ -861,7 +861,7 @@ class Users extends AbstractModel implements UserInterface
     {
         if (!empty($this->email)) {
             $random = new Random();
-            $displayname = Str::cleanup(strstr($this->email, '@', true) . $random->number(999));
+            $displayname = strstr($this->email, '@', true) . $random->number(999);
         } else {
             $appName = $this->getDI()->get('app')->name;
             $random = new Random();
@@ -871,7 +871,7 @@ class Users extends AbstractModel implements UserInterface
             $displayname = $appName . $random->number(99999999);
         }
 
-        return  $displayname;
+        return Str::cleanup($displayname);
     }
 
     /**
