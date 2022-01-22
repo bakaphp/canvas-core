@@ -11,6 +11,7 @@ use Baka\Database\Exception\ModelNotProcessedException;
 use function Baka\getShortClassName;
 use Baka\Hashing\Keys;
 use Baka\Hashing\Password;
+use Baka\Support\Str;
 use Baka\Validations\PasswordValidation;
 use Canvas\Auth\App as AppAuth;
 use Canvas\Contracts\Auth\TokenTrait;
@@ -858,16 +859,10 @@ class Users extends AbstractModel implements UserInterface
      */
     public function generateDefaultDisplayname() : string
     {
-        if (empty($this->firstname) && empty($this->lastname)) {
-            $appName = $this->getDI()->get('app')->name;
-            $random = new Random();
-            $this->lastname = 'User';
-            $this->firstname = $appName;
+        $random = new Random();
+        $displayname = Str::cleanup(strstr($this->email, '@', true) . $random->number(999));
 
-            return  $appName . $random->number(99999999);
-        }
-
-        return $this->firstname . '.' . $this->lastname;
+        return  $displayname;
     }
 
     /**
