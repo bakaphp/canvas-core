@@ -10,8 +10,6 @@ use Canvas\Auth\Auth;
 use Canvas\Contracts\AuthTrait;
 use Canvas\Models\Roles;
 use Canvas\Models\Users;
-use Canvas\Models\Companies;
-use Canvas\Models\UserConfig;
 use Canvas\Models\UsersInvite;
 use Canvas\Notifications\Invitation;
 use Exception;
@@ -183,7 +181,7 @@ class UsersInviteController extends BaseController
     }
 
     /**
-     * Resends invite email.
+     * Resend invite email.
      *
      * @param int $id
      *
@@ -198,6 +196,6 @@ class UsersInviteController extends BaseController
         $tempUser->email = $userInvite->email;
         $tempUser->notify(new Invitation($userInvite));
 
-        return $this->response("Success");
+        return $this->response('Success');
     }
 }
