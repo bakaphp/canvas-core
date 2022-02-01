@@ -440,6 +440,7 @@ class Notification implements NotificationInterface
                     && is_object($toUserSettlings->importance)
                     && $this->currentNotification instanceof Notifications
                 ) {
+                $sendNotificationByImportance = $toUserSettlings->importance->validateExpression($this->currentNotification);
             }
 
             return $sendNotification && $sendNotificationByImportance;
