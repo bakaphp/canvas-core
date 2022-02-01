@@ -428,7 +428,7 @@ class Notification implements NotificationInterface
             $this->type
         );
 
-        //those he want to receive this type of notification from the current entity?
+        //does he want to receive this type of notification from the current entity?
         if ($this->fromUser instanceof UserInterface) {
             $toUserSettlings = UserEntityImportance::getByEntity(
                 $app,
