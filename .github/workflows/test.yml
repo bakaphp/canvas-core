@@ -5,7 +5,7 @@ on: [push, pull_request]
 jobs:
   run-tests:
     name: PHP ${{ matrix.php-versions }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     env:
       extensions: mbstring, intl, json, redis, swoole, xdebug, phalcon4
       DATA_API_MYSQL_HOST: 127.0.0.1
