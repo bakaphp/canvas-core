@@ -102,7 +102,6 @@ class CompaniesBranchesController extends BaseController
         if ($company->updateOrFail($request, $this->updateFields)) {
             return $this->response($this->processOutput($company));
         } else {
-            //didnt work
             throw new UnprocessableEntityException((string) current($company->getMessages()));
         }
     }
