@@ -60,7 +60,7 @@ class CompaniesController extends BaseController
 
         $this->model->users_id = $this->userData->getId();
 
-        //my list of avaiable companies
+        //my list of available companies
         $this->additionalSearchFields = [
             ['id', ':', implode('|', $this->userData->getAssociatedCompanies())],
             ['is_deleted', ':', '0']
