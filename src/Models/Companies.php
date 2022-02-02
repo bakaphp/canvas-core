@@ -109,7 +109,10 @@ class Companies extends AbstractModel
             'id',
             UsersAssociatedCompanies::class,
             'companies_id',
-            ['alias' => 'UsersAssociatedCompanies', 'reusable' => true, ]
+            [
+                'alias' => 'UsersAssociatedCompanies',
+                'reusable' => true,
+            ]
         );
 
         $this->hasMany(
@@ -532,5 +535,30 @@ class Companies extends AbstractModel
         $companyApps->is_deleted = 0;
 
         return $companyApps->saveOrFail();
+    }
+
+    /**
+     * Associate a user to a branch.
+     *
+     * @param Users $user
+     * @param Companies $company
+     * @param CompaniesBranches $branch
+     *
+     * @return array
+     */
+    public function associateWithBranch(Users $user, Companies $company, CompaniesBranches $branch) : usersAssociatedCompanies
+    {
+        $usersAssociatedCompanies = new UsersAssociatedCompanies();
+        $usersAssociatedCompanies->users_id = $user->getId();
+        $usersAssociatedCompanies->companies_id = $company->getId();
+        $usersAssociatedCompanies->apps_id = $this->di->getApp()->getId();
+        $usersAssociatedCompanies->identify_id = (string) $user->getId();
+        $usersAssociatedCompanies->user_active = 1;
+        $usersAssociatedCompanies->user_role = (string) $user->roles_id;
+        $usersAssociatedCompanies->companies_branches_id = $branch->getId();
+        $usersAssociatedCompanies->created_at = date('Y-m-d H:i:s');
+        $usersAssociatedCompanies->saveOrFail();
+
+        return $usersAssociatedCompanies;
     }
 }

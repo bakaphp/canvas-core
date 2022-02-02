@@ -582,6 +582,16 @@ class Users extends AbstractModel implements UserInterface
     }
 
     /**
+     * Current user company branch.
+     *
+     * @return CompaniesBranches
+     */
+    public function getCurrentBranch() : CompaniesBranches
+    {
+        return CompaniesBranches::findFirstOrFail($this->currentBranchId());
+    }
+
+    /**
      * Overwrite the user relationship.
      * use Phalcon Registry to assure we maintain the same instance across the request.
      */

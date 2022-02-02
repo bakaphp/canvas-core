@@ -9,6 +9,7 @@ class UsersAssociatedCompanies extends Model
 {
     public int $users_id;
     public int $company_id;
+    public int $companies_branches_id = 0;
     public string $identify_id;
     public int $user_active;
     public string $user_role;
@@ -20,14 +21,14 @@ class UsersAssociatedCompanies extends Model
     {
         $this->belongsTo(
             'users_id',
-            'Canvas\Models\Users',
+            Users::class,
             'id',
             ['alias' => 'user']
         );
 
         $this->belongsTo(
             'companies_id',
-            'Canvas\Models\Companies',
+            Companies::class,
             'id',
             ['alias' => 'company']
         );
