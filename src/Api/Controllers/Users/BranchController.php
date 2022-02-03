@@ -10,7 +10,6 @@ use Canvas\Dto\User as UserDto;
 use Canvas\Mapper\UserMapper;
 use Canvas\Models\CompaniesBranches;
 use Canvas\Models\Users;
-use Canvas\Models\UsersAssociatedCompanies;
 use Phalcon\Http\Response;
 
 class BranchController extends BaseController
@@ -46,21 +45,15 @@ class BranchController extends BaseController
             ],
         ]);
 
-        $users = Users::find([
-            'conditions' => 'id IN (
+        $this->customConditions = " WHERE id IN (
                 SELECT users_id 
-                    FROM ' . UsersAssociatedCompanies::class . ' 
+                    FROM users_associated_company
                     WHERE 
-                        companies_id = :companies_id:
-                        AND companies_branches_id = :companies_branches_id:
-                        )',
-            'bind' => [
-                'companies_id' => $branch->companies_id,
-                'companies_branches_id' => $branch->getId(),
+                        companies_id = {$this->userData->currentCompanyId()}
+                        AND companies_branches_id ={$branch->getId()}
+                        )";
 
-            ]
-        ]);
 
-        return $this->response($this->processOutput($users));
+        return $this->index();
     }
 }
