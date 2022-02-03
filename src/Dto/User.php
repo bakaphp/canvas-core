@@ -36,6 +36,7 @@ class User
     public ?int $state_id = null;
     public ?int $status = null;
     public ?string $stripe_id = null;
+    public ?string $last_visit = null;
     public ?int $system_modules_id = 2;
     public ?string $timezone = null;
     public ?int $welcome = null;
