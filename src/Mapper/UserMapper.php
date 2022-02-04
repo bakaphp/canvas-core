@@ -78,6 +78,7 @@ class UserMapper extends CustomMapper
         $userDto->welcome = (int)$user->welcome;
         $userDto->photo = $user->photo;
         $userDto->countries = $user->countries ?: null;
+        $userDto->last_visit = $user->lastvisit ?: null;
         $userDto->user_activation_email = $user->user_activation_email;
         $userDto->states = $user->states ?: null;
         $userDto->cities = $user->cities ?: null;

@@ -45,7 +45,11 @@ class BranchController extends BaseController
             ],
         ]);
 
-        $this->customConditions = " WHERE id IN (
+        $this->additionalSearchFields = [
+            ['id', '>', '0'],
+        ];
+
+        $this->customConditions = " AND id IN (
                 SELECT users_id 
                     FROM users_associated_company
                     WHERE 
