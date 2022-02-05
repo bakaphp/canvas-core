@@ -15,9 +15,13 @@ class UsersInvite extends AbstractModel
     public string $invite_hash;
     public int $users_id;
     public int $companies_id;
+    public int $companies_branches_id = 0;
     public int $role_id;
     public int $apps_id;
     public string $email;
+    public ?string $firstname = null;
+    public ?string $lastname = null;
+    public ?string $description = null;
 
     /**
      * Subscription plan key.
