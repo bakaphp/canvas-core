@@ -29,7 +29,10 @@ class UsersInviteCest
         $I->sendPost('/v1/users/invite', [
             'email' => $testEmail,
             'role_id' => 1,
-            'dont_send' => 1
+            'dont_send' => 1,
+            'firstname' => 'testFirstsName',
+            'lastname' => 'testLastName',
+            'description' => 'testDescription',
         ]);
 
         $I->seeResponseIsSuccessful();
@@ -75,7 +78,10 @@ class UsersInviteCest
         $I->sendPost('/v1/users/invite', [
             'email' => $testEmail,
             'role_id' => 1,
-            'dont_send' => 1
+            'dont_send' => 1,
+            'firstname' => 'testFirstsName',
+            'lastname' => 'testLastName',
+            'description' => 'testDescription',
         ]);
 
         $I->seeResponseIsSuccessful();
@@ -97,7 +103,7 @@ class UsersInviteCest
     }
 
     /**
-     * Resend invite test
+     * Resend invite test.
      *
      * @param ApiTester $I
      *

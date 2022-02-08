@@ -28,9 +28,13 @@ class UsersInviteController extends BaseController
     protected $createFields = [
         'invite_hash',
         'companies_id',
+        'companies_branches_id',
         'role_id',
         'apps_id',
-        'email'
+        'email',
+        'firstname',
+        'lastname',
+        'description',
     ];
 
     /*
@@ -41,9 +45,13 @@ class UsersInviteController extends BaseController
     protected $updateFields = [
         'invite_hash',
         'companies_id',
+        'companies_branches_id',
         'role_id',
         'apps_id',
-        'email'
+        'email',
+        'firstname',
+        'lastname',
+        'description',
     ];
 
     /**
@@ -96,10 +104,14 @@ class UsersInviteController extends BaseController
     {
         $this->request->enableSanitize();
         $request = $this->request->getPostData();
+
         $random = new Random();
 
         $this->request->validate([
             'email' => 'required|email',
+            'firstname' => 'string',
+            'lastname' => 'string',
+            'description' => 'string',
             'role_id' => 'required',
         ]);
 
@@ -109,10 +121,14 @@ class UsersInviteController extends BaseController
         //Save data to users_invite table and generate a hash for the invite
         $userInvite = $this->model;
         $userInvite->companies_id = $this->userData->getDefaultCompany()->getId();
+        $userInvite->companies_branches_id = $request['companies_branches_id'] ?? 0;
         $userInvite->users_id = $this->userData->getId();
         $userInvite->apps_id = $this->app->getId();
         $userInvite->role_id = (int) Roles::existsById((int)$request['role_id'])->id;
         $userInvite->email = $request['email'];
+        $userInvite->firstname = $request['firstname'] ?? '';
+        $userInvite->lastname = $request['lastname'] ?? '';
+        $userInvite->description = $request['description'] ?? '';
         $userInvite->invite_hash = $random->base58();
         $userInvite->created_at = date('Y-m-d H:m:s');
         $userInvite->saveOrFail();
