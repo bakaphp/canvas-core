@@ -14,8 +14,9 @@ use Canvas\Models\Notifications;
 use Canvas\Models\Roles;
 use Canvas\Models\Users;
 use Canvas\Models\UsersAssociatedApps;
-use Phalcon\Http\Response;
+use Illuminate\Http\Response;
 use Phalcon\Validation\Validator\PresenceOf;
+use Illuminate\Http\Request;
 
 class UsersController extends BaseController
 {
@@ -89,16 +90,16 @@ class UsersController extends BaseController
         $this->dtoMapper = new UserMapper();
 
         //if you are not a admin you cant see all the users
-        if (!$this->userData->hasRole('Defaults.Admins') && !$this->userData->can('Users.list')) {
-            $this->additionalSearchFields = [
-                ['id', ':', $this->userData->getId()],
-            ];
-        } else {
-            //admin get all the users for this company
-            $this->additionalSearchFields = [
-                ['id', ':', implode('|', $this->userData->getDefaultCompany()->getAssociatedUsersByApp())],
-            ];
-        }
+        // if (!$this->userData->hasRole('Defaults.Admins') && !$this->userData->can('Users.list')) {
+        //     $this->additionalSearchFields = [
+        //         ['id', ':', $this->userData->getId()],
+        //     ];
+        // } else {
+        //     //admin get all the users for this company
+        //     $this->additionalSearchFields = [
+        //         ['id', ':', implode('|', $this->userData->getDefaultCompany()->getAssociatedUsersByApp())],
+        //     ];
+        // }
     }
 
     /**
@@ -111,14 +112,14 @@ class UsersController extends BaseController
      *
      * @return Response
      */
-    public function getById($id) : Response
+    public function getId($id)
     {
         //none admin users can only edit themselves
-        if (!$this->userData->hasRole('Default.Admins') || (int) $id === 0) {
-            $id = $this->userData->getId();
-        }
+        // if (!$this->userData->hasRole('Default.Admins') || (int) $id === 0) {
+        //     $id = $this->userData->getId();
+        // }
 
-        $this->userData->can('SettingsMenu.company-settings');
+        // $this->userData->can('SettingsMenu.company-settings');
 
         /**
          * @todo filter only by user from this app / company
@@ -128,7 +129,9 @@ class UsersController extends BaseController
             'bind' => [$id],
         ]);
 
-        return $this->response($this->processOutput($user));
+        // print_r(get_class($this->response));
+        // die();
+        return $user;
     }
 
     /**

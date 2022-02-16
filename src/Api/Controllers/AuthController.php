@@ -59,19 +59,20 @@ class AuthController extends BaseController
      *
      * @return Response
      */
-    public function login() : Response
+    public function login() : array
     {
-        $request = $this->request->getPostData();
+        // $request = $this->request->json('email');
 
-        $this->request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
 
-        $email = $request['email'];
-        $password = $request['password'];
+        // $this->request->validate([
+        //     'email' => 'required|email',
+        //     'password' => 'required',
+        // ]);
 
-        return $this->response($this->loginUsers($email, $password));
+        $email = $this->request->json('email');
+        $password = $this->request->json('password');
+
+        return $this->loginUsers($email, $password);
     }
 
     /**

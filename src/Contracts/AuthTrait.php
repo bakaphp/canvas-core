@@ -20,7 +20,7 @@ trait AuthTrait
      */
     protected function getClientIp() : string
     {
-        return  is_string($this->request->getClientAddress(true)) ? $this->request->getClientAddress(true) : '127.0.0.1';
+        return  is_string($this->request->ip()) ? $this->request->ip() : '127.0.0.1';
     }
 
     /**

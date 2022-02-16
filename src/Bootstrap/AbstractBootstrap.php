@@ -9,7 +9,7 @@ use Phalcon\Cli\Console;
 use Phalcon\Di\FactoryDefault;
 use Phalcon\Di\FactoryDefault\Cli as PhCli;
 use Phalcon\Di\ServiceProviderInterface;
-use Phalcon\Mvc\Micro;
+use Canvas\Bootstrap\Micro;
 
 /**
  * Abstract class that provides the bootstrap structure for any Micro PhalconPHP App.

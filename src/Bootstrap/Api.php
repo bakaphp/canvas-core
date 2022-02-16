@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace Canvas\Bootstrap;
 
 use function Baka\appPath;
-use Baka\Http\Request\Phalcon as Request;
+// use Baka\Http\Request\Phalcon as Request;
+use Illuminate\Http\Request;
 use Canvas\Http\Response;
 use Phalcon\Di\FactoryDefault;
 use Phalcon\Mvc\Micro;
 use Throwable;
+use Illuminate\Contracts\Http\Kernel;
 
 /**
  * Class Api.
@@ -28,9 +30,10 @@ class Api extends AbstractBootstrap
     public function run()
     {
         try {
-            $request = new Request();
-            $uri = rawurldecode($request->getServer('REQUEST_URI') ?? '');
-            return $this->application->handle($uri);
+            $request = Request::capture();
+            // $uri = rawurldecode($request->getServer('REQUEST_URI') ?? '');
+            // $uri = $request->url();
+            return $this->application->dispatch($request);
         } catch (Throwable $e) {
             $response = new Response();
             $response->handleException($e)->send();
