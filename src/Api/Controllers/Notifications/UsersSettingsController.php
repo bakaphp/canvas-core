@@ -104,7 +104,7 @@ class UsersSettingsController extends BaseController
             $notificationSettings->users_id = $this->userData->getId();
             $notificationSettings->apps_id = $this->app->getId();
             $notificationSettings->notifications_types_id = $notificationTypeId;
-            $notificationSettings->is_enabled = (int) true;
+            $notificationSettings->is_enabled = (int) false; //if its the first time its to turn it off
             $notificationSettings->channels = json_encode([]);
         } else {
             $notificationSettings->is_enabled = (int) !$notificationSettings->is_enabled;
