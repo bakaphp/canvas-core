@@ -18,7 +18,7 @@ class Helper extends FilesystemHelper
     /**
      * Given a file create it in the filesystem.
      *
-     * @param \Phalcon\Http\Request\File $file
+     * @param \Phalcon\Http\Request\FileInterface $file
      *
      * @return FileSystem
      */
