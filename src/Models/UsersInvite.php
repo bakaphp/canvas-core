@@ -5,12 +5,14 @@ namespace Canvas\Models;
 
 use Baka\Database\Exception\ModelNotFoundException;
 use Baka\Support\Random;
+use Canvas\Contracts\CustomFields\CustomFieldsTrait;
 use Canvas\Contracts\SubscriptionPlanLimitTrait;
 use Phalcon\Di;
 
 class UsersInvite extends AbstractModel
 {
     use SubscriptionPlanLimitTrait;
+    use CustomFieldsTrait;
 
     public string $invite_hash;
     public int $users_id;
