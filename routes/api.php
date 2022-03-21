@@ -103,6 +103,10 @@ $privateRoutes = [
     Route::get('/users/{id}/notifications_importance')->controller('Notifications\UsersImportanceController')->action('index'),
     Route::post('/users/{id}/notifications_importance')->controller('Notifications\UsersImportanceController')->action('setImportanceSettings'),
     Route::get('/notifications_importance')->controller('Notifications\ImportanceController')->action('index'),
+
+    # Users Deletion
+    Route::post('/users/{userId}/request-delete-account')->controller('Users\DeletionRequestController')->action('requestDeletion'),
+    Route::delete('/users/{userId}/request-delete-account')->controller('Users\DeletionRequestController')->action('requestActivate')
 ];
 
 $privateRoutesRefresh = [

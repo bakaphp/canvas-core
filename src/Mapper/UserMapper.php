@@ -85,6 +85,7 @@ class UserMapper extends CustomMapper
         $userDto->registered = $user->registered;
         $userDto->new_notification = Notifications::totalUnRead($user);
         $userDto->notification_mute_all_status = (int) $user->get(Notification::USER_MUTE_ALL_STATUS);
+        $userDto->delete_requested = $user->get('delete_requested');
 
         /**
          * Properties we need to overwrite base on the
@@ -171,6 +172,7 @@ class UserMapper extends CustomMapper
         $user->phone_number = '';
         $user->cell_phone_number = '';
         $user->user_activation_email = '';
+        unset($user->delete_requested);
         $user->dob = '';
         $user->roles = [];
     }
