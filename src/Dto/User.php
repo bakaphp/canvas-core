@@ -47,5 +47,5 @@ class User
     public $roles = [];
     public array $access_list = [];
     public ?string $registered = null;
-    public int $delete_requested = 0;
+    public ?int $delete_requested = null;
 }
