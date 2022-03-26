@@ -25,7 +25,7 @@ class AccessList extends AbstractModel
 
         $this->belongsTo(
             'roles_name',
-            'Canvas\Models\Roles',
+            Roles::class,
             'name',
             ['alias' => 'role']
         );
