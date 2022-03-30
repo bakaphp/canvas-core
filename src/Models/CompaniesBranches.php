@@ -26,14 +26,14 @@ class CompaniesBranches extends AbstractModel
 
         $this->belongsTo(
             'companies_id',
-            'Canvas\Models\Companies',
+            Companies::class,
             'id',
             ['alias' => 'company']
         );
 
         $this->belongsTo(
             'users_id',
-            'Canvas\Models\Users',
+            Users::class,
             'id',
             ['alias' => 'id']
         );

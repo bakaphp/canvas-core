@@ -106,7 +106,12 @@ $privateRoutes = [
 
     # Users Deletion
     Route::post('/users/{userId}/request-delete-account')->controller('Users\DeletionRequestController')->action('requestDeletion'),
-    Route::delete('/users/{userId}/request-delete-account')->controller('Users\DeletionRequestController')->action('requestActivate')
+    Route::delete('/users/{userId}/request-delete-account')->controller('Users\DeletionRequestController')->action('requestActivate'),
+
+    # Company User Deletion
+    Route::delete('/company/{companyId}/users/{usersId}')->controller('Companies\UsersController')->action('remove'),
+    Route::delete('/companies-branches/{branchId}/users/{usersId}')->controller('Companies\UsersController')->action('removeFromBranch')
+
 ];
 
 $privateRoutesRefresh = [
