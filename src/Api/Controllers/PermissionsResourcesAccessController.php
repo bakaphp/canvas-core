@@ -32,7 +32,7 @@ class PermissionsResourcesAccessController extends BaseController
         $this->model = new ResourcesAccesses();
         $this->customLimit = 200;
 
-        //get the list of roes for the systema + my company
+        //get the list of roes for the system + my company
         $this->additionalSearchFields = [
             ['is_deleted', ':', '0'],
             ['apps_id', ':', $this->app->getId()],
