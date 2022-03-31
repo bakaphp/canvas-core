@@ -69,7 +69,7 @@ class AppsPlansController extends BaseController
             $subscription->name = $appPlan->name;
             $subscription->stripe_plan = $appPlan->stripe_plan;
         } else {
-            $subscription->swap($stripeId);
+            $subscription->swap($appPlan);
         }
 
         //update the subscription with the plan

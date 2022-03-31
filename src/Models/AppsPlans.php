@@ -81,9 +81,9 @@ class AppsPlans extends AbstractModel
      */
     public static function getDefaultPlan() : AppsPlans
     {
-        return AppsPlans::findFirst([
+        return AppsPlans::findFirstOrFail([
             'conditions' => 'apps_id = ?0 and is_default = 1',
-            'bind' => [Di::getDefault()->getApp()->getId()]
+            'bind' => [Di::getDefault()->get('app')->getId()]
         ]);
     }
 

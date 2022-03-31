@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Canvas\Contracts\Cashier;
 
 use Baka\Http\Exception\InternalServerErrorException;

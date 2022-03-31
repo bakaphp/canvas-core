@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Canvas\Contracts\Cashier;
 
 use Canvas\Cashier\Cashier;
-use Canvas\Cashier\Exceptions\Customer as CustomerException;
+use Canvas\Cashier\Exceptions\Customers as CustomerException;
 use Stripe\BillingPortal\Session as StripeBillingPortalSession;
 use Stripe\Customer as StripeCustomer;
 
