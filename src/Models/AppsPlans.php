@@ -32,14 +32,14 @@ class AppsPlans extends AbstractModel
 
         $this->belongsTo(
             'apps_id',
-            'Canvas\Models\Apps',
+            Apps::class,
             'id',
             ['alias' => 'app']
         );
 
         $this->belongsTo(
             'payment_frequencies_id',
-            'Canvas\Models\PaymentFrequencies',
+            PaymentFrequencies::class,
             'id',
             ['alias' => 'paymentFrequencies']
         );
@@ -47,14 +47,14 @@ class AppsPlans extends AbstractModel
         //remove
         $this->belongsTo(
             'payment_frequencies_id',
-            'Canvas\Models\PaymentFrequencies',
+            PaymentFrequencies::class,
             'id',
             ['alias' => 'paymentFrequecies']
         );
 
         $this->hasMany(
             'apps_id',
-            'Canvas\Models\AppsPlansSettings',
+            AppsPlansSettings::class,
             'apps_id',
             ['alias' => 'settings']
         );
@@ -83,21 +83,26 @@ class AppsPlans extends AbstractModel
     {
         return AppsPlans::findFirstOrFail([
             'conditions' => 'apps_id = ?0 and is_default = 1',
-            'bind' => [Di::getDefault()->get('app')->getId()]
+            'bind' => [
+                Di::getDefault()->get('app')->getId()
+            ]
         ]);
     }
 
     /**
-     * Get the value of the settins by it key.
+     * Get the value of the setting by it key.
      *
      * @param string $key
-     * @param string $value
+     *
+     * @return string|null
      */
     public function get(string $key) : ?string
     {
         $setting = AppsPlansSettings::findFirst([
             'conditions' => 'apps_plans_id = ?0 and apps_id = ?1 and key = ?2',
-            'bind' => [$this->getId(), $this->apps_id, $key]
+            'bind' => [
+                $this->getId(), $this->apps_id, $key
+            ]
         ]);
 
         if (is_object($setting)) {
@@ -117,7 +122,11 @@ class AppsPlans extends AbstractModel
     {
         $setting = AppsPlansSettings::findFirst([
             'conditions' => 'apps_plans_id = ?0 and apps_id = ?1 and key = ?2',
-            'bind' => [$this->getId(), $this->apps_id, $key]
+            'bind' => [
+                $this->getId(),
+                $this->apps_id,
+                $key
+            ]
         ]);
 
         if (!is_object($setting)) {
@@ -129,7 +138,7 @@ class AppsPlans extends AbstractModel
 
         $setting->value = $value;
 
-        return $setting->saveOrFail();
+        return (bool) $setting->saveOrFail();
     }
 
     /**
