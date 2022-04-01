@@ -257,7 +257,7 @@ class InitGewaer extends AbstractSeed
             [
                 'apps_id' => '1',
                 'name' => 'monthly-10-1',
-                'payment_ìnterval' => 'monthly',
+                'payment_interval' => 'monthly',
                 'description' => 'monthly-10-1',
                 'stripe_id' => 'monthly-10-1',
                 'stripe_plan' => 'monthly-10-1',
@@ -271,7 +271,7 @@ class InitGewaer extends AbstractSeed
             ], [
                 'apps_id' => '1',
                 'name' => 'monthly-10-2',
-                'payment_ìnterval' => 'monthly',
+                'payment_interval' => 'monthly',
                 'description' => 'monthly-10-2',
                 'stripe_id' => 'monthly-10-2',
                 'stripe_plan' => 'monthly-10-2',
@@ -286,7 +286,7 @@ class InitGewaer extends AbstractSeed
             [
                 'apps_id' => '1',
                 'name' => 'yearly-10-1',
-                'payment_ìnterval' => 'yearly',
+                'payment_interval' => 'yearly',
                 'description' => 'yearly-10-1',
                 'stripe_id' => 'yearly-10-1',
                 'stripe_plan' => 'yearly-10-1',
@@ -300,7 +300,7 @@ class InitGewaer extends AbstractSeed
             ], [
                 'apps_id' => '1',
                 'name' => 'yearly-10-2',
-                'payment_ìnterval' => 'yearly',
+                'payment_interval' => 'yearly',
                 'description' => 'yearly-10-2',
                 'stripe_id' => 'yearly-10-2',
                 'stripe_plan' => 'yearly-10-2',
