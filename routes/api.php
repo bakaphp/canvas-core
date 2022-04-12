@@ -37,7 +37,7 @@ $privateRoutes = [
     Route::crud('/notifications'),
     Route::crud('/system-modules')->controller('SystemModulesController'),
     Route::crud('/companies-branches')->controller('CompaniesBranchesController'),
-    Route::crud('/companies-branches/{id}/users')->controller('Users\BranchController')->action('getUserListByBranchId'),
+    Route::get('/companies-branches/{id}/users')->controller('Users\BranchController')->action('getUserListByBranchId'),
     Route::crud('/apps-plans')->controller('AppsPlansController'),
     Route::post('/apps-plans/{id}/reactivate')->controller('AppsPlansController')->action('reactivateSubscription'),
     Route::crud('/roles-acceslist')->controller('RolesAccessListController'),
