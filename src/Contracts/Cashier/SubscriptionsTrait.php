@@ -22,7 +22,11 @@ trait SubscriptionsTrait
      */
     public function newSubscription(AppsPlans $appPlan) : SubscriptionBuilder
     {
-        return new SubscriptionBuilder($this, $appPlan, Di::getDefault()->get('app'));
+        return new SubscriptionBuilder(
+            $this,
+            $appPlan,
+            Di::getDefault()->get('app')
+        );
     }
 
     /**

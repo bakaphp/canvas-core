@@ -9,6 +9,7 @@ use Baka\Blameable\BlameableTrait;
 use Baka\Contracts\Database\HashTableTrait;
 use Baka\Contracts\EventsManager\EventManagerAwareTrait;
 use Baka\Http\Exception\InternalServerErrorException;
+use Canvas\Cashier\Billable;
 use Canvas\Contracts\FileSystemModelTrait;
 use Canvas\Contracts\UsersAssociatedTrait;
 use Canvas\CustomFields\CustomFields;
@@ -27,6 +28,7 @@ class Companies extends AbstractModel
     use FileSystemModelTrait;
     use BlameableTrait;
     use EventManagerAwareTrait;
+    use Billable;
 
     public int $users_id;
     public ?string $uuid = null;
@@ -36,6 +38,7 @@ class Companies extends AbstractModel
     public ?string $language = null;
     public ?string $timezone = null;
     public ?string $currency = null;
+    public ?string $email = null;
     public int $system_modules_id = 1;
     public ?string $phone = null;
     public ?string $country_code = null;
@@ -68,7 +71,10 @@ class Companies extends AbstractModel
             'users_id',
             Users::class,
             'id',
-            ['alias' => 'user', 'reusable' => true, ]
+            [
+                'alias' => 'user',
+                'reusable' => true
+            ]
         );
 
         $this->hasMany(
@@ -190,7 +196,7 @@ class Companies extends AbstractModel
             UsersAssociatedApps::class,
             'companies_id',
             'users_id',
-            'Canvas\Models\Users',
+            Users::class,
             'id',
             [
                 'alias' => 'users',

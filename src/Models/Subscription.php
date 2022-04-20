@@ -25,6 +25,7 @@ class Subscription extends AbstractModel
     public int $users_id;
     public int $companies_groups_id;
     public int $companies_id;
+    public int $companies_branches_id = 0;
     public int $apps_id;
     public ?string $name = null;
     public string $stripe_id;

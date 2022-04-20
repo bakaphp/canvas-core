@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Canvas\Cashier;
 
+use Canvas\Enums\State;
 use Canvas\Models\Apps;
 use Canvas\Models\AppsPlans;
 use Canvas\Models\CompaniesGroups;
@@ -255,6 +256,7 @@ class SubscriptionBuilder
         $subscription->quantity = $stripeSubscription->quantity;
         $subscription->trial_ends_at = $trialEndsAt->toDateTimeString();
         $subscription->companies_id = $options['companies_id'] ?? $this->entity->defaultCompany->getFirst()->getId();
+        $subscription->companies_id = $options['companies_branches_id'] ?? State::OFF;
         $subscription->companies_groups_id = $this->entity->getId();
         $subscription->apps_id = $this->apps->getId();
         $subscription->payment_frequency_id = $this->apps->getDefaultPlan()->payment_frequencies_id;

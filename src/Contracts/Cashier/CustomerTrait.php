@@ -52,12 +52,12 @@ trait CustomerTrait
      */
     public function stripeEmail() : string
     {
-        if (property_exists($this, 'email')) {
+        if (property_exists($this, 'email') && !empty($this->email)) {
             return $this->email;
         }
 
-        if (is_object($this->users)) {
-            return $this->users->getEmail();
+        if (is_object($this->user)) {
+            return $this->user->getEmail();
         }
     }
 
