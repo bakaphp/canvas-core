@@ -45,7 +45,10 @@ class UserSettings extends AbstractModel
     public static function isEnabled(Apps $app, UserInterface $user, NotificationType $notificationType) : bool
     {
         $setting = self::findFirst([
-            'conditions' => 'users_id = :users_id: AND apps_id = :apps_id: AND \notifications_types_id = :notifications_types_id:  AND is_deleted = 0',
+            'conditions' => 'users_id = :users_id: 
+                            AND apps_id = :apps_id: 
+                            AND \notifications_types_id = :notifications_types_id: 
+                            AND is_deleted = 0',
             'bind' => [
                 'users_id' => $user->getId(),
                 'apps_id' => $app->getId(),
@@ -72,7 +75,10 @@ class UserSettings extends AbstractModel
     public static function getByUserAndNotificationType(Apps $app, UserInterface $user, NotificationType $notificationType) : ?self
     {
         return self::findFirst([
-            'conditions' => 'users_id = :users_id: AND apps_id = :apps_id: AND \notifications_types_id = :notifications_types_id:  AND is_deleted = 0',
+            'conditions' => 'users_id = :users_id: 
+                            AND apps_id = :apps_id: 
+                            AND \notifications_types_id = :notifications_types_id: 
+                            AND is_deleted = 0',
             'bind' => [
                 'users_id' => $user->getId(),
                 'apps_id' => $app->getId(),
@@ -91,12 +97,27 @@ class UserSettings extends AbstractModel
      */
     public function muteAll(Apps $app, UserInterface $user) : bool
     {
-        return $this->di->get('db')->prepare(
-            'UPDATE users_notification_settings SET is_enabled = 0 WHERE users_id = :users_id AND apps_id = :apps_id AND is_deleted = 0',
-        )->execute([
-            'users_id' => $user->getId(),
-            'apps_id' => $app->getId()
-        ]);
+        $notificationTypes = NotificationType::find('is_published = 1 AND apps_id =' . $app->getId());
+
+        foreach ($notificationTypes as $notificationType) {
+            self::updateOrCreate([
+                'conditions' => 'users_id = :users_id: 
+                                AND apps_id = :apps_id: 
+                                AND \notifications_types_id = :notifications_types_id:',
+                'bind' => [
+                    'users_id' => $user->getId(),
+                    'apps_id' => $notificationType->apps_id,
+                    'notifications_types_id' => $notificationType->getId(),
+                ],
+            ], [
+                'is_enabled' => 0,
+                'users_id' => $user->getId(),
+                'apps_id' => $notificationType->apps_id,
+                'notifications_types_id' => $notificationType->getId()
+            ]);
+        }
+
+        return true;
     }
 
     /**
@@ -110,9 +131,10 @@ class UserSettings extends AbstractModel
      */
     public static function listOfNotifications(Apps $app, UserInterface $user, int $parent = 0) : array
     {
-        $notificationType = NotificationType::find('is_published = 1 AND parent_id = ' . $parent . ' and apps_id =' . $app->getId());
+        $notificationType = NotificationType::find('is_published = 1 AND parent_id = ' . $parent . ' AND apps_id =' . $app->getId());
         $userNotificationList = [];
         $i = 0;
+
         foreach ($notificationType as $notification) {
             $userNotificationList[$i] = [
                 'name' => $notification->name,
