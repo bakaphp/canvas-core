@@ -1,5 +1,6 @@
 <?php
 
+use Canvas\Enums\SubscriptionTypes;
 use Phinx\Seed\AbstractSeed;
 
 class SubscriptionsSeeder extends AbstractSeed
@@ -12,6 +13,7 @@ class SubscriptionsSeeder extends AbstractSeed
                 'companies_id' => 1,
                 'companies_groups_id' => 1,
                 'companies_branches_id' => 1,
+                'subscription_types_id' => SubscriptionTypes::GROUP,
                 'apps_id' => 1,
                 'name' => 'example',
                 'stripe_id' => 'asaefaeasdafa132eb',
