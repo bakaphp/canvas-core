@@ -70,11 +70,9 @@ class SubscriptionsController extends BaseController
             ],
         ]);
 
-
         $subscription->name = $appPlan->name;
         $subscription->stripe_plan = $appPlan->stripe_plan;
         $subscription->swap($appPlan);
-
 
         //update the subscription with the plan
         $subscription->apps_plans_id = $appPlan->getId();
@@ -101,11 +99,7 @@ class SubscriptionsController extends BaseController
             ],
         ]);
 
-        //if on trial you can cancel without going to stripe
-        if (!$subscription->onTrial()) {
-            $subscription->cancel();
-        }
-
+        $subscription->cancel();
         $subscription->is_cancelled = 1;
         $subscription->update();
 
@@ -129,11 +123,7 @@ class SubscriptionsController extends BaseController
             ],
         ]);
 
-        //if on trial you can cancel without going to stripe
-        if (!$subscription->onTrial()) {
-            $subscription->reactivate();
-        }
-
+        $subscription->reactivate();
         $subscription->is_cancelled = 0;
         $subscription->update();
 
