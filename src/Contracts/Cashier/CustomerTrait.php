@@ -28,7 +28,7 @@ trait CustomerTrait
      */
     public function hasStripeId() : bool
     {
-        return !is_null($this->stripe_id);
+        return !is_null($this->stripe_id) && !empty(trim($this->stripe_id));
     }
 
     /**
@@ -50,7 +50,7 @@ trait CustomerTrait
      *
      * @return string|null
      */
-    public function stripeEmail() : string
+    public function stripeEmail() : ?string
     {
         if (property_exists($this, 'email')) {
             return $this->email;

@@ -9,6 +9,7 @@ use Baka\Blameable\BlameableTrait;
 use Baka\Contracts\Database\HashTableTrait;
 use Baka\Contracts\EventsManager\EventManagerAwareTrait;
 use Baka\Http\Exception\InternalServerErrorException;
+use Canvas\Cashier\Billable;
 use Canvas\Contracts\FileSystemModelTrait;
 use Canvas\Contracts\UsersAssociatedTrait;
 use Canvas\CustomFields\CustomFields;
@@ -27,12 +28,14 @@ class Companies extends AbstractModel
     use FileSystemModelTrait;
     use BlameableTrait;
     use EventManagerAwareTrait;
+    use Billable;
 
     public int $users_id;
     public ?string $uuid = null;
     public ?int $has_activities = 0;
     public ?int $appPlanId = null;
     public ?int $currency_id = 0;
+    public ?string $stripe_id = null;
     public ?string $language = null;
     public ?string $timezone = null;
     public ?string $currency = null;
@@ -503,7 +506,9 @@ class Companies extends AbstractModel
     {
         return  CompaniesBranches::findFirstOrCreate(
             [
-                'conditions' => 'companies_id = :companies_id: AND users_id = :users_id: AND name = :name:',
+                'conditions' => 'companies_id = :companies_id: 
+                                AND users_id = :users_id: 
+                                AND name = :name:',
                 'bind' => [
                     'companies_id' => $this->getId(),
                     'users_id' => $this->user->getId(),

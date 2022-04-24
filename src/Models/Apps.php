@@ -9,6 +9,7 @@ use Baka\Database\Apps as BakaApps;
 use Canvas\App\Setup;
 use Canvas\Contracts\UsersAssociatedTrait;
 use Canvas\Enums\App;
+use Canvas\Enums\SubscriptionTypes;
 use Phalcon\Di;
 use Phalcon\Security\Random;
 
@@ -24,6 +25,7 @@ class Apps extends BakaApps
     public int $ecosystem_auth = 0;
     public int $default_apps_plan_id = 0;
     public int $payments_active = 0;
+    public int $subscription_types_id = 0;
     public int $is_public = 1;
     public array $settings = [];
 
@@ -237,6 +239,26 @@ class Apps extends BakaApps
     public function defaultCurrency() : string
     {
         return $this->get('currency');
+    }
+
+    public function usesSubscriptionType(int $type)
+    {
+        return  $this->subscriptionBased() && $this->subscription_types_id === $type;
+    }
+
+    public function usesGroupSubscription() : bool
+    {
+        return  $this->usesSubscriptionType(SubscriptionTypes::GROUP);
+    }
+
+    public function usesCompanySubscription() : bool
+    {
+        return  $this->usesSubscriptionType(SubscriptionTypes::COMPANY);
+    }
+
+    public function usesBranchSubscription() : bool
+    {
+        return  $this->usesSubscriptionType(SubscriptionTypes::BRANCH);
     }
 
     /**
