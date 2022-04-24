@@ -71,7 +71,7 @@ class Companies extends AbstractModel
             'users_id',
             Users::class,
             'id',
-            ['alias' => 'user', 'reusable' => true, ]
+            ['alias' => 'user', 'reusable' => true]
         );
 
         $this->hasMany(
@@ -504,7 +504,7 @@ class Companies extends AbstractModel
      */
     public function createBranch(?string $name = null) : CompaniesBranches
     {
-        return  CompaniesBranches::findFirstOrCreate(
+        return CompaniesBranches::findFirstOrCreate(
             [
                 'conditions' => 'companies_id = :companies_id: 
                                 AND users_id = :users_id: 

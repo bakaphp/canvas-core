@@ -83,6 +83,16 @@ class CompaniesGroups extends AbstractModel
                 'reusable' => true
             ]
         );
+
+        $this->belongsTo(
+            'users_id',
+            Users::class,
+            'id',
+            [
+                'alias' => 'user',
+                'reusable' => true
+            ]
+        );
     }
 
     /**

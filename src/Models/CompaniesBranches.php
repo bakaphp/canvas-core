@@ -39,7 +39,7 @@ class CompaniesBranches extends AbstractModel
             'users_id',
             Users::class,
             'id',
-            ['alias' => 'id']
+            ['alias' => 'user', 'reusable' => true]
         );
     }
 

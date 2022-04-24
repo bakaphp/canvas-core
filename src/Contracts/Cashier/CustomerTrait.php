@@ -52,12 +52,12 @@ trait CustomerTrait
      */
     public function stripeEmail() : ?string
     {
-        if (property_exists($this, 'email')) {
+        if (property_exists($this, 'email') && !empty($this->email)) {
             return $this->email;
         }
 
-        if (is_object($this->users)) {
-            return $this->users->getEmail();
+        if (is_object($this->user)) {
+            return $this->user->getEmail();
         }
     }
 
@@ -77,6 +77,12 @@ trait CustomerTrait
         if (!array_key_exists('email', $options) && $email = $this->stripeEmail()) {
             $options['email'] = $email;
         }
+
+        if (!array_key_exists('name', $options)) {
+            $options['name'] = $this->name;
+        }
+
+        $options['metadata']['subscription_type'] = get_class($this);
 
         // Here we will create the customer instance on Stripe and store the ID of the
         // user from Stripe. This ID will correspond with the Stripe user instances

@@ -78,7 +78,7 @@ class Company
                 $company,
                 $branch
             );
-        } elseif (true) { //$app->usesCompanySubscription()) {
+        } elseif ($app->usesCompanySubscription()) {
             $company->startFreeTrial(
                 $companiesGroup,
                 $company,
