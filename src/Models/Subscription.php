@@ -7,6 +7,7 @@ namespace Canvas\Models;
 use Baka\Http\Exception\InternalServerErrorException;
 use Canvas\Cashier\Cashier;
 use Canvas\Cashier\Exceptions\Subscriptions as SubscriptionException;
+use Canvas\Enums\State;
 use Carbon\Carbon;
 use DateTime;
 use DateTimeInterface;
@@ -24,7 +25,7 @@ class Subscription extends AbstractModel
 
     public int $users_id;
     public int $companies_groups_id;
-    public int $companies_branches_id = 0;
+    public int $companies_branches_id = State::OFF;
     public int $companies_id;
     public int $subscription_type_id;
     public int $apps_id;

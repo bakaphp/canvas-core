@@ -32,7 +32,6 @@ trait SubscriptionsTrait
         AppsPlans $appPlan
     ) : SubscriptionBuilder {
         return new SubscriptionBuilder(
-            $this,
             $appPlan,
             Di::getDefault()->get('app'),
             $companyGroup,

@@ -79,14 +79,12 @@ class SubscriptionBuilder
      * @param Apps $apps
      */
     public function __construct(
-        ModelInterface $entity,
         AppsPlans $appPlan,
         Apps $apps,
         CompaniesGroups $companyGroup,
         Companies $company,
         CompaniesBranches $branch
     ) {
-        $this->entity = $entity;
         $this->name = $appPlan->name;
         $this->apps = $apps;
         $this->plan = $appPlan->stripe_id;
@@ -95,7 +93,24 @@ class SubscriptionBuilder
         $this->company = $company;
         $this->branch = $branch;
 
+        $this->setCustomerEntity();
         $this->addPlan($appPlan);
+    }
+
+    /**
+     * Set the customer stripe entity base on the app configuration.
+     *
+     * @return void
+     */
+    protected function setCustomerEntity() : void
+    {
+        $this->entity = $this->company;
+
+        if ($this->apps->usesGroupSubscription()) {
+            $this->entity = $this->companyGroup;
+        } elseif ($this->apps->usesBranchSubscription()) {
+            $this->entity = $this->branch;
+        }
     }
 
     /**

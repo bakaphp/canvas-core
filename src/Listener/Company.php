@@ -72,24 +72,14 @@ class Company
         }
 
         //if the app is subscription based, create a free trial for this companyGroup and this app
-        if ($app->usesGroupSubscription()) {
+        if ($app->usesSubscriptions()) {
             $companiesGroup->startFreeTrial(
                 $companiesGroup,
                 $company,
                 $branch
             );
-        } elseif ($app->usesCompanySubscription()) {
-            $company->startFreeTrial(
-                $companiesGroup,
-                $company,
-                $branch
-            );
-        } elseif ($app->usesBranchSubscription()) {
-            $branch->startFreeTrial(
-                $companiesGroup,
-                $company,
-                $branch
-            );
         }
+
+        //this can be change to call it direclty fromt eh subscriptionbuilder and we are missing calling it from the branch
     }
 }

@@ -11,6 +11,7 @@ class SubscriptionsSeeder extends AbstractSeed
                 'users_id' => 1,
                 'companies_id' => 1,
                 'companies_groups_id' => 1,
+                'companies_branches_id' => 1,
                 'apps_id' => 1,
                 'name' => 'example',
                 'stripe_id' => 'asaefaeasdafa132eb',
