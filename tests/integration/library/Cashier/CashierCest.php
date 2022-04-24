@@ -23,7 +23,12 @@ class CashierCest
         $companyGroup = CompaniesGroups::findFirst();
 
         //Create Subscription
-        $companyGroup->newSubscription($defaultPlan)
+        $companyGroup->newSubscription(
+            $companyGroup,
+            $companyGroup->defaultCompany->getFirst(),
+            $companyGroup->defaultCompany->getFirst()->defaultBranch,
+            $defaultPlan
+        )
         ->trialDays($defaultPlan->free_trial_dates)
         ->create();
 
@@ -54,7 +59,12 @@ class CashierCest
         $companyGroup = CompaniesGroups::findFirst();
 
         //Create Subscription
-        $companyGroup->newSubscription($defaultPlan)
+        $companyGroup->newSubscription(
+            $companyGroup,
+            $companyGroup->defaultCompany->getFirst(),
+            $companyGroup->defaultCompany->getFirst()->defaultBranch,
+            $defaultPlan
+        )
          ->trialDays($defaultPlan->free_trial_dates)
          ->withMetadata(['appPlan' => $defaultPlan->getId()])
          ->create();
@@ -78,7 +88,12 @@ class CashierCest
         $companyGroup = CompaniesGroups::findFirst();
 
         //Create Subscription
-        $companyGroup->newSubscription($defaultPlan)
+        $companyGroup->newSubscription(
+            $companyGroup,
+            $companyGroup->defaultCompany->getFirst(),
+            $companyGroup->defaultCompany->getFirst()->defaultBranch,
+            $defaultPlan
+        )
         ->trialDays(7)
         ->create();
 
@@ -104,7 +119,12 @@ class CashierCest
         $companyGroup = CompaniesGroups::findFirst();
 
         //Create Subscription
-        $companyGroup->newSubscription($defaultPlan)
+        $companyGroup->newSubscription(
+            $companyGroup,
+            $companyGroup->defaultCompany->getFirst(),
+            $companyGroup->defaultCompany->getFirst()->defaultBranch,
+            $defaultPlan
+        )
         ->trialDays(7)
         ->create();
 
@@ -131,7 +151,12 @@ class CashierCest
         $companyGroup = CompaniesGroups::findFirst();
 
         //Create Subscription
-        $companyGroup->newSubscription($defaultPlan)
+        $companyGroup->newSubscription(
+            $companyGroup,
+            $companyGroup->defaultCompany->getFirst(),
+            $companyGroup->defaultCompany->getFirst()->defaultBranch,
+            $defaultPlan
+        )
         ->trialDays(7)
         ->create();
 
@@ -222,7 +247,12 @@ class CashierCest
         $defaultPlan = AppsPlans::getDefaultPlan();
 
         //Create Subscription
-        $companyGroup->newSubscription($defaultPlan)
+        $companyGroup->newSubscription(
+            $companyGroup,
+            $companyGroup->defaultCompany->getFirst(),
+            $companyGroup->defaultCompany->getFirst()->defaultBranch,
+            $defaultPlan
+        )
           ->trialDays($defaultPlan->free_trial_dates)
           ->create();
 

@@ -79,7 +79,5 @@ class Company
                 $branch
             );
         }
-
-        //this can be change to call it direclty fromt eh subscriptionbuilder and we are missing calling it from the branch
     }
 }
