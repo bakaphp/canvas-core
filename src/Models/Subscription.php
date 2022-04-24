@@ -28,7 +28,7 @@ class Subscription extends AbstractModel
     public int $companies_groups_id;
     public int $companies_branches_id = State::OFF;
     public int $companies_id;
-    public int $subscription_type_id = SubscriptionTypes::GROUP;
+    public int $subscription_types_id = SubscriptionTypes::GROUP;
     public int $apps_id;
     public ?string $name = null;
     public string $stripe_id;
@@ -92,6 +92,16 @@ class Subscription extends AbstractModel
             'id',
             [
                 'alias' => 'company',
+                'reusable' => true,
+            ]
+        );
+
+        $this->belongsTo(
+            'companies_branches_id',
+            CompaniesBranches::class,
+            'id',
+            [
+                'alias' => 'branch',
                 'reusable' => true,
             ]
         );
@@ -498,7 +508,6 @@ class Subscription extends AbstractModel
     protected function getSwapOptions(AppsPlans $plan, array $options = []) : array
     {
         //replace the id of the plan with this new one
-
         $payload = [
             'items' => [
                 [
@@ -645,7 +654,15 @@ class Subscription extends AbstractModel
      */
     public function asStripeSubscription() : StripeSubscription
     {
-        return $this->companyGroup->getStripeCustomerInfo()->subscriptions->retrieve($this->stripe_id);
+        if ($this->subscription_types_id === SubscriptionTypes::GROUP) {
+            $entity = $this->companyGroup;
+        } elseif ($this->subscription_types_id === SubscriptionTypes::BRANCH) {
+            $entity = $this->branch;
+        } else {
+            $entity = $this->company;
+        }
+
+        return $entity->getStripeCustomerInfo()->subscriptions->retrieve($this->stripe_id);
     }
 
     /**
