@@ -25,7 +25,7 @@ class Apps extends BakaApps
     public int $ecosystem_auth = 0;
     public int $default_apps_plan_id = 0;
     public int $payments_active = 0;
-    public int $subscription_types_id = 0;
+    public ?int $subscription_types_id = 0;
     public int $is_public = 1;
     public array $settings = [];
 
