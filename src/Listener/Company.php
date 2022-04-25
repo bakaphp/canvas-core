@@ -35,7 +35,7 @@ class Company
         $app->associate($company->user, $company);
 
         //create default branch
-        $company->createBranch();
+        $branch = $company->createBranch();
 
         //Set Default Company Branch if record is not found
         if (!$company->user->get($company->branchCacheKey())) {
@@ -72,8 +72,12 @@ class Company
         }
 
         //if the app is subscription based, create a free trial for this companyGroup and this app
-        if ($app->subscriptionBased()) {
-            $companiesGroup->startFreeTrial();
+        if ($app->usesSubscriptions()) {
+            $companiesGroup->startFreeTrial(
+                $companiesGroup,
+                $company,
+                $branch
+            );
         }
     }
 }

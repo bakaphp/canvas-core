@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace Canvas\Cashier;
 
+use Canvas\Enums\State;
 use Canvas\Models\Apps;
 use Canvas\Models\AppsPlans;
+use Canvas\Models\Companies;
+use Canvas\Models\CompaniesBranches;
 use Canvas\Models\CompaniesGroups;
 use Canvas\Models\Subscription;
 use Canvas\Models\SubscriptionItems;
@@ -22,6 +25,9 @@ class SubscriptionBuilder
      * Entity who is been assigned a subscription.
      */
     protected ModelInterface $entity;
+    protected CompaniesGroups $companyGroup;
+    protected Companies $company;
+    protected CompaniesBranches $branch;
 
     /**
      * The name of the subscription.
@@ -67,20 +73,44 @@ class SubscriptionBuilder
     /**
      * Create a new Subscription.
      *
-     * @param CompaniesGroups $entity
+     * @param Companies $entity
      * @param string $name
      * @param string $plan
      * @param Apps $apps
      */
-    public function __construct(CompaniesGroups $entity, AppsPlans $appPlan, Apps $apps)
-    {
-        $this->entity = $entity;
+    public function __construct(
+        AppsPlans $appPlan,
+        Apps $apps,
+        CompaniesGroups $companyGroup,
+        Companies $company,
+        CompaniesBranches $branch
+    ) {
         $this->name = $appPlan->name;
         $this->apps = $apps;
         $this->plan = $appPlan->stripe_id;
         $this->appsPlan = $appPlan;
+        $this->companyGroup = $companyGroup;
+        $this->company = $company;
+        $this->branch = $branch;
 
+        $this->setCustomerEntity();
         $this->addPlan($appPlan);
+    }
+
+    /**
+     * Set the customer stripe entity base on the app configuration.
+     *
+     * @return void
+     */
+    protected function setCustomerEntity() : void
+    {
+        $this->entity = $this->company;
+
+        if ($this->apps->usesGroupSubscription()) {
+            $this->entity = $this->companyGroup;
+        } elseif ($this->apps->usesBranchSubscription()) {
+            $this->entity = $this->branch;
+        }
     }
 
     /**
@@ -254,13 +284,15 @@ class SubscriptionBuilder
         $subscription->stripe_status = $stripeSubscription->status;
         $subscription->quantity = $stripeSubscription->quantity;
         $subscription->trial_ends_at = $trialEndsAt->toDateTimeString();
-        $subscription->companies_id = $options['companies_id'] ?? $this->entity->defaultCompany->getFirst()->getId();
-        $subscription->companies_groups_id = $this->entity->getId();
+        $subscription->companies_id = $this->company->getId();
+        $subscription->companies_branches_id = $this->branch->getId();
+        $subscription->companies_groups_id = $this->companyGroup->getId();
         $subscription->apps_id = $this->apps->getId();
         $subscription->payment_frequency_id = $this->apps->getDefaultPlan()->payment_frequencies_id;
-        $subscription->is_freetrial = $trialEndsAt ? 1 : 0;
+        $subscription->subscription_types_id = $this->apps->subscription_types_id;
+        $subscription->is_freetrial = $trialEndsAt ? State::YES : State::NO;
         $subscription->users_id = $this->entity->users_id;
-        $subscription->is_active = 1;
+        $subscription->is_active = State::YES;
         $subscription->saveOrFail();
 
         foreach ($stripeSubscription->items as $item) {

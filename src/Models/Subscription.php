@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Canvas\Models;
 
+use Baka\Contracts\Database\ModelInterface;
 use Baka\Http\Exception\InternalServerErrorException;
 use Canvas\Cashier\Cashier;
 use Canvas\Cashier\Exceptions\Subscriptions as SubscriptionException;
+use Canvas\Enums\State;
+use Canvas\Enums\SubscriptionTypes;
 use Carbon\Carbon;
 use DateTime;
 use DateTimeInterface;
@@ -24,7 +27,9 @@ class Subscription extends AbstractModel
 
     public int $users_id;
     public int $companies_groups_id;
+    public int $companies_branches_id = State::OFF;
     public int $companies_id;
+    public int $subscription_types_id = SubscriptionTypes::GROUP;
     public int $apps_id;
     public ?string $name = null;
     public string $stripe_id;
@@ -88,6 +93,16 @@ class Subscription extends AbstractModel
             'id',
             [
                 'alias' => 'company',
+                'reusable' => true,
+            ]
+        );
+
+        $this->belongsTo(
+            'companies_branches_id',
+            CompaniesBranches::class,
+            'id',
+            [
+                'alias' => 'branch',
                 'reusable' => true,
             ]
         );
@@ -494,7 +509,6 @@ class Subscription extends AbstractModel
     protected function getSwapOptions(AppsPlans $plan, array $options = []) : array
     {
         //replace the id of the plan with this new one
-
         $payload = [
             'items' => [
                 [
@@ -635,13 +649,32 @@ class Subscription extends AbstractModel
     }
 
     /**
+     * Based on the subscriber type get the customer entity.
+     *
+     * @return ModelInterface
+     */
+    public function getSubscriberEntity() : ModelInterface
+    {
+        $entity = $this->company;
+        if ($this->subscription_types_id === SubscriptionTypes::GROUP) {
+            $entity = $this->companyGroup;
+        } elseif ($this->subscription_types_id === SubscriptionTypes::BRANCH) {
+            $entity = $this->branch;
+        }
+
+        return $entity;
+    }
+
+    /**
      * Get the subscription as a Stripe subscription object.
      *
      * @return Subscription
      */
     public function asStripeSubscription() : StripeSubscription
     {
-        return $this->companyGroup->getStripeCustomerInfo()->subscriptions->retrieve($this->stripe_id);
+        $entity = $this->getSubscriberEntity();
+
+        return $entity->getStripeCustomerInfo()->subscriptions->retrieve($this->stripe_id);
     }
 
     /**

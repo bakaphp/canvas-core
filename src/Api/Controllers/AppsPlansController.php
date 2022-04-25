@@ -53,6 +53,8 @@ class AppsPlansController extends BaseController
      *
      * @param string $stripeId
      *
+     * @deprecated v1.0.0
+     *
      * @return Response
      */
     public function edit($stripeId) : Response
@@ -85,6 +87,8 @@ class AppsPlansController extends BaseController
      *
      * @param string $stripeId
      *
+     * @deprecated v1.0.0
+     *
      * @return Response
      */
     public function delete($stripeId) : Response
@@ -113,6 +117,8 @@ class AppsPlansController extends BaseController
      *
      * @param string $stripeId
      *
+     * @deprecated v1.0.0
+     *
      * @return Response
      */
     public function reactivateSubscription($stripeId) : Response
@@ -140,6 +146,8 @@ class AppsPlansController extends BaseController
      * Update payment method.
      *
      * @param int $id
+     *
+     * @deprecated v1.0.0
      *
      * @return Response
      */

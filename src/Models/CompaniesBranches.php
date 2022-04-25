@@ -3,12 +3,16 @@ declare(strict_types=1);
 
 namespace Canvas\Models;
 
+use Canvas\Cashier\Billable;
 use Phalcon\Validation;
 use Phalcon\Validation\Validator\PresenceOf;
 
 class CompaniesBranches extends AbstractModel
 {
+    use Billable;
+
     public string $name;
+    public ?string $stripe_id = null;
     public ?string $address = null;
     public ?string $email = null;
     public ?string $zipcode = null;
@@ -35,7 +39,7 @@ class CompaniesBranches extends AbstractModel
             'users_id',
             Users::class,
             'id',
-            ['alias' => 'id']
+            ['alias' => 'user', 'reusable' => true]
         );
     }
 

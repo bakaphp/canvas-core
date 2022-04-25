@@ -1,5 +1,6 @@
 <?php
 
+use Canvas\Enums\SubscriptionTypes;
 use Phalcon\Security\Random;
 use Phinx\Seed\AbstractSeed;
 
@@ -16,6 +17,7 @@ class InitGewaer extends AbstractSeed
                 'description' => 'Gewaer Ecosystem',
                 'created_at' => date('Y-m-d H:i:s'),
                 'default_apps_plan_id' => 1,
+                'subscription_types_id' => SubscriptionTypes::GROUP,
                 'payments_active' => 1,
                 'ecosystem_auth' => 1,
                 'is_actived' => 1,

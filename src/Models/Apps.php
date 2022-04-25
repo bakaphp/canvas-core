@@ -9,6 +9,7 @@ use Baka\Database\Apps as BakaApps;
 use Canvas\App\Setup;
 use Canvas\Contracts\UsersAssociatedTrait;
 use Canvas\Enums\App;
+use Canvas\Enums\SubscriptionTypes;
 use Phalcon\Di;
 use Phalcon\Security\Random;
 
@@ -24,6 +25,7 @@ class Apps extends BakaApps
     public int $ecosystem_auth = 0;
     public int $default_apps_plan_id = 0;
     public int $payments_active = 0;
+    public int $subscription_types_id = 0;
     public int $is_public = 1;
     public array $settings = [];
 
@@ -214,9 +216,21 @@ class Apps extends BakaApps
     /**
      * Is this app subscription based?
      *
+     * @deprecated  v1.0.0
+     *
      * @return bool
      */
     public function subscriptionBased() : bool
+    {
+        return $this->usesSubscriptions();
+    }
+
+    /**
+     * Is this app subscription based?
+     *
+     * @return bool
+     */
+    public function usesSubscriptions() : bool
     {
         return (bool) $this->payments_active;
     }
@@ -237,6 +251,48 @@ class Apps extends BakaApps
     public function defaultCurrency() : string
     {
         return $this->get('currency');
+    }
+
+    /**
+     * What type of subscription is this app?
+     *
+     * @param int $type
+     *
+     * @return bool
+     */
+    public function usesSubscriptionType(int $type) : bool
+    {
+        return  $this->usesSubscriptions() && $this->subscription_types_id === $type;
+    }
+
+    /**
+     * Company Group subscription.
+     *
+     * @return bool
+     */
+    public function usesGroupSubscription() : bool
+    {
+        return  $this->usesSubscriptionType(SubscriptionTypes::GROUP);
+    }
+
+    /**
+     * Company subscription.
+     *
+     * @return bool
+     */
+    public function usesCompanySubscription() : bool
+    {
+        return  $this->usesSubscriptionType(SubscriptionTypes::COMPANY);
+    }
+
+    /**
+     * Branch subscription.
+     *
+     * @return bool
+     */
+    public function usesBranchSubscription() : bool
+    {
+        return  $this->usesSubscriptionType(SubscriptionTypes::BRANCH);
     }
 
     /**
