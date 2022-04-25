@@ -147,6 +147,8 @@ class AppsPlansController extends BaseController
      *
      * @param int $id
      *
+     * @deprecated v1.0.0
+     *
      * @return Response
      */
     public function updatePaymentMethod(string $id) : Response
