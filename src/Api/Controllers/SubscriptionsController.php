@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Canvas\Api\Controllers;
 
+use Baka\Validation as CanvasValidation;
 use Canvas\Http\Exception\NotFoundException;
 use Canvas\Models\AppsPlans;
 use Canvas\Models\Subscription;
 use Phalcon\Http\Response;
+use Phalcon\Validation\Validator\PresenceOf;
 
 class SubscriptionsController extends BaseController
 {
@@ -126,6 +128,70 @@ class SubscriptionsController extends BaseController
         $subscription->reactivate();
         $subscription->is_cancelled = 0;
         $subscription->update();
+
+        return $this->response($subscription);
+    }
+
+    /**
+     * Update payment method.
+     *
+     * @param int $id
+     *
+     * @return Response
+     */
+    public function updatePaymentMethod(int $id) : Response
+    {
+        //Update default payment method with new card.
+        $subscription = Subscription::findFirstOrFail([
+            'conditions' => 'id = :id: AND companies_id = :companies_id: AND is_deleted = 0',
+            'bind' => [
+                'id' => $id,
+                'companies_id' => $this->userData->currentCompanyId(),
+            ],
+        ]);
+
+        $subscriber = $subscription->getSubscriberEntity();
+
+        if (empty($this->request->hasPut('card_token'))) {
+            $validation = new CanvasValidation();
+            $validation->add('card_number', new PresenceOf(['message' => _('Credit Card Number is required.')]));
+            $validation->add('card_exp_month', new PresenceOf(['message' => _('Credit Card expiration month is required.')]));
+            $validation->add('card_exp_year', new PresenceOf(['message' => _('Credit Card expiration year is required.')]));
+            $validation->add('card_cvc', new PresenceOf(['message' => _('CVC is required.')]));
+
+            //validate this form for password
+            $validation->validate($this->request->getPut());
+
+            $cardNumber = $this->request->getPut('card_number', 'string');
+            $expMonth = $this->request->getPut('card_exp_month', 'string');
+            $expYear = $this->request->getPut('card_exp_year', 'string');
+            $cvc = $this->request->getPut('card_cvc', 'string');
+
+            $token = $subscriber->createCreditCard([
+                'card' => [
+                    'number' => $cardNumber,
+                    'exp_month' => $expMonth,
+                    'exp_year' => $expYear,
+                    'cvc' => $cvc,
+                ]
+            ])->id;
+        } else {
+            $token = $this->request->getPut('card_token');
+        }
+
+        $subscriber->updateDefaultCreditCard($token);
+        $address = $this->request->getPut('address', 'string');
+        $zipcode = $this->request->getPut('zipcode', 'string');
+
+        //update the default company info
+        $this->userData->getDefaultCompany()->address = $address;
+        $this->userData->getDefaultCompany()->zipcode = $zipcode;
+        $this->userData->getDefaultCompany()->update();
+
+        //not valid? ok then lets charge the credit card to active your subscription
+        if (!$subscription->valid()) {
+            $subscription->activate();
+        }
 
         return $this->response($subscription);
     }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Canvas\Models;
 
+use Baka\Contracts\Database\ModelInterface;
 use Baka\Http\Exception\InternalServerErrorException;
 use Canvas\Cashier\Cashier;
 use Canvas\Cashier\Exceptions\Subscriptions as SubscriptionException;
@@ -648,19 +649,30 @@ class Subscription extends AbstractModel
     }
 
     /**
+     * Based on the subscriber type get the customer entity.
+     *
+     * @return ModelInterface
+     */
+    public function getSubscriberEntity() : ModelInterface
+    {
+        $entity = $this->company;
+        if ($this->subscription_types_id === SubscriptionTypes::GROUP) {
+            $entity = $this->companyGroup;
+        } elseif ($this->subscription_types_id === SubscriptionTypes::BRANCH) {
+            $entity = $this->branch;
+        }
+
+        return $entity;
+    }
+
+    /**
      * Get the subscription as a Stripe subscription object.
      *
      * @return Subscription
      */
     public function asStripeSubscription() : StripeSubscription
     {
-        if ($this->subscription_types_id === SubscriptionTypes::GROUP) {
-            $entity = $this->companyGroup;
-        } elseif ($this->subscription_types_id === SubscriptionTypes::BRANCH) {
-            $entity = $this->branch;
-        } else {
-            $entity = $this->company;
-        }
+        $entity = $this->getSubscriberEntity();
 
         return $entity->getStripeCustomerInfo()->subscriptions->retrieve($this->stripe_id);
     }
