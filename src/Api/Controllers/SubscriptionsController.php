@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Canvas\Api\Controllers;
 
 use Baka\Validation as CanvasValidation;
-use Canvas\Http\Exception\NotFoundException;
 use Canvas\Models\AppsPlans;
 use Canvas\Models\Subscription;
 use Phalcon\Http\Response;
@@ -58,11 +57,13 @@ class SubscriptionsController extends BaseController
 
         $request = $this->request->getPutData();
 
-        $appPlan = AppsPlans::findFirstByStripeId($request['stripe_id']);
-
-        if (!is_object($appPlan)) {
-            throw new NotFoundException(_('This plan doesn\'t exist'));
-        }
+        $appPlan = AppsPlans::findFirstOrFail([
+            'conditions' => 'stripe_id = :stripe_id: AND apps_id = :apps_id:',
+            'bind' => [
+                'stripe_id' => $request['stripe_id'],
+                'apps_id' => $this->app->getId(),
+            ],
+        ]);
 
         $subscription = Subscription::findFirstOrFail([
             'conditions' => 'id = :id: AND companies_id = :companies_id: AND is_deleted = 0',
