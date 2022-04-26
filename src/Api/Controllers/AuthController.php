@@ -238,9 +238,11 @@ class AuthController extends BaseController
         $refreshToken = $this->getToken($request['refresh_token']);
         $user = null;
 
+        /**
         if (!$accessToken->isExpired()) {
             throw new InternalServerErrorException('Issued Access Token has not expired');
-        }
+        }*/
+        
         if ($refreshToken->isExpired()) {
             throw new InternalServerErrorException('Refresh Token has expired');
         }
