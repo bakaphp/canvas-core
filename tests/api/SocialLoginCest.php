@@ -125,7 +125,7 @@ class SocialLoginCest
         $userData = $I->apiLogin();
 
         $I->haveHttpHeader('Authorization', $userData->token);
-        $I->sendDelete('/v1/users/' . $userData->id . '/social/ ' . $this->provider);
+        $I->sendDelete('/v1/users/' . $userData->id . '/social/' . $this->provider);
 
         $I->seeResponseIsSuccessful();
         $response = $I->grabResponse();
