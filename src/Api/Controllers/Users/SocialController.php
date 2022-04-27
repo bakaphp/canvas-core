@@ -27,7 +27,7 @@ class SocialController extends BaseController
         }
 
         return $this->response(
-            ['Disconnected from Social Site.'],
+            'Disconnected from Social Site.',
         );
     }
 }
