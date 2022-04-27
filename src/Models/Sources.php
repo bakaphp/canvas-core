@@ -27,7 +27,12 @@ class Sources extends Model
     {
         $this->setSource('sources');
 
-        $this->hasMany('id', UserLinkedSources::class, 'source_id', ['alias' => 'linkedSource']);
+        $this->hasMany(
+            'id',
+            UserLinkedSources::class,
+            'source_id',
+            ['alias' => 'linkedSource']
+        );
     }
 
     /**
@@ -68,7 +73,7 @@ class Sources extends Model
         return self::findFirstOrFail([
             'conditions' => 'title = :title: AND is_deleted = 0',
             'bind' => [
-                $title
+                'title' => $title
             ]
         ]);
     }
