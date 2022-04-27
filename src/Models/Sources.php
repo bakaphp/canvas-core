@@ -6,7 +6,6 @@ namespace Canvas\Models;
 
 use Baka\Database\Model;
 use Baka\Http\Exception\InternalServerErrorException;
-use Baka\Http\Exception\NotFoundException;
 use Baka\Social\Apple\ASDecoder;
 
 class Sources extends Model
@@ -58,16 +57,19 @@ class Sources extends Model
     }
 
     /**
-     * Get a source by its title.
+     * Get source by title.
+     *
+     * @param string $title
+     *
+     * @return Sources
      */
     public static function getByTitle(string $title) : Sources
     {
-        $sourceData = self::findFirstByTitle($title);
-
-        if (!$sourceData) {
-            throw new NotFoundException(_('Importing site is not currently supported.'));
-        }
-
-        return $sourceData;
+        return self::findFirstOrFail([
+            'conditions' => 'title = :title: AND is_deleted = 0',
+            'bind' => [
+                $title
+            ]
+        ]);
     }
 }

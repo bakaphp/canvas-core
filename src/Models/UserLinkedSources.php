@@ -3,9 +3,8 @@ declare(strict_types=1);
 
 namespace Canvas\Models;
 
+use Baka\Contracts\Auth\UserInterface;
 use Baka\Database\Model;
-use Phalcon\Validation;
-use Phalcon\Validation\Validator\Uniqueness;
 
 class UserLinkedSources extends Model
 {
@@ -21,8 +20,18 @@ class UserLinkedSources extends Model
     public function initialize()
     {
         $this->setSource('user_linked_sources');
-        $this->belongsTo('users_id', 'Canvas\Models\Users', 'id', ['alias' => 'user']);
-        $this->belongsTo('source_id', 'Canvas\Models\Sources', 'id', ['alias' => 'source']);
+        $this->belongsTo(
+            'users_id',
+            Users::class,
+            'id',
+            ['alias' => 'user']
+        );
+        $this->belongsTo(
+            'source_id',
+            Sources::class,
+            'id',
+            ['alias' => 'source']
+        );
     }
 
     /**
@@ -63,20 +72,44 @@ class UserLinkedSources extends Model
      * @param  $userData Users
      * @param  $socialNetwork string
      */
-    public static function alreadyConnected(Users $userData, $socialNetwork) : bool
+    public static function alreadyConnected(Users $user, string $socialNetwork) : bool
     {
-        $source = Sources::findFirst(['title = :title:', 'bind' => ['title' => $socialNetwork]]);
+        $source = Sources::getByTitle($socialNetwork);
 
         $bind = [
-            'source_id' => $source->source_id,
-            'users_id' => $userData->users_id,
+            'source_id' => $source->getId(),
+            'users_id' => $user->getId(),
         ];
 
-        if (self::findFirst(['source_id = :source_id: and users_id = :users_id:', 'bind' => $bind])) {
+        if (self::findFirst(['conditions' => 'source_id = :source_id: and users_id = :users_id:', 'bind' => $bind])) {
             return true;
         }
 
         return false;
+    }
+
+    /**
+     * Get connection by site.
+     *
+     * @param Users $userData
+     * @param string $site
+     *
+     * @return UserLinkedSources
+     */
+    public static function getConnectionBySite(UserInterface $user, string $site) : UserLinkedSources
+    {
+        $source = Sources::getByTitle($site);
+
+        $bind = [
+            'source_id' => $source->getId(),
+            'users_id' => $user->getId(),
+        ];
+
+        return self::findFirstOrFail([
+            'conditions' => 'source_id = :source_id: 
+                            AND users_id = :users_id:',
+            'bind' => $bind
+        ]);
     }
 
     /**
@@ -90,7 +123,9 @@ class UserLinkedSources extends Model
     public static function getBySourceAndSocialId(Sources $source, string $socialId) : ?UserLinkedSources
     {
         return self::findFirst([
-            'conditions' => 'source_id = :source_id: and source_users_id_text = :source_users_id_text: and is_deleted = 0',
+            'conditions' => 'source_id = :source_id: 
+                            AND source_users_id_text = :source_users_id_text: 
+                            AND is_deleted = 0',
             'bind' => [
                 'source_id' => $source->getId(),
                 'source_users_id_text' => $socialId
