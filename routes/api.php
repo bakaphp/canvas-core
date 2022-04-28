@@ -114,7 +114,10 @@ $privateRoutes = [
 
     # Company User Deletion
     Route::delete('/company/{companyId}/users/{usersId}')->controller('Companies\UsersController')->action('remove'),
-    Route::delete('/companies-branches/{branchId}/users/{usersId}')->controller('Companies\UsersController')->action('removeFromBranch')
+    Route::delete('/companies-branches/{branchId}/users/{usersId}')->controller('Companies\UsersController')->action('removeFromBranch'),
+
+    #social
+    Route::delete('/users/{id}/social/{site}')->controller('Users\SocialController')->action('disconnectFromSite'),
 
 ];
 
