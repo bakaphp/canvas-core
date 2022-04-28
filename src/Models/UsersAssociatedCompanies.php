@@ -12,6 +12,7 @@ class UsersAssociatedCompanies extends Model
     public int $companies_branches_id = 0;
     public string $identify_id;
     public int $user_active;
+    public ?string $configuration = null;
     public string $user_role;
 
     /**
