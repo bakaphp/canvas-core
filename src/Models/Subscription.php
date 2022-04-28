@@ -548,7 +548,7 @@ class Subscription extends AbstractModel
         } else {
             $this->ends_at = Carbon::createFromTimestamp(
                 $subscription->current_period_end
-            );
+            )->toDayDateTimeString();
         }
 
         $this->save();
