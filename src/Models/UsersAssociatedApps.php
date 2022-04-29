@@ -15,6 +15,7 @@ class UsersAssociatedApps extends AbstractModel implements UserInterface
     public string $identify_id;
     public int $user_active;
     public string $user_role;
+    public ?string $configuration = null;
     public ?string $password = null;
 
     /**
@@ -117,6 +118,6 @@ class UsersAssociatedApps extends AbstractModel implements UserInterface
             ]
         ]);
 
-        return $userAssociatedApp->softDelete();
+        return (bool) $userAssociatedApp->softDelete();
     }
 }
