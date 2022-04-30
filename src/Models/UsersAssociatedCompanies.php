@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Canvas\Models;
 
 use Baka\Database\Model;
-
 use function Baka\isJson;
 
 class UsersAssociatedCompanies extends Model
@@ -43,34 +42,33 @@ class UsersAssociatedCompanies extends Model
      * Set a new config value for the specific user.
      *
      * @param string $key
-     * @param string $value
+     * @param mixed $value
      *
      * @return void
      */
-    public function set(string $key, string $value) : void
+    public function set(string $key, $value) : void
     {
         if (isJson($this->configuration)) {
             $configuration = json_decode($this->configuration, true);
             $configuration[$key] = $value;
             $this->configuration = json_encode($configuration);
         } else {
-            $configuration = [
+            $this->configuration = json_encode([
                 $key => $value
-            ];
-            $this->configuration = json_encode($configuration);
+            ]);
         }
 
         $this->saveOrFail();
     }
 
     /**
-     * Get a specifc config value for the specific user.
+     * Get a specific config value for the specific user.
      *
      * @param string $key
      *
-     * @return string|null
+     * @return mixed|null
      */
-    public function get(string $key) : ?string
+    public function get(string $key)
     {
         if (isJson($this->configuration)) {
             $configuration = json_decode($this->configuration, true);
