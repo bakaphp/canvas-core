@@ -551,10 +551,10 @@ class Users extends AbstractModel implements UserInterface
     {
         $this->phone_number = StringFormatter::sanitizePhoneNumber($this->phone_number);
         $this->cell_phone_number = StringFormatter::sanitizePhoneNumber($this->cell_phone_number);
-        $this->firstname = trim($this->firstname);
-        $this->lastname = trim($this->lastname);
+        $this->firstname = !empty($this->firstname) ? trim($this->firstname) : null;
+        $this->lastname = !empty($this->lastname) ? trim($this->lastname) : null;
         $this->displayname = trim($this->displayname);
-        $this->description = trim($this->description);
+        $this->description = !empty($this->description) ? trim($this->description) : null;
     }
 
     /**
