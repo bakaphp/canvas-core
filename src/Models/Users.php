@@ -142,7 +142,7 @@ class Users extends AbstractModel implements UserInterface
 
         $this->hasOne(
             'default_company',
-            'Canvas\Models\Companies',
+            Companies::class,
             'id',
             [
                 'alias' => 'defaultCompany',
@@ -152,14 +152,14 @@ class Users extends AbstractModel implements UserInterface
 
         $this->hasOne(
             'default_company',
-            'Canvas\Models\Companies',
+            Companies::class,
             'id',
             ['alias' => 'currentCompany', 'reusable' => true]
         );
 
         $this->hasMany(
             'id',
-            'Canvas\Models\UsersAssociatedApps',
+            UsersAssociatedApps::class,
             'users_id',
             [
                 'alias' => 'companies',
@@ -173,7 +173,7 @@ class Users extends AbstractModel implements UserInterface
 
         $this->hasMany(
             'id',
-            'Canvas\Models\UsersAssociatedApps',
+            UsersAssociatedApps::class,
             'users_id',
             [
                 'alias' => 'apps',
@@ -183,7 +183,7 @@ class Users extends AbstractModel implements UserInterface
 
         $this->hasOne(
             'id',
-            'Canvas\Models\UsersAssociatedApps',
+            UsersAssociatedApps::class,
             'users_id',
             [
                 'alias' => 'app',
@@ -197,7 +197,7 @@ class Users extends AbstractModel implements UserInterface
 
         $this->hasMany(
             'id',
-            'Canvas\Models\UserWebhooks',
+            UserWebhooks::class,
             'users_id',
             ['alias' => 'userWebhook']
         );
@@ -205,7 +205,7 @@ class Users extends AbstractModel implements UserInterface
         $systemModule = SystemModules::getByModelName(self::class);
         $this->hasOne(
             'id',
-            'Canvas\Models\FileSystemEntities',
+            FileSystemEntities::class,
             'entity_id',
             [
                 'alias' => 'files',
@@ -231,7 +231,7 @@ class Users extends AbstractModel implements UserInterface
     {
         $this->hasManyToMany(
             'id',
-            'Canvas\Models\UserRoles',
+            UserRoles::class,
             'users_id',
             'roles_id',
             'Canvas\Models\Roles',
@@ -241,7 +241,8 @@ class Users extends AbstractModel implements UserInterface
                 'reusable' => true,
                 'params' => [
                     'limit' => 1,
-                    'conditions' => 'Canvas\Models\UserRoles.apps_id = ' . $this->getDI()->get('app')->getId() . ' AND Canvas\Models\UserRoles.companies_id = ' . $this->currentCompanyId(),
+                    'conditions' => 'Canvas\Models\UserRoles.apps_id = ' . $this->getDI()->get('app')->getId() .
+                                    ' AND Canvas\Models\UserRoles.companies_id = ' . $this->currentCompanyId(),
                     'order' => 'Canvas\Models\UserRoles.apps_id desc',
                 ]
             ]
@@ -249,14 +250,15 @@ class Users extends AbstractModel implements UserInterface
 
         $this->hasOne(
             'id',
-            'Canvas\Models\UserRoles',
+            UserRoles::class,
             'users_id',
             [
                 'alias' => 'userRole',
                 'reusable' => true,
                 'params' => [
                     'limit' => 1,
-                    'conditions' => 'Canvas\Models\UserRoles.apps_id in (?0, ?1) AND Canvas\Models\UserRoles.companies_id = ' . $this->currentCompanyId(),
+                    'conditions' => 'Canvas\Models\UserRoles.apps_id in (?0, ?1) 
+                                    AND Canvas\Models\UserRoles.companies_id = ' . $this->currentCompanyId(),
                     'bind' => [$this->getDI()->get('app')->getId(), Roles::DEFAULT_ACL_APP_ID],
                     'order' => 'apps_id desc',
                 ]
@@ -265,13 +267,14 @@ class Users extends AbstractModel implements UserInterface
 
         $this->hasMany(
             'id',
-            'Canvas\Models\UserRoles',
+            UserRoles::class,
             'users_id',
             [
                 'alias' => 'permissions',
                 'reusable' => true,
                 'params' => [
-                    'conditions' => 'Canvas\Models\UserRoles.apps_id = ' . $this->getDI()->get('app')->getId() . ' AND Canvas\Models\UserRoles.companies_id = ' . $this->currentCompanyId(),
+                    'conditions' => 'Canvas\Models\UserRoles.apps_id = ' . $this->getDI()->get('app')->getId() .
+                                    ' AND Canvas\Models\UserRoles.companies_id = ' . $this->currentCompanyId(),
                 ]
             ]
         );
@@ -548,6 +551,10 @@ class Users extends AbstractModel implements UserInterface
     {
         $this->phone_number = StringFormatter::sanitizePhoneNumber($this->phone_number);
         $this->cell_phone_number = StringFormatter::sanitizePhoneNumber($this->cell_phone_number);
+        $this->firstname = trim($this->firstname);
+        $this->lastname = trim($this->lastname);
+        $this->displayname = trim($this->displayname);
+        $this->description = trim($this->description);
     }
 
     /**
