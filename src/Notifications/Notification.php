@@ -517,7 +517,12 @@ class Notification implements NotificationInterface
             $this->currentNotification->read = 0;
         } else {
             $this->currentNotification = Notifications::findFirstById($isGroupable);
-            $this->groupNotification();
+
+            if (!$this->groupByEntity) {
+                $this->groupNotification();
+            } else {
+                $this->groupNotificationEntity();
+            }
         }
 
         $this->currentNotification->saveOrFail();
@@ -579,6 +584,26 @@ class Notification implements NotificationInterface
     }
 
     /**
+     * Group by Entity.
+     *
+     * @return void
+     */
+    protected function groupNotificationEntity() : void
+    {
+        $notificationGroup = $this->currentNotification->content_group;
+
+        if (!isJson($this->currentNotification->content_group)) {
+            $notificationGroup = [
+                'total' => 1,
+            ];
+        } else {
+            $notificationGroup = json_decode($notificationGroup, true);
+            $notificationGroup['total']++;
+        }
+        $this->currentNotification->content_group = json_encode($notificationGroup);
+    }
+
+    /**
      * Verifies if the user is already on that group notification
      * and validates that the length is not grater than 10.
      *
@@ -621,7 +646,7 @@ class Notification implements NotificationInterface
         $usersCount = count($group->from_users) - 1;
 
         if ($usersCount > 0) {
-            //$group->from_users[0]->name , we dont need to add the username
+            //$group->from_users[0]->name , we don't need to add the username
             $newMessage = 'and other ' . $usersCount . ' users ' . $this->message();
             $this->currentNotification->content = $newMessage;
         }
