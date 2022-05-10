@@ -102,11 +102,11 @@ class NotificationsCest
         Di::getDefault()->set('userData', $user);
 
         $I->assertJson($notifications->content_group, 'is a valid json');
-        $groupUsers = json_decode($notifications->content_group);
+        $groupUsers = json_decode($notifications->content_group, true);
 
         //total notification + the original creator
-        $I->assertEquals(count($groupUsers->from_users), $users->count());
-        $I->assertIsArray($groupUsers->from_users, 'has a group');
+        $I->assertEquals($groupUsers['total'], $users->count() - 1);
+        $I->assertIsArray($groupUsers, 'has a group');
     }
 
     public function nonGroupedNotifications(IntegrationTester $I)
