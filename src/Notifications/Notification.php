@@ -32,6 +32,7 @@ class Notification implements NotificationInterface
     protected string $message = '';
     protected ?Notifications $currentNotification = null;
     protected bool $enableGroupable = false;
+    protected bool $overWriteMessage = false;
 
     /**
      * Send this notification to the queue?
@@ -162,6 +163,18 @@ class Notification implements NotificationInterface
     public function setGroupByEntity(bool $groupByEntity) : void
     {
         $this->groupByEntity = $groupByEntity;
+    }
+
+    /**
+     * Allow use to overwrite the user message for group notifications.
+     *
+     * @param bool $overWriteMessage
+     *
+     * @return void
+     */
+    public function setOverWriteMessage(bool $overWriteMessage) : void
+    {
+        $this->overWriteMessage = $overWriteMessage;
     }
 
     /**
@@ -522,6 +535,10 @@ class Notification implements NotificationInterface
                 $this->groupNotification();
             } else {
                 $this->groupNotificationEntity();
+            }
+
+            if ($this->overWriteMessage) {
+                $this->currentNotification->content = $content;
             }
         }
 
