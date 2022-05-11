@@ -674,6 +674,16 @@ class Users extends AbstractModel implements UserInterface
     }
 
     /**
+     * After delete.
+     *
+     * @return void
+     */
+    public function afterDelete()
+    {
+        $this->fire('user:afterDelete', $this);
+    }
+
+    /**
      * update user role for the specific app.
      *
      * @return bool

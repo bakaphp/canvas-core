@@ -101,6 +101,7 @@ class Company
      */
     public function afterDelete(Event $event, Companies $company) : void
     {
+        $verifyUsers = [];
         $users = UsersAssociatedCompanies::find([
             'conditions' => 'companies_id = :companies_id: ',
             'bind' => [
@@ -108,8 +109,9 @@ class Company
             ]
         ]);
 
-        if ($users->count()) {
-            $users->delete();
+        foreach ($users as $user) {
+            $verifyUsers[$user->users_id] = $user->users_id;
+            $user->delete();
         }
 
         $users = UsersAssociatedApps::find([
@@ -225,6 +227,22 @@ class Company
 
         if ($userWebHooks->count()) {
             $userWebHooks->delete();
+        }
+
+        //remove estranged users from the system
+        foreach ($verifyUsers as $userId) {
+            $user = Users::findFirstById($userId);
+
+            $hasCompany = UsersAssociatedCompanies::count([
+                'conditions' => 'users_id = :users_id:',
+                'bind' => [
+                    'users_id' => $user->getId()
+                ]
+            ]);
+
+            if ($user && !$hasCompany) {
+                $user->delete();
+            }
         }
     }
 }

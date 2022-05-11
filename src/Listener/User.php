@@ -106,4 +106,20 @@ class User
             $usersInvite->company
         );
     }
+
+    /**
+     * Delete user.
+     *
+     * @param Event $event
+     * @param Users $user
+     *
+     * @return void
+     */
+    public function afterDelete(Event $event, Users $user) : void
+    {
+        $user->sessions->delete();
+        $user->sessionKeys->delete();
+        $user->sources->delete();
+        $user->config->delete();
+    }
 }
