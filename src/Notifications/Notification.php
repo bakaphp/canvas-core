@@ -338,6 +338,16 @@ class Notification implements NotificationInterface
     }
 
     /**
+     * Has group Message.
+     *
+     * @return bool
+     */
+    public function hasGroupMessage() : bool
+    {
+        return $this->currentNotification instanceof Notification && isJson($this->currentNotification->content_group);
+    }
+
+    /**
      * Process the notification
      *  - handle the db
      *  - trigger the notification
