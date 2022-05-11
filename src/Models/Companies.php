@@ -377,6 +377,16 @@ class Companies extends AbstractModel
     }
 
     /**
+     * After delete a company.
+     *
+     * @return void
+     */
+    public function afterDelete()
+    {
+        $this->fire('company:afterDelete', $this);
+    }
+
+    /**
      * Get the default company the users has selected.
      *
      * @param  Users  $user

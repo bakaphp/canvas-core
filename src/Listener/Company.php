@@ -6,8 +6,18 @@ namespace Canvas\Listener;
 
 use Canvas\Models\Companies;
 use Canvas\Models\CompaniesGroups;
+use Canvas\Models\Notifications;
+use Canvas\Models\NotificationsUnsubscribe;
 use Canvas\Models\Roles;
+use Canvas\Models\Subscription;
+use Canvas\Models\UserCompanyApps;
+use Canvas\Models\UserCompanyAppsActivities;
+use Canvas\Models\UserRoles;
 use Canvas\Models\Users;
+use Canvas\Models\UsersAssociatedApps;
+use Canvas\Models\UsersAssociatedCompanies;
+use Canvas\Models\UsersInvite;
+use Canvas\Models\UserWebhooks;
 use Phalcon\Di;
 use Phalcon\Events\Event;
 
@@ -78,6 +88,143 @@ class Company
                 $company,
                 $branch
             );
+        }
+    }
+
+    /**
+     * After delete a company.
+     *
+     * @param Event $event
+     * @param Companies $company
+     *
+     * @return void
+     */
+    public function afterDelete(Event $event, Companies $company) : void
+    {
+        $users = UsersAssociatedCompanies::find([
+            'conditions' => 'companies_id = :companies_id: ',
+            'bind' => [
+                'companies_id' => $company->getId()
+            ]
+        ]);
+
+        if ($users->count()) {
+            $users->delete();
+        }
+
+        $users = UsersAssociatedApps::find([
+            'conditions' => 'companies_id = :companies_id:',
+            'bind' => [
+                'companies_id' => $company->getId()
+            ]
+        ]);
+
+        if ($users->count()) {
+            $users->delete();
+        }
+
+        $userInvite = UsersInvite::find([
+            'conditions' => 'companies_id = :companies_id:',
+            'bind' => [
+                'companies_id' => $company->getId()
+            ]
+        ]);
+
+        if ($userInvite->count()) {
+            $userInvite->delete();
+        }
+
+        $userCompaniesApps = UserCompanyApps::find([
+            'conditions' => 'companies_id = :companies_id:',
+            'bind' => [
+                'companies_id' => $company->getId()
+            ]
+        ]);
+
+        if ($userCompaniesApps->count()) {
+            $userCompaniesApps->delete();
+        }
+
+        $userCompaniesAppsActivities = UserCompanyAppsActivities::find([
+            'conditions' => 'companies_id = :companies_id:',
+            'bind' => [
+                'companies_id' => $company->getId()
+            ]
+        ]);
+
+        if ($userCompaniesAppsActivities->count()) {
+            $userCompaniesAppsActivities->delete();
+        }
+
+        $company->settings->delete();
+        $company->branches->delete();
+        $company->companiesAssoc->delete();
+
+        $notifications = Notifications::find([
+            'conditions' => 'companies_id = :companies_id:',
+            'bind' => [
+                'companies_id' => $company->getId()
+            ]
+        ]);
+
+        if ($notifications->count()) {
+            $notifications->delete();
+        }
+
+        $notificationUnsubscribe = NotificationsUnsubscribe::find([
+            'conditions' => 'companies_id = :companies_id:',
+            'bind' => [
+                'companies_id' => $company->getId()
+            ]
+        ]);
+
+        if ($notificationUnsubscribe->count()) {
+            $notificationUnsubscribe->delete();
+        }
+
+        $roles = Roles::find([
+            'conditions' => 'companies_id = :companies_id:',
+            'bind' => [
+                'companies_id' => $company->getId()
+            ]
+        ]);
+
+        if ($roles->count()) {
+            $roles->delete();
+        }
+
+        $subscriptions = Subscription::find([
+            'conditions' => 'companies_id = :companies_id:',
+            'bind' => [
+                'companies_id' => $company->getId()
+            ]
+        ]);
+
+        foreach ($subscriptions as $subscription) {
+            $subscription->plans->delete();
+            $subscription->delete();
+        }
+
+        $useRoles = UserRoles::find([
+            'conditions' => 'companies_id = :companies_id:',
+            'bind' => [
+                'companies_id' => $company->getId()
+            ]
+        ]);
+
+        if ($useRoles->count()) {
+            $useRoles->delete();
+        }
+
+        $userWebHooks = UserWebhooks::find([
+            'conditions' => 'companies_id = :companies_id:',
+            'bind' => [
+                'companies_id' => $company->getId()
+            ]
+        ]);
+
+        if ($userWebHooks->count()) {
+            $userWebHooks->delete();
         }
     }
 }
