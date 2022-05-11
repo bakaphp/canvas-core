@@ -344,7 +344,7 @@ class Notification implements NotificationInterface
      */
     public function hasGroupMessage() : bool
     {
-        return $this->currentNotification instanceof Notification && isJson($this->currentNotification->content_group);
+        return !empty($this->currentNotification->content_group);
     }
 
     /**
