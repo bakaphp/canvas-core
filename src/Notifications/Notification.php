@@ -338,6 +338,16 @@ class Notification implements NotificationInterface
     }
 
     /**
+     * Has group Message.
+     *
+     * @return bool
+     */
+    public function hasGroupMessage() : bool
+    {
+        return $this->currentNotification instanceof Notification && isJson($this->currentNotification->content_group);
+    }
+
+    /**
      * Process the notification
      *  - handle the db
      *  - trigger the notification
@@ -512,7 +522,6 @@ class Notification implements NotificationInterface
      */
     public function saveNotification() : bool
     {
-        $content = $this->message();
         $app = Di::getDefault()->get('app');
         $isGroupable = $this->enableGroupable ? $this->isGroupable() : null;
 
@@ -526,7 +535,7 @@ class Notification implements NotificationInterface
             $this->currentNotification->system_modules_id = $this->type->system_modules_id;
             $this->currentNotification->notification_type_id = $this->type->getId();
             $this->currentNotification->entity_id = $this->entity->getId();
-            $this->currentNotification->content = $content;
+            $this->currentNotification->content = $this->message();
             $this->currentNotification->read = 0;
         } else {
             $this->currentNotification = Notifications::findFirstById($isGroupable);
@@ -538,7 +547,7 @@ class Notification implements NotificationInterface
             }
 
             if ($this->overWriteMessage) {
-                $this->currentNotification->content = $content;
+                $this->currentNotification->content = $this->message();
             }
         }
 
