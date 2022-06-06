@@ -72,7 +72,7 @@ class UsersAssociatedCompanies extends Model
     {
         if (isJson($this->configuration)) {
             $configuration = json_decode($this->configuration, true);
-            return $configuration[$key];
+            return $configuration[$key] ?? null;
         }
 
         return null;
