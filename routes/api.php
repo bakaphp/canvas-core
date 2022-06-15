@@ -75,6 +75,7 @@ $privateRoutes = [
     Route::get('/subscriptions')->controller('SubscriptionsController'),
     Route::put('/subscriptions/{id}')->controller('SubscriptionsController')->action('update'),
     Route::delete('/subscriptions/{id}')->controller('SubscriptionsController')->action('cancel'),
+    Route::put('/subscriptions/{id}/cancel-reason')->controller('SubscriptionsController')->action('cancelReason'),
     Route::post('/subscriptions/{id}/reactivate')->controller('SubscriptionsController')->action('reactivate'),
     Route::put('/subscriptions/{id}/payment-method')->controller('SubscriptionsController')->action('updatePaymentMethod'),
     Route::get('/subscriptions/{id}/payment-method')->controller('SubscriptionsController')->action('getPaymentMethod'),

@@ -112,6 +112,34 @@ class SubscriptionsController extends BaseController
     }
 
     /**
+     * Cancel reason.
+     *
+     * @param int $id
+     *
+     * @return Response
+     */
+    public function cancelReason(int $id) : Response
+    {
+        $subscription = Subscription::findFirstOrFail([
+            'conditions' => 'id = :id: AND companies_id = :companies_id: AND is_deleted = 0',
+            'bind' => [
+                'id' => $id,
+                'companies_id' => $this->userData->currentCompanyId(),
+            ],
+        ]);
+
+        $this->request->validate([
+            'reason' => 'required|string',
+        ]);
+
+        $request = $this->request->getPutData();
+
+        $subscription->set('cancel_reason', $request['reason']);
+
+        return $this->response($subscription);
+    }
+
+    /**
      * Reactivate a given subscription.
      *
      * @param string $stripeId
