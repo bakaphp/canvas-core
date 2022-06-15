@@ -142,4 +142,32 @@ class SubscriptionCest
 
         $I->assertTrue(isset($data['id']));
     }
+
+    /**
+     * get subscription payment info.
+     *
+     * @param ApiTester $I
+     *
+     * @return void
+     */
+    public function getPaymentInfo(ApiTester $I) : void
+    {
+        $userData = $I->apiLogin();
+        $I->haveHttpHeader('Authorization', $userData->token);
+        $I->sendGet("/v1/{$this->model}");
+        $I->seeResponseIsSuccessful();
+        $response = $I->grabResponse();
+        $data = json_decode($response, true);
+
+        $subscription = $data[0];
+
+        $I->haveHttpHeader('Authorization', $userData->token);
+        $I->sendGet("/v1/{$this->model}/" . $subscription['id'] . '/payment-method');
+
+        $I->seeResponseIsSuccessful();
+        $response = $I->grabResponse();
+        $data = json_decode($response, true);
+
+        $I->assertTrue(isset($data['last4']));
+    }
 }
