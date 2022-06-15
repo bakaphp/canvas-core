@@ -78,6 +78,7 @@ $privateRoutes = [
     Route::post('/subscriptions/{id}/reactivate')->controller('SubscriptionsController')->action('reactivate'),
     Route::put('/subscriptions/{id}/payment-method')->controller('SubscriptionsController')->action('updatePaymentMethod'),
     Route::get('/subscriptions/{id}/payment-method')->controller('SubscriptionsController')->action('getPaymentMethod'),
+    Route::get('/subscriptions/{id}/payment-history')->controller('SubscriptionsController')->action('transactionHistory'),
     Route::crud('/users-associated-apps')->controller('UsersAssociatedAppsController'),
     Route::crud('/users-linked-sources')->controller('UserLinkedSourcesController'),
     Route::crud('/users-config')->controller('UserConfigController'),
