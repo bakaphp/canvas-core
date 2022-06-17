@@ -295,6 +295,10 @@ class SubscriptionBuilder
         $subscription->is_active = State::YES;
         $subscription->saveOrFail();
 
+        $this->company->set('billing', [
+            'email' => $customer->email,
+        ]);
+
         foreach ($stripeSubscription->items as $item) {
             $subscriptionItem = new SubscriptionItems();
             $subscriptionItem->subscription_id = $subscription->getId();
