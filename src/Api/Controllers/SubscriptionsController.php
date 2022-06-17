@@ -196,4 +196,32 @@ class SubscriptionsController extends BaseController
 
         return $this->response($subscription);
     }
+
+    /**
+     * Update payment method.
+     *
+     * @param int $id
+     *
+     * @return Response
+     */
+    public function getPaymentMethod(int $id) : Response
+    {
+        //Update default payment method with new card.
+        $subscription = Subscription::findFirstOrFail([
+            'conditions' => 'id = :id: AND companies_id = :companies_id: AND is_deleted = 0',
+            'bind' => [
+                'id' => $id,
+                'companies_id' => $this->userData->currentCompanyId(),
+            ],
+        ]);
+
+        $subscriber = $subscription->getSubscriberEntity();
+        $cardInfo = $subscriber->getStripeCustomerInfo()->sources;
+
+        if ($cardInfo->total_count == 0) {
+            return $this->response(['message' => _('No credit card found.')]);
+        }
+
+        return $this->response($cardInfo->data[0]);
+    }
 }
