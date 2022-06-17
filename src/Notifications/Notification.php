@@ -20,6 +20,7 @@ use Canvas\Notifications\Users as NotificationsUsers;
 use Phalcon\Di;
 use Phalcon\Mvc\Model;
 use Phalcon\Mvc\ModelInterface;
+use Throwable;
 
 class Notification implements NotificationInterface
 {
@@ -335,30 +336,34 @@ class Notification implements NotificationInterface
     public function process() : bool
     {
         //if the user didn't provide the type get it based on the class name
-        if (is_null($this->type)) {
-            $this->setType(
-                NotificationType::getByKeyOrCreate(
-                    static::class,
-                    $this->entity
-                )
-            );
-        } elseif (is_string($this->type)) {
-            //not great but for now lets use it
-            $this->setType(NotificationType::getByKey($this->type));
+        try {
+            if (is_null($this->type)) {
+                $this->setType(
+                    NotificationType::getByKeyOrCreate(
+                        static::class,
+                        $this->entity
+                    )
+                );
+            } elseif (is_string($this->type)) {
+                //not great but for now lets use it
+                $this->setType(NotificationType::getByKey($this->type));
+            }
+
+            if (Di::getDefault()->has('mail')) {
+                $this->mail = Di::getDefault()->get('mail');
+            }
+
+            if ($this->useQueue) {
+                $this->sendToQueue();
+                return true; //send it to the queue
+            }
+
+            $this->trigger();
+
+            return true;
+        } catch (Throwable $e) {
+            return false;
         }
-
-        if (Di::getDefault()->has('mail')) {
-            $this->mail = Di::getDefault()->get('mail');
-        }
-
-        if ($this->useQueue) {
-            $this->sendToQueue();
-            return true; //send it to the queue
-        }
-
-        $this->trigger();
-
-        return true;
     }
 
     /**
