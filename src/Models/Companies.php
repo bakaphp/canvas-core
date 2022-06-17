@@ -187,6 +187,56 @@ class Companies extends AbstractModel
             ['alias' => 'companiesAssoc', 'reusable' => true, ]
         );
 
+        $this->hasMany(
+            'id',
+            UsersInvite::class,
+            'companies_id',
+            [
+                'alias' => 'userInvites',
+                'reusable' => true,
+            ]
+        );
+
+        $this->hasMany(
+            'id',
+            UserCompanyAppsActivities::class,
+            'companies_id',
+            [
+                'alias' => 'appActivities',
+                'reusable' => true,
+            ]
+        );
+
+        $this->hasMany(
+            'id',
+            Notifications::class,
+            'companies_id',
+            [
+                'alias' => 'notifications',
+                'reusable' => true,
+            ]
+        );
+
+        $this->hasMany(
+            'id',
+            Roles::class,
+            'companies_id',
+            [
+                'alias' => 'roles',
+                'reusable' => true,
+            ]
+        );
+
+        $this->hasMany(
+            'id',
+            UserRoles::class,
+            'companies_id',
+            [
+                'alias' => 'userRoles',
+                'reusable' => true,
+            ]
+        );
+
         //users associated with this company app
         $this->hasManyToMany(
             'id',
@@ -222,6 +272,13 @@ class Companies extends AbstractModel
             UserWebhooks::class,
             'companies_id',
             ['alias' => 'user-webhooks', 'reusable' => true, ]
+        );
+
+        $this->hasMany(
+            'id',
+            UserWebhooks::class,
+            'companies_id',
+            ['alias' => 'webhooks', 'reusable' => true, ]
         );
 
         $systemModule = SystemModules::getByModelName(self::class);
@@ -374,6 +431,16 @@ class Companies extends AbstractModel
     public function afterCreate()
     {
         $this->fire('company:afterSignup', $this);
+    }
+
+    /**
+     * After delete a company.
+     *
+     * @return void
+     */
+    public function afterDelete()
+    {
+        $this->fire('company:afterDelete', $this);
     }
 
     /**
