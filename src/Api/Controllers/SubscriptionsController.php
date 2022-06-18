@@ -9,6 +9,8 @@ use Canvas\Models\AppsPlans;
 use Canvas\Models\Subscription;
 use Phalcon\Http\Response;
 use Phalcon\Validation\Validator\PresenceOf;
+use Stripe\Invoice;
+use Stripe\Stripe;
 
 class SubscriptionsController extends BaseController
 {
@@ -105,6 +107,34 @@ class SubscriptionsController extends BaseController
         $subscription->cancel();
         $subscription->is_cancelled = 1;
         $subscription->update();
+
+        return $this->response($subscription);
+    }
+
+    /**
+     * Cancel reason.
+     *
+     * @param int $id
+     *
+     * @return Response
+     */
+    public function cancelReason(int $id) : Response
+    {
+        $subscription = Subscription::findFirstOrFail([
+            'conditions' => 'id = :id: AND companies_id = :companies_id: AND is_deleted = 0',
+            'bind' => [
+                'id' => $id,
+                'companies_id' => $this->userData->currentCompanyId(),
+            ],
+        ]);
+
+        $this->request->validate([
+            'reason' => 'required|string',
+        ]);
+
+        $request = $this->request->getPutData();
+
+        $subscription->set('cancel_reason', $request['reason']);
 
         return $this->response($subscription);
     }
@@ -223,5 +253,37 @@ class SubscriptionsController extends BaseController
         }
 
         return $this->response($cardInfo->data[0]);
+    }
+
+    /**
+     * Update payment method.
+     *
+     * @param int $id
+     *
+     * @return Response
+     */
+    public function transactionHistory(int $id) : Response
+    {
+        //Update default payment method with new card.
+        $subscription = Subscription::findFirstOrFail([
+            'conditions' => 'id = :id: AND companies_id = :companies_id: AND is_deleted = 0',
+            'bind' => [
+                'id' => $id,
+                'companies_id' => $this->userData->currentCompanyId(),
+            ],
+        ]);
+
+        $subscriber = $subscription->getSubscriberEntity();
+        $customer = $subscriber->getStripeCustomerInfo();
+
+        Stripe::setApiKey($this->userData->getDefaultCompany()->getStripeKey());
+
+        $invoices = Invoice::all([
+            'customer' => $customer->id,
+            'limit' => $this->request->getQuery('limit', 'int', 25),
+            'starting_after' => $this->request->getQuery('starting_after', 'string', null),
+        ]);
+
+        return $this->response($invoices->data);
     }
 }

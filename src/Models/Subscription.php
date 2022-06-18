@@ -8,6 +8,7 @@ use Baka\Contracts\Database\ModelInterface;
 use Baka\Http\Exception\InternalServerErrorException;
 use Canvas\Cashier\Cashier;
 use Canvas\Cashier\Exceptions\Subscriptions as SubscriptionException;
+use Canvas\Contracts\CustomFields\CustomFieldsTrait;
 use Canvas\Enums\State;
 use Canvas\Enums\SubscriptionTypes;
 use Carbon\Carbon;
@@ -21,6 +22,8 @@ use Stripe\Subscription as StripeSubscription;
 
 class Subscription extends AbstractModel
 {
+    use CustomFieldsTrait;
+
     const FREE_TRIAL = 1;
     const DEFAULT_APP = 1;
     const DEFAULT_GRACE_PERIOD_DAYS = 5;
