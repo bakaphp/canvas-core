@@ -630,7 +630,7 @@ class Notification implements NotificationInterface
             ];
         } else {
             $notificationGroup = json_decode($notificationGroup, true);
-            $notificationGroup['total']++;
+            ++$notificationGroup['total'];
         }
         $this->currentNotification->content_group = json_encode($notificationGroup);
     }
