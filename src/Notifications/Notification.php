@@ -626,11 +626,11 @@ class Notification implements NotificationInterface
 
         if (!isJson($this->currentNotification->content_group)) {
             $notificationGroup = [
-                'total' => 1,
+                'total' => 2,
             ];
         } else {
             $notificationGroup = json_decode($notificationGroup, true);
-            ++$notificationGroup['total'];
+            $notificationGroup['total']++;
         }
         $this->currentNotification->content_group = json_encode($notificationGroup);
     }
