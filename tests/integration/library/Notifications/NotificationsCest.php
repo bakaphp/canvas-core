@@ -105,7 +105,7 @@ class NotificationsCest
         $groupUsers = json_decode($notifications->content_group, true);
 
         //total notification + the original creator
-        $I->assertEquals($groupUsers['total'], $users->count() - 1);
+        $I->assertEquals($groupUsers['total'], $users->count());
         $I->assertIsArray($groupUsers, 'has a group');
     }
 
