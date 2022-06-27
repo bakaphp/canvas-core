@@ -536,6 +536,7 @@ class Notification implements NotificationInterface
             $this->currentNotification->from_users_id = $this->fromUser->getId();
             $this->currentNotification->users_id = $this->toUser->getId();
             $this->currentNotification->companies_id = $this->fromUser->currentCompanyId();
+            $this->currentNotification->companies_branches_id = $this->fromUser->currentBranchId();
             $this->currentNotification->apps_id = $app->getId();
             $this->currentNotification->system_modules_id = $this->type->system_modules_id;
             $this->currentNotification->notification_type_id = $this->type->getId();
@@ -625,7 +626,7 @@ class Notification implements NotificationInterface
 
         if (!isJson($this->currentNotification->content_group)) {
             $notificationGroup = [
-                'total' => 1,
+                'total' => 2,
             ];
         } else {
             $notificationGroup = json_decode($notificationGroup, true);
