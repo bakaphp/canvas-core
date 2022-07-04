@@ -42,7 +42,7 @@ class QueueTask extends PhTask
 
                 //overwrite the user who is running this process
                 if (isset($event['userData']) && $event['userData'] instanceof Users) {
-                    $this->di->setShared('userData', $event['userData']);
+                    $this->di->set('userData', $event['userData']);
                 }
 
                 //lets fire the event
@@ -87,7 +87,7 @@ class QueueTask extends PhTask
 
                 //overwrite the user who is running this process
                 if ($notification['from'] instanceof Users) {
-                    $this->di->setShared('userData', $notification['from']);
+                    $this->di->set('userData', $notification['from']);
                 }
 
                 if (!$notification['to'] instanceof Users) {
@@ -157,7 +157,7 @@ class QueueTask extends PhTask
 
                 //overwrite the user who is running this process
                 if ($job['userData'] instanceof Users) {
-                    $this->di->setShared('userData', $job['userData']);
+                    $this->di->set('userData', $job['userData']);
                 }
 
                 if (!class_exists($job['class'])) {
