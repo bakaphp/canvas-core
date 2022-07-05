@@ -268,14 +268,15 @@ trait FileSystemModelTrait
      * Get all the files matching the field name.
      *
      * @param string $fieldName
+     * @param bool $useCache
      *
      * @return array
      */
-    public function getFilesByName(string $fieldName) : array
+    public function getFilesByName(string $fieldName, bool $useCache = true) : array
     {
         $systemModule = SystemModules::getByModelName(self::class);
 
-        $attachments = $this->getAttachmentsByName($fieldName);
+        $attachments = $this->getAttachmentsByName($fieldName, $useCache);
 
         $fileMapper = new FileMapper($this->getId(), $systemModule->getId());
 
@@ -344,12 +345,13 @@ trait FileSystemModelTrait
      * Get the file byt it's name.
      *
      * @param string $fieldName
+     * @param bool $useCache
      *
      * @return string|null
      */
-    public function getFileByName(string $fieldName) : ?object
+    public function getFileByName(string $fieldName, bool $useCache = true) : ?object
     {
-        return $this->fileMapper($this->getAttachmentByName($fieldName));
+        return $this->fileMapper($this->getAttachmentByName($fieldName, $useCache));
     }
 
     /**
