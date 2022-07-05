@@ -296,13 +296,12 @@ trait FileSystemModelTrait
      * @param string $name
      * @param bool $useCache
      *
-     * @return void
+     * @return FileSystemEntities
      */
     public function getAttachmentByName(string $fieldName, bool $useCache = true)
     {
         $criteria = $this->searchCriteriaForFilesByName($fieldName);
         $criteria['cache']['key'] .= '_find_one';
-
         $searchOptions = [
             'conditions' => $criteria['conditions'],
             'order' => 'id desc',
@@ -317,16 +316,40 @@ trait FileSystemModelTrait
     }
 
     /**
+     * Get a files by its fieldname.
+     *
+     * @param string $name
+     * @param bool $useCache
+     *
+     * @return array
+     */
+    public function getAttachmentsByName(string $fieldName, bool $useCache = true)
+    {
+        $criteria = $this->searchCriteriaForFilesByName($fieldName);
+        $criteria['cache']['key'] .= '_find_all';
+        $searchOptions = [
+            'conditions' => $criteria['conditions'],
+            'order' => 'id desc',
+            'bind' => $criteria['bind'],
+        ];
+
+        if ($useCache) {
+            $searchOptions['cache'] = $criteria['cache'];
+        }
+
+        return FileSystemEntities::find($searchOptions);
+    }
+
+    /**
      * Get the file byt it's name.
      *
      * @param string $fieldName
-     * @param bool $useCache
      *
      * @return string|null
      */
-    public function getFileByName(string $fieldName, bool $useCache = true) : ?object
+    public function getFileByName(string $fieldName) : ?object
     {
-        return $this->fileMapper($this->getAttachmentByName($fieldName, $useCache));
+        return $this->fileMapper($this->getAttachmentByName($fieldName));
     }
 
     /**
