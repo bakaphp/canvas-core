@@ -294,52 +294,39 @@ trait FileSystemModelTrait
      * when a company has over 1k images
      *
      * @param string $name
+     * @param bool $useCache
      *
      * @return void
      */
-    public function getAttachmentByName(string $fieldName)
+    public function getAttachmentByName(string $fieldName, bool $useCache = true)
     {
         $criteria = $this->searchCriteriaForFilesByName($fieldName);
         $criteria['cache']['key'] .= '_find_one';
 
-        return FileSystemEntities::findFirst([
+        $searchOptions = [
             'conditions' => $criteria['conditions'],
             'order' => 'id desc',
             'bind' => $criteria['bind'],
-            'cache' => $criteria['cache']
-        ]);
-    }
+        ];
 
-    /**
-     * Get a files by its fieldname.
-     *
-     * @param string $name
-     *
-     * @return void
-     */
-    public function getAttachmentsByName(string $fieldName)
-    {
-        $criteria = $this->searchCriteriaForFilesByName($fieldName);
-        $criteria['cache']['key'] .= '_find_all';
+        if ($useCache) {
+            $searchOptions['cache'] = $criteria['cache'];
+        }
 
-        return FileSystemEntities::find([
-            'conditions' => $criteria['conditions'],
-            'order' => 'id desc',
-            'bind' => $criteria['bind'],
-            'cache' => $criteria['cache']
-        ]);
+        return FileSystemEntities::findFirst($searchOptions);
     }
 
     /**
      * Get the file byt it's name.
      *
      * @param string $fieldName
+     * @param bool $useCache
      *
      * @return string|null
      */
-    public function getFileByName(string $fieldName) : ?object
+    public function getFileByName(string $fieldName, bool $useCache = true) : ?object
     {
-        return $this->fileMapper($this->getAttachmentByName($fieldName));
+        return $this->fileMapper($this->getAttachmentByName($fieldName, $useCache));
     }
 
     /**
