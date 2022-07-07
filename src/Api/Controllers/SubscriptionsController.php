@@ -210,7 +210,7 @@ class SubscriptionsController extends BaseController
             $token = $this->request->getPut('card_token');
         }
 
-        $subscriber->updateDefaultCreditCard($token);
+        $subscriber->updateCreditCard($token);
         $address = $this->request->getPut('address', 'string');
         $zipcode = $this->request->getPut('zipcode', 'string');
 
@@ -249,7 +249,7 @@ class SubscriptionsController extends BaseController
         $cardInfo = $subscriber->getStripeCustomerInfo()->sources;
 
         if ($cardInfo->total_count == 0) {
-            return $this->response(['message' => _('No credit card found.')]);
+            return $this->response([]);
         }
 
         return $this->response($cardInfo->data[0]);

@@ -8,6 +8,7 @@ use Baka\Contracts\Database\ModelInterface;
 use Baka\Http\Exception\InternalServerErrorException;
 use Canvas\Cashier\Cashier;
 use Canvas\Cashier\Exceptions\Subscriptions as SubscriptionException;
+use Canvas\Cashier\SubscriptionBuilder;
 use Canvas\Contracts\CustomFields\CustomFieldsTrait;
 use Canvas\Enums\State;
 use Canvas\Enums\SubscriptionTypes;
@@ -567,6 +568,32 @@ class Subscription extends AbstractModel
     public function reactivate() : self
     {
         $subscription = $this->asStripeSubscription();
+
+        if ($subscription->status === 'canceled') {
+            $appPlan = $this->getPlans('apps_plans_id > 0')->getFirst()->appPlan;
+            $companyGroup = $this->companyGroup;
+            $company = $this->company;
+            $branch = $this->branch;
+            $options = [];
+            $customerOptions = [];
+
+            //we need to recreate the subscription
+            $newSubscription = new SubscriptionBuilder(
+                $appPlan,
+                $this->getDI()->get('app'),
+                $companyGroup,
+                $company,
+                $branch
+            );
+            $newSubscription
+                ->withMetadata(['appPlan' => $appPlan->getId()])
+                ->create($options, $customerOptions);
+
+            $this->softDelete();
+
+            return $newSubscription;
+        }
+
         $subscription->cancel_at_period_end = false;
         $subscription->save();
 
