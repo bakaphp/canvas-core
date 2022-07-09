@@ -283,7 +283,8 @@ class SubscriptionBuilder
         $subscription->stripe_plan = $stripeSubscription->plan ? $stripeSubscription->plan->id : null;
         $subscription->stripe_status = $stripeSubscription->status;
         $subscription->quantity = $stripeSubscription->quantity;
-        $subscription->trial_ends_at = $trialEndsAt->toDateTimeString();
+        $subscription->trial_ends_at = $trialEndsAt instanceof CarbonInterface ? $trialEndsAt->toDateTimeString() : null;
+        $subscription->next_due_payment = !empty($stripeSubscription->current_period_end) ? date('Y-m-d H:i:s', $stripeSubscription->current_period_end) : null;
         $subscription->companies_id = $this->company->getId();
         $subscription->companies_branches_id = $this->branch->getId();
         $subscription->companies_groups_id = $this->companyGroup->getId();

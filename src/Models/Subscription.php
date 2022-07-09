@@ -585,13 +585,14 @@ class Subscription extends AbstractModel
                 $company,
                 $branch
             );
-            $newSubscription
+            $newSubscriptionModel = $newSubscription
                 ->withMetadata(['appPlan' => $appPlan->getId()])
+                ->skipTrial()
                 ->create($options, $customerOptions);
 
             $this->softDelete();
 
-            return $newSubscription;
+            return $newSubscriptionModel;
         }
 
         $subscription->cancel_at_period_end = false;
