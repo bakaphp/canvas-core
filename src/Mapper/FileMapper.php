@@ -42,7 +42,7 @@ class FileMapper extends CustomMapper
         $fileDto->size = $fileEntity->file->size;
         $fileDto->file_type = $fileEntity->file->file_type;
         $fileDto->created_at = $fileEntity->created_at;
-        $fileDto->attributes = $fileEntity->file->getAllSettings();
+        $fileDto->attributes = $fileEntity->file ? $fileEntity->file->getAllSettings() : [];
 
         return $fileDto;
     }
