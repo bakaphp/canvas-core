@@ -195,7 +195,7 @@ trait FileSystemModelTrait
 
             $fileSystemEntities = null;
             //check if we are updating the attachment
-            if ($id = (int) $file['id']) {
+            if (isset($file['id']) && $id = (int) $file['id']) {
                 $fileSystemEntities = FileSystemEntities::getByIdWithSystemModule($id, $systemModule);
             }
 
