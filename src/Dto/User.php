@@ -9,8 +9,6 @@ class User
     public ?string $uuid = null;
     public array $bypassRoutes;
     public ?string $cell_phone_number = null;
-    public ?int $city_id = 0;
-    public ?int $country_id = 0;
     public int $default_company;
     public ?int $default_company_branch = 0;
     public ?string $displayname = null;
@@ -33,9 +31,13 @@ class User
     public ?string $profile_remote_image = null;
     public int $roles_id;
     public ?string $sex = null;
-    public ?int $state_id = null;
     public ?int $status = null;
-    public ?string $stripe_id = null;
+    public ?string $address_1 = null;
+    public ?string $address_2 = null;    
+    public ?string $zip_code = null;
+    public ?int $city_id = 0;
+    public ?int $state_id = null;
+    public ?int $country_id = 0;
     public ?string $last_visit = null;
     public ?int $system_modules_id = 2;
     public ?string $timezone = null;
