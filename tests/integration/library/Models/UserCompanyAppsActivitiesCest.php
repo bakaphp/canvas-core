@@ -2,17 +2,16 @@
 
 namespace Canvas\Tests\integration\library\Models;
 
-use Canvas\Models\Companies;
 use Canvas\Models\UserCompanyAppsActivities;
 use IntegrationTester;
-use Phalcon\Security\Random;
 
 class UserCompanyAppsActivitiesCest
 {
     /**
-     * Set a setting for the given app
+     * Set a setting for the given app.
      *
      * @param IntegrationTester $I
+     *
      * @return void
      */
     public function set(IntegrationTester $I)
@@ -22,9 +21,10 @@ class UserCompanyAppsActivitiesCest
     }
 
     /**
-     * Get the value of the settins by it key
+     * Get the value of the settins by it key.
      *
      * @param IntegrationTester $I
+     *
      * @return void
      */
     public function get(IntegrationTester $I)

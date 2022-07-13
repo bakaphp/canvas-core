@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Canvas\Models;
@@ -8,9 +9,12 @@ use Baka\Blameable\BlameableTrait;
 use Baka\Contracts\Database\HashTableTrait;
 use Baka\Contracts\EventsManager\EventManagerAwareTrait;
 use Baka\Http\Exception\InternalServerErrorException;
+use Canvas\Cashier\Billable;
 use Canvas\Contracts\FileSystemModelTrait;
 use Canvas\Contracts\UsersAssociatedTrait;
 use Canvas\CustomFields\CustomFields;
+use Canvas\Enums\Company;
+use Canvas\Models\Behaviors\Uuid;
 use Canvas\Utils\StringFormatter;
 use Exception;
 use Phalcon\Di;
@@ -24,22 +28,26 @@ class Companies extends AbstractModel
     use FileSystemModelTrait;
     use BlameableTrait;
     use EventManagerAwareTrait;
+    use Billable;
 
     public int $users_id;
+    public ?string $uuid = null;
     public ?int $has_activities = 0;
     public ?int $appPlanId = null;
     public ?int $currency_id = 0;
+    public ?string $stripe_id = null;
     public ?string $language = null;
     public ?string $timezone = null;
     public ?string $currency = null;
     public int $system_modules_id = 1;
     public ?string $phone = null;
+    public ?string $country_code = null;
 
-    public const DEFAULT_COMPANY = 'DefaulCompany';
-    public const DEFAULT_COMPANY_APP = 'DefaulCompanyApp_';
-    public const PAYMENT_GATEWAY_CUSTOMER_KEY = 'payment_gateway_customer_id';
-    public const DEFAULT_COMPANY_BRANCH_APP = 'DefaultCompanyBranchApp_';
-    public const GLOBAL_COMPANIES_ID = 0;
+    public const DEFAULT_COMPANY = Company::DEFAULT_COMPANY;
+    public const DEFAULT_COMPANY_APP = Company::DEFAULT_COMPANY_APP;
+    public const PAYMENT_GATEWAY_CUSTOMER_KEY = Company::PAYMENT_GATEWAY_CUSTOMER_KEY;
+    public const DEFAULT_COMPANY_BRANCH_APP = Company::DEFAULT_COMPANY_BRANCH_APP;
+    public const GLOBAL_COMPANIES_ID = Company::GLOBAL_COMPANIES_ID;
 
     /**
      * Initialize method for model.
@@ -50,14 +58,20 @@ class Companies extends AbstractModel
 
         $this->keepSnapshots(true);
         $this->addBehavior(new Blameable());
+        $this->addBehavior(new Uuid());
 
-        $this->hasMany('id', CompaniesSettings::class, 'companies_id', ['alias' => 'settings', 'reusable' => true]);
+        $this->hasMany(
+            'id',
+            CompaniesSettings::class,
+            'companies_id',
+            ['alias' => 'settings', 'reusable' => true]
+        );
 
         $this->belongsTo(
             'users_id',
             Users::class,
             'id',
-            ['alias' => 'user', 'reusable' => true, ]
+            ['alias' => 'user', 'reusable' => true]
         );
 
         $this->hasMany(
@@ -98,7 +112,10 @@ class Companies extends AbstractModel
             'id',
             UsersAssociatedCompanies::class,
             'companies_id',
-            ['alias' => 'UsersAssociatedCompanies', 'reusable' => true, ]
+            [
+                'alias' => 'UsersAssociatedCompanies',
+                'reusable' => true,
+            ]
         );
 
         $this->hasMany(
@@ -170,6 +187,56 @@ class Companies extends AbstractModel
             ['alias' => 'companiesAssoc', 'reusable' => true, ]
         );
 
+        $this->hasMany(
+            'id',
+            UsersInvite::class,
+            'companies_id',
+            [
+                'alias' => 'userInvites',
+                'reusable' => true,
+            ]
+        );
+
+        $this->hasMany(
+            'id',
+            UserCompanyAppsActivities::class,
+            'companies_id',
+            [
+                'alias' => 'appActivities',
+                'reusable' => true,
+            ]
+        );
+
+        $this->hasMany(
+            'id',
+            Notifications::class,
+            'companies_id',
+            [
+                'alias' => 'notifications',
+                'reusable' => true,
+            ]
+        );
+
+        $this->hasMany(
+            'id',
+            Roles::class,
+            'companies_id',
+            [
+                'alias' => 'roles',
+                'reusable' => true,
+            ]
+        );
+
+        $this->hasMany(
+            'id',
+            UserRoles::class,
+            'companies_id',
+            [
+                'alias' => 'userRoles',
+                'reusable' => true,
+            ]
+        );
+
         //users associated with this company app
         $this->hasManyToMany(
             'id',
@@ -205,6 +272,13 @@ class Companies extends AbstractModel
             UserWebhooks::class,
             'companies_id',
             ['alias' => 'user-webhooks', 'reusable' => true, ]
+        );
+
+        $this->hasMany(
+            'id',
+            UserWebhooks::class,
+            'companies_id',
+            ['alias' => 'webhooks', 'reusable' => true, ]
         );
 
         $systemModule = SystemModules::getByModelName(self::class);
@@ -310,7 +384,9 @@ class Companies extends AbstractModel
      */
     public function userAssociatedToCompany(Users $user) : bool
     {
-        return $this->countUsersAssociatedApps('users_id =' . $user->getId() . ' and apps_id = ' . Di::getDefault()->get('app')->getId()) > 0;
+        return $this->countUsersAssociatedApps(
+            'users_id =' . $user->getId() . ' AND apps_id = ' . Di::getDefault()->get('app')->getId()
+        ) > 0;
     }
 
     /**
@@ -355,6 +431,16 @@ class Companies extends AbstractModel
     public function afterCreate()
     {
         $this->fire('company:afterSignup', $this);
+    }
+
+    /**
+     * After delete a company.
+     *
+     * @return void
+     */
+    public function afterDelete()
+    {
+        $this->fire('company:afterDelete', $this);
     }
 
     /**
@@ -485,9 +571,11 @@ class Companies extends AbstractModel
      */
     public function createBranch(?string $name = null) : CompaniesBranches
     {
-        return  CompaniesBranches::findFirstOrCreate(
+        return CompaniesBranches::findFirstOrCreate(
             [
-                'conditions' => 'companies_id = :companies_id: AND users_id = :users_id: AND name = :name:',
+                'conditions' => 'companies_id = :companies_id: 
+                                AND users_id = :users_id: 
+                                AND name = :name:',
                 'bind' => [
                     'companies_id' => $this->getId(),
                     'users_id' => $this->user->getId(),
@@ -519,5 +607,30 @@ class Companies extends AbstractModel
         $companyApps->is_deleted = 0;
 
         return $companyApps->saveOrFail();
+    }
+
+    /**
+     * Associate a user to a branch.
+     *
+     * @param Users $user
+     * @param Companies $company
+     * @param CompaniesBranches $branch
+     *
+     * @return array
+     */
+    public function associateWithBranch(Users $user, Companies $company, CompaniesBranches $branch) : usersAssociatedCompanies
+    {
+        $usersAssociatedCompanies = new UsersAssociatedCompanies();
+        $usersAssociatedCompanies->users_id = $user->getId();
+        $usersAssociatedCompanies->companies_id = $company->getId();
+        $usersAssociatedCompanies->apps_id = $this->di->getApp()->getId();
+        $usersAssociatedCompanies->identify_id = (string) $user->getId();
+        $usersAssociatedCompanies->user_active = 1;
+        $usersAssociatedCompanies->user_role = (string) $user->roles_id;
+        $usersAssociatedCompanies->companies_branches_id = $branch->getId();
+        $usersAssociatedCompanies->created_at = date('Y-m-d H:i:s');
+        $usersAssociatedCompanies->saveOrFail();
+
+        return $usersAssociatedCompanies;
     }
 }

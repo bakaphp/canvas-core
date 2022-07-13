@@ -25,7 +25,7 @@ class SchemaController extends BakaBaseController
     }
 
     /**
-     * Overwrite inde schema.
+     * Overwrite index schema.
      *
      * @return Response
      */

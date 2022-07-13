@@ -9,6 +9,7 @@ use Baka\Http\Exception\InternalServerErrorException;
 use Canvas\Contracts\CustomFields\CustomFieldsTrait;
 use Phalcon\Di;
 use Phalcon\Mvc\ModelInterface;
+use Phalcon\Utils\Slug;
 
 class SystemModules extends BakaSystemModules
 {
@@ -155,6 +156,35 @@ class SystemModules extends BakaSystemModules
         ]);
 
         return $module;
+    }
+
+    /**
+     * Create a new system module for the given app.
+     *
+     * @param string $class
+     * @param Apps $app
+     *
+     * @return self
+     */
+    public static function createForApp(string $class, Apps $app) : self
+    {
+        if (!class_exists($class)) {
+            throw new InternalServerErrorException('We expecting the complete class with namespace');
+        }
+
+        return SystemModules::updateOrCreate([
+            'conditions' => 'model_name = :model_name:
+                            AND apps_id = :apps_id:',
+            'bind' => [
+                'model_name' => $class,
+                'apps_id' => $app->getId()
+            ],
+        ], [
+            'name' => $class,
+            'model_name' => $class,
+            'apps_id' => $app->getId(),
+            'slug' => Slug::generate($class),
+        ]);
     }
 
     /**

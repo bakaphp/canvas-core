@@ -1,10 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Canvas\Contracts\Cashier;
 
 use Baka\Http\Exception\InternalServerErrorException;
 use Canvas\Cashier\SubscriptionBuilder;
 use Canvas\Models\AppsPlans;
+use Canvas\Models\Companies;
+use Canvas\Models\CompaniesBranches;
+use Canvas\Models\CompaniesGroups;
 use Canvas\Models\Subscription;
 use Phalcon\Di;
 
@@ -13,14 +18,26 @@ trait SubscriptionsTrait
     /**
      * Create a new subscription.
      *
-     * @param string $name
-     * @param string $plan
+     * @param CompaniesGroups $companyGroup
+     * @param Companies $company
+     * @param CompaniesBranches $branch
+     * @param AppsPlans $appPlan
      *
-     * @return void
+     * @return SubscriptionBuilder
      */
-    public function newSubscription(AppsPlans $appPlan) : SubscriptionBuilder
-    {
-        return new SubscriptionBuilder($this, $appPlan, Di::getDefault()->get('app'));
+    public function newSubscription(
+        CompaniesGroups $companyGroup,
+        Companies $company,
+        CompaniesBranches $branch,
+        AppsPlans $appPlan
+    ) : SubscriptionBuilder {
+        return new SubscriptionBuilder(
+            $appPlan,
+            Di::getDefault()->get('app'),
+            $companyGroup,
+            $company,
+            $branch
+        );
     }
 
     /**

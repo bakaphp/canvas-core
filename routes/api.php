@@ -37,6 +37,7 @@ $privateRoutes = [
     Route::crud('/notifications'),
     Route::crud('/system-modules')->controller('SystemModulesController'),
     Route::crud('/companies-branches')->controller('CompaniesBranchesController'),
+    Route::get('/companies-branches/{id}/users')->controller('Users\BranchController')->action('getUserListByBranchId'),
     Route::crud('/apps-plans')->controller('AppsPlansController'),
     Route::post('/apps-plans/{id}/reactivate')->controller('AppsPlansController')->action('reactivateSubscription'),
     Route::crud('/roles-acceslist')->controller('RolesAccessListController'),
@@ -71,7 +72,14 @@ $privateRoutes = [
     Route::get('/companies-groups')->controller('CompaniesGroupsController')->action('index'),
     Route::get('/companies-groups/{id}')->controller('CompaniesGroupsController')->action('getById'),
     Route::crud('/users-roles')->controller('UserRolesController'),
-    Route::crud('/subscriptions')->controller('SubscriptionsController'),
+    Route::get('/subscriptions')->controller('SubscriptionsController'),
+    Route::put('/subscriptions/{id}')->controller('SubscriptionsController')->action('update'),
+    Route::delete('/subscriptions/{id}')->controller('SubscriptionsController')->action('cancel'),
+    Route::put('/subscriptions/{id}/cancel-reason')->controller('SubscriptionsController')->action('cancelReason'),
+    Route::post('/subscriptions/{id}/reactivate')->controller('SubscriptionsController')->action('reactivate'),
+    Route::put('/subscriptions/{id}/payment-method')->controller('SubscriptionsController')->action('updatePaymentMethod'),
+    Route::get('/subscriptions/{id}/payment-method')->controller('SubscriptionsController')->action('getPaymentMethod'),
+    Route::get('/subscriptions/{id}/payment-history')->controller('SubscriptionsController')->action('transactionHistory'),
     Route::crud('/users-associated-apps')->controller('UsersAssociatedAppsController'),
     Route::crud('/users-linked-sources')->controller('UserLinkedSourcesController'),
     Route::crud('/users-config')->controller('UserConfigController'),
@@ -102,6 +110,18 @@ $privateRoutes = [
     Route::get('/users/{id}/notifications_importance')->controller('Notifications\UsersImportanceController')->action('index'),
     Route::post('/users/{id}/notifications_importance')->controller('Notifications\UsersImportanceController')->action('setImportanceSettings'),
     Route::get('/notifications_importance')->controller('Notifications\ImportanceController')->action('index'),
+
+    # Users Deletion
+    Route::post('/users/{userId}/request-delete-account')->controller('Users\DeletionRequestController')->action('requestDeletion'),
+    Route::delete('/users/{userId}/request-delete-account')->controller('Users\DeletionRequestController')->action('requestActivate'),
+
+    # Company User Deletion
+    Route::delete('/company/{companyId}/users/{usersId}')->controller('Companies\UsersController')->action('remove'),
+    Route::delete('/companies-branches/{branchId}/users/{usersId}')->controller('Companies\UsersController')->action('removeFromBranch'),
+
+    #social
+    Route::delete('/users/{id}/social/{site}')->controller('Users\SocialController')->action('disconnectFromSite'),
+
 ];
 
 $privateRoutesRefresh = [
@@ -115,6 +135,7 @@ $privateSubscriptionRoutes = [
     Route::crud('/custom-fields')->controller('CustomFieldsController'),
     Route::crud('/user-webhooks')->controller('UserWebhooksController'),
     Route::crud('/custom-filters')->controller('CustomFiltersController'),
+    Route::post('/custom-filters/{id}')->controller('CustomFiltersController')->action('executeCriteria'),
     Route::crud('/email-templates-variables')->controller('EmailTemplatesVariablesController'),
     Route::crud('/templates-variables')->controller('EmailTemplatesVariablesController'),
 

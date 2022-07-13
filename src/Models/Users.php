@@ -11,6 +11,7 @@ use Baka\Database\Exception\ModelNotProcessedException;
 use function Baka\getShortClassName;
 use Baka\Hashing\Keys;
 use Baka\Hashing\Password;
+use Baka\Support\Str;
 use Baka\Validations\PasswordValidation;
 use Canvas\Auth\App as AppAuth;
 use Canvas\Contracts\Auth\TokenTrait;
@@ -27,7 +28,7 @@ use Phalcon\Di;
 use Phalcon\Security\Random;
 use Phalcon\Validation;
 use Phalcon\Validation\Validator\Email;
-use  Phalcon\Validation\Validator\PresenceOf;
+use Phalcon\Validation\Validator\PresenceOf;
 use Phalcon\Validation\Validator\Uniqueness;
 
 class Users extends AbstractModel implements UserInterface
@@ -43,7 +44,7 @@ class Users extends AbstractModel implements UserInterface
     /**
      * Constant for anonymous user.
      */
-    const ANONYMOUS = '-1';
+    const ANONYMOUS = -1;
 
     public ?string $uuid = null;
     public ?string $email = null;
@@ -141,7 +142,7 @@ class Users extends AbstractModel implements UserInterface
 
         $this->hasOne(
             'default_company',
-            'Canvas\Models\Companies',
+            Companies::class,
             'id',
             [
                 'alias' => 'defaultCompany',
@@ -151,14 +152,14 @@ class Users extends AbstractModel implements UserInterface
 
         $this->hasOne(
             'default_company',
-            'Canvas\Models\Companies',
+            Companies::class,
             'id',
             ['alias' => 'currentCompany', 'reusable' => true]
         );
 
         $this->hasMany(
             'id',
-            'Canvas\Models\UsersAssociatedApps',
+            UsersAssociatedApps::class,
             'users_id',
             [
                 'alias' => 'companies',
@@ -172,7 +173,7 @@ class Users extends AbstractModel implements UserInterface
 
         $this->hasMany(
             'id',
-            'Canvas\Models\UsersAssociatedApps',
+            UsersAssociatedApps::class,
             'users_id',
             [
                 'alias' => 'apps',
@@ -182,7 +183,7 @@ class Users extends AbstractModel implements UserInterface
 
         $this->hasOne(
             'id',
-            'Canvas\Models\UsersAssociatedApps',
+            UsersAssociatedApps::class,
             'users_id',
             [
                 'alias' => 'app',
@@ -196,7 +197,7 @@ class Users extends AbstractModel implements UserInterface
 
         $this->hasMany(
             'id',
-            'Canvas\Models\UserWebhooks',
+            UserWebhooks::class,
             'users_id',
             ['alias' => 'userWebhook']
         );
@@ -204,7 +205,7 @@ class Users extends AbstractModel implements UserInterface
         $systemModule = SystemModules::getByModelName(self::class);
         $this->hasOne(
             'id',
-            'Canvas\Models\FileSystemEntities',
+            FileSystemEntities::class,
             'entity_id',
             [
                 'alias' => 'files',
@@ -230,7 +231,7 @@ class Users extends AbstractModel implements UserInterface
     {
         $this->hasManyToMany(
             'id',
-            'Canvas\Models\UserRoles',
+            UserRoles::class,
             'users_id',
             'roles_id',
             'Canvas\Models\Roles',
@@ -240,7 +241,8 @@ class Users extends AbstractModel implements UserInterface
                 'reusable' => true,
                 'params' => [
                     'limit' => 1,
-                    'conditions' => 'Canvas\Models\UserRoles.apps_id = ' . $this->getDI()->get('app')->getId() . ' AND Canvas\Models\UserRoles.companies_id = ' . $this->currentCompanyId(),
+                    'conditions' => 'Canvas\Models\UserRoles.apps_id = ' . $this->getDI()->get('app')->getId() .
+                                    ' AND Canvas\Models\UserRoles.companies_id = ' . $this->currentCompanyId(),
                     'order' => 'Canvas\Models\UserRoles.apps_id desc',
                 ]
             ]
@@ -248,14 +250,15 @@ class Users extends AbstractModel implements UserInterface
 
         $this->hasOne(
             'id',
-            'Canvas\Models\UserRoles',
+            UserRoles::class,
             'users_id',
             [
                 'alias' => 'userRole',
                 'reusable' => true,
                 'params' => [
                     'limit' => 1,
-                    'conditions' => 'Canvas\Models\UserRoles.apps_id in (?0, ?1) AND Canvas\Models\UserRoles.companies_id = ' . $this->currentCompanyId(),
+                    'conditions' => 'Canvas\Models\UserRoles.apps_id in (?0, ?1) 
+                                    AND Canvas\Models\UserRoles.companies_id = ' . $this->currentCompanyId(),
                     'bind' => [$this->getDI()->get('app')->getId(), Roles::DEFAULT_ACL_APP_ID],
                     'order' => 'apps_id desc',
                 ]
@@ -264,13 +267,14 @@ class Users extends AbstractModel implements UserInterface
 
         $this->hasMany(
             'id',
-            'Canvas\Models\UserRoles',
+            UserRoles::class,
             'users_id',
             [
                 'alias' => 'permissions',
                 'reusable' => true,
                 'params' => [
-                    'conditions' => 'Canvas\Models\UserRoles.apps_id = ' . $this->getDI()->get('app')->getId() . ' AND Canvas\Models\UserRoles.companies_id = ' . $this->currentCompanyId(),
+                    'conditions' => 'Canvas\Models\UserRoles.apps_id = ' . $this->getDI()->get('app')->getId() .
+                                    ' AND Canvas\Models\UserRoles.companies_id = ' . $this->currentCompanyId(),
                 ]
             ]
         );
@@ -386,11 +390,13 @@ class Users extends AbstractModel implements UserInterface
     /**
      * is the user logged in?
      *
+     * @deprecated version 1.x
+     *
      * @return bool
      */
     public function isLoggedIn() : bool
     {
-        return $this->loggedIn;
+        return $this->getId() !== self::ANONYMOUS;
     }
 
     /**
@@ -400,7 +406,7 @@ class Users extends AbstractModel implements UserInterface
      */
     public function isAnonymous() : bool
     {
-        return (int) $this->getId() == self::ANONYMOUS;
+        return (int) $this->getId() === self::ANONYMOUS;
     }
 
     /**
@@ -545,6 +551,10 @@ class Users extends AbstractModel implements UserInterface
     {
         $this->phone_number = StringFormatter::sanitizePhoneNumber($this->phone_number);
         $this->cell_phone_number = StringFormatter::sanitizePhoneNumber($this->cell_phone_number);
+        $this->firstname = !empty($this->firstname) ? trim($this->firstname) : null;
+        $this->lastname = !empty($this->lastname) ? trim($this->lastname) : null;
+        $this->displayname = trim($this->displayname);
+        $this->description = !empty($this->description) ? trim($this->description) : null;
     }
 
     /**
@@ -568,7 +578,7 @@ class Users extends AbstractModel implements UserInterface
         $branchId = $this->get($this->getDefaultCompany()->branchCacheKey());
         if (is_null($branchId)) {
             $branchId = $this->getDefaultCompany()->defaultBranch->getId();
-            
+
             /**
              * @todo Remove this later in future versions.
              */
@@ -576,6 +586,16 @@ class Users extends AbstractModel implements UserInterface
         }
 
         return $branchId;
+    }
+
+    /**
+     * Current user company branch.
+     *
+     * @return CompaniesBranches
+     */
+    public function getCurrentBranch() : CompaniesBranches
+    {
+        return CompaniesBranches::findFirstOrFail($this->currentBranchId());
     }
 
     /**
@@ -651,6 +671,16 @@ class Users extends AbstractModel implements UserInterface
     public function afterSave()
     {
         $this->associateFileSystem();
+    }
+
+    /**
+     * After delete.
+     *
+     * @return void
+     */
+    public function afterDelete()
+    {
+        $this->fire('user:afterDelete', $this);
     }
 
     /**
@@ -856,16 +886,19 @@ class Users extends AbstractModel implements UserInterface
      */
     public function generateDefaultDisplayname() : string
     {
-        if (empty($this->firstname) && empty($this->lastname)) {
+        if (!empty($this->email)) {
+            $random = new Random();
+            $displayname = strstr($this->email, '@', true) . $random->number(999);
+        } else {
             $appName = $this->getDI()->get('app')->name;
             $random = new Random();
             $this->lastname = 'User';
             $this->firstname = $appName;
 
-            return  $appName . $random->number(99999999);
+            $displayname = $appName . $random->number(99999999);
         }
 
-        return $this->firstname . '.' . $this->lastname;
+        return Str::cleanup($displayname);
     }
 
     /**

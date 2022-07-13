@@ -238,9 +238,11 @@ class AuthController extends BaseController
         $refreshToken = $this->getToken($request['refresh_token']);
         $user = null;
 
+        /**
         if (!$accessToken->isExpired()) {
             throw new InternalServerErrorException('Issued Access Token has not expired');
-        }
+        }*/
+
         if ($refreshToken->isExpired()) {
             throw new InternalServerErrorException('Refresh Token has expired');
         }
@@ -335,12 +337,7 @@ class AuthController extends BaseController
             'provider' => 'required',
         ]);
 
-        $source = Sources::findFirstOrFail([
-            'title = ?0 and is_deleted = 0',
-            'bind' => [
-                $request['provider']
-            ]
-        ]);
+        $source = Sources::getByTitle($request['provider']);
 
         if ($source->isApple()) {
             $appleUserInfo = $source->validateAppleUser($request['social_id']);

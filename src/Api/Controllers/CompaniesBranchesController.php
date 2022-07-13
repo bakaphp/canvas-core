@@ -79,6 +79,28 @@ class CompaniesBranchesController extends BaseController
     }
 
     /**
+     * Create new record.
+     *
+     * @return Response
+     */
+    public function create() : Response
+    {
+        //process the input
+        $branch = $this->processCreate($this->request);
+
+        //create subscription
+        if ($this->app->usesBranchSubscription()) {
+            $branch->startFreeTrial(
+                $branch->company->getDefaultCompanyGroup(),
+                $branch->company,
+                $branch
+            );
+        }
+
+        return $this->response($this->processOutput($branch));
+    }
+
+    /**
      * Update a User Info.
      *
      * @method PUT
@@ -102,7 +124,6 @@ class CompaniesBranchesController extends BaseController
         if ($company->updateOrFail($request, $this->updateFields)) {
             return $this->response($this->processOutput($company));
         } else {
-            //didnt work
             throw new UnprocessableEntityException((string) current($company->getMessages()));
         }
     }

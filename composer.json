@@ -9,7 +9,7 @@
     "require": {
         "php": ">=7.4",
         "ext-phalcon": ">=4",
-        "baka/baka": "0.7.x-dev",
+        "baka/baka": "^0.7",
         "dariuszp/cli-progress-bar": "^1.0",
         "elasticsearch/elasticsearch": "^7.5",
         "firebase/php-jwt": "^5.0",
@@ -33,7 +33,6 @@
         "norkunas/onesignal-php-api": "^1.12",
         "sentry/sentry": "^2.4",
         "robmorgan/phinx": "^0.12",
-        "sly/notification-pusher": "2.x",
         "squizlabs/php_codesniffer": "^3.2",
         "stripe/stripe-php": "^7.36",
         "swiftmailer/swiftmailer": "^6",

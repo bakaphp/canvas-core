@@ -5,19 +5,25 @@ namespace Canvas\Models;
 
 use Baka\Database\Exception\ModelNotFoundException;
 use Baka\Support\Random;
+use Canvas\Contracts\CustomFields\CustomFieldsTrait;
 use Canvas\Contracts\SubscriptionPlanLimitTrait;
 use Phalcon\Di;
 
 class UsersInvite extends AbstractModel
 {
     use SubscriptionPlanLimitTrait;
+    use CustomFieldsTrait;
 
     public string $invite_hash;
     public int $users_id;
     public int $companies_id;
+    public int $companies_branches_id = 0;
     public int $role_id;
     public int $apps_id;
     public string $email;
+    public ?string $firstname = null;
+    public ?string $lastname = null;
+    public ?string $description = null;
 
     /**
      * Subscription plan key.
@@ -123,7 +129,7 @@ class UsersInvite extends AbstractModel
      */
     public function newUser(array $request) : Users
     {
-        $user = new Users();
+        $user = $this->di->get('userProvider');
         $user->firstname = $request['firstname'];
         $user->lastname = $request['lastname'];
         $user->password = $request['password'];

@@ -1,5 +1,6 @@
 <?php
 
+use Canvas\Enums\SubscriptionTypes;
 use Phalcon\Security\Random;
 use Phinx\Seed\AbstractSeed;
 
@@ -16,6 +17,7 @@ class InitGewaer extends AbstractSeed
                 'description' => 'Gewaer Ecosystem',
                 'created_at' => date('Y-m-d H:i:s'),
                 'default_apps_plan_id' => 1,
+                'subscription_types_id' => SubscriptionTypes::GROUP,
                 'payments_active' => 1,
                 'ecosystem_auth' => 1,
                 'is_actived' => 1,
@@ -257,7 +259,7 @@ class InitGewaer extends AbstractSeed
             [
                 'apps_id' => '1',
                 'name' => 'monthly-10-1',
-                'payment_ìnterval' => 'monthly',
+                'payment_interval' => 'monthly',
                 'description' => 'monthly-10-1',
                 'stripe_id' => 'monthly-10-1',
                 'stripe_plan' => 'monthly-10-1',
@@ -271,7 +273,7 @@ class InitGewaer extends AbstractSeed
             ], [
                 'apps_id' => '1',
                 'name' => 'monthly-10-2',
-                'payment_ìnterval' => 'monthly',
+                'payment_interval' => 'monthly',
                 'description' => 'monthly-10-2',
                 'stripe_id' => 'monthly-10-2',
                 'stripe_plan' => 'monthly-10-2',
@@ -286,7 +288,7 @@ class InitGewaer extends AbstractSeed
             [
                 'apps_id' => '1',
                 'name' => 'yearly-10-1',
-                'payment_ìnterval' => 'yearly',
+                'payment_interval' => 'yearly',
                 'description' => 'yearly-10-1',
                 'stripe_id' => 'yearly-10-1',
                 'stripe_plan' => 'yearly-10-1',
@@ -300,7 +302,7 @@ class InitGewaer extends AbstractSeed
             ], [
                 'apps_id' => '1',
                 'name' => 'yearly-10-2',
-                'payment_ìnterval' => 'yearly',
+                'payment_interval' => 'yearly',
                 'description' => 'yearly-10-2',
                 'stripe_id' => 'yearly-10-2',
                 'stripe_plan' => 'yearly-10-2',
