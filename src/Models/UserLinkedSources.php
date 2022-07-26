@@ -5,6 +5,7 @@ namespace Canvas\Models;
 
 use Baka\Contracts\Auth\UserInterface;
 use Baka\Database\Model;
+use Canvas\Enums\Sources as SourcesEnum;
 
 class UserLinkedSources extends Model
 {
@@ -24,13 +25,19 @@ class UserLinkedSources extends Model
             'users_id',
             Users::class,
             'id',
-            ['alias' => 'user']
+            [
+                'alias' => 'user',
+                'reusable' => true,
+            ]
         );
         $this->belongsTo(
             'source_id',
             Sources::class,
             'id',
-            ['alias' => 'source']
+            [
+                'alias' => 'source',
+                'reusable' => true,
+            ]
         );
     }
 
@@ -44,22 +51,30 @@ class UserLinkedSources extends Model
     public static function getMobileUserLinkedSources(int $usersId) : array
     {
         $userDevicesArray = [
-            2 => [],
-            3 => []
+            SourcesEnum::IOS => [],
+            SourcesEnum::ANDROID => [],
+            SourcesEnum::WEBAPP => [],
         ];
 
-        /**
-         * @todo change this from ID's to use the actual definition of the android / ios apps
-         */
         $linkedSource = UserLinkedSources::find([
-            'conditions' => 'users_id = ?0 and source_id in (2,3) AND is_deleted = 0',
-            'bind' => [$usersId]
+            'conditions' => 'users_id = :users_id:
+                            AND source_id in (
+                                SELECT ' . Sources::class . '.id FROM ' . Sources::class . ' WHERE title IN (:ios:, :android:, :webapp:) 
+                            ) 
+                            AND is_deleted = 0
+            ',
+            'bind' => [
+                'users_id' => $usersId,
+                'ios' => SourcesEnum::IOS,
+                'android' => SourcesEnum::ANDROID,
+                'webapp' => SourcesEnum::WEBAPP,
+            ]
         ]);
 
-        if ($linkedSource) {
+        if ($linkedSource->count()) {
             //add to list of devices id
             foreach ($linkedSource as $device) {
-                $userDevicesArray[$device->source_id][] = $device->source_users_id_text;
+                $userDevicesArray[$device->source->title][] = $device->source_users_id_text;
             }
         }
 
