@@ -50,6 +50,12 @@ class UserLinkedSources extends Model
      */
     public static function getMobileUserLinkedSources(int $usersId) : array
     {
+        $userDevicesArray = [
+            SourcesEnum::IOS => [],
+            SourcesEnum::ANDROID => [],
+            SourcesEnum::WEBAPP => [],
+        ];
+
         $linkedSource = UserLinkedSources::find([
             'conditions' => 'users_id = :users_id:
                             AND source_id in (
