@@ -47,7 +47,7 @@ class UserLinkedSources extends Model
         $linkedSource = UserLinkedSources::find([
             'conditions' => 'users_id = :users_id:
                             AND source_id in (
-                                SELECT id FROM ' . Sources::class . ' WHERE title IN (:ios:, :android:, :webapp:) 
+                                SELECT ' . Sources::class . '.id FROM ' . Sources::class . ' WHERE title IN (:ios:, :android:, :webapp:) 
                             ) 
                             AND is_deleted = 0
             ',
