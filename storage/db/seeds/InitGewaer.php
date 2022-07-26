@@ -148,6 +148,12 @@ class InitGewaer extends AbstractSeed
                 'url' => 'apple.com',
                 'created_at' => date('Y-m-d H:i:s'),
                 'is_deleted' => 0
+            ],
+            [
+                'title' => 'webapp',
+                'url' => 'webapp.io',
+                'created_at' => date('Y-m-d H:i:s'),
+                'is_deleted' => 0
             ]
         ];
 
