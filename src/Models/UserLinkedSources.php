@@ -25,13 +25,19 @@ class UserLinkedSources extends Model
             'users_id',
             Users::class,
             'id',
-            ['alias' => 'user']
+            [
+                'alias' => 'user',
+                'reusable' => true,
+            ]
         );
         $this->belongsTo(
             'source_id',
             Sources::class,
             'id',
-            ['alias' => 'source']
+            [
+                'alias' => 'source',
+                'reusable' => true,
+            ]
         );
     }
 
@@ -59,10 +65,10 @@ class UserLinkedSources extends Model
             ]
         ]);
 
-        if ($linkedSource) {
+        if ($linkedSource->count()) {
             //add to list of devices id
             foreach ($linkedSource as $device) {
-                $userDevicesArray[$device->title][] = $device->source_users_id_text;
+                $userDevicesArray[$device->source->title][] = $device->source_users_id_text;
             }
         }
 
