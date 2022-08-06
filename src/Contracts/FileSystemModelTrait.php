@@ -515,7 +515,7 @@ trait FileSystemModelTrait
      *
      * @return array
      */
-    public function getAttachments(string $fileType = null) : Resultset
+    public function getAttachments(string $fileType = null, bool $useCache = true) : Resultset
     {
         $redis = Di::getDefault()->get('redis');
 
@@ -551,8 +551,9 @@ trait FileSystemModelTrait
         $sql = $this->getAttachmentsQuery($condition);
 
         $key = self::generateCacheKey($bindParams);
-        $resultSet = $redis->get($key);
-        if (!$resultSet || !$resultSet->count()) {
+        $resultSet = $useCache ? $redis->get($key) : false;
+
+        if (!$resultSet || ($resultSet instanceof Resultset && !$resultSet->count())) {
             $fileSystemEntities = new FileSystemEntities();
             // Execute the query
             $resultSet = new Resultset(
