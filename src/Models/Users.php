@@ -349,18 +349,23 @@ class Users extends AbstractModel implements UserInterface
     }
 
     /**
-     * get user by there email address.
+     * Get user by there email address.
+     *
+     * @param string $email
+     * @param bool $enableException
      *
      * @return User
      */
-    public static function getByEmail(string $email) : UserInterface
+    public static function getByEmail(string $email, bool $enableException = true) : UserInterface
     {
         $user = self::findFirst([
             'conditions' => 'email = ?0 and is_deleted = 0',
-            'bind' => [$email]
+            'bind' => [
+                $email
+            ]
         ]);
 
-        if (!$user) {
+        if (!$user && $enableException) {
             throw new Exception('No User Found');
         }
 
@@ -558,6 +563,28 @@ class Users extends AbstractModel implements UserInterface
     }
 
     /**
+     * Get session from redis.
+     *
+     * @param string $key
+     *
+     * @return int|null
+     */
+    protected function getCurrentKeyFromRedis(string $key) : ?int
+    {
+        $sessionId = $this->getCurrentSessionId();
+
+        if ($sessionId !== null) {
+            $redis = Di::getDefault()->get('redis');
+            $redisKey = $key . $sessionId;
+            if ((int) $redis->get($redisKey) > 0) {
+                return (int) $redis->get($redisKey);
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * What the current company the users is logged in with
      * in this current session?
      *
@@ -565,7 +592,18 @@ class Users extends AbstractModel implements UserInterface
      */
     public function currentCompanyId() : int
     {
-        return  (int) $this->get(Companies::cacheKey());
+        $sessionId = $this->getCurrentSessionId();
+        $companyKey = Companies::cacheKey();
+
+        if ($sessionId !== null) {
+            $currentCompanyId = $this->getCurrentKeyFromRedis($companyKey);
+
+            if ($currentCompanyId > 0) {
+                return $currentCompanyId;
+            }
+        }
+
+        return  (int) $this->get($companyKey);
     }
 
     /**
@@ -575,8 +613,19 @@ class Users extends AbstractModel implements UserInterface
      */
     public function currentBranchId() : int
     {
+        $sessionId = $this->getCurrentSessionId();
+        $branchKey = $this->getDefaultCompany()->branchCacheKey();
+
+        if ($sessionId !== null) {
+            $currentBranchId = $this->getCurrentKeyFromRedis($branchKey);
+
+            if ($currentBranchId > 0) {
+                return $currentBranchId;
+            }
+        }
+
         $branchId = $this->get($this->getDefaultCompany()->branchCacheKey());
-        if (is_null($branchId)) {
+        if ($branchId === null) {
             $branchId = $this->getDefaultCompany()->defaultBranch->getId();
 
             /**
@@ -785,6 +834,14 @@ class Users extends AbstractModel implements UserInterface
                     $this->default_company = $branch->company->getId();
                     $this->default_company_branch = $branch->getId();
                     //set the default company id per the specific app , we do this so we can have multiple default companies per diff apps
+
+                    $sessionId = $this->getCurrentSessionId();
+                    if ($sessionId !== null) {
+                        $redis = Di::getDefault()->get('redis');
+                        $redis->set(Companies::cacheKey() . $this->getCurrentSessionId(), $this->default_company, 86400); //1 day
+                        $redis->set($branch->company->branchCacheKey() . $this->getCurrentSessionId(), $branch->getId(), 86400); //1 day
+                    }
+
                     $this->set(Companies::cacheKey(), $this->default_company);
                     $this->set($branch->company->branchCacheKey(), $branch->getId());
                 }
