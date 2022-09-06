@@ -107,4 +107,23 @@ trait TokenTrait
             'expiration' => $token->claims()->get('exp')
         ];
     }
+
+    /**
+     * Get Current request Session ID from Bear Token.
+     *
+     * @return string|null
+     */
+    public function getCurrentSessionId() : ?string
+    {
+        $request = Di::getDefault()->get('request');
+        $bearerToken = $request->getBearerTokenFromHeader();
+        if (!empty($bearerToken)) {
+            $config = Jwt::getConfig();
+            $token = $config->parser()->parse($bearerToken);
+
+            return $token->claims()->get('sessionId') ?? null;
+        }
+
+        return null;
+    }
 }
