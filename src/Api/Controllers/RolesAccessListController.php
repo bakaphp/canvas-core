@@ -46,7 +46,12 @@ class RolesAccessListController extends BaseController
         ];
 
         $this->customConditions = "
-            AND access_list.roles_id in (SELECT id from roles WHERE companies_id = {$this->userData->currentCompanyId()} AND apps_id in (0, {$this->app->getId()}))
+            AND access_list.roles_id 
+                IN (
+                    SELECT id from roles 
+                    WHERE 
+                        companies_id = {$this->userData->currentCompanyId()}
+                        AND apps_id in (0, {$this->app->getId()}))
         ";
     }
 
@@ -64,8 +69,14 @@ class RolesAccessListController extends BaseController
 
         //Ok let validate user password
         $validation = new CanvasValidation();
-        $validation->add('roles', new PresenceOf(['message' => _('Role information is required.')]));
-        $validation->add('access', new PresenceOf(['message' => _('Access list is required.')]));
+        $validation->add(
+            'roles',
+            new PresenceOf(['message' => _('Role information is required.')])
+        );
+        $validation->add(
+            'access',
+            new PresenceOf(['message' => _('Access list is required.')])
+        );
 
         //validate this form for password
         $validation->validate($request);
@@ -76,14 +87,24 @@ class RolesAccessListController extends BaseController
 
         $scope = 1;
         //create the role , the scope is level 1 , that means user
-        $this->acl->addRole(new Role($request['roles']['name'], $request['roles']['description']), $scope);
+        $this->acl->addRole(
+            new Role(
+                $request['roles']['name'],
+                $request['roles']['description']
+            ),
+            $scope
+        );
 
         /**
          * we always deny permission, by default the canvas set allow to all
          * so we only have to take away permissions.
          */
         foreach ($request['access'] as $access) {
-            $this->acl->deny($request['roles']['name'], $access['resources_name'], $access['access_name']);
+            $this->acl->deny(
+                $request['roles']['name'],
+                $access['resources_name'],
+                $access['access_name']
+            );
         }
 
         return $this->response($request['roles']);
@@ -134,8 +155,14 @@ class RolesAccessListController extends BaseController
 
         //Ok let validate user password
         $validation = new CanvasValidation();
-        $validation->add('roles', new PresenceOf(['message' => _('Role information is required.')]));
-        $validation->add('access', new PresenceOf(['message' => _('Access list is required.')]));
+        $validation->add(
+            'roles',
+            new PresenceOf(['message' => _('Role information is required.')])
+        );
+        $validation->add(
+            'access',
+            new PresenceOf(['message' => _('Access list is required.')])
+        );
 
         //validate this form for password
         $validation->validate($request);
@@ -156,14 +183,18 @@ class RolesAccessListController extends BaseController
          * so we only have to take away permissions.
          */
         foreach ($request['access'] as $access) {
-            $this->acl->deny($request['roles']['name'], $access['resources_name'], $access['access_name']);
+            $this->acl->deny(
+                $request['roles']['name'],
+                $access['resources_name'],
+                $access['access_name']
+            );
         }
 
         return $this->response($role);
     }
 
     /**
-     * Copy a existen.
+     * Copy a existent.
      *
      * @param int $id
      *

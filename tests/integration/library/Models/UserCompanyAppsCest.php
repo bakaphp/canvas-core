@@ -8,9 +8,10 @@ use IntegrationTester;
 class UserCompanyAppsCest
 {
     /**
-     * Get the current company app
+     * Get the current company app.
      *
      * @param IntegrationTester $I
+     *
      * @return void
      */
     public function getCurrentApp(IntegrationTester $I)

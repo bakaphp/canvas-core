@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Canvas\Contracts\Cashier;
 
 use Canvas\Cashier\Cashier;
-use Canvas\Cashier\Exceptions\Customer as CustomerException;
+use Canvas\Cashier\Exceptions\Customers as CustomerException;
 use Stripe\BillingPortal\Session as StripeBillingPortalSession;
 use Stripe\Customer as StripeCustomer;
 
@@ -26,7 +28,7 @@ trait CustomerTrait
      */
     public function hasStripeId() : bool
     {
-        return !is_null($this->stripe_id);
+        return !is_null($this->stripe_id) && !empty(trim($this->stripe_id));
     }
 
     /**
@@ -48,14 +50,14 @@ trait CustomerTrait
      *
      * @return string|null
      */
-    public function stripeEmail() : string
+    public function stripeEmail() : ?string
     {
-        if (property_exists($this, 'email')) {
+        if (property_exists($this, 'email') && !empty($this->email)) {
             return $this->email;
         }
 
-        if (is_object($this->users)) {
-            return $this->users->getEmail();
+        if (is_object($this->user)) {
+            return $this->user->getEmail();
         }
     }
 
@@ -75,6 +77,12 @@ trait CustomerTrait
         if (!array_key_exists('email', $options) && $email = $this->stripeEmail()) {
             $options['email'] = $email;
         }
+
+        if (!array_key_exists('name', $options)) {
+            $options['name'] = $this->name;
+        }
+
+        $options['metadata']['subscription_type'] = get_class($this);
 
         // Here we will create the customer instance on Stripe and store the ID of the
         // user from Stripe. This ID will correspond with the Stripe user instances

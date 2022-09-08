@@ -29,7 +29,7 @@ class FileSystemMapper extends CustomMapper
         $filesystemDto->size = $filesystem->size;
         $filesystemDto->file_type = $filesystem->file_type;
         $filesystemDto->created_at = $filesystem->created_at;
-        $filesystemDto->attributes = $filesystem->getAllSettings();
+        $filesystemDto->attributes = $filesystem ? $filesystem->getAllSettings() : [];
 
         return $filesystemDto;
     }

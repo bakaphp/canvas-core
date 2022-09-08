@@ -15,6 +15,7 @@ class UsersAssociatedApps extends AbstractModel implements UserInterface
     public string $identify_id;
     public int $user_active;
     public string $user_role;
+    public ?string $configuration = null;
     public ?string $password = null;
 
     /**
@@ -24,21 +25,21 @@ class UsersAssociatedApps extends AbstractModel implements UserInterface
     {
         $this->belongsTo(
             'companies_id',
-            'Canvas\Models\Companies',
+            Companies::class,
             'id',
             ['alias' => 'company']
         );
 
         $this->belongsTo(
             'apps_id',
-            'Canvas\Models\Apps',
+            Apps::class,
             'id',
             ['alias' => 'app']
         );
 
         $this->belongsTo(
             'users_id',
-            'Canvas\Models\Users',
+            Users::class,
             'id',
             ['alias' => 'user']
         );
@@ -56,7 +57,7 @@ class UsersAssociatedApps extends AbstractModel implements UserInterface
     public function afterSave()
     {
         if (!$this->validateIsActive()) {
-            $parentUser = Di::getDefault()->getUserData();
+            $parentUser = $this->getDI()->get('userData');
             $userInactiveConfirmation = new UserInactiveConfirmation($parentUser);
             $userInactiveConfirmation->setFrom($parentUser);
 
@@ -84,7 +85,10 @@ class UsersAssociatedApps extends AbstractModel implements UserInterface
     public static function getByUserId(int $userId) : self
     {
         return self::findFirstOrFail([
-            'conditions' => 'apps_id = :apps_id: and users_id = :users_id: and companies_id = :companies_id: and is_deleted = 0',
+            'conditions' => 'apps_id = :apps_id: 
+                            AND users_id = :users_id: 
+                            AND companies_id = :companies_id: 
+                            AND is_deleted = 0',
             'bind' => [
                 'apps_id' => Di::getDefault()->get('app')->getId(),
                 'users_id' => $userId,
@@ -93,24 +97,27 @@ class UsersAssociatedApps extends AbstractModel implements UserInterface
         ]);
     }
 
-     /**
-     * Desassociated a user from an app
-     * 
+    /**
+     * Disassociated a user from an app.
+     *
      * @param Users $users
      * @param Users $companies
-     * 
-     * @return void
+     *
+     * @return bool
      */
     public static function disassociateUserFromApp(Users $users, Companies $companies) : bool
     {
         $userAssociatedApp = UsersAssociatedApps::findFirstOrFail([
-            "conditions" => "users_id = :users_id: and companies_id = :companies_id: and user_active = 1 and is_deleted = 0",
-            "bind" => [
-                "users_id" => $users->getId(),
-                "companies_id" => $companies->getId()
+            'conditions' => 'users_id = :users_id: 
+                            AND companies_id = :companies_id: 
+                            AND user_active = 1 
+                            AND is_deleted = 0',
+            'bind' => [
+                'users_id' => $users->getId(),
+                'companies_id' => $companies->getId()
             ]
         ]);
 
-        return $userAssociatedApp->softDelete();
+        return (bool) $userAssociatedApp->softDelete();
     }
 }

@@ -8,6 +8,7 @@ use Baka\Support\Str;
 use Canvas\Models\Users;
 use Phalcon\Cli\Task as PhTask;
 use Phalcon\Mvc\Model;
+use Sentry\SentrySdk;
 use Throwable;
 
 class QueueTask extends PhTask
@@ -29,24 +30,39 @@ class QueueTask extends PhTask
      */
     public function eventsAction()
     {
-        $callback = function ($msg) : void {
-            //check the db before running anything
-            $this->reconnectDb();
+        $sentryClient = SentrySdk::getCurrentHub()->getClient();
 
-            //we get the data from our event trigger and unserialize
-            $event = unserialize($msg->body);
+        $callback = function ($msg) use ($sentryClient) : void {
+            try {
+                //check the db before running anything
+                $this->reconnectDb();
 
-            //overwrite the user who is running this process
-            if (isset($event['userData']) && $event['userData'] instanceof Users) {
-                $this->di->setShared('userData', $event['userData']);
+                //we get the data from our event trigger and unserialize
+                $event = unserialize($msg->body);
+
+                //overwrite the user who is running this process
+                if (isset($event['userData']) && $event['userData'] instanceof Users) {
+                    $this->di->set('userData', $event['userData']);
+                }
+
+                //lets fire the event
+                $this->events->fire($event['event'], $event['source'], $event['data']);
+
+                $this->log->info(
+                    "Notification ({$event['event']}) - Process ID " . $msg->delivery_info['consumer_tag']
+                );
+            } catch (Throwable $e) {
+                $this->log->error(
+                    $e->getMessage(),
+                    [
+                        $e->getTraceAsString(),
+                    ]
+                );
+
+                if ($sentryClient) {
+                    $sentryClient->flush();
+                }
             }
-
-            //lets fire the event
-            $this->events->fire($event['event'], $event['source'], $event['data']);
-
-            $this->log->info(
-                "Notification ({$event['event']}) - Process ID " . $msg->delivery_info['consumer_tag']
-            );
         };
 
         Queue::process(QUEUE::EVENTS, $callback);
@@ -59,47 +75,62 @@ class QueueTask extends PhTask
      */
     public function notificationsAction()
     {
-        $callback = function (object $msg) : void {
-            //check the db before running anything
-            $this->reconnectDb();
+        $sentryClient = SentrySdk::getCurrentHub()->getClient();
 
-            //we get the data from our event trigger and unserialize
-            $notification = unserialize($msg->body);
+        $callback = function (object $msg) use ($sentryClient) : void {
+            try {
+                //check the db before running anything
+                $this->reconnectDb();
 
-            //overwrite the user who is running this process
-            if ($notification['from'] instanceof Users) {
-                $this->di->setShared('userData', $notification['from']);
+                //we get the data from our event trigger and unserialize
+                $notification = unserialize($msg->body);
+
+                //overwrite the user who is running this process
+                if ($notification['from'] instanceof Users) {
+                    $this->di->set('userData', $notification['from']);
+                }
+
+                if (!$notification['to'] instanceof Users) {
+                    echo 'Attribute TO has to be a User' . PHP_EOL;
+                    return;
+                }
+
+                if (!class_exists($notification['notification'])) {
+                    echo 'Attribute notification has to be a Notification' . PHP_EOL;
+                    return;
+                }
+                $notificationClass = $notification['notification'];
+
+                if (!$notification['entity'] instanceof Model) {
+                    echo 'Attribute entity has to be a Model' . PHP_EOL;
+                    return;
+                }
+
+                $user = $notification['to'];
+
+                //instance notification and pass the entity
+                $notification = new $notification['notification']($notification['entity']);
+                //disable the queue so we process it now
+                $notification->disableQueue();
+
+                //run notify for the specify user
+                $user->notify($notification);
+
+                $this->log->info(
+                    "Notification ({$notificationClass}) sent to {$user->email} - Process ID " . $msg->delivery_info['consumer_tag']
+                );
+            } catch (Throwable $e) {
+                $this->log->error(
+                    $e->getMessage(),
+                    [
+                        $e->getTraceAsString(),
+                    ]
+                );
+
+                if ($sentryClient) {
+                    $sentryClient->flush();
+                }
             }
-
-            if (!$notification['to'] instanceof Users) {
-                echo 'Attribute TO has to be a User' . PHP_EOL;
-                return;
-            }
-
-            if (!class_exists($notification['notification'])) {
-                echo 'Attribute notification has to be a Notification' . PHP_EOL;
-                return;
-            }
-            $notificationClass = $notification['notification'];
-
-            if (!$notification['entity'] instanceof Model) {
-                echo 'Attribute entity has to be a Model' . PHP_EOL;
-                return;
-            }
-
-            $user = $notification['to'];
-
-            //instance notification and pass the entity
-            $notification = new $notification['notification']($notification['entity']);
-            //disable the queue so we process it now
-            $notification->disableQueue();
-
-            //run notify for the specify user
-            $user->notify($notification);
-
-            $this->log->info(
-                "Notification ({$notificationClass}) sent to {$user->email} - Process ID " . $msg->delivery_info['consumer_tag']
-            );
         };
 
         Queue::process(QUEUE::NOTIFICATIONS, $callback);
@@ -114,7 +145,9 @@ class QueueTask extends PhTask
     {
         $queue = is_null($queueName) ? QUEUE::JOBS : $queueName;
 
-        $callback = function (object $msg) : void {
+        $sentryClient = SentrySdk::getCurrentHub()->getClient();
+
+        $callback = function (object $msg) use ($sentryClient) : void {
             try {
                 //check the db before running anything
                 $this->reconnectDb();
@@ -124,7 +157,7 @@ class QueueTask extends PhTask
 
                 //overwrite the user who is running this process
                 if ($job['userData'] instanceof Users) {
-                    $this->di->setShared('userData', $job['userData']);
+                    $this->di->set('userData', $job['userData']);
                 }
 
                 if (!class_exists($job['class'])) {
@@ -134,12 +167,12 @@ class QueueTask extends PhTask
                 }
 
                 if (!$job['job'] instanceof QueueableJobInterface) {
-                    echo 'This Job is not queueable ' . $msg->delivery_info['consumer_tag'] ;
+                    echo 'This Job is not queueable ' . $msg->delivery_info['consumer_tag'];
                     $this->log->error('This Job is not queueable ' . $msg->delivery_info['consumer_tag']);
                     return;
                 }
 
-                go(function () use ($job, $msg) {
+                go(function () use ($job, $msg, $sentryClient) {
                     //instance notification and pass the entity
                     try {
                         $this->reconnectDb();
@@ -154,18 +187,26 @@ class QueueTask extends PhTask
                         $this->log->error(
                             $e->getMessage(),
                             [
-                                $e->getTraceAsString()
+                                $e->getTraceAsString(),
                             ]
                         );
+
+                        if ($sentryClient) {
+                            $sentryClient->flush();
+                        }
                     }
                 });
             } catch (Throwable $e) {
                 $this->log->error(
                     $e->getMessage(),
                     [
-                        $e->getTraceAsString()
+                        $e->getTraceAsString(),
                     ]
                 );
+
+                if ($sentryClient) {
+                    $sentryClient->flush();
+                }
             }
         };
 
@@ -189,7 +230,7 @@ class QueueTask extends PhTask
             }
         }
 
-        return ;
+        return;
     }
 
     /**

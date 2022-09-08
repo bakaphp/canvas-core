@@ -67,10 +67,19 @@ class EventsManagerProvider implements ServiceProviderInterface
         //navigate the list of listener and create the events
         foreach ($listeners as $key => $listen) {
             //create the events given the key
-            $eventsManager->attach(
-                $key,
-                new $listen()
-            );
+            if (!is_array($listen)) {
+                $eventsManager->attach(
+                    $key,
+                    new $listen()
+                );
+            } else {
+                foreach ($listen as $listener) {
+                    $eventsManager->attach(
+                        $key,
+                        new $listener()
+                    );
+                }
+            }
         }
 
         return true;

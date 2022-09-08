@@ -37,13 +37,17 @@ trait FileSystemModelTrait
                     continue;
                 }
 
-                if ($fileSystem = FileSystem::getById($file['filesystem_id'])) {
+
+                try {
+                    $fileSystem = FileSystem::getById($file['filesystem_id']);
                     $this->attach([[
                         'id' => $file['id'] ?? 0,
                         'file' => $fileSystem,
                         'field_name' => $file['field_name'] ?? '',
                         'is_deleted' => $file['is_deleted'] ?? 0
                     ]]);
+                } catch (Exception $e) {
+                    continue;
                 }
             }
         }
@@ -191,7 +195,7 @@ trait FileSystemModelTrait
 
             $fileSystemEntities = null;
             //check if we are updating the attachment
-            if ($id = (int) $file['id']) {
+            if (isset($file['id']) && $id = (int) $file['id']) {
                 $fileSystemEntities = FileSystemEntities::getByIdWithSystemModule($id, $systemModule);
             }
 
@@ -268,14 +272,15 @@ trait FileSystemModelTrait
      * Get all the files matching the field name.
      *
      * @param string $fieldName
+     * @param bool $useCache
      *
      * @return array
      */
-    public function getFilesByName(string $fieldName) : array
+    public function getFilesByName(string $fieldName, bool $useCache = true) : array
     {
         $systemModule = SystemModules::getByModelName(self::class);
 
-        $attachments = $this->getAttachmentsByName($fieldName);
+        $attachments = $this->getAttachmentsByName($fieldName, $useCache);
 
         $fileMapper = new FileMapper($this->getId(), $systemModule->getId());
 
@@ -294,52 +299,63 @@ trait FileSystemModelTrait
      * when a company has over 1k images
      *
      * @param string $name
+     * @param bool $useCache
      *
-     * @return void
+     * @return FileSystemEntities
      */
-    public function getAttachmentByName(string $fieldName)
+    public function getAttachmentByName(string $fieldName, bool $useCache = true)
     {
         $criteria = $this->searchCriteriaForFilesByName($fieldName);
         $criteria['cache']['key'] .= '_find_one';
-
-        return FileSystemEntities::findFirst([
+        $searchOptions = [
             'conditions' => $criteria['conditions'],
             'order' => 'id desc',
             'bind' => $criteria['bind'],
-            'cache' => $criteria['cache']
-        ]);
+        ];
+
+        if ($useCache) {
+            $searchOptions['cache'] = $criteria['cache'];
+        }
+
+        return FileSystemEntities::findFirst($searchOptions);
     }
 
     /**
      * Get a files by its fieldname.
      *
      * @param string $name
+     * @param bool $useCache
      *
-     * @return void
+     * @return array
      */
-    public function getAttachmentsByName(string $fieldName)
+    public function getAttachmentsByName(string $fieldName, bool $useCache = true)
     {
         $criteria = $this->searchCriteriaForFilesByName($fieldName);
         $criteria['cache']['key'] .= '_find_all';
-
-        return FileSystemEntities::find([
+        $searchOptions = [
             'conditions' => $criteria['conditions'],
             'order' => 'id desc',
             'bind' => $criteria['bind'],
-            'cache' => $criteria['cache']
-        ]);
+        ];
+
+        if ($useCache) {
+            $searchOptions['cache'] = $criteria['cache'];
+        }
+
+        return FileSystemEntities::find($searchOptions);
     }
 
     /**
      * Get the file byt it's name.
      *
      * @param string $fieldName
+     * @param bool $useCache
      *
      * @return string|null
      */
-    public function getFileByName(string $fieldName) : ?object
+    public function getFileByName(string $fieldName, bool $useCache = true) : ?object
     {
-        return $this->fileMapper($this->getAttachmentByName($fieldName));
+        return $this->fileMapper($this->getAttachmentByName($fieldName, $useCache));
     }
 
     /**
@@ -499,7 +515,7 @@ trait FileSystemModelTrait
      *
      * @return array
      */
-    public function getAttachments(string $fileType = null) : Resultset
+    public function getAttachments(string $fileType = null, bool $useCache = true) : Resultset
     {
         $redis = Di::getDefault()->get('redis');
 
@@ -535,8 +551,9 @@ trait FileSystemModelTrait
         $sql = $this->getAttachmentsQuery($condition);
 
         $key = self::generateCacheKey($bindParams);
-        $resultSet = $redis->get($key);
-        if (!$resultSet || !$resultSet->count()) {
+        $resultSet = $useCache ? $redis->get($key) : false;
+
+        if (!$resultSet || ($resultSet instanceof Resultset && !$resultSet->count())) {
             $fileSystemEntities = new FileSystemEntities();
             // Execute the query
             $resultSet = new Resultset(

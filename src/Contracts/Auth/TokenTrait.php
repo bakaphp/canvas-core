@@ -1,7 +1,6 @@
 <?php
 
 declare(strict_types=1);
-
 namespace Canvas\Contracts\Auth;
 
 use Canvas\Auth\Jwt;
@@ -106,5 +105,27 @@ trait TokenTrait
             'token' => $token->toString(),
             'expiration' => $token->claims()->get('exp')
         ];
+    }
+
+    /**
+     * Get Current request Session ID from Bear Token.
+     *
+     * @return string|null
+     */
+    public function getCurrentSessionId() : ?string
+    {
+        if (!Di::getDefault()->has('request')) {
+            return null;
+        }
+        $request = Di::getDefault()->get('request');
+        $bearerToken = $request->getBearerTokenFromHeader();
+        if (!empty($bearerToken)) {
+            $config = Jwt::getConfig();
+            $token = $config->parser()->parse($bearerToken);
+
+            return $token->claims()->get('sessionId') ?? null;
+        }
+
+        return null;
     }
 }

@@ -7,6 +7,9 @@ use Canvas\Contracts\Cashier\PaymentMethodsTrait;
 use Canvas\Contracts\Cashier\PaymentsTrait;
 use Canvas\Contracts\Cashier\SubscriptionsTrait;
 use Canvas\Models\AppsPlans;
+use Canvas\Models\Companies;
+use Canvas\Models\CompaniesBranches;
+use Canvas\Models\CompaniesGroups;
 use Canvas\Models\Subscription;
 use Phalcon\Di;
 
@@ -34,11 +37,21 @@ trait Billable
      *
      * @return SubscriptionBuilder
      */
-    public function startFreeTrial(array $options = [], array $customerOptions = []) : Subscription
-    {
+    public function startFreeTrial(
+        CompaniesGroups $companyGroup,
+        Companies $company,
+        CompaniesBranches $branch,
+        array $options = [],
+        array $customerOptions = []
+    ) : Subscription {
         $defaultPlan = AppsPlans::getDefaultPlan();
 
-        return $this->newSubscription($defaultPlan)
+        return $this->newSubscription(
+            $companyGroup,
+            $company,
+            $branch,
+            $defaultPlan,
+        )
             ->trialDays($defaultPlan->free_trial_dates)
             ->withMetadata(['appPlan' => $defaultPlan->getId()])
             ->create($options, $customerOptions);

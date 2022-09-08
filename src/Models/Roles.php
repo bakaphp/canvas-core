@@ -16,11 +16,11 @@ use Phalcon\Validation\Validator\Uniqueness;
 
 class Roles extends AbstractModel
 {
-    public string $name;
-    public ?string $description;
-    public ?int $scope;
-    public int $companies_id;
-    public int $apps_id;
+    public string $name = '';
+    public ?string $description = null;
+    public ?int $scope = null;
+    public int $companies_id = 0;
+    public int $apps_id = 0;
     public int $is_default = 0;
     public int $is_active = 1;
 
