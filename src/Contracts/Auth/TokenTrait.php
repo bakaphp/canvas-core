@@ -1,7 +1,6 @@
 <?php
 
 declare(strict_types=1);
-
 namespace Canvas\Contracts\Auth;
 
 use Canvas\Auth\Jwt;
@@ -115,6 +114,9 @@ trait TokenTrait
      */
     public function getCurrentSessionId() : ?string
     {
+        if (!Di::getDefault()->has('request')) {
+            return null;
+        }
         $request = Di::getDefault()->get('request');
         $bearerToken = $request->getBearerTokenFromHeader();
         if (!empty($bearerToken)) {
