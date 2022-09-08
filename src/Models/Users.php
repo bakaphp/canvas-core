@@ -378,9 +378,9 @@ class Users extends AbstractModel implements UserInterface
      * @param string $email
      * @param bool $enableException
      *
-     * @return User
+     * @return User|null
      */
-    public static function getByEmail(string $email, bool $enableException = true) : UserInterface
+    public static function getByEmail(string $email, bool $enableException = true) : ?UserInterface
     {
         $user = self::findFirst([
             'conditions' => 'email = ?0 and is_deleted = 0',
