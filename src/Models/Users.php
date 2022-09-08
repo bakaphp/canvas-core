@@ -335,6 +335,30 @@ class Users extends AbstractModel implements UserInterface
     }
 
     /**
+     * get the user by its uuid, we can specify the cache if we want to
+     * we only get result if the user is active.
+     *
+     * @param string $userUuid
+     * @param bool $cache
+     *
+     * @return UserInterface
+     */
+    public static function getByUuid(string $userUuid, bool $cache = false) : UserInterface
+    {
+        $options = null;
+        $key = 'userInfo_' . $userUuid;
+
+        if ($cache) {
+            $options = ['cache' => ['lifetime' => 3600, 'key' => $key]];
+        }
+
+        return self::findFirstOrFail([
+            'conditions' => 'uuid = ?0 and is_deleted = 0',
+            'bind' => [$userUuid]
+        ]);
+    }
+
+    /**
      * is the user active?
      *
      * @return bool
@@ -568,7 +592,7 @@ class Users extends AbstractModel implements UserInterface
         $branchId = $this->get($this->getDefaultCompany()->branchCacheKey());
         if (is_null($branchId)) {
             $branchId = $this->getDefaultCompany()->defaultBranch->getId();
-            
+
             /**
              * @todo Remove this later in future versions.
              */
