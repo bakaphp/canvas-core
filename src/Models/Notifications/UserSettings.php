@@ -131,7 +131,15 @@ class UserSettings extends AbstractModel
      */
     public static function listOfNotifications(Apps $app, UserInterface $user, int $parent = 0) : array
     {
-        $notificationType = NotificationType::find('is_published = 1 AND parent_id = ' . $parent . ' AND apps_id =' . $app->getId());
+        $notificationType = NotificationType::find([
+            'conditions' => 'is_published = 1 AND parent_id = :parent_id: AND apps_id = :apps_id:',
+            'bind' => [
+                'parent_id' => $parent,
+                'apps_id' => $app->getId()
+            ],
+            'order' => 'weight ASC'
+        ]);
+
         $userNotificationList = [];
         $i = 0;
 
