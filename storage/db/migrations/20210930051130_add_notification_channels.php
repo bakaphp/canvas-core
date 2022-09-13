@@ -2,7 +2,7 @@
 
 use Phinx\Db\Adapter\MysqlAdapter;
 
-class RenameNotificationRelevancy extends Phinx\Migration\AbstractMigration
+class AddNotificationChannels extends Phinx\Migration\AbstractMigration
 {
     public function change()
     {
