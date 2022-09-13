@@ -8,6 +8,7 @@ use Baka\Database\Model;
 class NotificationChannels extends AbstractModel
 {
     public string $name;
+    public string $slug;
 
     /**
      * Initialize method for model.
@@ -18,7 +19,7 @@ class NotificationChannels extends AbstractModel
     }
 
     /**
-     * Get the notification by its slug
+     * Get the notification by its slug.
      *
      * @param string $slug
      *
@@ -29,8 +30,18 @@ class NotificationChannels extends AbstractModel
         return self::findFirstOrFail([
             'conditions' => 'slug = :slug: and is_deleted = 0',
             'bind' => [
-                "slug" => $slug
+                'slug' => $slug
             ]
         ]);
+    }
+
+    /**
+     * Before create system modules forms.
+     *
+     * @return void
+     */
+    public function beforeCreate()
+    {
+        $this->slug = strtolower(trim($this->name));
     }
 }
