@@ -19,7 +19,7 @@ class NotificationType extends AbstractModel
     public int $parent_id = 0;
     public int $is_published = 1;
     public float $weight = 0.0;
-    public int $notification_channel_id;
+    public ?int $notification_channel_id = null;
 
     /**
      * Initialize method for model.
