@@ -22,14 +22,14 @@ class AddNotificationChannels extends Phinx\Migration\AbstractMigration
             ])
             ->addColumn('name', 'string', [
                 'null' => false,
-                'limit' => 255,
+                'limit' => 64,
                 'collation' => 'utf8_general_mysql500_ci',
                 'encoding' => 'utf8',
                 'after' => 'id',
             ])
             ->addColumn('slug', 'string', [
-                'null' => false,
-                'limit' => 255,
+                'null' => true,
+                'limit' => 64,
                 'collation' => 'utf8_general_mysql500_ci',
                 'encoding' => 'utf8',
                 'after' => 'name',
