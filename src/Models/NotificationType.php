@@ -19,6 +19,7 @@ class NotificationType extends AbstractModel
     public int $parent_id = 0;
     public int $is_published = 1;
     public float $weight = 0.0;
+    public ?int $notification_channel_id = null;
 
     /**
      * Initialize method for model.
@@ -26,6 +27,13 @@ class NotificationType extends AbstractModel
     public function initialize()
     {
         $this->setSource('notification_types');
+
+        $this->belongsTo(
+            'notification_channel_id',
+            NotificationChannels::class,
+            'id',
+            ['alias' => 'channel']
+        );
     }
 
     /**
