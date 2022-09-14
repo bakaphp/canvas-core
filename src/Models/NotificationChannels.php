@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Canvas\Models;
 
 use Baka\Database\Model;
+use Phalcon\Utils\Slug;
 
 class NotificationChannels extends AbstractModel
 {
@@ -42,6 +43,6 @@ class NotificationChannels extends AbstractModel
      */
     public function beforeCreate()
     {
-        $this->slug = strtolower(trim($this->name));
+        $this->slug = Slug::generate($this->name);
     }
 }
