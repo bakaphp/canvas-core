@@ -10,9 +10,11 @@ use Baka\Exception\AuthException;
 use Baka\Hashing\Keys;
 use Baka\Hashing\Password;
 use Baka\Support\Random;
+use Canvas\Enums\App;
+use Canvas\Enums\State;
+use Canvas\Enums\UserStatus;
 use Canvas\Models\Sessions;
 use Canvas\Models\Users;
-use Canvas\Models\Companies;
 use Exception;
 use Lcobucci\JWT\Token;
 use stdClass;
@@ -81,25 +83,25 @@ class Auth
      */
     public static function signUp(UserInterface $user) : UserInterface
     {
-        $user->sex = 'U';
+        $user->sex = App::DEFAULT_SEX;
         $user->firstname = $user->firstname ?? ' ';
         $user->lastname = $user->lastname ?? ' ';
         $user->displayname = $user->displayname ?? Random::generateDisplayName($user->email);
         $user->dob = date('Y-m-d');
         $user->lastvisit = date('Y-m-d H:i:s');
         $user->registered = date('Y-m-d H:i:s');
-        $user->timezone = 'America/New_York';
-        $user->user_level = 3;
-        $user->user_active = 1;
-        $user->status = 1;
-        $user->banned = 'N';
+        $user->timezone = App::DEFAULT_TIMEZONE;
+        $user->user_level = App::DEFAULT_USER_LEVEL;
+        $user->user_active = UserStatus::ACTIVE;
+        $user->status = UserStatus::ACTIVE;
+        $user->banned = State::NO_STRING;
         $user->user_login_tries = 0;
         $user->user_last_login_try = 0;
         $user->default_company = $user->default_company ?? 0;
         $user->session_time = time();
         $user->session_page = time();
         $user->password = Password::make($user->password);
-        $user->language = $user->language ?: 'EN';
+        $user->language = $user->language ?: App::DEFAULT_LANGUAGE;
         $user->user_activation_key = Keys::make();
 
         //if you need to run any extra feature with the data we get from the request
@@ -127,6 +129,7 @@ class Auth
         $config = new stdClass();
         $config->login_reset_time = getenv('AUTH_MAX_AUTOLOGIN_TIME');
         $config->max_login_attempts = getenv('AUTH_MAX_AUTOLOGIN_ATTEMPS');
+        //$config->max_login_attempts = getenv('AUTH_MAX_AUTOLOGIN_ATTEMPTS');
 
         // If the last login is more than x minutes ago, then reset the login tries/time
         if ($user->user_last_login_try && $config->login_reset_time && $user->user_last_login_try < (time() - ($config->login_reset_time * 60))) {

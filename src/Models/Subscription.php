@@ -4,9 +4,14 @@ declare(strict_types=1);
 
 namespace Canvas\Models;
 
+use Baka\Contracts\Database\ModelInterface;
 use Baka\Http\Exception\InternalServerErrorException;
 use Canvas\Cashier\Cashier;
 use Canvas\Cashier\Exceptions\Subscriptions as SubscriptionException;
+use Canvas\Cashier\SubscriptionBuilder;
+use Canvas\Contracts\CustomFields\CustomFieldsTrait;
+use Canvas\Enums\State;
+use Canvas\Enums\SubscriptionTypes;
 use Carbon\Carbon;
 use DateTime;
 use DateTimeInterface;
@@ -18,13 +23,17 @@ use Stripe\Subscription as StripeSubscription;
 
 class Subscription extends AbstractModel
 {
+    use CustomFieldsTrait;
+
     const FREE_TRIAL = 1;
     const DEFAULT_APP = 1;
     const DEFAULT_GRACE_PERIOD_DAYS = 5;
 
     public int $users_id;
     public int $companies_groups_id;
+    public int $companies_branches_id = State::OFF;
     public int $companies_id;
+    public int $subscription_types_id = SubscriptionTypes::GROUP;
     public int $apps_id;
     public ?string $name = null;
     public string $stripe_id;
@@ -88,6 +97,16 @@ class Subscription extends AbstractModel
             'id',
             [
                 'alias' => 'company',
+                'reusable' => true,
+            ]
+        );
+
+        $this->belongsTo(
+            'companies_branches_id',
+            CompaniesBranches::class,
+            'id',
+            [
+                'alias' => 'branch',
                 'reusable' => true,
             ]
         );
@@ -494,7 +513,6 @@ class Subscription extends AbstractModel
     protected function getSwapOptions(AppsPlans $plan, array $options = []) : array
     {
         //replace the id of the plan with this new one
-
         $payload = [
             'items' => [
                 [
@@ -534,7 +552,7 @@ class Subscription extends AbstractModel
         } else {
             $this->ends_at = Carbon::createFromTimestamp(
                 $subscription->current_period_end
-            );
+            )->toDayDateTimeString();
         }
 
         $this->save();
@@ -550,6 +568,33 @@ class Subscription extends AbstractModel
     public function reactivate() : self
     {
         $subscription = $this->asStripeSubscription();
+
+        if ($subscription->status === 'canceled') {
+            $appPlan = $this->getPlans('apps_plans_id > 0')->getFirst()->appPlan;
+            $companyGroup = $this->companyGroup;
+            $company = $this->company;
+            $branch = $this->branch;
+            $options = [];
+            $customerOptions = [];
+
+            //we need to recreate the subscription
+            $newSubscription = new SubscriptionBuilder(
+                $appPlan,
+                $this->getDI()->get('app'),
+                $companyGroup,
+                $company,
+                $branch
+            );
+            $newSubscriptionModel = $newSubscription
+                ->withMetadata(['appPlan' => $appPlan->getId()])
+                ->skipTrial()
+                ->create($options, $customerOptions);
+
+            $this->softDelete();
+
+            return $newSubscriptionModel;
+        }
+
         $subscription->cancel_at_period_end = false;
         $subscription->save();
 
@@ -635,13 +680,32 @@ class Subscription extends AbstractModel
     }
 
     /**
+     * Based on the subscriber type get the customer entity.
+     *
+     * @return ModelInterface
+     */
+    public function getSubscriberEntity() : ModelInterface
+    {
+        $entity = $this->company;
+        if ($this->subscription_types_id === SubscriptionTypes::GROUP) {
+            $entity = $this->companyGroup;
+        } elseif ($this->subscription_types_id === SubscriptionTypes::BRANCH) {
+            $entity = $this->branch;
+        }
+
+        return $entity;
+    }
+
+    /**
      * Get the subscription as a Stripe subscription object.
      *
      * @return Subscription
      */
     public function asStripeSubscription() : StripeSubscription
     {
-        return $this->companyGroup->getStripeCustomerInfo()->subscriptions->retrieve($this->stripe_id);
+        $entity = $this->getSubscriberEntity();
+
+        return $entity->getStripeCustomerInfo()->subscriptions->retrieve($this->stripe_id);
     }
 
     /**

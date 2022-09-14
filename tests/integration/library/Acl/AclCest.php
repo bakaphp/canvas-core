@@ -3,8 +3,8 @@
 namespace Canvas\Tests\integration\library\Acl;
 
 use Canvas\Acl\Manager as AclManager;
-use Canvas\Models\Users;
 use Canvas\Models\Roles;
+use Canvas\Models\Users;
 use Canvas\Providers\AclProvider;
 use Canvas\Providers\ConfigProvider;
 use Canvas\Providers\DatabaseProvider;
@@ -132,5 +132,20 @@ class AclCest
         $I->assertTrue($userData->removeRole('Default.Admins'));
 
         $I->assertTrue($userData->assignRole('Default.Admins'));
+    }
+
+    public function checkIsAdmin(IntegrationTester $I)
+    {
+        $userData = Users::findFirstByEmail(Data::loginJsonDefaultUser()['email']);
+
+        $I->assertTrue($userData->isAdmin());
+    }
+
+
+    public function checkIsAdminNoThrow(IntegrationTester $I)
+    {
+        $userData = Users::findFirstByEmail(Data::loginJsonDefaultUser()['email']);
+
+        $I->assertTrue($userData->isAdmin(false));
     }
 }

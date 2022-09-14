@@ -130,10 +130,16 @@ trait SocialLoginTrait
         $newUser->displayname = $userObj->generateDefaultDisplayname();
         $newUser->password = $password;
         $newUser->email = $userInfo['email'];
+        $newUser->phone_number = $userInfo['phone_number'] ?? '';
         $newUser->user_active = 1;
         $newUser->roles_id = 1;
         $newUser->created_at = date('Y-m-d H:m:s');
         $newUser->defaultCompanyName = $userInfo['default_company'] ?? $newUser->displayname . ' Company';
+        $newUser->dob = $userInfo['dob'] ?? '';
+        $newUser->address_1 = $userInfo['address_1'] ?? '';
+        $newUser->address_2 = $userInfo['address_2'] ?? '';
+        $newUser->zip_code = $userInfo['zip_code'] ?? '';
+        $newUser->profile_image = $userInfo['profile_image'] ?? '';
 
         try {
             $this->db->begin();

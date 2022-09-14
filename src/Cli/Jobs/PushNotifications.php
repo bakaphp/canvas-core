@@ -4,6 +4,7 @@ namespace Canvas\Cli\Jobs;
 
 use Baka\Contracts\Queue\QueueableJobInterface;
 use Baka\Jobs\Job;
+use Canvas\Enums\Sources;
 use Canvas\Models\Notifications;
 use Canvas\Models\UserLinkedSources;
 use Canvas\Models\Users;
@@ -55,7 +56,7 @@ class PushNotifications extends Job implements QueueableJobInterface
 
         $userDevicesArray = UserLinkedSources::getMobileUserLinkedSources($this->users->getId());
 
-        if (empty($userDevicesArray[2]) && empty($userDevicesArray[3])) {
+        if (empty($userDevicesArray[Sources::IOS]) && empty($userDevicesArray[Sources::ANDROID]) && empty($userDevicesArray[Sources::WEBAPP])) {
             return false;
         }
 
@@ -76,7 +77,7 @@ class PushNotifications extends Job implements QueueableJobInterface
         }
 
         //if IOS add badge
-        if (!empty($userDevicesArray[self::IOS])) {
+        if (!empty($userDevicesArray[Sources::IOS])) {
             $pushBody['ios_badgeType'] = 'SetTo';
             $pushBody['ios_badgeCount'] = Notifications::totalUnRead($this->users);
         }

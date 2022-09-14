@@ -53,6 +53,8 @@ class AppsPlansController extends BaseController
      *
      * @param string $stripeId
      *
+     * @deprecated v1.0.0
+     *
      * @return Response
      */
     public function edit($stripeId) : Response
@@ -69,7 +71,7 @@ class AppsPlansController extends BaseController
             $subscription->name = $appPlan->name;
             $subscription->stripe_plan = $appPlan->stripe_plan;
         } else {
-            $subscription->swap($stripeId);
+            $subscription->swap($appPlan);
         }
 
         //update the subscription with the plan
@@ -84,6 +86,8 @@ class AppsPlansController extends BaseController
      * Cancel a given subscription.
      *
      * @param string $stripeId
+     *
+     * @deprecated v1.0.0
      *
      * @return Response
      */
@@ -113,6 +117,8 @@ class AppsPlansController extends BaseController
      *
      * @param string $stripeId
      *
+     * @deprecated v1.0.0
+     *
      * @return Response
      */
     public function reactivateSubscription($stripeId) : Response
@@ -140,6 +146,8 @@ class AppsPlansController extends BaseController
      * Update payment method.
      *
      * @param int $id
+     *
+     * @deprecated v1.0.0
      *
      * @return Response
      */

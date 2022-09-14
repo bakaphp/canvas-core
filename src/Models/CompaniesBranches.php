@@ -3,12 +3,20 @@ declare(strict_types=1);
 
 namespace Canvas\Models;
 
+use Canvas\Cashier\Billable;
+use Canvas\Contracts\CustomFields\CustomFieldsTrait;
+use Canvas\Contracts\FileSystemModelTrait;
 use Phalcon\Validation;
 use Phalcon\Validation\Validator\PresenceOf;
 
 class CompaniesBranches extends AbstractModel
 {
+    use Billable;
+    use FileSystemModelTrait;
+    use CustomFieldsTrait;
+
     public string $name;
+    public ?string $stripe_id = null;
     public ?string $address = null;
     public ?string $email = null;
     public ?string $zipcode = null;
@@ -26,16 +34,16 @@ class CompaniesBranches extends AbstractModel
 
         $this->belongsTo(
             'companies_id',
-            'Canvas\Models\Companies',
+            Companies::class,
             'id',
             ['alias' => 'company']
         );
 
         $this->belongsTo(
             'users_id',
-            'Canvas\Models\Users',
+            Users::class,
             'id',
-            ['alias' => 'id']
+            ['alias' => 'user', 'reusable' => true]
         );
     }
 
@@ -57,5 +65,17 @@ class CompaniesBranches extends AbstractModel
         );
 
         return $this->validate($validator);
+    }
+
+    /**
+     * Upload Files.
+     *
+     * @todo move this to the baka class
+     *
+     * @return void
+     */
+    public function afterSave()
+    {
+        $this->associateFileSystem();
     }
 }

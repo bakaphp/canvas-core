@@ -61,20 +61,23 @@ class UsersController extends BaseController
         'description',
         'displayname',
         'language',
-        'country_id',
         'timezone',
         'email',
         'password',
         'roles_id',
-        'created_at',
-        'updated_at',
         'default_company',
         'default_company_branch',
         'cell_phone_number',
         'phone_number',
-        'country_id',
         'location',
-        'user_active'
+        'user_active',
+        'dob',
+        'address_1',
+        'address_2',
+        'zip_code',
+        'city_id',
+        'state_id',
+        'country_id',
     ];
 
     /**

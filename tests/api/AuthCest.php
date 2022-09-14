@@ -68,6 +68,34 @@ class AuthCest
         $I->assertTrue(isset($data['user']['uuid']));
     }
 
+
+    public function createMultipleUsers(ApiTester $I)
+    {
+        //iterate 20 times
+        for ($i = 0; $i < 20; $i++) {
+            $email = !Users::findFirstByEmail(Data::$defaultEmail) ? Data::$defaultEmail : $I->faker()->email;
+
+            $I->sendPOST(Data::$usersUrl, [
+                'email' => $email,
+                'password' => Data::$defaultPassword,
+                'verify_password' => Data::$defaultPassword,
+                'firstname' => $I->faker()->firstName,
+                'lastname' => $I->faker()->lastName,
+                'displayname' => $I->faker()->userName,
+                'default_company' => $I->faker()->domainWord,
+            ]);
+
+            $I->seeResponseIsSuccessful();
+            $response = $I->grabResponse();
+
+            $data = json_decode($response, true);
+
+            $I->assertTrue(isset($data['user']['id']));
+            $I->assertTrue(isset($data['user']['email']));
+            $I->assertTrue(isset($data['user']['uuid']));
+        }
+    }
+
     /**
      * Test login user.
      *

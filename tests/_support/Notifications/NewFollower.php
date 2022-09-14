@@ -9,10 +9,27 @@ use Canvas\Notifications\Notification;
 use Canvas\Notifications\PusherNotification;
 use Canvas\Traits\Notifications\CanSendGlobalCounter;
 use Phalcon\Di;
+use Phalcon\Mvc\Model;
 
 class NewFollower extends Notification implements NotificationInterface
 {
     use CanSendGlobalCounter;
+
+    /**
+     * Construct.
+     *
+     * @param bool $groupable
+     */
+    public function __construct(Model $entity, ?bool $groupable = false)
+    {
+        parent::__construct($entity);
+
+        if ($groupable) {
+            $this->setGroupable(true);
+            $this->setSoftCap(0);
+            $this->setHardCap(10);
+        }
+    }
 
     /**
      * Notification msg.

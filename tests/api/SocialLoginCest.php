@@ -2,9 +2,8 @@
 
 namespace Canvas\Tests\api;
 
-use Phalcon\Security\Random;
 use ApiTester;
-use Canvas\Models\AppsPlans;
+use Phalcon\Security\Random;
 
 class SocialLoginCest
 {
@@ -14,10 +13,12 @@ class SocialLoginCest
 
     /**
      * Login a user that is not in the system and does not have a linked sourced from Facebook.
+     *
      * @param ApiTester
+     *
      * @return void
      */
-    public function loginFirstTimeUser(ApiTester $I):void
+    public function loginFirstTimeUser(ApiTester $I) : void
     {
         $userData = $I->apiLogin();
         $random = new Random();
@@ -51,10 +52,12 @@ class SocialLoginCest
 
     /**
      * Login a user that is already in the system and has a linked sourced from Facebook.
+     *
      * @param ApiTester
+     *
      * @return void
      */
-    public function loginLinkedUser(ApiTester $I):void
+    public function loginLinkedUser(ApiTester $I) : void
     {
         $userData = $I->apiLogin();
 
@@ -84,10 +87,12 @@ class SocialLoginCest
 
     /**
      * Login a user that is already in the system and has a linked sourced from Facebook.
+     *
      * @param ApiTester
+     *
      * @return void
      */
-    public function loginWithoutLink(ApiTester $I):void
+    public function loginWithoutLink(ApiTester $I) : void
     {
         $userData = $I->apiLogin();
 
@@ -113,5 +118,19 @@ class SocialLoginCest
         $userCurrentData = json_decode($response, true);
 
         $I->assertTrue($userCurrentData['email'] == $this->testEmail);
+    }
+
+    public function disconnectFromSocialSite(ApiTester $I) : void
+    {
+        $userData = $I->apiLogin();
+
+        $I->haveHttpHeader('Authorization', $userData->token);
+        $I->sendDelete('/v1/users/' . $userData->id . '/social/' . $this->provider);
+
+        $I->seeResponseIsSuccessful();
+        $response = $I->grabResponse();
+        $data = json_decode($response, true);
+
+        $I->assertEquals('Disconnected from Social Site.', $data);
     }
 }

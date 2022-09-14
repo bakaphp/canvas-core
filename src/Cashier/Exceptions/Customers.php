@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Canvas\Cashier\Exceptions;
 
 use function Baka\getShortClassName;
@@ -17,7 +19,9 @@ class Customers extends Exception
      */
     public static function notYetCreated(ModelInterface $model) : self
     {
-        return new static(getShortClassName($model) . ' is not a Stripe customer yet. Use method createAsStripeCustomer first.');
+        return new static(
+            getShortClassName($model) . ' is not a Stripe customer yet. Use method createAsStripeCustomer first.'
+        );
     }
 
     /**
@@ -29,6 +33,8 @@ class Customers extends Exception
      */
     public static function exists(ModelInterface $model) : self
     {
-        return new static(getShortClassName($model) . ' is already a Stripe customer with ID ' . $owner->stripe_id);
+        return new static(
+            getShortClassName($model) . ' is already a Stripe customer with ID ' . $owner->stripe_id
+        );
     }
 }

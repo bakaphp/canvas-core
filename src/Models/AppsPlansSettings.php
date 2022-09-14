@@ -19,7 +19,7 @@ class AppsPlansSettings extends AbstractModel
 
         $this->belongsTo(
             'apps_id',
-            'Canvas\Models\Apps',
+            Apps::class,
             'id',
             ['alias' => 'app']
         );
