@@ -18,6 +18,7 @@ use Canvas\Models\Users;
 use Phalcon\Di;
 use Phalcon\Mvc\Model;
 use Phalcon\Mvc\ModelInterface;
+use Canvas\Enums\NotificationChannels;
 
 class Notification implements NotificationInterface
 {
@@ -341,16 +342,21 @@ class Notification implements NotificationInterface
         }
 
         if ($this->sendNotificationEnabled()) {
-            if ($this->toPusher) {
-                $this->toPusher();
-            }
 
-            if ($this->toMail) {
-                $this->toMailNotification();
-            }
-
-            if ($this->toPushNotification) {
-                $this->toSendPushNotification();
+            if (!$this->type->channel) {
+                if ($this->toPusher) {
+                    $this->toPusher();
+                }
+    
+                if ($this->toMail) {
+                    $this->toMailNotification();
+                }
+    
+                if ($this->toPushNotification) {
+                    $this->toSendPushNotification();
+                }
+            } else {
+                $this->NotificationChannels::getValue($this->type->channel->slug)();
             }
         }
 
