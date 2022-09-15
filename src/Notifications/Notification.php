@@ -20,6 +20,7 @@ use Canvas\Notifications\Users as NotificationsUsers;
 use Phalcon\Di;
 use Phalcon\Mvc\Model;
 use Phalcon\Mvc\ModelInterface;
+use Canvas\Enums\NotificationChannels;
 use Throwable;
 
 class Notification implements NotificationInterface
@@ -422,16 +423,28 @@ class Notification implements NotificationInterface
         }
 
         if ($this->sendNotificationEnabled()) {
-            if ($this->toPusher) {
-                $this->toPusher();
-            }
 
-            if ($this->toMail) {
-                $this->toMailNotification();
-            }
+            if (!$this->type->channel) {
+                if ($this->toPusher) {
+                    $this->toPusher();
+                }
+    
+                if ($this->toMail) {
+                    $this->toMailNotification();
+                }
+    
+                if ($this->toPushNotification) {
+                    $this->toSendPushNotification();
+                }
+            } else {
 
-            if ($this->toPushNotification) {
-                $this->toSendPushNotification();
+                /**
+                 * The slug of the channel related to the notification type is passed
+                 * and the name of the method is returned corresponding to the channel.
+                 * 
+                 * Ex: slug: email   --> method: toMailNotification()
+                 */
+                $this->NotificationChannels::getValue($this->type->channel->slug)();
             }
         }
 

@@ -149,6 +149,7 @@ class UserSettings extends AbstractModel
                 'description' => $notification->description,
                 'notifications_types_id' => $notification->getId(),
                 'is_enabled' => (int) self::isEnabled($app, $user, $notification),
+                'channel' => $notificationType->channel
             ];
             $userNotificationList[$i]['children'] = self::listOfNotifications($app, $user, $notification->getId());
             $i++;
