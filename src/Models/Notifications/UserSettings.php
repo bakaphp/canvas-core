@@ -143,7 +143,8 @@ class UserSettings extends AbstractModel
                 "is_published" => 1,
                 "parent_id" => $parent,
                 "apps_id" => $app->getId(),
-                ]
+            ],
+            "order" => 'weight ASC'
         ];
 
         if ($channelSlug) {
