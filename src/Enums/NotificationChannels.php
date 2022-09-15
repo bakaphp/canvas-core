@@ -10,7 +10,15 @@ class NotificationChannels
     public const TO_PUSH = 'toSendPushNotification';
     public const TO_REALTIME = 'toPusher';
 
-    public static function getValue(string $notificationChannelSlug){
+    /**
+     * Get the value of the enum by slug
+     * 
+     * @param string $notificationChannelSlug
+     * 
+     * @return string
+     */
+    public static function getValue(string $notificationChannelSlug) : string
+    {
 
         switch ($notificationChannelSlug) {
             case 'email':
