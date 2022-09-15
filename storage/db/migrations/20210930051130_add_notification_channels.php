@@ -6,7 +6,7 @@ class AddNotificationChannels extends Phinx\Migration\AbstractMigration
 {
     public function change()
     {
-        $this->table('notifications_channels', [
+        $this->table('notification_channels', [
             'id' => false,
             'primary_key' => ['id'],
             'engine' => 'InnoDB',
