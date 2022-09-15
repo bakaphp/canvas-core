@@ -24,7 +24,7 @@ class NotificationChannelsSeeder extends AbstractSeed
             ]
         ];
 
-        $posts = $this->table('notifications_channels');
+        $posts = $this->table('notification_channels');
         $posts->insert($data)
               ->save();
     }
