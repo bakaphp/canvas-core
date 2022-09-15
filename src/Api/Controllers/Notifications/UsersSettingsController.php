@@ -65,7 +65,7 @@ class UsersSettingsController extends BaseController
      */
     public function listAll(int $userId) : Response
     {
-        $channelName = $this->request->hasQuery('channel') ? $this->getQuery('channel', 'string') : null;
+        $channelName = $this->request->hasQuery('channel') ? $this->request->getQuery('channel', 'string') : null;
         return $this->response(UserSettings::listOfNotifications($this->app, $this->userData, 0, $channelName));
     }
 
