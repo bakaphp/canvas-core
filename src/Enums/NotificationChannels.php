@@ -6,27 +6,27 @@ namespace Canvas\Enums;
 
 class NotificationChannels
 {
-    public const TO_MAIL = 'toMailNotification';
-    public const TO_PUSH = 'toSendPushNotification';
-    public const TO_REALTIME = 'toPusher';
+    public const MAIL = 1;
+    public const PUSH = 2;
+    public const REALTIME = 3;
 
     /**
      * Get the value of the enum by slug
      * 
      * @param string $notificationChannelSlug
      * 
-     * @return string
+     * @return int
      */
-    public static function getValue(string $notificationChannelSlug) : string
+    public static function getValueBySlug(string $notificationChannelSlug) : int
     {
 
         switch ($notificationChannelSlug) {
             case 'email':
-                return self::TO_MAIL;
+                return self::MAIL;
             case 'push':
-                return self::TO_PUSH;
+                return self::PUSH;
             case 'realtime':
-                return self::TO_REALTIME;
+                return self::REALTIME;
             default:
                 break;
         }
