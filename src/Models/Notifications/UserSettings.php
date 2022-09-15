@@ -7,6 +7,8 @@ use Baka\Contracts\Auth\UserInterface;
 use Canvas\Models\AbstractModel;
 use Canvas\Models\Apps;
 use Canvas\Models\NotificationType;
+use Canvas\Models\NotificationChannels;
+use Canvas\Enums\NotificationChannels as NotificationChannelsEnum;
 
 class UserSettings extends AbstractModel
 {
@@ -126,20 +128,32 @@ class UserSettings extends AbstractModel
      * @param Apps $app
      * @param UserInterface $user
      * @param NotificationType $notificationType
+     * @param string $channelSlug
      *
      * @return array
      */
-    public static function listOfNotifications(Apps $app, UserInterface $user, int $parent = 0) : array
+    public static function listOfNotifications(Apps $app, UserInterface $user, int $parent = 0, ?string $channelSlug = null) : array
     {
-        $notificationType = NotificationType::find([
-            'conditions' => 'is_published = 1 AND parent_id = :parent_id: AND apps_id = :apps_id:',
-            'bind' => [
-                'parent_id' => $parent,
-                'apps_id' => $app->getId()
+        $params = [
+            "conditions" => 
+                "is_published = :is_published:
+                AND parent_id = :parent_id:
+                AND apps_id = :apps_id:",
+            "bind" => [
+                "is_published" => 1,
+                "parent_id" => $parent,
+                "apps_id" => $app->getId(),
             ],
-            'order' => 'weight ASC'
-        ]);
+            "order" => 'weight ASC'
+        ];
 
+        if ($channelSlug) {
+            $notificationChannel = NotificationChannelsEnum::getValueBySlug($channelSlug);
+            $params['conditions'] .= " AND notification_channel_id = :notification_channel_id:";
+            $params['bind']['notification_channel_id'] = $notificationChannel->id;
+        }
+        
+        $notificationType = NotificationType::find($params);
         $userNotificationList = [];
         $i = 0;
 

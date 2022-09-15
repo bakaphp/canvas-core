@@ -20,7 +20,7 @@ use Canvas\Notifications\Users as NotificationsUsers;
 use Phalcon\Di;
 use Phalcon\Mvc\Model;
 use Phalcon\Mvc\ModelInterface;
-use Canvas\Enums\NotificationChannels;
+use Canvas\Enums\NotificationChannelsSendFunctions;
 use Throwable;
 
 class Notification implements NotificationInterface
@@ -444,7 +444,7 @@ class Notification implements NotificationInterface
                  * 
                  * Ex: slug: email   --> method: toMailNotification()
                  */
-                $this->NotificationChannels::getValue($this->type->channel->slug)();
+                $this->NotificationChannelsSendFunctions::getValueBySlug($this->type->channel->slug)();
             }
         }
 
