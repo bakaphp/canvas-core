@@ -132,7 +132,7 @@ class UserSettings extends AbstractModel
      *
      * @return array
      */
-    public static function listOfNotifications(Apps $app, UserInterface $user, int $parent = 0, string $channelSlug = null) : array
+    public static function listOfNotifications(Apps $app, UserInterface $user, int $parent = 0, ?string $channelSlug = null) : array
     {
         $params = [
             "conditions" => 
