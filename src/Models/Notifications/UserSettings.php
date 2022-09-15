@@ -148,9 +148,9 @@ class UserSettings extends AbstractModel
         ];
 
         if ($channelSlug) {
-            $notificationChannel = NotificationChannelsEnum::getValueBySlug($channelSlug);
-            $params['conditions'] .= " AND notification_channel_id = :notification_channel_id:";
-            $params['bind']['notification_channel_id'] = $notificationChannel->id;
+            $notificationChannelId = NotificationChannelsEnum::getValueBySlug($channelSlug);
+            $params['conditions'] .= " AND \\notification_channel_id = :notification_channel_id:";
+            $params['bind']['notification_channel_id'] = $notificationChannelId;
         }
         
         $notificationType = NotificationType::find($params);
@@ -163,7 +163,7 @@ class UserSettings extends AbstractModel
                 'description' => $notification->description,
                 'notifications_types_id' => $notification->getId(),
                 'is_enabled' => (int) self::isEnabled($app, $user, $notification),
-                'channel' => $notificationType->channel
+                'channel' => $notification->channel
             ];
             $userNotificationList[$i]['children'] = self::listOfNotifications($app, $user, $notification->getId());
             $i++;
