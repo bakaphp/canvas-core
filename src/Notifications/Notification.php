@@ -437,6 +437,13 @@ class Notification implements NotificationInterface
                     $this->toSendPushNotification();
                 }
             } else {
+
+                /**
+                 * The slug of the channel related to the notification type is passed
+                 * and the name of the method is returned corresponding to the channel.
+                 * 
+                 * Ex: slug: email   --> method: toMailNotification()
+                 */
                 $this->NotificationChannels::getValue($this->type->channel->slug)();
             }
         }
