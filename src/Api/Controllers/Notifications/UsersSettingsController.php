@@ -111,7 +111,7 @@ class UsersSettingsController extends BaseController
             $notificationSettings->is_enabled = (int) !$notificationSettings->is_enabled;
         }
         $notificationSettings->saveOrFail();
-        $this->userData->set(Notification::USER_MUTE_ALL_STATUS, 0);
+        $this->userData->set(Notification::getValueBySlug($notificationType->channel->slug), 0);
 
         return $this->response($this->processOutput($notificationSettings));
     }
@@ -127,7 +127,7 @@ class UsersSettingsController extends BaseController
     {
         $channelName = $this->request->hasQuery('channel') ? $this->request->getQuery('channel', 'string') : null;
         $this->model->muteAll($this->app, $this->userData, $channelName);
-        $this->userData->set(Notification::USER_MUTE_ALL_STATUS, 1);
+        $this->userData->set(Notification::getValueBySlug($channelName), 1);
 
         return $this->response('All Notifications are muted');
     }

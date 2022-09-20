@@ -86,7 +86,9 @@ class UserMapper extends CustomMapper
         $userDto->states = $user->states ?: null;
         $userDto->country_id = (int)$user->country_id;
         $userDto->countries = $user->countries ?: null;
-        $userDto->notification_mute_all_status = (int) $user->get(Notification::USER_MUTE_ALL_STATUS);
+        $userDto->notification_mute_all_mail_status = (int) $user->get(Notification::USER_MUTE_ALL_MAIL_STATUS) ?? 0;
+        $userDto->notification_mute_all_push_status = (int) $user->get(Notification::USER_MUTE_ALL_PUSH_STATUS) ?? 0;
+        $userDto->notification_mute_all_realtime_status = (int) $user->get(Notification::USER_MUTE_ALL_REALTIME_STATUS) ?? 0;
         $userDto->delete_requested = $user->get('delete_requested');
 
         /**
