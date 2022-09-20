@@ -4,11 +4,10 @@ declare(strict_types=1);
 namespace Canvas\Models\Notifications;
 
 use Baka\Contracts\Auth\UserInterface;
+use Canvas\Enums\NotificationChannels as NotificationChannelsEnum;
 use Canvas\Models\AbstractModel;
 use Canvas\Models\Apps;
 use Canvas\Models\NotificationType;
-use Canvas\Models\NotificationChannels;
-use Canvas\Enums\NotificationChannels as NotificationChannelsEnum;
 
 class UserSettings extends AbstractModel
 {
@@ -97,9 +96,23 @@ class UserSettings extends AbstractModel
      *
      * @return bool
      */
-    public function muteAll(Apps $app, UserInterface $user) : bool
+    public function muteAll(Apps $app, UserInterface $user, ?string $channelSlug = null) : bool
     {
-        $notificationTypes = NotificationType::find('is_published = 1 AND apps_id =' . $app->getId());
+        $params = [
+            "conditions" => "is_published = :is_published: AND apps_id = :apps_id:",
+            "bind" => [
+                "is_published" => 1,
+                "apps_id" => $app->getId()
+            ]
+        ];
+
+        if ($channelSlug) {
+            $notificationChannelId = NotificationChannelsEnum::getValueBySlug($channelSlug);
+            $params['conditions'] .= ' AND \\notification_channel_id = :notification_channel_id:';
+            $params['bind']['notification_channel_id'] = $notificationChannelId;
+        }
+
+        $notificationTypes = NotificationType::find($params);
 
         foreach ($notificationTypes as $notificationType) {
             self::updateOrCreate([
@@ -135,24 +148,23 @@ class UserSettings extends AbstractModel
     public static function listOfNotifications(Apps $app, UserInterface $user, int $parent = 0, ?string $channelSlug = null) : array
     {
         $params = [
-            "conditions" => 
-                "is_published = :is_published:
+            'conditions' => 'is_published = :is_published:
                 AND parent_id = :parent_id:
-                AND apps_id = :apps_id:",
-            "bind" => [
-                "is_published" => 1,
-                "parent_id" => $parent,
-                "apps_id" => $app->getId(),
+                AND apps_id = :apps_id:',
+            'bind' => [
+                'is_published' => 1,
+                'parent_id' => $parent,
+                'apps_id' => $app->getId(),
             ],
-            "order" => 'weight ASC'
+            'order' => 'weight ASC'
         ];
 
         if ($channelSlug) {
             $notificationChannelId = NotificationChannelsEnum::getValueBySlug($channelSlug);
-            $params['conditions'] .= " AND \\notification_channel_id = :notification_channel_id:";
+            $params['conditions'] .= ' AND \\notification_channel_id = :notification_channel_id:';
             $params['bind']['notification_channel_id'] = $notificationChannelId;
         }
-        
+
         $notificationType = NotificationType::find($params);
         $userNotificationList = [];
         $i = 0;
