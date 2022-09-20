@@ -125,7 +125,8 @@ class UsersSettingsController extends BaseController
      */
     public function muteAll(int $userId) : Response
     {
-        $this->model->muteAll($this->app, $this->userData);
+        $channelName = $this->request->hasQuery('channel') ? $this->request->getQuery('channel', 'string') : null;
+        $this->model->muteAll($this->app, $this->userData, $channelName);
         $this->userData->set(Notification::USER_MUTE_ALL_STATUS, 1);
 
         return $this->response('All Notifications are muted');
