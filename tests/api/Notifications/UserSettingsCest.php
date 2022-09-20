@@ -33,7 +33,7 @@ class UserSettingsCest
 
         $user = Users::findFirst($userData->id);
 
-        $I->assertFalse((bool)  $user->get(Notification::getValueBySlug($notificationType->channel->slug)));
+        $I->assertFalse((bool)  $user->get(Notification::getValueBySlug($notificationType->getChannel()->slug)));
         $I->assertArrayHasKey('is_enabled', $data);
     }
 
