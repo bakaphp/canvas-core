@@ -30,8 +30,6 @@ class DeletionRequestCest
         $I->seeResponseIsSuccessful();
         $response = $I->grabResponse();
         $data = json_decode($response, true);
-
-        print_R($data);
         $I->assertTrue(
             (bool) Users::findFirstOrFail($userData->id)->get('delete_requested')
         );
