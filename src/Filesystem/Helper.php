@@ -81,9 +81,16 @@ class Helper extends FilesystemHelper
             $image = new Gd($file->getTempName());
             $fileSystem->set('width', $image->getWidth());
             $fileSystem->set('height', $image->getHeight());
+
+            if ($image->getHeight() === $image->getWidth()) {
+                $orientation = 'square';
+            } else {
+                $orientation = $image->getHeight() > $image->getWidth() ? 'portrait' : 'landscape';
+            }
+
             $fileSystem->set(
                 'orientation',
-                $image->getHeight() > $image->getWidth() ? 'portrait' : 'landscape'
+                $orientation
             );
         }
     }
