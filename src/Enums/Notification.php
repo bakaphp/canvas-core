@@ -19,7 +19,7 @@ class Notification
      * 
      * @return string
      */
-    public static function getValueBySlug(string $slug) : string
+    public static function getValueBySlug(?string $slug = null) : string
     {
         switch ($slug) {
             case 'email':
