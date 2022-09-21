@@ -25,9 +25,6 @@ class UserSettingsCest
 
         $notificationType = NotificationType::findFirst();
 
-        print_r($notificationType->channel->toArray());
-        die();
-
         $I->sendPUT('/v1/users/' . $userData->id . '/notifications/' . $notificationType->getId(), []);
 
         $I->seeResponseIsSuccessful();
@@ -52,7 +49,7 @@ class UserSettingsCest
         $userData = $I->apiLogin();
 
         $I->haveHttpHeader('Authorization', $userData->token);
-        $I->sendGet("/v1/users/{$userData->id}/notifications");
+        $I->sendGet("/v1/users/{$userData->id}/notifications?channel=email");
 
         $I->seeResponseIsSuccessful();
         $response = $I->grabResponse();

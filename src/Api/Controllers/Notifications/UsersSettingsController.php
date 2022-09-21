@@ -100,6 +100,10 @@ class UsersSettingsController extends BaseController
     {
         $notificationType = NotificationType::findFirstOrFail($notificationTypeId);
 
+        print_r($notificationType->toArray());
+        print_r($notificationType->channel->toArray());
+        die();
+
         if (!$notificationSettings = UserSettings::getByUserAndNotificationType($this->app, $this->userData, $notificationType)) {
             $notificationSettings = new UserSettings();
             $notificationSettings->users_id = $this->userData->getId();
@@ -111,7 +115,7 @@ class UsersSettingsController extends BaseController
             $notificationSettings->is_enabled = (int) !$notificationSettings->is_enabled;
         }
         $notificationSettings->saveOrFail();
-        $this->userData->set(Notification::getValueBySlug($notificationType->getChannel()->slug), 0);
+        $this->userData->set(Notification::getValueBySlug($notificationType->channel->slug), 0);
 
         return $this->response($this->processOutput($notificationSettings));
     }
