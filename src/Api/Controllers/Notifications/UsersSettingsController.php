@@ -101,7 +101,7 @@ class UsersSettingsController extends BaseController
         $notificationType = NotificationType::findFirstOrFail($notificationTypeId);
 
         print_r($notificationType->toArray());
-        print_r($notificationType->channel->toArray());
+        print_r(get_class($notificationType->channel));
         die();
 
         if (!$notificationSettings = UserSettings::getByUserAndNotificationType($this->app, $this->userData, $notificationType)) {
