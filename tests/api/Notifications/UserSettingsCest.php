@@ -25,6 +25,9 @@ class UserSettingsCest
 
         $notificationType = NotificationType::findFirst();
 
+        print_r($notificationType->toArray());
+        die();
+
         $I->sendPUT('/v1/users/' . $userData->id . '/notifications/' . $notificationType->getId(), []);
 
         $I->seeResponseIsSuccessful();
