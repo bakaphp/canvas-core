@@ -106,7 +106,7 @@ class UserSettings extends AbstractModel
             ]
         ];
 
-        if ($channelSlug) {
+        if (!is_null($channelSlug)) {
             $notificationChannelId = NotificationChannelsEnum::getValueBySlug($channelSlug);
             $params['conditions'] .= ' AND \\notification_channel_id = :notification_channel_id:';
             $params['bind']['notification_channel_id'] = $notificationChannelId;
@@ -159,7 +159,7 @@ class UserSettings extends AbstractModel
             'order' => 'weight ASC'
         ];
 
-        if ($channelSlug) {
+        if (!is_null($channelSlug)) {
             $notificationChannelId = NotificationChannelsEnum::getValueBySlug($channelSlug);
             $params['conditions'] .= ' AND \\notification_channel_id = :notification_channel_id:';
             $params['bind']['notification_channel_id'] = $notificationChannelId;
