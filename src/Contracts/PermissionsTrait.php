@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Canvas\Contracts;
 
+use Baka\Http\Exception\ForbiddenException;
 use Baka\Http\Exception\InternalServerErrorException;
-use Baka\Http\Exception\UnauthorizedException;
 use Baka\Support\Str;
 use Canvas\Models\Apps;
 use Canvas\Models\Companies;
@@ -191,7 +191,7 @@ trait PermissionsTrait
         $canExecute = $this->getDI()->get('acl')->isAllowed($role->roles->name, $resource, $action);
 
         if ($throwException && !$canExecute) {
-            throw new UnauthorizedException("ACL - Users doesn't have permission to run this action `{$action}`");
+            throw new ForbiddenException("ACL - Users doesn't have permission to run this action `{$action}`");
         }
 
         return (bool) $canExecute;
@@ -208,7 +208,7 @@ trait PermissionsTrait
     {
         if (!$this->hasRole("{$this->getDI()->get('app')->name}.Admins")) {
             if ($throw) {
-                throw new UnauthorizedException('Current user does not have Admins role');
+                throw new ForbiddenException('Current user does not have Admins role');
             }
 
             return false;
