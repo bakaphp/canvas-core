@@ -33,7 +33,7 @@ class UserSettingsCest
 
         $user = Users::findFirst($userData->id);
 
-        $I->assertFalse((bool)  $user->get(Notification::getValueBySlug($notificationType->getChannel()->slug)));
+        $I->assertFalse((bool)  $user->get(Notification::USER_MUTE_ALL_STATUS));
         $I->assertArrayHasKey('is_enabled', $data);
     }
 
@@ -49,7 +49,7 @@ class UserSettingsCest
         $userData = $I->apiLogin();
 
         $I->haveHttpHeader('Authorization', $userData->token);
-        $I->sendGet("/v1/users/{$userData->id}/notifications?channel=email");
+        $I->sendGet("/v1/users/{$userData->id}/notifications");
 
         $I->seeResponseIsSuccessful();
         $response = $I->grabResponse();
@@ -95,7 +95,7 @@ class UserSettingsCest
 
         $I->haveHttpHeader('Authorization', $userData->token);
 
-        $I->sendDelete('/v1/users/' . $userData->id . '/notifications?channel=email');
+        $I->sendDelete('/v1/users/' . $userData->id . '/notifications');
 
         $I->seeResponseIsSuccessful();
         $response = $I->grabResponse();
@@ -103,7 +103,7 @@ class UserSettingsCest
 
         $user = Users::findFirst($userData->id);
 
-        $I->assertTrue((bool)  $user->get(Notification::getValueBySlug('email')));
+        $I->assertTrue((bool)  $user->get(Notification::USER_MUTE_ALL_STATUS));
         $I->assertEquals('All Notifications are muted', $data);
     }
 }
