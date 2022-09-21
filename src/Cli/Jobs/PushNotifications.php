@@ -76,7 +76,7 @@ class PushNotifications extends Job implements QueueableJobInterface
             $pushBody['data'] = $this->params;
         }
 
-        $disableIosNotificationBadge = (bool) $this->user->get('disable_ios_badge_count');
+        $disableIosNotificationBadge = (bool) $this->users->get('disable_ios_badge_count');
         //if IOS add badge
         if (!empty($userDevicesArray[Sources::IOS]) && !$disableIosNotificationBadge) {
             $pushBody['ios_badgeType'] = 'SetTo';
