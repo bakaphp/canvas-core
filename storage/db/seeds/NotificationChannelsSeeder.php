@@ -9,17 +9,17 @@ class NotificationChannelsSeeder extends AbstractSeed
         $data = [
             [
                 'name' => 'Email',
-                'name' => 'email',
+                'slug' => 'email',
                 'created_at' => date('Y-m-d H:m:s'),
             ],
             [
                 'name' => 'Push',
-                'name' => 'push',
+                'slug' => 'push',
                 'created_at' => date('Y-m-d H:m:s'),
             ],
             [
                 'name' => 'Realtime',
-                'name' => 'realtime',
+                'slug' => 'realtime',
                 'created_at' => date('Y-m-d H:m:s'),
             ]
         ];

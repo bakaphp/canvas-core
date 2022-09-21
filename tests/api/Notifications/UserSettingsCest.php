@@ -33,7 +33,7 @@ class UserSettingsCest
 
         $user = Users::findFirst($userData->id);
 
-        $I->assertFalse((bool)  $user->get(Notification::getValueBySlug(null)));
+        $I->assertFalse((bool)  $user->get(Notification::getValueBySlug()));
         $I->assertArrayHasKey('is_enabled', $data);
     }
 
@@ -103,7 +103,7 @@ class UserSettingsCest
 
         $user = Users::findFirst($userData->id);
 
-        $I->assertTrue((bool)  $user->get(Notification::getValueBySlug(null)));
+        $I->assertTrue((bool)  $user->get(Notification::getValueBySlug()));
         $I->assertEquals('All Notifications are muted', $data);
     }
 }

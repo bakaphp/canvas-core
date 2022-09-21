@@ -11,7 +11,6 @@ class NotificationsSeeder extends AbstractSeed
                 'name' => 'Apps',
                 'apps_id' => 1,
                 'system_modules_id' => 1,
-                'notification_channel_id' => 1,
                 'key' => 'Canvas\\Notifications\\Apps',
                 'description' => 'Apps Notification',
                 'created_at' => date('Y-m-d H:m:s')
@@ -20,7 +19,6 @@ class NotificationsSeeder extends AbstractSeed
                 'name' => 'System',
                 'apps_id' => 1,
                 'system_modules_id' => 1,
-                'notification_channel_id' => 1,
                 'key' => 'Canvas\\Notifications\\System',
                 'description' => 'System Notification',
                 'created_at' => date('Y-m-d H:m:s')
@@ -29,7 +27,6 @@ class NotificationsSeeder extends AbstractSeed
                 'name' => 'Users',
                 'apps_id' => 1,
                 'system_modules_id' => 1,
-                'notification_channel_id' => 1,
                 'key' => 'Canvas\\Notifications\\Users',
                 'description' => 'Users Notification',
                 'created_at' => date('Y-m-d H:m:s')
@@ -38,7 +35,6 @@ class NotificationsSeeder extends AbstractSeed
                 'name' => 'Signup',
                 'apps_id' => 1,
                 'system_modules_id' => 1,
-                'notification_channel_id' => 1,
                 'key' => 'Canvas\\Notifications\\Signup',
                 'description' => 'Signup Notification',
                 'created_at' => date('Y-m-d H:m:s')
@@ -47,7 +43,6 @@ class NotificationsSeeder extends AbstractSeed
                 'name' => 'Subscription',
                 'apps_id' => 1,
                 'system_modules_id' => 1,
-                'notification_channel_id' => 1,
                 'key' => 'Canvas\\Notifications\\Subscription',
                 'description' => 'Subscription Notification',
                 'created_at' => date('Y-m-d H:m:s')
@@ -56,7 +51,6 @@ class NotificationsSeeder extends AbstractSeed
                 'name' => 'Invitation',
                 'apps_id' => 1,
                 'system_modules_id' => 1,
-                'notification_channel_id' => 1,
                 'key' => 'Canvas\\Notifications\\Invitation',
                 'description' => 'Invitation Notification',
                 'created_at' => date('Y-m-d H:m:s')

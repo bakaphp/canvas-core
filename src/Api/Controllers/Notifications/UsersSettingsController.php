@@ -111,8 +111,7 @@ class UsersSettingsController extends BaseController
             $notificationSettings->is_enabled = (int) !$notificationSettings->is_enabled;
         }
         $notificationSettings->saveOrFail();
-        $notificationChannelSlug = $notificationType->channel ? $notificationType->channel->slug : null;
-        $this->userData->set(Notification::getValueBySlug($notificationChannelSlug), 0);
+        $this->userData->set(Notification::getValueBySlug($notificationType->channel->slug), 0);
 
         return $this->response($this->processOutput($notificationSettings));
     }
