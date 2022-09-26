@@ -10,6 +10,7 @@ use function Baka\isJson;
 use Baka\Mail\Message;
 use Baka\Queue\Queue;
 use Canvas\Contracts\EventManagerAwareTrait;
+use Canvas\Enums\NotificationChannelsSendFunctions;
 use Canvas\Models\AbstractModel;
 use Canvas\Models\Notifications;
 use Canvas\Models\Notifications\UserEntityImportance;
@@ -20,7 +21,6 @@ use Canvas\Notifications\Users as NotificationsUsers;
 use Phalcon\Di;
 use Phalcon\Mvc\Model;
 use Phalcon\Mvc\ModelInterface;
-use Canvas\Enums\NotificationChannelsSendFunctions;
 use Throwable;
 
 class Notification implements NotificationInterface
@@ -423,28 +423,27 @@ class Notification implements NotificationInterface
         }
 
         if ($this->sendNotificationEnabled()) {
-
             if (!$this->type->channel) {
                 if ($this->toPusher) {
                     $this->toPusher();
                 }
-    
+
                 if ($this->toMail) {
                     $this->toMailNotification();
                 }
-    
+
                 if ($this->toPushNotification) {
                     $this->toSendPushNotification();
                 }
             } else {
-
                 /**
                  * The slug of the channel related to the notification type is passed
                  * and the name of the method is returned corresponding to the channel.
-                 * 
+                 *
                  * Ex: slug: email   --> method: toMailNotification()
                  */
-                $this->NotificationChannelsSendFunctions::getValueBySlug($this->type->channel->slug)();
+                $notificationSender = NotificationChannelsSendFunctions::getValueBySlug($this->type->channel->slug);
+                $this->$notificationSender();
             }
         }
 
@@ -480,7 +479,7 @@ class Notification implements NotificationInterface
             if ($toUserSettlings
                     && is_object($toUserSettlings->importance)
                     && $this->currentNotification instanceof Notifications
-                ) {
+            ) {
                 $sendNotificationByImportance = $toUserSettlings->importance->validateExpression($this->currentNotification);
             }
 
@@ -687,7 +686,7 @@ class Notification implements NotificationInterface
     {
         if (is_null($this->currentNotification->content_group)
             || !isJson($this->currentNotification->content_group)
-            ) {
+        ) {
             return;
         }
 
