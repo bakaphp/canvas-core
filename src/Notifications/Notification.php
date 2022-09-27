@@ -20,7 +20,6 @@ use Canvas\Notifications\Users as NotificationsUsers;
 use Phalcon\Di;
 use Phalcon\Mvc\Model;
 use Phalcon\Mvc\ModelInterface;
-use Canvas\Enums\NotificationChannelsSendFunctions;
 use Throwable;
 
 class Notification implements NotificationInterface
@@ -423,25 +422,23 @@ class Notification implements NotificationInterface
         }
 
         if ($this->sendNotificationEnabled()) {
-
             if (!$this->type->channel) {
                 if ($this->toPusher) {
                     $this->toPusher();
                 }
-    
+
                 if ($this->toMail) {
                     $this->toMailNotification();
                 }
-    
+
                 if ($this->toPushNotification) {
                     $this->toSendPushNotification();
                 }
             } else {
-
                 /**
                  * The slug of the channel related to the notification type is passed
                  * and the name of the method is returned corresponding to the channel.
-                 * 
+                 *
                  * Ex: slug: email   --> method: toMailNotification()
                  */
                 $this->NotificationChannelsSendFunctions::getValueBySlug($this->type->channel->slug)();
@@ -480,7 +477,7 @@ class Notification implements NotificationInterface
             if ($toUserSettlings
                     && is_object($toUserSettlings->importance)
                     && $this->currentNotification instanceof Notifications
-                ) {
+            ) {
                 $sendNotificationByImportance = $toUserSettlings->importance->validateExpression($this->currentNotification);
             }
 
@@ -545,21 +542,35 @@ class Notification implements NotificationInterface
 
         //save to DB
         if (is_null($isGroupable)) {
-            $this->currentNotification = new Notifications();
-            $this->currentNotification->from_users_id = $this->fromUser->getId();
-            $this->currentNotification->users_id = $this->toUser->getId();
-            $this->currentNotification->companies_id = $this->fromUser->currentCompanyId();
-            try {
-                $this->currentNotification->companies_branches_id = $this->fromUser->currentBranchId();
-            } catch (Throwable $e) {
-                $this->currentNotification->companies_branches_id = 0;
-            }
-            $this->currentNotification->apps_id = $app->getId();
-            $this->currentNotification->system_modules_id = $this->type->system_modules_id;
-            $this->currentNotification->notification_type_id = $this->type->getId();
-            $this->currentNotification->entity_id = $this->entity->getId();
-            $this->currentNotification->content = $this->message();
-            $this->currentNotification->read = 0;
+            $this->currentNotification = Notifications::updateOrCreate([
+                'conditions' => 'users_id = :users_id: 
+                                AND companies_id = :companies_id:
+                                AND apps_id = :apps_id:
+                                AND system_modules_id = :system_modules_id:
+                                AND notification_type_id = :notification_type_id:
+                                AND entity_id = :entity_id:
+                                AND is_deleted = 0',
+                'bind' => [
+                    'users_id' => $this->toUser->getId(),
+                    'companies_id' => $this->fromUser->currentCompanyId(),
+                    'apps_id' => $app->getId(),
+                    'system_modules_id' => $this->type->system_modules_id,
+                    'notification_type_id' => $this->type->getId(),
+                    'entity_id' => $this->entity->getId(),
+                ]
+            ], [
+                'from_users_id' =>  $this->fromUser->getId(),
+                'users_id' => $this->toUser->getId(),
+                'companies_id' => $this->fromUser->currentCompanyId(),
+                'companies_branches_id' => $this->fromUser->currentBranchId() ?? 0,
+                'apps_id' => $app->getId(),
+                'system_modules_id' => $this->type->system_modules_id,
+                'notification_type_id' => $this->type->getId(),
+                'entity_id' => $this->entity->getId(),
+                'content' => $this->message(),
+                'read' => 0,
+                'created_at' => date('Y-m-d H:i:s')
+            ]);
         } else {
             $this->currentNotification = Notifications::findFirstById($isGroupable);
 
@@ -687,7 +698,7 @@ class Notification implements NotificationInterface
     {
         if (is_null($this->currentNotification->content_group)
             || !isJson($this->currentNotification->content_group)
-            ) {
+        ) {
             return;
         }
 
