@@ -541,6 +541,12 @@ class Notification implements NotificationInterface
         $app = Di::getDefault()->get('app');
         $isGroupable = $this->enableGroupable ? $this->isGroupable() : null;
 
+        try {
+            $fromUserCurrentBranchId = $this->fromUser->currentBranchId();
+        } catch (Throwable $e) {
+            $fromUserCurrentBranchId  = 0;
+        }
+
         //save to DB
         if (is_null($isGroupable)) {
             $this->currentNotification = Notifications::updateOrCreate([
@@ -563,7 +569,7 @@ class Notification implements NotificationInterface
                 'from_users_id' =>  $this->fromUser->getId(),
                 'users_id' => $this->toUser->getId(),
                 'companies_id' => $this->fromUser->currentCompanyId(),
-                'companies_branches_id' => $this->fromUser->currentBranchId() ?? 0,
+                'companies_branches_id' => $fromUserCurrentBranchId,
                 'apps_id' => $app->getId(),
                 'system_modules_id' => $this->type->system_modules_id,
                 'notification_type_id' => $this->type->getId(),
