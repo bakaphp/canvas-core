@@ -441,7 +441,8 @@ class Notification implements NotificationInterface
                  *
                  * Ex: slug: email   --> method: toMailNotification()
                  */
-                $this->NotificationChannelsSendFunctions::getValueBySlug($this->type->channel->slug)();
+                $notificationSender = NotificationChannelsSendFunctions::getValueBySlug($this->type->channel->slug);
+                $this->$notificationSender();
             }
         }
 
