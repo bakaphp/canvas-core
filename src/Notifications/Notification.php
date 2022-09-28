@@ -576,7 +576,7 @@ class Notification implements NotificationInterface
                 'entity_id' => $this->entity->getId(),
                 'content' => $this->message(),
                 'read' => 0,
-                'created_at' => date('Y-m-d H:i:s')
+                // 'created_at' => date('Y-m-d H:i:s')
             ]);
         } else {
             $this->currentNotification = Notifications::findFirstById($isGroupable);

@@ -97,9 +97,6 @@ class NotificationsCest
 
         $notifications = Notifications::find();
 
-        print_r($notifications->toArray());
-        die();
-
         Di::getDefault()->set('userData', $user);
 
         $I->assertJson($notifications->content_group, 'is a valid json');
