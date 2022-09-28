@@ -580,7 +580,7 @@ class Notification implements NotificationInterface
             //     'is_deleted' => 0
             // ]);
 
-            $this->currentNotification = Notifications::findFirst([
+            $notification = Notifications::findFirst([
                 'conditions' => 'users_id = :users_id: 
                                     AND companies_id = :companies_id:
                                     AND apps_id = :apps_id:
@@ -598,7 +598,7 @@ class Notification implements NotificationInterface
                 ]
             ]);
 
-            if (!$this->currentNotification) {
+            if (!$notification) {
                 $this->currentNotification = new Notifications();
                 $this->currentNotification->from_users_id = $this->fromUser->getId();
                 $this->currentNotification->users_id = $this->toUser->getId();
