@@ -73,6 +73,9 @@ class NotificationsCest
 
         Di::getDefault()->set('userData', $user);
 
+        print_r($notifications->toArray());
+        die();
+
         $I->assertJson($notifications->content_group, 'is a valid json');
         $groupUsers = json_decode($notifications->content_group);
 
