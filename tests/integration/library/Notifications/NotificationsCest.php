@@ -95,10 +95,10 @@ class NotificationsCest
             $user->notify(new NewComment($company, true));
         }
 
-        $notifications = Notifications::findFirst([
-            'conditions' => 'content_group IS NOT NULL',
-            'order' => 'id DESC'
-        ]);
+        $notifications = Notifications::findFirst();
+
+        print_r($notifications->toArray());
+        die();
 
         Di::getDefault()->set('userData', $user);
 
