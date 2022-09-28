@@ -95,7 +95,7 @@ class NotificationsCest
             $user->notify(new NewComment($company, true));
         }
 
-        $notifications = Notifications::findFirst();
+        $notifications = Notifications::find();
 
         print_r($notifications->toArray());
         die();
