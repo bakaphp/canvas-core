@@ -548,7 +548,7 @@ class Notification implements NotificationInterface
         }
 
         //save to DB
-        if (is_null($isGroupable)) {
+        if (!$isGroupable) {
             $this->currentNotification = Notifications::updateOrCreate([
                 'conditions' => 'users_id = :users_id:
                                     AND companies_id = :companies_id:
@@ -576,7 +576,7 @@ class Notification implements NotificationInterface
                 'entity_id' => $this->entity->getId(),
                 'content' => $this->message(),
                 'read' => 0,
-                // 'created_at' => date('Y-m-d H:i:s')
+                'created_at' => date('Y-m-d H:i:s')
             ]);
         } else {
             $this->currentNotification = Notifications::findFirstById($isGroupable);

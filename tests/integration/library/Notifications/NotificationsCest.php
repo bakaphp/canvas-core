@@ -95,7 +95,9 @@ class NotificationsCest
             $user->notify(new NewComment($company, true));
         }
 
-        $notifications = Notifications::find();
+        $notifications = Notifications::findFirst([
+            'order' => 'id DESC'
+        ]);
 
         Di::getDefault()->set('userData', $user);
 
