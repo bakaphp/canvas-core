@@ -96,6 +96,7 @@ class NotificationsCest
         }
 
         $notifications = Notifications::findFirst([
+            'conditions' => 'content_group IS NOT NULL',
             'order' => 'id DESC'
         ]);
 
