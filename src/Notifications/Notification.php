@@ -578,6 +578,9 @@ class Notification implements NotificationInterface
                 'read' => 0,
                 'created_at' => date('Y-m-d H:i:s')
             ]);
+
+            print_r($this->currentNotification->toArray());
+            die();
         } else {
             $this->currentNotification = Notifications::findFirstById($isGroupable);
 
