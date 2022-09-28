@@ -549,7 +549,7 @@ class Notification implements NotificationInterface
 
         //save to DB
         if (is_null($isGroupable)) {
-            $this->currentNotification = Notifications::updateOrCreate([
+            $this->currentNotification = Notifications::findFirstOrCreate([
                 'conditions' => 'users_id = :users_id: 
                                     AND companies_id = :companies_id:
                                     AND apps_id = :apps_id:
