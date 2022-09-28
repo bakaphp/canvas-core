@@ -576,11 +576,8 @@ class Notification implements NotificationInterface
                 'entity_id' => $this->entity->getId(),
                 'content' => $this->message(),
                 'read' => 0,
-                'created_at' => date('Y-m-d H:i:s')
+                // 'created_at' => date('Y-m-d H:i:s')
             ]);
-
-            print_r($this->currentNotification->toArray());
-            die();
         } else {
             $this->currentNotification = Notifications::findFirstById($isGroupable);
 
@@ -593,9 +590,9 @@ class Notification implements NotificationInterface
             if ($this->overWriteMessage) {
                 $this->currentNotification->content = $this->message();
             }
-        }
 
-        $this->currentNotification->saveOrFail();
+            $this->currentNotification->saveOrFail();
+        }
 
         return true;
     }
