@@ -580,7 +580,7 @@ class Notification implements NotificationInterface
             //     'is_deleted' => 0
             // ]);
 
-            $this->currentNotification = Notifications::findFirstOrFail([
+            $this->currentNotification = Notifications::findFirst([
                 'conditions' => 'users_id = :users_id: 
                                     AND companies_id = :companies_id:
                                     AND apps_id = :apps_id:
