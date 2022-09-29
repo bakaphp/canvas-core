@@ -549,35 +549,40 @@ class Notification implements NotificationInterface
 
         //save to DB
         if (!$isGroupable) {
-            $this->currentNotification = Notifications::updateOrCreate([
-                'conditions' => 'users_id = :users_id:
-                                    AND companies_id = :companies_id:
-                                    AND apps_id = :apps_id:
-                                    AND system_modules_id = :system_modules_id:
-                                    AND notification_type_id = :notification_type_id:
-                                    AND entity_id = :entity_id:
-                                    AND is_deleted = 0',
-                'bind' => [
+            try {
+                $this->currentNotification = Notifications::updateOrCreate([
+                    'conditions' => 'users_id = :users_id:
+                                        AND companies_id = :companies_id:
+                                        AND apps_id = :apps_id:
+                                        AND system_modules_id = :system_modules_id:
+                                        AND notification_type_id = :notification_type_id:
+                                        AND entity_id = :entity_id:
+                                        AND is_deleted = 0',
+                    'bind' => [
+                        'users_id' => $this->toUser->getId(),
+                        'companies_id' => $this->fromUser->currentCompanyId(),
+                        'apps_id' => $app->getId(),
+                        'system_modules_id' => $this->type->system_modules_id,
+                        'notification_type_id' => $this->type->getId(),
+                        'entity_id' => $this->entity->getId(),
+                    ]
+                ], [
+                    'from_users_id' => $this->fromUser->getId(),
                     'users_id' => $this->toUser->getId(),
                     'companies_id' => $this->fromUser->currentCompanyId(),
+                    'companies_branches_id' => $fromUserCurrentBranchId,
                     'apps_id' => $app->getId(),
                     'system_modules_id' => $this->type->system_modules_id,
                     'notification_type_id' => $this->type->getId(),
                     'entity_id' => $this->entity->getId(),
-                ]
-            ], [
-                'from_users_id' => $this->fromUser->getId(),
-                'users_id' => $this->toUser->getId(),
-                'companies_id' => $this->fromUser->currentCompanyId(),
-                'companies_branches_id' => $fromUserCurrentBranchId,
-                'apps_id' => $app->getId(),
-                'system_modules_id' => $this->type->system_modules_id,
-                'notification_type_id' => $this->type->getId(),
-                'entity_id' => $this->entity->getId(),
-                'content' => $this->message(),
-                'read' => 0,
-                'created_at' => date('Y-m-d H:i:s')
-            ]);
+                    'content' => $this->message(),
+                    'read' => 0,
+                    'created_at' => date('Y-m-d H:i:s')
+                ]);
+            } catch (Throwable $th) {
+                throw new Throwable($th->getMessage());
+            }
+           
         } else {
             $this->currentNotification = Notifications::findFirstById($isGroupable);
 
