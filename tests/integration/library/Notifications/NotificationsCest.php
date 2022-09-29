@@ -68,7 +68,8 @@ class NotificationsCest
         }
 
         $notifications = Notifications::findFirst([
-            'order' => 'id DESC'
+            'conditions' => 'is_deleted = 0',
+            'order' => 'updated_at desc'
         ]);
 
         Di::getDefault()->set('userData', $user);
@@ -96,7 +97,8 @@ class NotificationsCest
         }
 
         $notifications = Notifications::findFirst([
-            'order' => 'id DESC'
+            'conditions' => 'is_deleted = 0',
+            'order' => 'updated_at desc'
         ]);
 
         Di::getDefault()->set('userData', $user);

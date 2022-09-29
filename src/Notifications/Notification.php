@@ -549,40 +549,39 @@ class Notification implements NotificationInterface
 
         //save to DB
         if (!$isGroupable) {
-            try {
-                $this->currentNotification = Notifications::updateOrCreate([
-                    'conditions' => 'users_id = :users_id:
-                                        AND companies_id = :companies_id:
-                                        AND apps_id = :apps_id:
-                                        AND system_modules_id = :system_modules_id:
-                                        AND notification_type_id = :notification_type_id:
-                                        AND entity_id = :entity_id:
-                                        AND is_deleted = 0',
-                    'bind' => [
-                        'users_id' => $this->toUser->getId(),
-                        'companies_id' => $this->fromUser->currentCompanyId(),
-                        'apps_id' => $app->getId(),
-                        'system_modules_id' => $this->type->system_modules_id,
-                        'notification_type_id' => $this->type->getId(),
-                        'entity_id' => $this->entity->getId(),
-                    ]
-                ], [
-                    'from_users_id' => $this->fromUser->getId(),
+            $this->currentNotification = Notifications::updateOrCreate([
+                'conditions' => 'users_id = :users_id:
+                                    AND from_users_id = :from_users_id:
+                                    AND companies_id = :companies_id:
+                                    AND companies_branches_id = :companies_branches_id:
+                                    AND apps_id = :apps_id:
+                                    AND system_modules_id = :system_modules_id:
+                                    AND \notification_type_id = :notification_type_id:
+                                    AND entity_id = :entity_id:
+                                    AND is_deleted = 0',
+                'bind' => [
                     'users_id' => $this->toUser->getId(),
+                    'from_users_id' => $this->fromUser->getId(),
                     'companies_id' => $this->fromUser->currentCompanyId(),
                     'companies_branches_id' => $fromUserCurrentBranchId,
                     'apps_id' => $app->getId(),
                     'system_modules_id' => $this->type->system_modules_id,
                     'notification_type_id' => $this->type->getId(),
                     'entity_id' => $this->entity->getId(),
-                    'content' => $this->message(),
-                    'read' => 0,
-                    'created_at' => date('Y-m-d H:i:s')
-                ]);
-            } catch (Throwable $th) {
-                throw new Throwable($th->getMessage());
-            }
-           
+                ]
+            ], [
+                'from_users_id' => $this->fromUser->getId(),
+                'users_id' => $this->toUser->getId(),
+                'companies_id' => $this->fromUser->currentCompanyId(),
+                'companies_branches_id' => $fromUserCurrentBranchId,
+                'apps_id' => $app->getId(),
+                'system_modules_id' => $this->type->system_modules_id,
+                'notification_type_id' => $this->type->getId(),
+                'entity_id' => $this->entity->getId(),
+                'content' => $this->message(),
+                'read' => 0,
+                'created_at' => date('Y-m-d H:i:s')
+            ]);
         } else {
             $this->currentNotification = Notifications::findFirstById($isGroupable);
 
@@ -740,7 +739,7 @@ class Notification implements NotificationInterface
             $query .= " AND entity_id = {$this->entity->getId()}";
         }
 
-        $query .= " AND users_id = {$this->toUser->getId()}
+        $query .= " AND is_deleted = 0 AND users_id = {$this->toUser->getId()}
         AND TIMESTAMPDIFF(MINUTE, updated_at, NOW()) BETWEEN {$this->softCap} AND {$this->hardCap}
         ORDER BY updated_at DESC limit 1";
 
