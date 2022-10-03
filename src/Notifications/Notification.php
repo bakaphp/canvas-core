@@ -99,6 +99,8 @@ class Notification implements NotificationInterface
      */
     protected bool $groupByEntity = false;
 
+    protected bool $overWriteNotificationByType = true;
+
     /**
      *
      * @var Baka\Mail\Manager
@@ -550,8 +552,9 @@ class Notification implements NotificationInterface
 
         //save to DB
         if (!$isGroupable) {
-            $this->currentNotification = Notifications::updateOrCreate([
-                'conditions' => 'users_id = :users_id:
+            if ($this->overWriteNotificationByType) {
+                $this->currentNotification = Notifications::updateOrCreate([
+                    'conditions' => 'users_id = :users_id:
                                     AND from_users_id = :from_users_id:
                                     AND companies_id = :companies_id:
                                     AND companies_branches_id = :companies_branches_id:
@@ -560,29 +563,42 @@ class Notification implements NotificationInterface
                                     AND \notification_type_id = :notification_type_id:
                                     AND entity_id = :entity_id:
                                     AND is_deleted = 0',
-                'bind' => [
-                    'users_id' => $this->toUser->getId(),
+                    'bind' => [
+                        'users_id' => $this->toUser->getId(),
+                        'from_users_id' => $this->fromUser->getId(),
+                        'companies_id' => $this->fromUser->currentCompanyId(),
+                        'companies_branches_id' => $fromUserCurrentBranchId,
+                        'apps_id' => $app->getId(),
+                        'system_modules_id' => $this->type->system_modules_id,
+                        'notification_type_id' => $this->type->getId(),
+                        'entity_id' => $this->entity->getId(),
+                    ]
+                ], [
                     'from_users_id' => $this->fromUser->getId(),
+                    'users_id' => $this->toUser->getId(),
                     'companies_id' => $this->fromUser->currentCompanyId(),
                     'companies_branches_id' => $fromUserCurrentBranchId,
                     'apps_id' => $app->getId(),
                     'system_modules_id' => $this->type->system_modules_id,
                     'notification_type_id' => $this->type->getId(),
                     'entity_id' => $this->entity->getId(),
-                ]
-            ], [
-                'from_users_id' => $this->fromUser->getId(),
-                'users_id' => $this->toUser->getId(),
-                'companies_id' => $this->fromUser->currentCompanyId(),
-                'companies_branches_id' => $fromUserCurrentBranchId,
-                'apps_id' => $app->getId(),
-                'system_modules_id' => $this->type->system_modules_id,
-                'notification_type_id' => $this->type->getId(),
-                'entity_id' => $this->entity->getId(),
-                'content' => $this->message(),
-                'read' => 0,
-                'created_at' => date('Y-m-d H:i:s')
-            ]);
+                    'content' => $this->message(),
+                    'read' => 0,
+                    'created_at' => date('Y-m-d H:i:s')
+                ]);
+            } else {
+                $this->currentNotification = new Notifications();
+                $this->currentNotification->from_users_id = $this->fromUser->getId();
+                $this->currentNotification->users_id = $this->toUser->getId();
+                $this->currentNotification->companies_id = $this->fromUser->currentCompanyId();
+                $this->currentNotification->companies_branches_id = $fromUserCurrentBranchId;
+                $this->currentNotification->apps_id = $app->getId();
+                $this->currentNotification->system_modules_id = $this->type->system_modules_id;
+                $this->currentNotification->notification_type_id = $this->type->getId();
+                $this->currentNotification->entity_id = $this->entity->getId();
+                $this->currentNotification->content = $this->message();
+                $this->currentNotification->read = 0;
+            }
         } else {
             $this->currentNotification = Notifications::findFirstById($isGroupable);
 
