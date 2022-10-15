@@ -66,7 +66,14 @@ class UsersSettingsController extends BaseController
     public function listAll(int $userId) : Response
     {
         $channelName = $this->request->hasQuery('channel') ? $this->request->getQuery('channel', 'string') : null;
-        return $this->response(UserSettings::listOfNotifications($this->app, $this->userData, 0, $channelName));
+        return $this->response(
+            UserSettings::listOfNotifications(
+                $this->app,
+                $this->userData,
+                0,
+                $channelName
+            )
+        );
     }
 
     /**
@@ -99,6 +106,12 @@ class UsersSettingsController extends BaseController
     public function setNotificationSettings(int $userId, int $notificationTypeId) : Response
     {
         $notificationType = NotificationType::findFirstOrFail($notificationTypeId);
+
+        $request = $this->request->getPutData();
+
+        $this->request->valiate([
+            'channel' => 'string'
+        ]);
 
         if (!$notificationSettings = UserSettings::getByUserAndNotificationType($this->app, $this->userData, $notificationType)) {
             $notificationSettings = new UserSettings();
