@@ -108,8 +108,10 @@ class UserSettings extends AbstractModel
             $this->is_enabled = (int) true;
         } elseif ($channel && $this->isChannelEnabled($channel)) {
             $this->removeChannel($channel);
+        } else {
+            $this->channels = '';
         }
-    
+
         if ($channel === null || count($this->getChannels()) === 0) {
             $this->is_enabled = (int) $status;
         }
