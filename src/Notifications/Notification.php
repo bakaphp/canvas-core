@@ -29,7 +29,7 @@ class Notification implements NotificationInterface
 
     protected ?UserInterface $toUser = null;
     protected ?UserInterface $fromUser = null;
-    protected $type = null;
+    protected ?NotificationType $type = null;
     protected ?ModelInterface $entity = null;
     protected string $message = '';
     protected ?Notifications $currentNotification = null;
@@ -467,7 +467,8 @@ class Notification implements NotificationInterface
         $sendNotification = UserSettings::isEnabled(
             $app,
             $this->toUser,
-            $this->type
+            $this->type,
+            $this->type->channel ? $this->type->channel->name : null
         );
 
         //does he want to receive this type of notification from the current entity?
