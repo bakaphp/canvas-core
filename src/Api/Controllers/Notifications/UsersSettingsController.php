@@ -109,7 +109,7 @@ class UsersSettingsController extends BaseController
 
         $request = $this->request->getPutData();
 
-        $this->request->valiate([
+        $this->request->validate([
             'channel' => 'string'
         ]);
 
@@ -118,11 +118,13 @@ class UsersSettingsController extends BaseController
             $notificationSettings->users_id = $this->userData->getId();
             $notificationSettings->apps_id = $this->app->getId();
             $notificationSettings->notifications_types_id = $notificationTypeId;
-            $notificationSettings->is_enabled = (int) false; //if its the first time its to turn it off
-            $notificationSettings->channels = json_encode([]);
+
+            //if its the first time its off, by default they are always on
+            $notificationSettings->setEnabledStatus(false, $request['channel'] ?? null); 
         } else {
-            $notificationSettings->is_enabled = (int) !$notificationSettings->is_enabled;
+            $notificationSettings->setEnabledStatus(!$notificationSettings->is_enabled, $request['channel'] ?? null);
         }
+
         $notificationSettings->saveOrFail();
         $this->userData->set(Notification::getValueBySlug($notificationType->channel->slug), 0);
 

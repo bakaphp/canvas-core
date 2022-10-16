@@ -65,9 +65,9 @@ class UserSettings extends AbstractModel
      *
      * @param string $channel
      *
-     * @return array
+     * @return void
      */
-    public function removeChannel(string $channel) : array
+    public function removeChannel(string $channel) : void
     {
         $channels = $this->getChannels();
 
@@ -75,7 +75,44 @@ class UserSettings extends AbstractModel
             unset($channels[$channel]);
         }
 
-        return $channels;
+        $this->channels = json_encode($channels);
+    }
+
+    /**
+     * Set a channel.
+     *
+     * @param string $channel
+     *
+     * @return void
+     */
+    public function addChannel(string $channel) : void
+    {
+        $channels = $this->getChannels();
+        $channels[$channel] = $channel;
+
+        $this->channels = json_encode($channels);
+    }
+
+    /**
+     * Set enable status.
+     *
+     * @param bool $status
+     * @param string|null $channel
+     *
+     * @return void
+     */
+    public function setEnabledStatus(bool $status, ?string $channel = null) : void
+    {
+        if ($channel && !$this->isChannelEnabled($channel)) {
+            $this->addChannel($channel);
+            $this->is_enabled = (int) true;
+        } elseif ($channel && $this->isChannelEnabled($channel)) {
+            $this->removeChannel($channel);
+        }
+    
+        if ($channel === null || count($this->getChannels()) === 0) {
+            $this->is_enabled = (int) $status;
+        }
     }
 
     /**
@@ -107,7 +144,7 @@ class UserSettings extends AbstractModel
         ]);
 
         if (is_object($setting)) {
-            if ($channel === null) {
+            if ($channel === null || empty($setting->getChannels())) {
                 return (bool) $setting->is_enabled;
             } else {
                 return (bool) $setting->isChannelEnabled($channel);
