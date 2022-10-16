@@ -118,6 +118,26 @@ class UserSettings extends AbstractModel
     }
 
     /**
+     * Given the user setting type verify if its enable
+     *
+     * @param self $userSettings
+     * @param string|null $channel
+     * @return boolean
+     */
+    public static function isSettingEnable(self $userSettings, ?string $channel) : bool
+    {
+        if (is_object($userSettings)) {
+            if ($channel === null || empty($userSettings->getChannels())) {
+                return (bool) $userSettings->is_enabled;
+            } else {
+                return (bool) $userSettings->isChannelEnabled($channel);
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * Is the current notification type enabled for the current user.
      *
      * @param Apps $app
@@ -133,27 +153,9 @@ class UserSettings extends AbstractModel
         NotificationType $notificationType,
         ?string $channel = null
     ) : bool {
-        $setting = self::findFirst([
-            'conditions' => 'users_id = :users_id: 
-                            AND apps_id = :apps_id: 
-                            AND \notifications_types_id = :notifications_types_id: 
-                            AND is_deleted = 0',
-            'bind' => [
-                'users_id' => $user->getId(),
-                'apps_id' => $app->getId(),
-                'notifications_types_id' => $notificationType->getId(),
-            ],
-        ]);
+        $setting = self::getByUserAndNotificationType($app, $user, $notificationType);
 
-        if (is_object($setting)) {
-            if ($channel === null || empty($setting->getChannels())) {
-                return (bool) $setting->is_enabled;
-            } else {
-                return (bool) $setting->isChannelEnabled($channel);
-            }
-        }
-
-        return true;
+        return self::isSettingEnable($setting, $channel);
     }
 
     /**
