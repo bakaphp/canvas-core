@@ -120,7 +120,7 @@ class UsersSettingsController extends BaseController
             $notificationSettings->notifications_types_id = $notificationTypeId;
 
             //if its the first time its off, by default they are always on
-            $notificationSettings->setEnabledStatus(false, $request['channel'] ?? null); 
+            $notificationSettings->setEnabledStatus(false, $request['channel'] ?? null);
         } else {
             $notificationSettings->setEnabledStatus(!$notificationSettings->is_enabled, $request['channel'] ?? null);
         }
