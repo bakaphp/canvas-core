@@ -29,7 +29,7 @@ class Notification implements NotificationInterface
 
     protected ?UserInterface $toUser = null;
     protected ?UserInterface $fromUser = null;
-    protected ?NotificationType $type = null;
+    protected $type = null;
     protected ?ModelInterface $entity = null;
     protected string $message = '';
     protected ?Notifications $currentNotification = null;
