@@ -600,10 +600,14 @@ class Users extends AbstractModel implements UserInterface
         if ($sessionId !== null) {
             $redis = Di::getDefault()->get('redis');
             $redisKey = $key . $sessionId;
-            if ((int) $redis->get($redisKey) > 0) {
-                return (int) $redis->get($redisKey);
+            $redisValue = $redis->get($redisKey);
+            if ((int) $redisValue > 0) {
+                return (int) $redisValue;
             } else {
-                $redis->set($redisKey, $this->get($key));
+                $value = $this->get($key);
+                if ((int) $value > 0) {
+                    $redis->set($redisKey, $value);
+                }
             }
         }
 
