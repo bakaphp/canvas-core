@@ -66,7 +66,14 @@ class UsersSettingsController extends BaseController
     public function listAll(int $userId) : Response
     {
         $channelName = $this->request->hasQuery('channel') ? $this->request->getQuery('channel', 'string') : null;
-        return $this->response(UserSettings::listOfNotifications($this->app, $this->userData, 0, $channelName));
+        return $this->response(
+            UserSettings::listOfNotifications(
+                $this->app,
+                $this->userData,
+                0,
+                $channelName
+            )
+        );
     }
 
     /**
@@ -100,16 +107,24 @@ class UsersSettingsController extends BaseController
     {
         $notificationType = NotificationType::findFirstOrFail($notificationTypeId);
 
+        $request = $this->request->getPutData();
+
+        $this->request->validate([
+            'channel' => 'string'
+        ]);
+
         if (!$notificationSettings = UserSettings::getByUserAndNotificationType($this->app, $this->userData, $notificationType)) {
             $notificationSettings = new UserSettings();
             $notificationSettings->users_id = $this->userData->getId();
             $notificationSettings->apps_id = $this->app->getId();
             $notificationSettings->notifications_types_id = $notificationTypeId;
-            $notificationSettings->is_enabled = (int) false; //if its the first time its to turn it off
-            $notificationSettings->channels = json_encode([]);
+
+            //if its the first time its off, by default they are always on
+            $notificationSettings->setEnabledStatus(false, $request['channel'] ?? null);
         } else {
-            $notificationSettings->is_enabled = (int) !$notificationSettings->is_enabled;
+            $notificationSettings->setEnabledStatus(!$notificationSettings->is_enabled, $request['channel'] ?? null);
         }
+
         $notificationSettings->saveOrFail();
         $this->userData->set(Notification::getValueBySlug($notificationType->channel->slug), 0);
 

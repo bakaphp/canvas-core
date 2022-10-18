@@ -32,7 +32,10 @@ class NotificationType extends AbstractModel
             'notification_channel_id',
             NotificationChannels::class,
             'id',
-            ['alias' => 'channel']
+            [
+                'alias' => 'channel',
+                'reuse' => true
+            ]
         );
     }
 
@@ -46,7 +49,7 @@ class NotificationType extends AbstractModel
      */
     public static function getByKey(string $key) : NotificationType
     {
-        $app = Di::getDefault()->getApp();
+        $app = Di::getDefault()->get('app');
 
         return self::findFirstOrFail([
             'conditions' => 'apps_id in (?0, ?1) AND key = ?2',
