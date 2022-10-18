@@ -600,14 +600,8 @@ class Users extends AbstractModel implements UserInterface
         if ($sessionId !== null) {
             $redis = Di::getDefault()->get('redis');
             $redisKey = $key . $sessionId;
-            $redisValue = $redis->get($redisKey);
-            if ((int) $redisValue > 0) {
-                return (int) $redisValue;
-            } else {
-                $value = $this->get($key);
-                if ((int) $value > 0) {
-                    $redis->set($redisKey, $value);
-                }
+            if ((int) $redis->get($redisKey) > 0) {
+                return (int) $redis->get($redisKey);
             }
         }
 
@@ -654,14 +648,14 @@ class Users extends AbstractModel implements UserInterface
             }
         }
 
-        $branchId = $this->get($branchKey);
+        $branchId = $this->get($this->getDefaultCompany()->branchCacheKey());
         if ($branchId === null) {
             $branchId = $this->getDefaultCompany()->defaultBranch->getId();
 
             /**
              * @todo Remove this later in future versions.
              */
-            $this->set($branchKey, $branchId);
+            $this->set($this->getDefaultCompany()->branchCacheKey(), $branchId);
         }
 
         return $branchId;

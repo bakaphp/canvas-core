@@ -4,11 +4,9 @@ declare(strict_types=1);
 namespace Canvas\Models\Notifications;
 
 use Baka\Contracts\Auth\UserInterface;
-use function Baka\isJson;
 use Canvas\Enums\NotificationChannels as NotificationChannelsEnum;
 use Canvas\Models\AbstractModel;
 use Canvas\Models\Apps;
-
 use Canvas\Models\NotificationType;
 
 class UserSettings extends AbstractModel
@@ -37,126 +35,33 @@ class UserSettings extends AbstractModel
     }
 
     /**
-     * Get current channels.
-     *
-     * @return array
-     */
-    public function getChannels() : array
-    {
-        return isJson($this->channels) ? json_decode($this->channels, true) : [];
-    }
-
-    /**
-     * Check if the given channel is enabled.
-     *
-     * @param string $channel
-     *
-     * @return bool
-     */
-    public function isChannelEnabled(string $channel) : bool
-    {
-        $channels = $this->getChannels();
-
-        return isset($channels[$channel]);
-    }
-
-    /**
-     * Remove a channel.
-     *
-     * @param string $channel
-     *
-     * @return void
-     */
-    public function removeChannel(string $channel) : void
-    {
-        $channels = $this->getChannels();
-
-        if ($this->isChannelEnabled($channel)) {
-            unset($channels[$channel]);
-        }
-
-        $this->channels = json_encode($channels);
-    }
-
-    /**
-     * Set a channel.
-     *
-     * @param string $channel
-     *
-     * @return void
-     */
-    public function addChannel(string $channel) : void
-    {
-        $channels = $this->getChannels();
-        $channels[$channel] = $channel;
-
-        $this->channels = json_encode($channels);
-    }
-
-    /**
-     * Set enable status.
-     *
-     * @param bool $status
-     * @param string|null $channel
-     *
-     * @return void
-     */
-    public function setEnabledStatus(bool $status, ?string $channel = null) : void
-    {
-        if ($channel && !$this->isChannelEnabled($channel)) {
-            $this->addChannel($channel);
-            $this->is_enabled = (int) true;
-        } elseif ($channel && $this->isChannelEnabled($channel)) {
-            $this->removeChannel($channel);
-        } else {
-            $this->channels = '';
-        }
-
-        if ($channel === null || count($this->getChannels()) === 0) {
-            $this->is_enabled = (int) $status;
-        }
-    }
-
-    /**
-     * Given the user setting type verify if its enable.
-     *
-     * @param self|null $userSettings
-     * @param string|null $channel
-     *
-     * @return bool
-     */
-    public static function isSettingEnable(?self $userSettings = null, ?string $channel) : bool
-    {
-        if ($userSettings instanceof self) {
-            if ($channel === null || empty($userSettings->getChannels())) {
-                return (bool) $userSettings->is_enabled;
-            } else {
-                return (bool) $userSettings->isChannelEnabled($channel);
-            }
-        }
-
-        return true;
-    }
-
-    /**
      * Is the current notification type enabled for the current user.
      *
      * @param Apps $app
      * @param UserInterface $user
      * @param NotificationType $notificationType
-     * @param string|null $channel
      *
      * @return bool
      */
-    public static function isEnabled(
-        Apps $app,
-        UserInterface $user,
-        NotificationType $notificationType,
-        ?string $channel = null
-    ) : bool {
-        $setting = self::getByUserAndNotificationType($app, $user, $notificationType);
+    public static function isEnabled(Apps $app, UserInterface $user, NotificationType $notificationType) : bool
+    {
+        $setting = self::findFirst([
+            'conditions' => 'users_id = :users_id: 
+                            AND apps_id = :apps_id: 
+                            AND \notifications_types_id = :notifications_types_id: 
+                            AND is_deleted = 0',
+            'bind' => [
+                'users_id' => $user->getId(),
+                'apps_id' => $app->getId(),
+                'notifications_types_id' => $notificationType->getId(),
+            ],
+        ]);
 
-        return self::isSettingEnable($setting, $channel);
+        if (is_object($setting)) {
+            return (bool) $setting->is_enabled;
+        }
+
+        return true;
     }
 
     /**
@@ -194,10 +99,10 @@ class UserSettings extends AbstractModel
     public function muteAll(Apps $app, UserInterface $user, ?string $channelSlug = null) : bool
     {
         $params = [
-            'conditions' => 'is_published = :is_published: AND apps_id = :apps_id:',
-            'bind' => [
-                'is_published' => 1,
-                'apps_id' => $app->getId()
+            "conditions" => "is_published = :is_published: AND apps_id = :apps_id:",
+            "bind" => [
+                "is_published" => 1,
+                "apps_id" => $app->getId()
             ]
         ];
 
@@ -223,7 +128,6 @@ class UserSettings extends AbstractModel
                 'is_enabled' => 0,
                 'users_id' => $user->getId(),
                 'apps_id' => $notificationType->apps_id,
-                'channels' => $channelSlug ? $this->removeChannel($channelSlug) : null,
                 'notifications_types_id' => $notificationType->getId()
             ]);
         }
@@ -255,9 +159,9 @@ class UserSettings extends AbstractModel
             'order' => 'weight ASC'
         ];
 
-        if ($channelSlug && $parent !== 0) {
+        if ($channelSlug) {
             $notificationChannelId = NotificationChannelsEnum::getValueBySlug($channelSlug);
-            $params['conditions'] .= ' AND \\notification_channel_id IN (:notification_channel_id: , 0)';
+            $params['conditions'] .= ' AND \\notification_channel_id = :notification_channel_id:';
             $params['bind']['notification_channel_id'] = $notificationChannelId;
         }
 
@@ -270,21 +174,10 @@ class UserSettings extends AbstractModel
                 'name' => $notification->name,
                 'description' => $notification->description,
                 'notifications_types_id' => $notification->getId(),
-                'is_enabled' => (int) self::isEnabled(
-                    $app,
-                    $user,
-                    $notification,
-                    $channelSlug
-                ),
+                'is_enabled' => (int) self::isEnabled($app, $user, $notification),
                 'channel' => $notification->channel
             ];
-
-            $userNotificationList[$i]['children'] = self::listOfNotifications(
-                $app,
-                $user,
-                $notification->getId(),
-                $channelSlug
-            );
+            $userNotificationList[$i]['children'] = self::listOfNotifications($app, $user, $notification->getId());
             $i++;
         }
 

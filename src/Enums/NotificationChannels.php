@@ -11,14 +11,15 @@ class NotificationChannels
     public const REALTIME = 3;
 
     /**
-     * Get the value of the enum by slug.
-     *
+     * Get the value of the enum by slug
+     * 
      * @param string $notificationChannelSlug
-     *
+     * 
      * @return int
      */
     public static function getValueBySlug(string $notificationChannelSlug) : int
     {
+
         switch ($notificationChannelSlug) {
             case 'email':
                 return self::MAIL;
