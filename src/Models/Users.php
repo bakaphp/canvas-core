@@ -607,6 +607,8 @@ class Users extends AbstractModel implements UserInterface
                 $value = $this->get($key);
                 if ((int) $value > 0) {
                     $redis->set($redisKey, $value);
+
+                    return (int) $value;
                 }
             }
         }
