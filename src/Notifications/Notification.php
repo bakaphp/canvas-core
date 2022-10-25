@@ -10,7 +10,6 @@ use function Baka\isJson;
 use Baka\Mail\Message;
 use Baka\Queue\Queue;
 use Canvas\Contracts\EventManagerAwareTrait;
-use Canvas\Enums\NotificationChannelsSendFunctions;
 use Canvas\Models\AbstractModel;
 use Canvas\Models\Notifications;
 use Canvas\Models\Notifications\UserEntityImportance;
@@ -425,27 +424,22 @@ class Notification implements NotificationInterface
         }
 
         if ($this->sendNotificationEnabled()) {
-            if (!$this->type->channel) {
-                if ($this->toPusher) {
-                    $this->toPusher();
-                }
+            $app = Di::getDefault()->get('app');
 
-                if ($this->toMail) {
-                    $this->toMailNotification();
-                }
+            //get the user notification setting
+            $userNotificationSetting = UserSettings::getByUserAndNotificationType($app, $this->toUser, $this->type);
 
-                if ($this->toPushNotification) {
-                    $this->toSendPushNotification();
-                }
-            } else {
-                /**
-                 * The slug of the channel related to the notification type is passed
-                 * and the name of the method is returned corresponding to the channel.
-                 *
-                 * Ex: slug: email   --> method: toMailNotification()
-                 */
-                $notificationSender = NotificationChannelsSendFunctions::getValueBySlug($this->type->channel->slug);
-                $this->$notificationSender();
+            //verify user has the channel enabled and dev has the notification on
+            if (UserSettings::isSettingEnable($userNotificationSetting, 'push') && $this->toPusher) {
+                $this->toPusher();
+            }
+
+            if (UserSettings::isSettingEnable($userNotificationSetting, 'email') && $this->toMail) {
+                $this->toMailNotification();
+            }
+
+            if (UserSettings::isSettingEnable($userNotificationSetting, 'realtime') && $this->toPushNotification) {
+                $this->toSendPushNotification();
             }
         }
 
@@ -463,13 +457,6 @@ class Notification implements NotificationInterface
         $sendNotificationByImportance = true;
         $app = Di::getDefault()->get('app');
 
-        //is this type of notification enabled for this user?
-        $sendNotification = UserSettings::isEnabled(
-            $app,
-            $this->toUser,
-            $this->type
-        );
-
         //does he want to receive this type of notification from the current entity?
         if ($this->fromUser instanceof UserInterface) {
             $toUserSettlings = UserEntityImportance::getByEntity(
@@ -485,8 +472,10 @@ class Notification implements NotificationInterface
                 $sendNotificationByImportance = $toUserSettlings->importance->validateExpression($this->currentNotification);
             }
 
-            return $sendNotification && $sendNotificationByImportance;
+            return $sendNotificationByImportance;
         }
+
+        return true;
     }
 
     /**
