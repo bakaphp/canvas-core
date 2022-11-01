@@ -47,7 +47,7 @@ trait SocialLoginTrait
     {
         $random = new Random();
         //if we don't find email go by social ID
-        if (isset($userInfo['email'])) {
+        if (isset($userInfo['email']) && filter_var($userInfo['email'], FILTER_VALIDATE_EMAIL)) {
             try {
                 $existingUser = Users::getByEmail($userInfo['email']);
             } catch (Exception $e) {
