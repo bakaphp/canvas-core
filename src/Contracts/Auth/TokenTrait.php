@@ -28,9 +28,6 @@ trait TokenTrait
         $random = new Random();
         $sessionId = $random->uuid();
 
-        // print_r($this->toArray());
-        // die();
-
         $token = self::createJwtToken($sessionId, $this);
         $monthInHours = ceil((Di::getDefault()->get('config')->jwt->payload->refresh_exp ?? 2628000) / 3600);
         $refreshToken = self::createJwtToken($sessionId, $this, $monthInHours);
