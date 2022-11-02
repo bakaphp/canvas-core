@@ -84,7 +84,7 @@ class AuthenticationMiddleware extends TokenBase
 
                 if (!empty($token->claims()->get('sessionId'))) {
                     //user
-                    if (!$user = $userData->getByEmail($token->claims()->get('email'))) {
+                    if (!$user = $userData->getById($token->claims()->get('id'))) {
                         throw new UnauthorizedException('User not found');
                     }
 
