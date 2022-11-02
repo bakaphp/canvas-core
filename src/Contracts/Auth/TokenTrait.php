@@ -1,8 +1,10 @@
 <?php
 
 declare(strict_types=1);
+
 namespace Canvas\Contracts\Auth;
 
+use Baka\Contracts\Auth\UserInterface;
 use Canvas\Auth\Jwt;
 use DateTimeImmutable;
 use Lcobucci\JWT\Token;
@@ -26,9 +28,9 @@ trait TokenTrait
         $random = new Random();
         $sessionId = $random->uuid();
 
-        $token = self::createJwtToken($sessionId, $this->getEmail());
+        $token = self::createJwtToken($sessionId, $this);
         $monthInHours = ceil((Di::getDefault()->get('config')->jwt->payload->refresh_exp ?? 2628000) / 3600);
-        $refreshToken = self::createJwtToken($sessionId, $this->getEmail(), $monthInHours);
+        $refreshToken = self::createJwtToken($sessionId, $this, $monthInHours);
 
         return [
             'sessionId' => $sessionId,
@@ -80,7 +82,7 @@ trait TokenTrait
      *
      * @return array
      */
-    public static function createJwtToken(string $sessionId, string $email, float $expirationAt = 0) : array
+    public static function createJwtToken(string $sessionId, UserInterface $user, float $expirationAt = 0) : array
     {
         $now = new DateTimeImmutable();
         $config = Jwt::getConfig();
@@ -96,7 +98,8 @@ trait TokenTrait
                 ->canOnlyBeUsedAfter($now)
                 ->expiresAt($now->modify('+' . $expiration . ' hour'))
                 ->withClaim('sessionId', $sessionId)
-                ->withClaim('email', $email)
+                ->withClaim('email', $user->email)
+                ->withClaim('id', $user->getId())
                 // Builds a new token
                 ->getToken($config->signer(), $config->signingKey());
 
