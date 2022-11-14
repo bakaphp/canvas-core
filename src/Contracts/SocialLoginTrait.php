@@ -75,6 +75,7 @@ trait SocialLoginTrait
              * This confirms if the linked source exists and if it has a user attached to it. If true then logs in the user.
              */
             if ($userLinkedSource) {
+                $newUser->set('is_new_user', 0);
                 return $this->loginSocial($userLinkedSource->getUser());
             }
 
@@ -90,6 +91,7 @@ trait SocialLoginTrait
                 $newLinkedSource->source_username = ucfirst($source->title) . 'Login-' . $random->base58();
                 $newLinkedSource->saveOrFail();
 
+                $newUser->set('is_new_user', 0);
                 return $this->loginSocial($existingUser);
             }
         }
@@ -105,6 +107,8 @@ trait SocialLoginTrait
             $userInfo,
             $password
         );
+
+        $newUser->set('is_new_user', 1);
         return $this->loginUsers($newUser->email, $password);
     }
 
