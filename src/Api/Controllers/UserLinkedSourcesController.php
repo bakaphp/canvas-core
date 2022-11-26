@@ -9,6 +9,7 @@ use Baka\Social\Apple\ASDecoder;
 use Baka\Validation as CanvasValidation;
 use Canvas\Models\Sources;
 use Canvas\Models\UserLinkedSources;
+use Exception;
 use Phalcon\Http\Response;
 use Phalcon\Validation\Validator\PresenceOf;
 
@@ -87,7 +88,7 @@ class UserLinkedSourcesController extends BaseController
             }
 
             UserLinkedSources::updateOrCreate([
-            'conditions' => 'users_id = ?0 AND source_users_id_text = ?1 AND source_id = ?2',
+                'conditions' => 'users_id = ?0 AND source_users_id_text = ?1 AND source_id = ?2',
                 'bind' => [
                     $this->userData->getId(),
                     $deviceId,
@@ -125,15 +126,18 @@ class UserLinkedSourcesController extends BaseController
     public function detachDevice(int $id, string $deviceId) : Response
     {
         //$sourceId = $this->request->getPost('source_id', 'int');
-        $userSource = UserLinkedSources::findFirstOrFail([
-            'conditions' => 'users_id = ?0  and source_users_id_text = ?1 and is_deleted = 0',
-            'bind' => [
-                $this->userData->getId(),
-                $deviceId
-            ]
-        ]);
+        try {
+            $userSource = UserLinkedSources::findFirstOrFail([
+                'conditions' => 'users_id = ?0  and source_users_id_text = ?1 and is_deleted = 0',
+                'bind' => [
+                    $this->userData->getId(),
+                    $deviceId
+                ]
+            ]);
 
-        $userSource->softDelete();
+            $userSource->softDelete();
+        } catch (Exception $e) {
+        }
 
         return $this->response([
             'msg' => 'User Device detached',
