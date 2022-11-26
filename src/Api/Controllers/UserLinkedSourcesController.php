@@ -139,6 +139,8 @@ class UserLinkedSourcesController extends BaseController
         } catch (Exception $e) {
         }
 
+        $this->userData->password = null;
+
         return $this->response([
             'msg' => 'User Device detached',
             'user' => $this->userData
