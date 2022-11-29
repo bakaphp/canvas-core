@@ -184,7 +184,8 @@ class UsersController extends BaseController
             unset($request['default_company'], $request['default_company_branch']);
         }
 
-        if (isset($request['roles_id'])) {
+        //only admin can modify roles
+        if (isset($request['roles_id']) && $this->userData->hasRole('Default.Admins')) {
             $user->assignRoleById((int)$request['roles_id']);
         }
 
