@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Canvas\Contracts\Auth;
 
 use Baka\Contracts\Auth\UserInterface;
+use function Baka\isCLI;
 use Canvas\Auth\Jwt;
 use DateTimeImmutable;
 use Lcobucci\JWT\Token;
@@ -117,9 +118,10 @@ trait TokenTrait
      */
     public function getCurrentSessionId() : ?string
     {
-        if (!Di::getDefault()->has('request')) {
+        if (!Di::getDefault()->has('request') || isCLI()) {
             return null;
         }
+
         $request = Di::getDefault()->get('request');
         $bearerToken = $request->getBearerTokenFromHeader();
         if (!empty($bearerToken)) {
