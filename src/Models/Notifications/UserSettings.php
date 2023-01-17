@@ -125,7 +125,7 @@ class UserSettings extends AbstractModel
      *
      * @return bool
      */
-    public static function isSettingEnable(?self $userSettings = null, ?string $channel) : bool
+    public static function isSettingEnable(?self $userSettings = null, ?string $channel = null) : bool
     {
         if ($userSettings instanceof self) {
             if ($channel === null || empty($userSettings->getChannels())) {
