@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Canvas\Models;
 
+use function Baka\envValue;
 use Baka\Http\Exception\InternalServerErrorException;
 use Baka\Http\Exception\UnprocessableEntityException;
 use Baka\Support\Str;
@@ -38,7 +39,7 @@ class Roles extends AbstractModel
      */
     public function initialize()
     {
-        $this->setSource('roles');
+        $this->setSource(envValue('KANVAS_ROLES_TABLE', 'roles'));
 
         $this->hasMany(
             'id',
