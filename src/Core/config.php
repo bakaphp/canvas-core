@@ -40,15 +40,11 @@ return [
         ]
     ],
     'filesystem' => [
-        //temp directory where we will upload our files before moving them to the final location
         'uploadDirectory' => appPath(envValue('LOCAL_UPLOAD_DIR_TEMP')),
         'local' => [
             'path' => appPath(envValue('LOCAL_UPLOAD_DIR')),
             'cdn' => envValue('FILESYSTEM_CDN_URL'),
         ],
-        /**
-         * @todo move this to app settings config
-         */
         's3' => [
             'info' => [
                 'credentials' => [
@@ -60,6 +56,16 @@ return [
             ],
             'path' => envValue('S3_UPLOAD_DIR'),
             'bucket' => getenv('S3_BUCKET'),
+            'cdn' => envValue('S3_CDN_URL'),
+        ],
+        'gcp' => [
+            'info' => [
+                'credentials' => [
+                    'keyFilePath' => getenv('GCP_KEY_FILE_PATH'),
+                ],
+            ],
+            'path' => envValue('GCP_UPLOAD_DIR'),
+            'bucket' => getenv('GCP_BUCKET'),
             'cdn' => envValue('S3_CDN_URL'),
         ],
     ],

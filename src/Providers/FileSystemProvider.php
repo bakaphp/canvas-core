@@ -8,6 +8,7 @@ use League\Flysystem\AwsS3v3\AwsS3Adapter;
 use League\Flysystem\Filesystem;
 use Phalcon\Di\DiInterface;
 use Phalcon\Di\ServiceProviderInterface;
+use Google\Cloud\Storage\StorageClient;
 
 class FileSystemProvider implements ServiceProviderInterface
 {
@@ -29,14 +30,24 @@ class FileSystemProvider implements ServiceProviderInterface
                     $filesystem = $app->get('filesystem');
                 }
 
-                if ($filesystem === 'local') {
-                    //create directory
-                    $adapter = new Local($config->filesystem->local->path);
-                } else {
-                    //s3
-                    $client = new S3Client($config->filesystem->s3->info->toArray());
-                    $adapter = new AwsS3Adapter($client, $config->filesystem->s3->bucket, null, ['ACL' => 'public-read']);
+
+                switch ($filesystem) {
+                    case 'local':
+                        $adapter = new Local($config->filesystem->local->path);
+                        break;
+                    case 's3':
+                        $client = new S3Client($config->filesystem->s3->info->toArray());
+                        $adapter = new AwsS3Adapter($client, $config->filesystem->s3->bucket, null, ['ACL' => 'public-read']);
+                        break;
+                    case 'gcp':
+                        $client = new StorageClient(['keyFilePath' => $config->filesystem->info->credentials->keyFilePath]);
+                        $adapter = $storage->bucket($config->filesystem->gcp->bucket);
+                        break;
+                    default:
+                        $adapter = new Local($config->filesystem->local->path);
+                        break;
                 }
+
                 return new Filesystem($adapter);
             }
         );
