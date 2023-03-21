@@ -62,6 +62,7 @@ return [
             'info' => [
                 'credentials' => [
                     'keyFilePath' => getenv('GCP_KEY_FILE_PATH'),
+                    'projectId' => getenv('GCP_PROJECT_ID')
                 ],
             ],
             'path' => envValue('GCP_UPLOAD_DIR'),

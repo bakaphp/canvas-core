@@ -40,7 +40,11 @@ class FileSystemProvider implements ServiceProviderInterface
                         $adapter = new AwsS3Adapter($client, $config->filesystem->s3->bucket, null, ['ACL' => 'public-read']);
                         break;
                     case 'gcp':
-                        $client = new StorageClient(['keyFilePath' => $config->filesystem->info->credentials->keyFilePath]);
+                        $client = new StorageClient([
+                            'keyFilePath' => $config->filesystem->info->credentials->keyFilePath,
+                            'projectId' => $config->filesystem->info->credentials->projectId
+                        ]);
+                        
                         $adapter = $storage->bucket($config->filesystem->gcp->bucket);
                         break;
                     default:
