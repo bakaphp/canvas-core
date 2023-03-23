@@ -18,6 +18,7 @@ class UserSettings extends AbstractModel
     public int $notifications_types_id;
     public int $is_enabled = 1;
     public ?string $channels = null;
+    public ?string $description = null;
 
     /**
      * Initialize method for model.
