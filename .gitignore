@@ -7,7 +7,6 @@
 
 .env
 phinx.php
-composer.lock
 tests/_output/
 vendor/
 api/public/filesystem/

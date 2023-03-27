@@ -3,12 +3,13 @@
 namespace Canvas\Providers;
 
 use Aws\S3\S3Client;
+use Google\Cloud\Storage\StorageClient;
 use League\Flysystem\Adapter\Local;
 use League\Flysystem\AwsS3v3\AwsS3Adapter;
 use League\Flysystem\Filesystem;
+use League\Flysystem\GoogleCloudStorage\GoogleCloudStorageAdapter;
 use Phalcon\Di\DiInterface;
 use Phalcon\Di\ServiceProviderInterface;
-use Google\Cloud\Storage\StorageClient;
 
 class FileSystemProvider implements ServiceProviderInterface
 {
@@ -30,7 +31,6 @@ class FileSystemProvider implements ServiceProviderInterface
                     $filesystem = $app->get('filesystem');
                 }
 
-
                 switch ($filesystem) {
                     case 'local':
                         $adapter = new Local($config->filesystem->local->path);
@@ -44,8 +44,8 @@ class FileSystemProvider implements ServiceProviderInterface
                             'keyFilePath' => $config->filesystem->info->credentials->keyFilePath,
                             'projectId' => $config->filesystem->info->credentials->projectId
                         ]);
-                        
-                        $adapter = $storage->bucket($config->filesystem->gcp->bucket);
+                        $bucket = $client->bucket($config->filesystem->gcp->bucket);
+                        $adapter = new GoogleCloudStorageAdapter($bucket);
                         break;
                     default:
                         $adapter = new Local($config->filesystem->local->path);
