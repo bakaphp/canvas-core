@@ -4,7 +4,7 @@ namespace Canvas\Providers;
 
 use Aws\S3\S3Client;
 use Google\Cloud\Storage\StorageClient;
-use League\Flysystem\Adapter\Local;
+use League\Flysystem\Local;
 use League\Flysystem\AwsS3v3\AwsS3Adapter;
 use League\Flysystem\Filesystem;
 use League\Flysystem\GoogleCloudStorage\GoogleCloudStorageAdapter;
