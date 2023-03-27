@@ -4,10 +4,10 @@ namespace Canvas\Providers;
 
 use Aws\S3\S3Client;
 use Google\Cloud\Storage\StorageClient;
-use League\Flysystem\Local\LocalFilesystemAdapter;
-use League\Flysystem\AwsS3v3\AwsS3Adapter;
+use League\Flysystem\AwsS3V3\AwsS3V3Adapter;
 use League\Flysystem\Filesystem;
 use League\Flysystem\GoogleCloudStorage\GoogleCloudStorageAdapter;
+use League\Flysystem\Local\LocalFilesystemAdapter;
 use Phalcon\Di\DiInterface;
 use Phalcon\Di\ServiceProviderInterface;
 
@@ -37,7 +37,7 @@ class FileSystemProvider implements ServiceProviderInterface
                         break;
                     case 's3':
                         $client = new S3Client($config->filesystem->s3->info->toArray());
-                        $adapter = new AwsS3Adapter($client, $config->filesystem->s3->bucket, null, ['ACL' => 'public-read']);
+                        $adapter = new AwsS3V3Adapter($client, $config->filesystem->s3->bucket, '', null, null, ['ACL' => 'public-read']);
                         break;
                     case 'gcp':
                         $client = new StorageClient([
