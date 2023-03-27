@@ -169,7 +169,7 @@ class FileSystem extends AbstractModel
         $newUrl = $fileSystemConfig->cdn . DIRECTORY_SEPARATOR . $newPath;
 
         try {
-            $this->di->get('filesystem')->rename($this->path, $newPath);
+            $this->di->get('filesystem')->move($this->path, $newPath);
             $this->path = $newPath;
             $this->url = $newUrl;
             $this->updateOrFail();

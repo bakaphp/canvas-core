@@ -34,18 +34,14 @@ class Helper extends FilesystemHelper
         $fileSystemConfig = $config->filesystem->{$appSettingFileConfig};
 
         //create local filesystem , for temp files
-        $di->get('filesystem', ['local'])->createDir($config->filesystem->local->path);
+        $di->get('filesystem', ['local'])->createDirectory($config->filesystem->local->path);
 
         //get the tem file
         $fileName = self::generateUniqueName($file, $config->filesystem->local->path . '/');
         $completeFilePath = $fileSystemConfig->path . DIRECTORY_SEPARATOR . $fileName;
         $uploadFileNameWithPath = $appSettingFileConfig === 'local' ? $fileName : $completeFilePath;
 
-        if ($appSettingFileConfig === 'gcp') {
-            $di->get('filesystem')->upload(fopen($file->getTempName(), 'r'),['name' => $uploadFileNameWithPath]);
-        } else {
-            $di->get('filesystem')->writeStream($uploadFileNameWithPath, fopen($file->getTempName(), 'r'), $options);
-        }
+        $di->get('filesystem')->writeStream($uploadFileNameWithPath, fopen($file->getTempName(), 'r'), $options);
 
         $fileSystem = new FileSystem();
         $fileSystem->name = $file->getName();
