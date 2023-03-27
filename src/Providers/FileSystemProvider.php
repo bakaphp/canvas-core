@@ -33,7 +33,7 @@ class FileSystemProvider implements ServiceProviderInterface
 
                 switch ($filesystem) {
                     case 'local':
-                        $adapter = new Local($config->filesystem->local->path);
+                        $adapter = new LocalFilesystemAdapter($config->filesystem->local->path);
                         break;
                     case 's3':
                         $client = new S3Client($config->filesystem->s3->info->toArray());
