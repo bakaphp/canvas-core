@@ -4,7 +4,7 @@ namespace Canvas\Providers;
 
 use Aws\S3\S3Client;
 use Google\Cloud\Storage\StorageClient;
-use League\Flysystem\Local;
+use League\Flysystem\Local\LocalFilesystemAdapter;
 use League\Flysystem\AwsS3v3\AwsS3Adapter;
 use League\Flysystem\Filesystem;
 use League\Flysystem\GoogleCloudStorage\GoogleCloudStorageAdapter;
@@ -48,7 +48,7 @@ class FileSystemProvider implements ServiceProviderInterface
                         $adapter = new GoogleCloudStorageAdapter($bucket);
                         break;
                     default:
-                        $adapter = new Local($config->filesystem->local->path);
+                        $adapter = new LocalFilesystemAdapter($config->filesystem->local->path);
                         break;
                 }
 
