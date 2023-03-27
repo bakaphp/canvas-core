@@ -34,7 +34,7 @@ class Helper extends FilesystemHelper
         $fileSystemConfig = $config->filesystem->{$appSettingFileConfig};
 
         //create local filesystem , for temp files
-        $di->get('filesystem', ['local'])->createDir($config->filesystem->local->path);
+        $di->get('filesystem', ['local'])->createDirectory($config->filesystem->local->path);
 
         //get the tem file
         $fileName = self::generateUniqueName($file, $config->filesystem->local->path . '/');
