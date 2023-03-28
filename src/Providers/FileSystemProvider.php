@@ -41,8 +41,8 @@ class FileSystemProvider implements ServiceProviderInterface
                         break;
                     case 'gcp':
                         $client = new StorageClient([
-                            'keyFilePath' => $config->filesystem->info->credentials->keyFilePath,
-                            'projectId' => $config->filesystem->info->credentials->projectId
+                            'keyFilePath' => $config->filesystem->gcp->info->credentials->keyFilePath,
+                            'projectId' => $config->filesystem->gcp->info->credentials->projectId
                         ]);
                         $bucket = $client->bucket($config->filesystem->gcp->bucket);
                         $adapter = new GoogleCloudStorageAdapter($bucket);
