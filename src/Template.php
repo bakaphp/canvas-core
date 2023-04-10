@@ -19,13 +19,8 @@ class Template
      *  - create the files
      *  - render it with the variables
      *  - return the content string for use to use anywhere.
-     *
-     * @param string $name
-     * @param array $params
-     *
-     * @return string
      */
-    public static function generate(string $name, array $params) : string
+    public static function generate(string $name, array $params): string
     {
         $di = Di::getDefault();
         $view = $di->get('view');
@@ -36,7 +31,7 @@ class Template
         $file = $template->name . '.volt';
 
         //write file
-        $filesystem->put('/view/' . $file, $template->template);
+        $filesystem->write('/view/' . $file, $template->template);
 
         //render and return content
         return $view->render($template->name, $params);
