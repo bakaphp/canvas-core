@@ -7,6 +7,6 @@ namespace Canvas\Enums;
 class Sources
 {
     public const IOS = 'iosapp';
-    public const ANDROID = 'androipapp';
+    public const ANDROID = 'androidapp';
     public const WEBAPP = 'webapp';
 }
