@@ -161,7 +161,7 @@ class QueueTask extends PhTask
                     return;
                 }
 
-                go(function () use ($job, $msg, $sentryClient) {
+                go(function () use ($job, $msg) {
                     //instance notification and pass the entity
                     try {
                         $this->reconnectDb();
@@ -179,10 +179,6 @@ class QueueTask extends PhTask
                                 $e->getTraceAsString(),
                             ]
                         );
-
-                        if ($sentryClient) {
-                            $sentryClient->flush();
-                        }
                     }
                 });
             } catch (Throwable $e) {
