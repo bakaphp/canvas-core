@@ -14,6 +14,7 @@ use Phalcon\Di\ServiceProviderInterface;
 use Sentry\ClientBuilder;
 use Sentry\Monolog\Handler as SentryHandler;
 use Sentry\State\Hub;
+use function Baka\isCLI;
 
 class LoggerProvider implements ServiceProviderInterface
 {
@@ -43,7 +44,7 @@ class LoggerProvider implements ServiceProviderInterface
                 $handler->setFormatter($formatter);
 
                 //only run logs in production
-                if ((bool) envValue('SENTRY_PROJECT', 0)) {
+                if ((bool) envValue('SENTRY_PROJECT', 0) && !isCLI()) {
                     //sentry logger
                     $client = ClientBuilder::create([
                         'dsn' => 'https://' . getenv('SENTRY_PROJECT_SECRET') . '@sentry.io/' . getenv('SENTRY_PROJECT_ID')
