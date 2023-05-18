@@ -8,17 +8,14 @@ use Baka\Support\Str;
 use Canvas\Models\Users;
 use Phalcon\Cli\Task as PhTask;
 use Phalcon\Mvc\Model;
-use Sentry\SentrySdk;
 use Throwable;
 
 class QueueTask extends PhTask
 {
     /**
      * Queue action for mobile notifications.
-     *
-     * @return void
      */
-    public function mainAction() : void
+    public function mainAction(): void
     {
         echo 'Canvas Ecosystem Queue Jobs: events | notifications | jobs' . PHP_EOL;
     }
@@ -30,9 +27,7 @@ class QueueTask extends PhTask
      */
     public function eventsAction()
     {
-        $sentryClient = SentrySdk::getCurrentHub()->getClient();
-
-        $callback = function ($msg) use ($sentryClient) : void {
+        $callback = function ($msg): void {
             try {
                 //check the db before running anything
                 $this->reconnectDb();
@@ -58,10 +53,6 @@ class QueueTask extends PhTask
                         $e->getTraceAsString(),
                     ]
                 );
-
-                if ($sentryClient) {
-                    $sentryClient->flush();
-                }
             }
         };
 
@@ -75,9 +66,7 @@ class QueueTask extends PhTask
      */
     public function notificationsAction()
     {
-        $sentryClient = SentrySdk::getCurrentHub()->getClient();
-
-        $callback = function (object $msg) use ($sentryClient) : void {
+        $callback = function (object $msg): void {
             try {
                 //check the db before running anything
                 $this->reconnectDb();
@@ -90,19 +79,22 @@ class QueueTask extends PhTask
                     $this->di->set('userData', $notification['from']);
                 }
 
-                if (!$notification['to'] instanceof Users) {
+                if (! $notification['to'] instanceof Users) {
                     echo 'Attribute TO has to be a User' . PHP_EOL;
+
                     return;
                 }
 
-                if (!class_exists($notification['notification'])) {
+                if (! class_exists($notification['notification'])) {
                     echo 'Attribute notification has to be a Notification' . PHP_EOL;
+
                     return;
                 }
                 $notificationClass = $notification['notification'];
 
-                if (!$notification['entity'] instanceof Model) {
+                if (! $notification['entity'] instanceof Model) {
                     echo 'Attribute entity has to be a Model' . PHP_EOL;
+
                     return;
                 }
 
@@ -126,10 +118,6 @@ class QueueTask extends PhTask
                         $e->getTraceAsString(),
                     ]
                 );
-
-                if ($sentryClient) {
-                    $sentryClient->flush();
-                }
             }
         };
 
@@ -145,9 +133,8 @@ class QueueTask extends PhTask
     {
         $queue = is_null($queueName) ? QUEUE::JOBS : $queueName;
 
-        $sentryClient = SentrySdk::getCurrentHub()->getClient();
 
-        $callback = function (object $msg) use ($sentryClient) : void {
+        $callback = function (object $msg): void {
             try {
                 //check the db before running anything
                 $this->reconnectDb();
@@ -160,15 +147,17 @@ class QueueTask extends PhTask
                     $this->di->set('userData', $job['userData']);
                 }
 
-                if (!class_exists($job['class'])) {
+                if (! class_exists($job['class'])) {
                     echo 'No Job class found' . PHP_EOL;
                     $this->log->error('No Job class found ' . $job['class']);
+
                     return;
                 }
 
-                if (!$job['job'] instanceof QueueableJobInterface) {
+                if (! $job['job'] instanceof QueueableJobInterface) {
                     echo 'This Job is not queueable ' . $msg->delivery_info['consumer_tag'];
                     $this->log->error('This Job is not queueable ' . $msg->delivery_info['consumer_tag']);
+
                     return;
                 }
 
@@ -203,10 +192,6 @@ class QueueTask extends PhTask
                         $e->getTraceAsString(),
                     ]
                 );
-
-                if ($sentryClient) {
-                    $sentryClient->flush();
-                }
             }
         };
 
@@ -215,10 +200,8 @@ class QueueTask extends PhTask
 
     /**
      * Reconnect to our db providers.
-     *
-     * @return void
      */
-    protected function reconnectDb() : void
+    protected function reconnectDb(): void
     {
         //list all of our di
         $listOfServices = array_keys($this->di->getServices());
@@ -235,10 +218,8 @@ class QueueTask extends PhTask
 
     /**
      * Confirm if the db is connected.
-     *
-     * @return bool
      */
-    protected function isDbConnected(string $dbProvider) : bool
+    protected function isDbConnected(string $dbProvider): bool
     {
         try {
             $this->di->get($dbProvider)->fetchAll('SELECT 1');
@@ -246,10 +227,13 @@ class QueueTask extends PhTask
             if (Str::contains($e->getMessage(), 'MySQL server has gone away') ||
                 Str::contains($e->getMessage(), 'Connection timed out')) {
                 $this->di->get($dbProvider)->connect();
+
                 return true;
             }
+
             return false;
         }
+
         return true;
     }
 }
