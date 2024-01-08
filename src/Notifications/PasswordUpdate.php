@@ -34,8 +34,7 @@ class PasswordUpdate extends Notification implements NotificationInterface
                 ]
             );
         } catch (Throwable $e) {
-            $message = "Hi {$this->fromUser->firstname} {$this->fromUser->lastname}, your password for {$app->name} was updated <br /><br />
-            Thanks ";
+            $message = "Hi {$this->fromUser->firstname} {$this->fromUser->lastname}, your password for {$app->name} was updated. Thanks ";
         }
 
         return $message;
