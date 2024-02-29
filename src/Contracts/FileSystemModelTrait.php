@@ -616,7 +616,7 @@ trait FileSystemModelTrait
      *
      * @return int
      */
-    protected function clearFileSystemCache() : int
+    public function clearFileSystemCache() : int
     {
         $systemModule = SystemModules::getByModelName(self::class);
 
